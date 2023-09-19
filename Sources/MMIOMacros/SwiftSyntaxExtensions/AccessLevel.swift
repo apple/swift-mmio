@@ -23,7 +23,7 @@ enum AccessLevel: String {
 
 extension AccessLevel: CaseIterable {}
 
-extension HasModifiersDeclSyntax {
+extension WithModifiersSyntax {
   var accessLevel: AccessLevel? {
     self.modifiers
       .lazy
