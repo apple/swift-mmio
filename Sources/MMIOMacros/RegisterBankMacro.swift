@@ -41,13 +41,13 @@ extension RegisterBankMacro: MemberMacro {
         context.diagnose(
           .init(
             node: declaration,
-            message: Diagnostics.Errors.OnlyStructDecl()))
+            message: Diagnostics.Errors.onlyStructDecl()))
         return []
       }
       context.diagnose(
         .init(
           node: introducer.introducerKeyword,
-          message: Diagnostics.Errors.OnlyStructDecl()))
+          message: Diagnostics.Errors.onlyStructDecl()))
       return []
     }
 
@@ -83,7 +83,7 @@ extension RegisterBankMacro: MemberMacro {
         context.diagnose(
           .init(
             node: variableDecl,
-            message: Diagnostics.Errors.OnlyAnnotatedMemberVarDecls()))
+            message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls()))
         error = true
         continue
       }
@@ -107,28 +107,33 @@ extension RegisterBankMacro: MemberMacro {
 
 extension RegisterBankMacro {
   enum Diagnostics {
-    enum Errors {
-      struct OnlyStructDecl: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank' can only be applied to structs"
-        var severity = DiagnosticSeverity.error
+    struct Errors: DiagnosticMessage {
+      var id: StaticString
+      var diagnosticID: MessageID {
+        .init(domain: "\(RegisterBankOffsetMacro.self)", id: "\(self.id)")
+      }
+      var severity: DiagnosticSeverity
+      var message: String
+
+      init(
+        message: String,
+        severity: DiagnosticSeverity = .error,
+        id: StaticString = #function
+      ) {
+        self.id = id
+        self.severity = severity
+        self.message = message
       }
 
-      struct OnlyAnnotatedMemberVarDecls: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank' struct properties must all be annotated with '@RegisterBank(offset:)'"
-        var severity = DiagnosticSeverity.error
+      static func onlyStructDecl() -> Self {
+        self.init(message: "'@RegisterBank' can only be applied to structs")
+      }
+
+      static func onlyAnnotatedMemberVarDecls() -> Self {
+        self.init(message: "'@RegisterBank' struct properties must all be annotated with '@RegisterBank(offset:)'")
       }
     }
 
-    enum FixIts {
-
-    }
+    enum FixIts {}
   }
 }

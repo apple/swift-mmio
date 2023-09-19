@@ -13,7 +13,7 @@ let package = Package(
     .macCatalyst(.v13),
   ],
   products: [
-    .library(name: "MMIO", targets: ["MMIO"]),
+    .library(name: "MMIO", targets: ["MMIO"])
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")

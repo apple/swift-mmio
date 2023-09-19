@@ -38,19 +38,19 @@ final class RegisterBankMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: Diagnostics.Errors.OnlyStructDecl().message,
+          message: Diagnostics.Errors.onlyStructDecl().message,
           line: 1,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
-          message: Diagnostics.Errors.OnlyStructDecl().message,
+          message: Diagnostics.Errors.onlyStructDecl().message,
           line: 2,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "class "),
         .init(
-          message: Diagnostics.Errors.OnlyStructDecl().message,
+          message: Diagnostics.Errors.onlyStructDecl().message,
           line: 3,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -65,26 +65,26 @@ final class RegisterBankMacroTests: XCTestCase {
       """
       @RegisterBank
       struct S {
-          var v1: Int
-          @OtherAttribute var v2: Int
+        var v1: Int
+        @OtherAttribute var v2: Int
       }
       """,
       expandedSource: """
         struct S {
-            var v1: Int
-            @OtherAttribute var v2: Int
+          var v1: Int
+          @OtherAttribute var v2: Int
         }
         """,
       diagnostics: [
         .init(
-          message: Diagnostics.Errors.OnlyAnnotatedMemberVarDecls().message,
+          message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls().message,
           line: 3,
-          column: 5,
+          column: 3,
           highlight: "var v1: Int"),
         .init(
-          message: Diagnostics.Errors.OnlyAnnotatedMemberVarDecls().message,
+          message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls().message,
           line: 4,
-          column: 5,
+          column: 3,
           highlight: "@OtherAttribute var v2: Int"),
       ],
       macros: Self.macros,

@@ -23,31 +23,14 @@ extension RegisterBankOffsetMacro {
   struct Arguments {
     var offset: ExprSyntax
 
-    init(node: AttributeSyntax, context: some MacroExpansionContext) {
-      guard
-        let arguments = node.arguments,
-        let arguments = arguments.as(LabeledExprListSyntax.self),
-        arguments.count == 1
-      else { fatalError() }
-
-      self.offset = ExprSyntax(literal: "")
-      var uninitializedProperties = Set<String>([
-        "offset"
-      ])
-
-      for argument in arguments {
-        guard
-          let label = argument.label?.text,
-          uninitializedProperties.remove(label) != nil
-        else { fatalError() }
-        switch label {
-        case "offset":
-          self.offset = argument.expression
-        default:
-          fatalError()
-        }
-      }
-      guard uninitializedProperties.isEmpty else { fatalError() }
+    init?(node: AttributeSyntax, context: some MacroExpansionContext) {
+      let arguments = MacroArgumentParser.parse(
+        macro: "@RegisterBank(offset:)",
+        labels: ["offset"],
+        node: node,
+        context: context)
+      guard let arguments = arguments else { return nil }
+      self.offset = arguments[0]
     }
   }
 }
@@ -61,14 +44,16 @@ extension RegisterBankOffsetMacro: AccessorMacro {
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
     in context: some MacroExpansionContext
   ) throws -> [AccessorDeclSyntax] {
-    let arguments = Arguments(node: node, context: context)
+    guard let arguments = Arguments(node: node, context: context) else {
+      return []
+    }
 
     // Can only applied to variables.
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
       context.diagnose(
         .init(
           node: declaration,
-          message: Diagnostics.Errors.OnlyVarDecl()))
+          message: Diagnostics.Errors.onlyVarDecl()))
       return []
     }
 
@@ -77,7 +62,7 @@ extension RegisterBankOffsetMacro: AccessorMacro {
       context.diagnose(
         .init(
           node: variableDecl.bindingSpecifier,
-          message: Diagnostics.Errors.OnlyVarBinding(),
+          message: Diagnostics.Errors.onlyVarBinding(),
           fixIt: Diagnostics.FixIts.replaceWithVar(
             node: variableDecl.bindingSpecifier)))
       return []
@@ -88,7 +73,7 @@ extension RegisterBankOffsetMacro: AccessorMacro {
       context.diagnose(
         .init(
           node: variableDecl.bindings,
-          message: Diagnostics.Errors.OnlySingleBinding()))
+          message: Diagnostics.Errors.onlySingleBinding()))
       return []
     }
 
@@ -99,13 +84,13 @@ extension RegisterBankOffsetMacro: AccessorMacro {
         context.diagnose(
           .init(
             node: binding.pattern,
-            message: Diagnostics.Errors.UnexpectedTupleBindingIdentifier()))
+            message: Diagnostics.Errors.unexpectedTupleBindingIdentifier()))
         return []
       } else if binding.pattern.is(WildcardPatternSyntax.self) {
         context.diagnose(
           .init(
             node: binding.pattern,
-            message: Diagnostics.Errors.MissingBindingIdentifier(),
+            message: Diagnostics.Errors.missingBindingIdentifier(),
             fixIt: Diagnostics.FixIts.insertBindingIdentifier(
               node: binding.pattern)))
         return []
@@ -113,7 +98,7 @@ extension RegisterBankOffsetMacro: AccessorMacro {
         context.diagnose(
           .init(
             node: binding.pattern,
-            message: Diagnostics.Errors.Internal()))
+            message: Diagnostics.Errors.internal()))
         return []
       }
     }
@@ -123,7 +108,7 @@ extension RegisterBankOffsetMacro: AccessorMacro {
       context.diagnose(
         .init(
           node: binding.pattern,
-          message: Diagnostics.Errors.MissingBindingIdentifier(),
+          message: Diagnostics.Errors.missingBindingIdentifier(),
           fixIt: Diagnostics.FixIts.insertBindingIdentifier(
             node: binding.pattern)))
       return []
@@ -134,31 +119,32 @@ extension RegisterBankOffsetMacro: AccessorMacro {
       context.diagnose(
         .init(
           node: binding,
-          message: Diagnostics.Errors.MissingTypeAnnotation(),
+          message: Diagnostics.Errors.missingTypeAnnotation(),
           fixIt: Diagnostics.FixIts.insertBindingType(
             node: binding)))
       return []
     }
 
-    // Binding type must be a simple identifier (not an optional, tuple,
+    // Binding type must be a simple identifier; not an optional, tuple,
     // array, etc...
-    guard let typeIdentifier = type.as(IdentifierTypeSyntax.self) else {
-      // Type annotation must not be a tuple.
+    if let typeIdentifier = type.as(IdentifierTypeSyntax.self) {
+      // Binding type must not be "_" (implicitly typed).
+      guard typeIdentifier.name.tokenKind != .wildcard else {
+        context.diagnose(
+          .init(
+            node: type,
+            message: Diagnostics.Errors.unexpectedInferredType(),
+            fixIt: Diagnostics.FixIts.insertBindingType(
+              node: binding)))
+        return []
+      }
+    } else if type.is(MemberTypeSyntax.self) {
+      // Ok
+    } else {
       context.diagnose(
         .init(
           node: type,
-          message: Diagnostics.Errors.UnexpectedBindingType()))
-      return []
-    }
-
-    // Binding type must not be "_" (implicitly typed).
-    guard typeIdentifier.name.tokenKind != .wildcard else {
-      context.diagnose(
-        .init(
-          node: type,
-          message: Diagnostics.Errors.UnexpectedInferredType(),
-          fixIt: Diagnostics.FixIts.insertBindingType(
-            node: binding)))
+          message: Diagnostics.Errors.unexpectedBindingType()))
       return []
     }
 
@@ -167,7 +153,7 @@ extension RegisterBankOffsetMacro: AccessorMacro {
       context.diagnose(
         .init(
           node: accessorBlock,
-          message: Diagnostics.Errors.UnexpectedAccessor(),
+          message: Diagnostics.Errors.unexpectedAccessor(),
           fixIt: Diagnostics.FixIts.removeAccessorBlock(
             node: binding)))
       return []
@@ -183,98 +169,72 @@ extension RegisterBankOffsetMacro: AccessorMacro {
 
 extension RegisterBankOffsetMacro {
   enum Diagnostics {
-    enum Errors {
-      struct Internal: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' internal error. Please file an issue at https://github.com/apple/swift-mmio/issues"
-        var severity = DiagnosticSeverity.error
+    struct Errors: DiagnosticMessage {
+      var id: StaticString
+      var diagnosticID: MessageID {
+        .init(domain: "\(RegisterBankOffsetMacro.self)", id: "\(self.id)")
+      }
+      var severity: DiagnosticSeverity
+      var message: String
+
+      init(
+        message: String,
+        severity: DiagnosticSeverity = .error,
+        id: StaticString = #function
+      ) {
+        self.id = id
+        self.severity = severity
+        self.message = message
       }
 
-      struct OnlyVarDecl: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' can only be applied to properties"
-        var severity = DiagnosticSeverity.error
+      // Internal Errors
+      static func `internal`() -> Self {
+        self.init(
+          message: """
+            '@RegisterBank(offset:)' internal error. Please file an issue at \
+            https://github.com/apple/swift-mmio/issues and, if possible, \
+            attach the source code that triggered the issue
+            """)
       }
 
-      struct OnlyVarBinding: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' can only be applied to 'var' properties"
-        var severity = DiagnosticSeverity.error
+      // General Declaration/Binding Errors
+      static func onlyVarDecl() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' can only be applied to properties")
       }
 
-      struct OnlySingleBinding: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' cannot be applied to compound properties"
-        var severity = DiagnosticSeverity.error
+      static func onlyVarBinding() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' can only be applied to 'var' properties")
+      }
+
+      static func onlySingleBinding() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' cannot be applied to compound properties")
       }
 
       // Binding Identifier Errors
-      struct MissingBindingIdentifier: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' cannot be applied to anonymous properties"
-        var severity = DiagnosticSeverity.error
+      static func missingBindingIdentifier() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' cannot be applied to anonymous properties")
       }
 
-      struct UnexpectedTupleBindingIdentifier: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' cannot be applied to tuple properties"
-        var severity = DiagnosticSeverity.error
+      static func unexpectedTupleBindingIdentifier() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' cannot be applied to tuple properties")
       }
 
       // Binding Type Errors
-      struct MissingTypeAnnotation: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' cannot be applied to untyped properties"
-        var severity = DiagnosticSeverity.error
+      static func missingTypeAnnotation() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' cannot be applied to untyped properties")
       }
 
-      struct UnexpectedInferredType: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' cannot be applied to implicitly typed properties"
-        var severity = DiagnosticSeverity.error
+      static func unexpectedInferredType() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' cannot be applied to implicitly typed properties")
       }
 
-      struct UnexpectedBindingType: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        // FIXME: I hate this diagnostic, what is a "simple type"
-        var message =
-          "'@RegisterBank(offset:)' can only be applied to properties with simple types"
-        var severity = DiagnosticSeverity.error
+      // FIXME: I hate this diagnostic, what is a "simple type"
+      static func unexpectedBindingType() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' can only be applied to properties with simple types")
       }
 
-      struct UnexpectedAccessor: DiagnosticMessage {
-        var diagnosticID = MessageID(
-          domain: "\(RegisterBankOffsetMacro.self)",
-          id: "\(Self.self)")
-        var message =
-          "'@RegisterBank(offset:)' cannot be applied properties with custom accessors"
-        var severity = DiagnosticSeverity.error
+      static func unexpectedAccessor() -> Self {
+        self.init(message: "'@RegisterBank(offset:)' cannot be applied properties with custom accessors")
       }
     }
 
@@ -284,9 +244,7 @@ extension RegisterBankOffsetMacro {
           message: MacroExpansionFixItMessage(
             "Replace '\(node.trimmed)' with 'var'"),
           oldNode: node,
-          // FIXME: Should this be EditorPlaceholderDeclSyntax?
-          newNode: EditorPlaceholderDeclSyntax(
-            placeholder: .keyword(.var)))
+          newNode: TokenSyntax.keyword(.var))
       }
 
       static func insertBindingType(node: PatternBindingSyntax) -> FixIt {
