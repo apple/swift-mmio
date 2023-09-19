@@ -15,8 +15,15 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public enum RegisterBankMacro {
+public enum RegisterBankMacro {}
+
+extension RegisterBankMacro: ParsableMacro {
   static let baseName = "RegisterBank"
+  static let labels = [String]()
+
+  struct Arguments: ParsableMacroArguments {
+    init(arguments: [ExprSyntax]) {}
+  }
 }
 
 extension RegisterBankMacro: MemberMacro {
@@ -35,25 +42,25 @@ extension RegisterBankMacro: MemberMacro {
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
+    let diagnostics = DiagnosticBuilder<Self>()
+
     // Can only applied to structs.
     guard let structDecl = declaration.as(StructDeclSyntax.self) else {
       guard let introducer = declaration as? HasIntroducerKeyword else {
         context.diagnose(
           .init(
             node: declaration,
-            message: Diagnostics.Errors.onlyStructDecl()))
+            message: diagnostics.onlyStructDecl()))
         return []
       }
       context.diagnose(
         .init(
           node: introducer.introducerKeyword,
-          message: Diagnostics.Errors.onlyStructDecl()))
+          message: diagnostics.onlyStructDecl()))
       return []
     }
 
-    // Walk all the members of the struct. Each variable declaration must be
-    // annotated with the RegisterBank(offset:) macro. Further syntactic
-    // checking will be performed by that macro.
+    // Walk all the members of the struct.
     var error = false
     for member in structDecl.memberBlock.members {
       // Ignore non-variable declaration.
@@ -61,29 +68,15 @@ extension RegisterBankMacro: MemberMacro {
         continue
       }
       // Each variable declaration must be annotated with the
-      // RegisterBank(offset:) macro.
-      var isAnnotated = false
-      for attribute in variableDecl.attributes {
-        guard case .attribute(let attributeSyntax) = attribute else {
-          continue
-        }
-        guard let identifier = attributeSyntax.attributeName.as(IdentifierTypeSyntax.self) else {
-          continue
-        }
-        // Further syntactic checking will be performed by
-        // RegisterBankOffsetMacro.
-        if identifier.name.text == RegisterBankOffsetMacro.baseName {
-          isAnnotated = true
-          break
-        }
-      }
-      guard isAnnotated else {
+      // RegisterBankOffsetMacro. Further syntactic checking will be performed
+      // by that macro.
+      guard variableDecl.hasAttribute(RegisterBankOffsetMacro.baseName) else {
         // FIXME: Add fixit
         // fixit: insert @RegisterBank(offset: <#Int#>)
         context.diagnose(
           .init(
             node: variableDecl,
-            message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls()))
+            message: diagnostics.onlyBankOffsetMemberVarDecls()))
         error = true
         continue
       }
@@ -95,45 +88,8 @@ extension RegisterBankMacro: MemberMacro {
     let declAccessLevel = structDecl.accessLevel
 
     return [
-      """
-      \(declAccessLevel) var unsafeAddress: UInt
-      """,
-      """
-      \(declAccessLevel) init(unsafeAddress: UInt) { self.unsafeAddress = unsafeAddress }
-      """,
+      "\(declAccessLevel) var unsafeAddress: UInt",
+      "\(declAccessLevel) init(unsafeAddress: UInt) { self.unsafeAddress = unsafeAddress }",
     ]
-  }
-}
-
-extension RegisterBankMacro {
-  enum Diagnostics {
-    struct Errors: DiagnosticMessage {
-      var id: StaticString
-      var diagnosticID: MessageID {
-        .init(domain: "\(RegisterBankOffsetMacro.self)", id: "\(self.id)")
-      }
-      var severity: DiagnosticSeverity
-      var message: String
-
-      init(
-        message: String,
-        severity: DiagnosticSeverity = .error,
-        id: StaticString = #function
-      ) {
-        self.id = id
-        self.severity = severity
-        self.message = message
-      }
-
-      static func onlyStructDecl() -> Self {
-        self.init(message: "'@RegisterBank' can only be applied to structs")
-      }
-
-      static func onlyAnnotatedMemberVarDecls() -> Self {
-        self.init(message: "'@RegisterBank' struct properties must all be annotated with '@RegisterBank(offset:)'")
-      }
-    }
-
-    enum FixIts {}
   }
 }

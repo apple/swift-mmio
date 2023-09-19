@@ -24,6 +24,7 @@ lint:
 	@swift-format lint \
 		--configuration SupportingFiles/Tools/swift-format/.swift-format \
 		--recursive \
+		--strict \
 		Package.swift Sources Tests
 
 .PHONY: format

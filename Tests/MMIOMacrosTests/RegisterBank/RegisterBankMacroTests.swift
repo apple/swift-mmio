@@ -17,7 +17,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class RegisterBankMacroTests: XCTestCase {
-  typealias Diagnostics = RegisterBankMacro.Diagnostics
+  let diagnostics = DiagnosticBuilder<RegisterBankMacro>()
 
   static let macros: [String: Macro.Type] = [
     "RegisterBank": RegisterBankMacro.self
@@ -38,19 +38,19 @@ final class RegisterBankMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: Diagnostics.Errors.onlyStructDecl().message,
+          message: diagnostics.onlyStructDecl().message,
           line: 1,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
-          message: Diagnostics.Errors.onlyStructDecl().message,
+          message: diagnostics.onlyStructDecl().message,
           line: 2,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "class "),
         .init(
-          message: Diagnostics.Errors.onlyStructDecl().message,
+          message: diagnostics.onlyStructDecl().message,
           line: 3,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -77,12 +77,12 @@ final class RegisterBankMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls().message,
+          message: diagnostics.onlyBankOffsetMemberVarDecls().message,
           line: 3,
           column: 3,
           highlight: "var v1: Int"),
         .init(
-          message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls().message,
+          message: diagnostics.onlyBankOffsetMemberVarDecls().message,
           line: 4,
           column: 3,
           highlight: "@OtherAttribute var v2: Int"),
@@ -97,13 +97,13 @@ final class RegisterBankMacroTests: XCTestCase {
       @RegisterBank
       struct S {
         func f() {}
-        struct S {}
+        class C {}
       }
       """,
       expandedSource: """
         struct S {
           func f() {}
-          struct S {}
+          class C {}
 
           var unsafeAddress: UInt
 

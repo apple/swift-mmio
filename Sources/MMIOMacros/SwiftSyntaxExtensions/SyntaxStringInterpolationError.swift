@@ -12,22 +12,19 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-enum AccessLevel: String {
-  case `open`
-  case `public`
-  case `package`
-  case `internal`
-  case `fileprivate`
-  case `private`
-}
+extension SyntaxStringInterpolation {
+  mutating func appendInterpolation(_ accessLevel: AccessLevel?) {
+    self.appendInterpolation(raw: accessLevel?.rawValue ?? "")
+  }
 
-extension AccessLevel: CaseIterable {}
-
-extension WithModifiersSyntax {
-  var accessLevel: AccessLevel? {
-    self.modifiers
-      .lazy
-      .compactMap { AccessLevel(rawValue: $0.name.text) }
-      .first
+  mutating func appendInterpolation<Node: SyntaxProtocol>(
+    _ nodes: [Node]
+  ) {
+    guard let first = nodes.first else { return }
+    self.appendInterpolation(first)
+    for node in nodes.dropFirst() {
+      self.appendInterpolation(.newline)
+      self.appendInterpolation(node)
+    }
   }
 }
