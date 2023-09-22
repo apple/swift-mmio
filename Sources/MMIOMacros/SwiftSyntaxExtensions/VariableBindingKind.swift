@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIO
-import XCTest
+enum VariableBindingKind {
+  case `var`
+  case `let`
+  case `inout`
+  case unknown(String)
+}
 
-final class MMIOTests: XCTestCase {}
+extension VariableBindingKind: Equatable {}
