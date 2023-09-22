@@ -8,3 +8,13 @@
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
+
+import SwiftCompilerPlugin
+import SwiftSyntaxMacros
+
+@main
+struct CompilerPluginMain: CompilerPlugin {
+  let providingMacros: [Macro.Type] = [
+    RegisterBankMacro.self
+  ]
+}
