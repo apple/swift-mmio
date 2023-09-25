@@ -15,6 +15,7 @@ import SwiftSyntaxMacros
 @main
 struct CompilerPluginMain: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
-    RegisterBankMacro.self
+    RegisterBankMacro.self,
+    RegisterBankOffsetMacro.self,
   ]
 }
