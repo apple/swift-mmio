@@ -38,19 +38,19 @@ final class RegisterBankMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.onlyStructDecl().message,
+          message: diagnostics.onlyDeclGroup(StructDeclSyntax.self).message,
           line: 1,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
-          message: diagnostics.onlyStructDecl().message,
+          message: diagnostics.onlyDeclGroup(StructDeclSyntax.self).message,
           line: 2,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "class "),
         .init(
-          message: diagnostics.onlyStructDecl().message,
+          message: diagnostics.onlyDeclGroup(StructDeclSyntax.self).message,
           line: 3,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213

@@ -78,8 +78,13 @@ extension DiagnosticBuilder {
     .init("'\(Macro.signature)' can only be applied to properties")
   }
 
-  func onlyStructDecl() -> ErrorDiagnostic {
-    .init("'\(Macro.signature)' can only be applied to structs")
+  func onlyDeclGroup(
+    _ decl: DiagnosableDeclGroupSyntax.Type
+  ) -> ErrorDiagnostic {
+    .init("""
+      '\(Macro.signature)' can only be applied to \(decl.declTypeName) \
+      declarations
+      """)
   }
 
   // Declaration Member Errors
@@ -130,16 +135,22 @@ extension DiagnosticBuilder {
   }
 
   func unexpectedInferredType() -> ErrorDiagnostic {
-    .init("'\(Macro.signature)' cannot be applied to implicitly typed properties")
+    .init("""
+      '\(Macro.signature)' cannot be applied to implicitly typed properties
+      """)
   }
 
   // FIXME: I hate this diagnostic, what is a "simple type"
   func unexpectedBindingType() -> ErrorDiagnostic {
-    .init("'\(Macro.signature)' can only be applied to properties with simple types")
+    .init("""
+      '\(Macro.signature)' can only be applied to properties with simple types
+      """)
   }
 
   func unexpectedAccessor() -> ErrorDiagnostic {
-    .init("'\(Macro.signature)' cannot be applied properties with custom accessors")
+    .init("""
+      '\(Macro.signature)' cannot be applied properties with custom accessors
+      """)
   }
 }
 

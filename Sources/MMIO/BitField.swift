@@ -11,10 +11,8 @@
 
 public typealias BitFieldStorage = FixedWidthInteger & UnsignedInteger
 
-public protocol BitField<RawStorage> {
+public protocol BitField {
   associatedtype RawStorage: BitFieldStorage
-  // var _rawStorage: RawStorage { get set }
-  // init(_ _rawStorage: RawStorage)
   static var bitRange: Range<Int> { get }
   static var bitWidth: Int { get }
   static var bitOffset: Int { get }
@@ -25,8 +23,4 @@ extension BitField {
   public static var bitWidth: Int { self.bitRange.count }
   public static var bitOffset: Int { self.bitRange.lowerBound }
   public static var bitMask: RawStorage { (1 << self.bitWidth) - 1 }
-}
-
-protocol ReadWriteBitField {
-
 }

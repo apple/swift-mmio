@@ -44,19 +44,19 @@ final class RegisterMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.onlyStructDecl().message,
+          message: diagnostics.onlyDeclGroup(StructDeclSyntax.self).message,
           line: 1,
           column: 26,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
-          message: diagnostics.onlyStructDecl().message,
+          message: diagnostics.onlyDeclGroup(StructDeclSyntax.self).message,
           line: 2,
           column: 26,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "class "),
         .init(
-          message: diagnostics.onlyStructDecl().message,
+          message: diagnostics.onlyDeclGroup(StructDeclSyntax.self).message,
           line: 3,
           column: 26,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -79,6 +79,9 @@ final class RegisterMacroTests: XCTestCase {
         struct S {
           func f() {}
           class C {}
+        }
+
+        extension S: RegisterLayout {
         }
         """,
       diagnostics: [
@@ -114,6 +117,9 @@ final class RegisterMacroTests: XCTestCase {
           var v1: Int
           @OtherAttribute var v2: Int
         }
+
+        extension S: RegisterLayout {
+        }
         """,
       diagnostics: [
         .init(
@@ -141,28 +147,67 @@ final class RegisterMacroTests: XCTestCase {
       """,
       expandedSource: """
         struct S {
-          @available(*, unavailable)
+          @available(*, unavailable) 
           var v1: V1 {
             get {
               fatalError()
             }
           }
 
-          @available(*, unavailable) private init() {
+          private init() {
+            fatalError()
           }
+
+          private var _never: Never
 
           enum V1: BitField {
                 typealias RawStorage = UInt8
                 static let bitRange = 0 ..< 1
           }
 
+          struct Raw: RegisterLayoutRaw {
+                typealias MMIOVolatileRepresentation = UInt8
+                typealias Layout = S
+                var _rawStorage: UInt8
+                init(_ value: Layout.ReadWrite) {
+               self._rawStorage = value._rawStorage
+             }
+                var v1: UInt8 {
+                  @inline(__always) get {
+                self._rawStorage[bits: V1.bitRange]
+              }
+                  @inline(__always) set {
+                self._rawStorage[bits: V1.bitRange] = newValue
+              }
+               }
+          }
+
           typealias Read = ReadWrite
 
           typealias Write = ReadWrite
 
-          struct ReadWrite {
-                var storage: UInt8
+          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
+                typealias MMIOVolatileRepresentation = UInt8
+                typealias Layout = S
+                var _rawStorage: UInt8
+                init(_ value: ReadWrite) {
+               self._rawStorage = value._rawStorage
+             }
+                init(_ value: Raw) {
+               self._rawStorage = value._rawStorage
+             }
+                var v1: UInt8 {
+                  @inline(__always) get {
+                self._rawStorage[bits: V1.bitRange]
+              }
+                  @inline(__always) set {
+                self._rawStorage[bits: V1.bitRange] = newValue
+              }
+               }
           }
+        }
+
+        extension S: RegisterLayout {
         }
         """,
       macros: Self.macros,

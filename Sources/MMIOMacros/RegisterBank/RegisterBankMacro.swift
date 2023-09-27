@@ -45,20 +45,11 @@ extension RegisterBankMacro: MemberMacro {
     let diagnostics = DiagnosticBuilder<Self>()
 
     // Can only applied to structs.
-    guard let structDecl = declaration.as(StructDeclSyntax.self) else {
-      guard let introducer = declaration as? HasIntroducerKeyword else {
-        context.diagnose(
-          .init(
-            node: declaration,
-            message: diagnostics.onlyStructDecl()))
-        return []
-      }
-      context.diagnose(
-        .init(
-          node: introducer.introducerKeyword,
-          message: diagnostics.onlyStructDecl()))
-      return []
-    }
+    let structDecl = declaration.as(
+      StructDeclSyntax.self,
+      diagnostics: diagnostics,
+      context: context)
+    guard let structDecl = structDecl else { return [] }
 
     // Walk all the members of the struct.
     var error = false

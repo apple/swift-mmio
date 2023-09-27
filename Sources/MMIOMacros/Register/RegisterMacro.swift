@@ -68,20 +68,11 @@ extension RegisterMacro: MemberMacro {
     }
 
     // Can only applied to structs.
-    guard let structDecl = declaration.as(StructDeclSyntax.self) else {
-      guard let introducer = declaration as? HasIntroducerKeyword else {
-        context.diagnose(
-          .init(
-            node: declaration,
-            message: diagnostics.onlyStructDecl()))
-        return []
-      }
-      context.diagnose(
-        .init(
-          node: introducer.introducerKeyword,
-          message: diagnostics.onlyStructDecl()))
-      return []
-    }
+    let structDecl = declaration.as(
+      StructDeclSyntax.self,
+      diagnostics: diagnostics,
+      context: context)
+    guard let structDecl = structDecl else { return [] }
 
     // Walk all the members of the struct.
     var error = false
@@ -342,7 +333,7 @@ extension RegisterMacro: MemberMacro {
       .map {
         """
         \(acl) var \($0.name): UInt\(raw: bitWidth) {
-          @available(*, deprecated, message: "API misuse; reading from a write view returns the value to be written, not the value initially read.")
+          @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
           @inline(__always) get { self._rawStorage[bits: \($0.type).bitRange] }
           @inline(__always) set { self._rawStorage[bits: \($0.type).bitRange] = newValue }
         }
@@ -394,13 +385,18 @@ extension RegisterMacro: ExtensionMacro {
     conformingTo protocols: [TypeSyntax],
     in context: some MacroExpansionContext
   ) throws -> [ExtensionDeclSyntax] {
+    let diagnostics = DiagnosticBuilder<Self>()
+
     let `extension`: DeclSyntax =
       """
       extension \(type.trimmed): RegisterLayout {}
       """
 
     guard let extensionDecl = `extension`.as(ExtensionDeclSyntax.self) else {
-      // FIXME: emit diagnostic
+      context.diagnose(
+        .init(
+          node: `extension`,
+          message: diagnostics.internalError()))
       return []
     }
 
