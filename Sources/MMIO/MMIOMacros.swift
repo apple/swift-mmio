@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// MARK: - RegisterBank macros
+// RegisterBank macros
 @attached(member, names: named(unsafeAddress), named(init))
 public macro RegisterBank() =
   #externalMacro(module: "MMIOMacros", type: "RegisterBankMacro")
@@ -18,13 +18,17 @@ public macro RegisterBank() =
 public macro RegisterBank(offset: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterBankOffsetMacro")
 
-// MARK: - Register macros
+// Register macros
 @attached(member, names: arbitrary)
 @attached(memberAttribute)
 @attached(extension, conformances: RegisterLayout)
 public macro Register(bitWidth: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterMacro")
 
+// Note: Since the 'Reserved' macro shares an implementation with the other
+// bitfield macros, it can also handle the `as:` parameter found on their
+// external macro declarations. However, this parameter will never be used by
+// expansion for reserved bitfields, so it is omitted to avoid programmer use.
 @attached(accessor)
 public macro Reserved(bits: Range<Int>) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")

@@ -16,13 +16,16 @@ import XCTest
 
 @testable import MMIOMacros
 
-final class BitFieldMacro: XCTestCase {
-  struct TestMacro: BitFieldMacroProtocol {
+final class BitFieldMacroTests: XCTestCase {
+  struct TestMacro: BitFieldMacro {
     typealias Arguments = BitFieldMacroArguments
     static var baseName = "Test"
+    static var isReadable: Bool { true }
+    static var isWriteable: Bool { true }
+    static var isSymmetric: Bool { true }
   }
 
-  let diagnostics = DiagnosticBuilder<TestMacro>()
+  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<TestMacro>
 
   static let macros: [String: Macro.Type] = [
     "Test": TestMacro.self
@@ -58,7 +61,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.onlyVarBinding().message,
+          message: ErrorDiagnostic.expectedBindingKind(.var).message,
           line: 1,
           column: 20,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -67,7 +70,7 @@ final class BitFieldMacro: XCTestCase {
             .init(message: "Replace 'inout' with 'var'")
           ]),
         .init(
-          message: diagnostics.onlyVarBinding().message,
+          message: ErrorDiagnostic.expectedBindingKind(.var).message,
           line: 2,
           column: 20,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -114,7 +117,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.missingBindingIdentifier().message,
+          message: ErrorDiagnostic.expectedBindingIdentifier().message,
           line: 1,
           column: 24,
           highlight: "_",
@@ -136,7 +139,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedTupleBindingIdentifier().message,
+          message: ErrorDiagnostic.unexpectedTupleBindingIdentifier().message,
           line: 1,
           column: 24,
           highlight: "(a, b)")
@@ -155,7 +158,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.missingTypeAnnotation().message,
+          message: ErrorDiagnostic.expectedTypeAnnotation().message,
           line: 1,
           column: 24,
           highlight: "v",
@@ -177,7 +180,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedInferredType().message,
+          message: ErrorDiagnostic.unexpectedInferredType().message,
           line: 1,
           column: 27,
           highlight: "_",
@@ -200,7 +203,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedBindingType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 27,
           highlight: "Int?")
@@ -219,7 +222,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedBindingType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 27,
           highlight: "[Int]")
@@ -238,7 +241,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedBindingType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 27,
           highlight: "(Int, Int)")
@@ -289,7 +292,7 @@ final class BitFieldMacro: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedAccessor().message,
+          message: ErrorDiagnostic.expectedStoredProperty().message,
           line: 1,
           column: 31,
           highlight: "{}",

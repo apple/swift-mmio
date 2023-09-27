@@ -12,7 +12,11 @@
 /// A container type referencing of a region of memory whose layout is defined
 /// by another type.
 public struct Register<Layout> where Layout: RegisterLayout {
-  var unsafeAddress: UnsafeMutablePointer<Layout>
+  public private(set) var unsafeAddress: UInt
+  var unsafePointer: UnsafeMutableRawPointer {
+    let intValue = Int(bitPattern: self.unsafeAddress)
+    return .init(bitPattern: intValue).unsafelyUnwrapped
+  }
 
   @inline(__always)
   public init(unsafeAddress: UInt) {
@@ -20,21 +24,21 @@ public struct Register<Layout> where Layout: RegisterLayout {
       unsafeAddress.isMultiple(
         of: UInt(MemoryLayout<Layout.Read.MMIOVolatileRepresentation>.alignment)),
       "Misaligned address for data of type '\(Layout.self)'")
-    self.unsafeAddress = .init(bitPattern: unsafeAddress).unsafelyUnwrapped
+    self.unsafeAddress = unsafeAddress
   }
 }
 
 extension Register {
   @inline(__always)
   public func read() -> Layout.Read {
-    self.unsafeAddress.withMemoryRebound(to: Layout.Read.self, capacity: 1) {
+    self.unsafePointer.withMemoryRebound(to: Layout.Read.self, capacity: 1) {
       Layout.Read.load(from: $0)
     }
   }
 
   @inline(__always)
   public func write(_ newValue: Layout.Write) {
-    self.unsafeAddress.withMemoryRebound(to: Layout.Write.self, capacity: 1) {
+    self.unsafePointer.withMemoryRebound(to: Layout.Write.self, capacity: 1) {
       Layout.Write.store(newValue, to: $0)
     }
   }
@@ -50,9 +54,16 @@ extension Register {
 }
 
 extension Register where Layout.Read == Layout.Write {
-  // FIXME: file radar for being able to make overload unavailable
-  // FIXME: improve message
-  @available(*, deprecated, message: "use modify with body (inout Layout.Write) -> T")
+  // TODO: New feature request to make overload unavailable
+  @available(
+    *,
+    deprecated,
+    message: """
+      API misuse; symmetric registers have identical read and write views, use \
+      modify method with single parameter closure instead. e.g. \
+      'modify { rw in ... }'.
+      """)
+  @inline(__always) @_disfavoredOverload
   public func modify<T>(_ body: (Layout.Read, inout Layout.Write) -> (T)) -> T {
     var value = self.read()
     let returnValue = body(value, &value)
@@ -60,6 +71,7 @@ extension Register where Layout.Read == Layout.Write {
     return returnValue
   }
 
+  @inline(__always)
   public func modify<T>(_ body: (inout Layout.Write) -> (T)) -> T {
     var value = self.read()
     let returnValue = body(&value)

@@ -9,9 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-// TODO: Static error on overflow
-// FIXME: Trap on overflow
-
 extension FixedWidthInteger {
   public subscript<Other: FixedWidthInteger>(
     bits range: Range<Int>, as type: Other.Type = Other.self

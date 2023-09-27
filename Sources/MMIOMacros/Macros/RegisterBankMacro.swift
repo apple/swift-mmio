@@ -19,14 +19,14 @@ public enum RegisterBankMacro {}
 
 extension RegisterBankMacro: ParsableMacro {
   static let baseName = "RegisterBank"
-  static let labels = [String]()
+  static let arguments = [(label: String, type: String)]()
 
   struct Arguments: ParsableMacroArguments {
     init(arguments: [ExprSyntax]) {}
   }
 }
 
-extension RegisterBankMacro: MemberMacro {
+extension RegisterBankMacro: MMIOMemberMacro {
   /// Expand an attached declaration macro to produce a set of members.
   ///
   /// - Parameters:
@@ -37,19 +37,15 @@ extension RegisterBankMacro: MemberMacro {
   /// - Returns: the set of member declarations introduced by this macro, which
   /// are nested inside the `attachedTo` declaration.
   /// - Throws: any error encountered during macro expansion.
-  public static func expansion(
+  public static func mmioExpansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
-    let diagnostics = DiagnosticBuilder<Self>()
+    let context = MacroContext(Self.self, context)
 
     // Can only applied to structs.
-    let structDecl = declaration.as(
-      StructDeclSyntax.self,
-      diagnostics: diagnostics,
-      context: context)
-    guard let structDecl = structDecl else { return [] }
+    let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
     // Walk all the members of the struct.
     var error = false
@@ -61,26 +57,25 @@ extension RegisterBankMacro: MemberMacro {
       // Each variable declaration must be annotated with the
       // RegisterBankOffsetMacro. Further syntactic checking will be performed
       // by that macro.
-      guard variableDecl.hasAttribute(RegisterBankOffsetMacro.baseName) else {
-        // FIXME: Add fixit
-        // fixit: insert @RegisterBank(offset: <#Int#>)
-        context.diagnose(
-          .init(
-            node: variableDecl,
-            message: diagnostics.onlyBankOffsetMemberVarDecls()))
+      do {
+        try variableDecl.requireMacro(RegisterBankOffsetMacro.self, context)
+      } catch _ {
         error = true
-        continue
       }
     }
     guard !error else { return [] }
 
     // Retrieve the access level of the struct, so we can use the same
     // access level for the unsafeAddress property and initializer.
-    let declAccessLevel = structDecl.accessLevel
+    let acl = structDecl.accessLevel
 
     return [
-      "\(declAccessLevel) var unsafeAddress: UInt",
-      "\(declAccessLevel) init(unsafeAddress: UInt) { self.unsafeAddress = unsafeAddress }",
+      "\(acl)private(set) var unsafeAddress: UInt",
+      """
+      \(acl)init(unsafeAddress: UInt) {
+        self.unsafeAddress = unsafeAddress
+      }
+      """,
     ]
   }
 }

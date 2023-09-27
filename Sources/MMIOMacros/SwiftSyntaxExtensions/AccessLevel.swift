@@ -31,4 +31,3 @@ extension WithModifiersSyntax {
       .first
   }
 }
-

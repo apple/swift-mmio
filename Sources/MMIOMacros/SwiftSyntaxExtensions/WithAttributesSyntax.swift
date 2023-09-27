@@ -10,44 +10,58 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftSyntax
+import SwiftSyntaxMacros
 
 extension WithAttributesSyntax {
-  func hasAttribute(_ baseName: String) -> Bool {
+  func requireMacro<Macro>(
+    _: Macro.Type,
+    _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws where Macro: ParsableMacro {
     for attribute in self.attributes {
-      guard case .attribute(let attribute) = attribute else {
-        // Ignore `#if` conditional attributes
-        // FIXME: diagnostic?
-        continue
-      }
+      // Ignore `#if` conditional attributes
+      guard case .attribute(let attribute) = attribute else { continue }
+
       let name = attribute.attributeName
       guard let identifier = name.as(IdentifierTypeSyntax.self) else {
-        // FIXME: maybe need to support MemberTypeSyntax?
         continue
       }
-      if identifier.name.text == baseName { return true }
+      if identifier.name.text == Macro.baseName { return }
     }
-    return false
+
+    context.error(
+      at: self,
+      message: .expectedMemberAnnotatedWithMacro(Macro.self),
+      fixIts: .insertMacro(node: self, Macro.self))
+
+    throw ExpansionError()
   }
 
-  func hasAttribute<T>(oneOf baseNames: [T]) -> (AttributeSyntax, T)? where T: RawRepresentable, T.RawValue == String {
-    let baseNames = Dictionary(uniqueKeysWithValues: baseNames.map { ($0.rawValue, $0) })
-    var matches = [(AttributeSyntax, T)]()
+  func requireMacro(
+    _ macros: [any BitFieldMacro.Type],
+    _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws -> (attribute: AttributeSyntax, type: any BitFieldMacro.Type) {
+    let map = macros.reduce(into: [String: any BitFieldMacro.Type]()) {
+      $0[$1.baseName] = $1
+    }
+    var matches = [(AttributeSyntax, any BitFieldMacro.Type)]()
     for attribute in self.attributes {
-      guard case .attribute(let attribute) = attribute else {
-        // Ignore `#if` conditional attributes
-        // FIXME: diagnostic?
-        continue
-      }
+      // Ignore `#if` conditional attributes
+      guard case .attribute(let attribute) = attribute else { continue }
+
       let name = attribute.attributeName
       guard let identifier = name.as(IdentifierTypeSyntax.self) else {
-        // FIXME: maybe need to support MemberTypeSyntax?
         continue
       }
-      if let value = baseNames[identifier.name.text] {
+      if let value = map[identifier.name.text] {
         matches.append((attribute, value))
       }
     }
-    guard matches.count == 1 else { return nil }
+    guard matches.count == 1 else {
+      context.error(
+        at: self,
+        message: .expectedMemberAnnotatedWithOneOf(macros))
+      throw ExpansionError()
+    }
     return matches[0]
   }
 }

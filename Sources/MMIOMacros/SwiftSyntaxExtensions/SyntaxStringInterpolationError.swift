@@ -14,7 +14,10 @@ import SwiftSyntaxBuilder
 
 extension SyntaxStringInterpolation {
   mutating func appendInterpolation(_ accessLevel: AccessLevel?) {
-    self.appendInterpolation(raw: accessLevel?.rawValue ?? "")
+    if let accessLevel = accessLevel {
+      self.appendInterpolation(raw: accessLevel.rawValue)
+      self.appendInterpolation(raw: " ")
+    }
   }
 
   mutating func appendInterpolation<Node: SyntaxProtocol>(

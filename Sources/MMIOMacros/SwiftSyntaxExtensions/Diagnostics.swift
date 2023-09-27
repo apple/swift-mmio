@@ -12,8 +12,11 @@
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
+import SwiftSyntaxMacros
 
-struct ErrorDiagnostic {
+struct ExpansionError: Error { }
+
+struct ErrorDiagnostic<Macro> where Macro: ParsableMacro {
   var diagnosticID: MessageID
   var severity = DiagnosticSeverity.error
   var message: String
@@ -26,11 +29,7 @@ struct ErrorDiagnostic {
 
 extension ErrorDiagnostic: DiagnosticMessage {}
 
-struct DiagnosticBuilder<Macro> where Macro: ParsableMacro {
-  init(_: Macro.Type = Macro.self) {}
-}
-
-extension DiagnosticBuilder {
+extension ErrorDiagnostic {
   static var internalErrorSuffix: String {
     """
     Please file an issue at \
@@ -39,12 +38,12 @@ extension DiagnosticBuilder {
     """
   }
 
-  func internalError() -> ErrorDiagnostic {
+  static func internalError() -> Self {
     .init("'\(Macro.signature)' internal error. \(Self.internalErrorSuffix)")
   }
 
   // Argument Parsing Errors
-  func argumentMustIntegerLiteral(label: String) -> ErrorDiagnostic {
+  static func argumentMustIntegerLiteral(label: String) -> Self {
     .init(
       """
       '\(Macro.signature)' value for argument '\(label)' must be \
@@ -52,9 +51,28 @@ extension DiagnosticBuilder {
       """)
   }
 
-  func incorrectArgumentCount(
+  static func argumentValueMustBeOneOf(label: String, values: [Int]) -> Self {
+    precondition(values.count > 1)
+    guard let last = values.last else { fatalError() }
+
+    let options =
+      values
+      .dropLast()
+      .map { "'\($0)'" }
+      .joined(separator: ", ")
+      .appending(", or ")
+      .appending("'\(last)'")
+
+    return .init(
+      """
+      '\(Macro.signature)' value for argument '\(label)' must be one of
+      \(options)
+      """)
+  }
+
+  static func incorrectArgumentCount(
     expected: Int, actual: Int
-  ) -> ErrorDiagnostic {
+  ) -> Self {
     .init(
       """
       '\(Macro.signature)' internal error. Incorrect number of arguments, \
@@ -62,9 +80,9 @@ extension DiagnosticBuilder {
       """)
   }
 
-  func incorrectArgumentLabel(
+  static func incorrectArgumentLabel(
     index: Int, expected: String, actual: String
-  ) -> ErrorDiagnostic {
+  ) -> Self {
     .init(
       """
       '\(Macro.signature)' internal error. Incorrect label for argument \
@@ -74,82 +92,102 @@ extension DiagnosticBuilder {
   }
 
   // Declaration Errors
-  func onlyVarDecl() -> ErrorDiagnostic {
+  static func expectedVarDecl() -> Self {
     .init("'\(Macro.signature)' can only be applied to properties")
   }
 
-  func onlyDeclGroup(
-    _ decl: DiagnosableDeclGroupSyntax.Type
-  ) -> ErrorDiagnostic {
-    .init("""
+  static func expectedDecl(_ decl: DiagnosableDeclGroupSyntax.Type) -> Self {
+    .init(
+      """
       '\(Macro.signature)' can only be applied to \(decl.declTypeName) \
       declarations
       """)
   }
 
   // Declaration Member Errors
-  func onlyMemberVarDecls() -> ErrorDiagnostic {
+  static func onlyMemberVarDecls() -> Self {
     .init(
       """
-      '\(Macro.signature)' struct can only contain properties
+      '\(Macro.signature)' type can only contain properties
       """)
   }
 
-  func onlyBankOffsetMemberVarDecls() -> ErrorDiagnostic {
+  static func expectedMemberAnnotatedWithMacro<OtherMacro>(
+    _ macro: OtherMacro.Type
+  ) -> Self where OtherMacro: ParsableMacro {
     .init(
       """
-      '\(Macro.signature)' struct properties must all be annotated with \
-      '\(RegisterBankOffsetMacro.signature)'
+      '\(Macro.signature)' type member must be annotated with \
+      '\(OtherMacro.signature)' macro
       """)
   }
 
-  func onlyBitFieldMemberVarDecls() -> ErrorDiagnostic {
-    .init(
+  static func expectedMemberAnnotatedWithOneOf(
+    _ macros: [any ParsableMacro.Type]
+  ) -> Self {
+    precondition(macros.count > 1)
+    guard let last = macros.last else { fatalError() }
+
+    let options =
+      macros
+      .dropLast()
+      .map { "'\($0.signature)'" }
+      .joined(separator: ", ")
+      .appending(", or ")
+      .appending("'\(last.signature)'")
+
+    return .init(
       """
-      '\(Macro.signature)' struct property must be annotated \
-      with a bitfield attribute
+      '\(Macro.signature)' type member must be annotated with exactly one \
+      macro of \(options)
       """)
   }
 
   // Binding Errors
-  func onlyVarBinding() -> ErrorDiagnostic {
-    .init("'\(Macro.signature)' can only be applied to 'var' properties")
+  static func expectedBindingKind(_ bindingKind: VariableBindingKind) -> Self {
+    .init(
+      """
+      '\(Macro.signature)' can only be applied to '\(bindingKind)' properties
+      """)
   }
 
-  func onlySingleBinding() -> ErrorDiagnostic {
+  static func expectedSingleBinding() -> Self {
     .init("'\(Macro.signature)' cannot be applied to compound properties")
   }
 
   // Binding Identifier Errors
-  func missingBindingIdentifier() -> ErrorDiagnostic {
+  static func expectedBindingIdentifier() -> Self {
     .init("'\(Macro.signature)' cannot be applied to anonymous properties")
   }
 
-  func unexpectedTupleBindingIdentifier() -> ErrorDiagnostic {
+  static func unexpectedTupleBindingIdentifier() -> Self {
     .init("'\(Macro.signature)' cannot be applied to tuple properties")
   }
 
   // Binding Type Errors
-  func missingTypeAnnotation() -> ErrorDiagnostic {
+  static func expectedTypeAnnotation() -> Self {
     .init("'\(Macro.signature)' cannot be applied to untyped properties")
   }
 
-  func unexpectedInferredType() -> ErrorDiagnostic {
-    .init("""
+  static func unexpectedInferredType() -> Self {
+    .init(
+      """
       '\(Macro.signature)' cannot be applied to implicitly typed properties
       """)
   }
 
-  // FIXME: I hate this diagnostic, what is a "simple type"
-  func unexpectedBindingType() -> ErrorDiagnostic {
-    .init("""
+  // FIXME: Improve diagnostic, what is a "simple type"?
+  static func unexpectedBindingType() -> Self {
+    .init(
+      """
       '\(Macro.signature)' can only be applied to properties with simple types
       """)
   }
 
-  func unexpectedAccessor() -> ErrorDiagnostic {
-    .init("""
-      '\(Macro.signature)' cannot be applied properties with custom accessors
+  static func expectedStoredProperty() -> Self {
+    .init(
+      """
+      '\(Macro.signature)' cannot be applied properties with accessors
       """)
   }
 }
@@ -184,11 +222,74 @@ extension FixIt {
         placeholder: .identifier("<#Identifier#>")))
   }
 
+  static func insertMacro<Macro>(
+    node: some WithAttributesSyntax, _: Macro.Type
+  ) -> FixIt where Macro: ParsableMacro {
+    var newNode = node
+    newNode.attributes.append(Macro.placeholder)
+    return .replace(
+      message: MacroExpansionFixItMessage("Insert '\(Macro.signature)' macro"),
+      oldNode: node,
+      newNode: newNode)
+  }
+
   static func removeAccessorBlock(node: PatternBindingSyntax) -> FixIt {
     .replace(
       message: MacroExpansionFixItMessage(
         "Remove accessor block"),
       oldNode: node,
       newNode: node.with(\.accessorBlock, nil))
+  }
+}
+
+struct MacroContext<Macro, Context>
+where Macro: ParsableMacro, Context: MacroExpansionContext {
+  var context: Context
+
+  init(_: Macro.Type = Macro.self, _ context: Context) {
+    self.context = context
+  }
+
+  func error(
+    at node: some SyntaxProtocol,
+    message: ErrorDiagnostic<Macro>,
+    highlights: [Syntax]? = nil,
+    notes: [Note] = [],
+    fixIts: FixIt...
+  ) {
+    self.context.diagnose(
+      .init(
+        node: node,
+        position: nil,
+        message: message,
+        highlights: highlights,
+        notes: notes,
+        fixIts: fixIts))
+  }
+}
+
+extension MacroContext where Context == SuppressionContext {
+  static func makeSuppressingDiagnostics(
+    _: Macro.Type = Macro.self
+  ) -> MacroContext<Macro, SuppressionContext> {
+    self.init(Macro.self, .init())
+  }
+}
+
+class SuppressionContext: MacroExpansionContext {
+  func location(
+    of node: some SyntaxProtocol,
+    at position: PositionInSyntaxNode,
+    filePathMode: SourceLocationFilePathMode
+  ) -> SwiftSyntaxMacros.AbstractSourceLocation? {
+    nil
+  }
+
+  func makeUniqueName(_ name: String) -> TokenSyntax {
+    fatalError("Unsupported")
+  }
+
+  func diagnose(_ diagnostic: SwiftDiagnostics.Diagnostic) {
+    // ignore
   }
 }

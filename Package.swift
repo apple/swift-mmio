@@ -14,13 +14,11 @@ let package = Package(
   ],
   products: [
     .library(name: "MMIO", targets: ["MMIO"]),
-    .executable(name: "MMIOClient", targets: ["MMIOClient"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
   ],
   targets: [
-    .executableTarget(name: "MMIOClient", dependencies: ["MMIO"]),
     .target(name: "MMIO", dependencies: ["MMIOMacros", "MMIOVolatile"]),
     .macro(
       name: "MMIOMacros",

@@ -43,21 +43,19 @@ extension StructDeclSyntax: DiagnosableDeclGroupSyntax {
 }
 
 extension DeclGroupSyntax {
-  func `as`<Other>(
+  func requireAs<Other>(
     _ other: Other.Type,
-    diagnostics: DiagnosticBuilder<some ParsableMacro>,
-    context: some MacroExpansionContext
-  ) -> Other? where Other: DiagnosableDeclGroupSyntax {
+    _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws -> Other where Other: DiagnosableDeclGroupSyntax {
     if let decl = self.as(Other.self) { return decl }
 
     let node: any SyntaxProtocol =
       (self as? DiagnosableDeclGroupSyntax)?.introducerKeyword ?? self
 
-    context.diagnose(
-      .init(
-        node: node,
-        message: diagnostics.onlyDeclGroup(Other.self)))
+    context.error(
+      at: node,
+      message: .expectedDecl(Other.self))
 
-    return nil
+    throw ExpansionError()
   }
 }

@@ -17,7 +17,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class RegisterBankOffsetMacroTests: XCTestCase {
-  let diagnostics = DiagnosticBuilder<RegisterBankOffsetMacro>()
+  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBankOffsetMacro>
 
   static let macros: [String: Macro.Type] = [
     "RegisterBank": RegisterBankOffsetMacro.self
@@ -53,7 +53,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.onlyVarBinding().message,
+          message: ErrorDiagnostic.expectedBindingKind(.var).message,
           line: 1,
           column: 28,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -62,7 +62,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
             .init(message: "Replace 'inout' with 'var'")
           ]),
         .init(
-          message: diagnostics.onlyVarBinding().message,
+          message: ErrorDiagnostic.expectedBindingKind(.var).message,
           line: 2,
           column: 28,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -109,7 +109,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.missingBindingIdentifier().message,
+          message: ErrorDiagnostic.expectedBindingIdentifier().message,
           line: 1,
           column: 32,
           highlight: "_",
@@ -131,7 +131,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedTupleBindingIdentifier().message,
+          message: ErrorDiagnostic.unexpectedTupleBindingIdentifier().message,
           line: 1,
           column: 32,
           highlight: "(a, b)")
@@ -150,7 +150,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.missingTypeAnnotation().message,
+          message: ErrorDiagnostic.expectedTypeAnnotation().message,
           line: 1,
           column: 32,
           highlight: "v",
@@ -172,7 +172,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedInferredType().message,
+          message: ErrorDiagnostic.unexpectedInferredType().message,
           line: 1,
           column: 35,
           highlight: "_",
@@ -195,7 +195,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedBindingType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 35,
           highlight: "Int?")
@@ -214,7 +214,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedBindingType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 35,
           highlight: "[Int]")
@@ -233,7 +233,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedBindingType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 35,
           highlight: "(Int, Int)")
@@ -284,7 +284,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: diagnostics.unexpectedAccessor().message,
+          message: ErrorDiagnostic.expectedStoredProperty().message,
           line: 1,
           column: 39,
           highlight: "{}",

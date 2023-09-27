@@ -19,7 +19,7 @@ public enum RegisterBankOffsetMacro {}
 
 extension RegisterBankOffsetMacro: ParsableMacro {
   static let baseName = "RegisterBank"
-  static let labels = ["offset"]
+  static let arguments: [(label: String, type: String)] = [("offset", "Int")]
 
   struct Arguments: ParsableMacroArguments {
     var offset: ExprSyntax
@@ -30,16 +30,16 @@ extension RegisterBankOffsetMacro: ParsableMacro {
   }
 }
 
-extension RegisterBankOffsetMacro: AccessorMacro {
+extension RegisterBankOffsetMacro: MMIOAccessorMacro {
   /// Expand a macro that's expressed as a custom attribute attached to
   /// the given declaration. The result is a set of accessors for the
   /// declaration.
-  public static func expansion(
+  public static func mmioExpansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
     in context: some MacroExpansionContext
   ) throws -> [AccessorDeclSyntax] {
-    let diagnostics = DiagnosticBuilder<Self>()
+    let context = MacroContext(Self.self, context)
 
     guard let arguments = Self.parse(from: node, in: context) else {
       return []
@@ -47,108 +47,74 @@ extension RegisterBankOffsetMacro: AccessorMacro {
 
     // Can only applied to variables.
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
-      context.diagnose(
-        .init(
-          node: declaration,
-          message: diagnostics.onlyVarDecl()))
+      context.error(
+        at: declaration,
+        message: .expectedVarDecl())
       return []
     }
 
     // Must be `var` binding.
-    guard variableDecl.bindingKind == .var else {
-      context.diagnose(
-        .init(
-          node: variableDecl.bindingSpecifier,
-          message: diagnostics.onlyVarBinding(),
-          fixIt: .replaceWithVar(node: variableDecl.bindingSpecifier)))
-      return []
-    }
+    try variableDecl.require(bindingKind: .var, context)
 
     // Exactly one binding for the variable.
-    guard let binding = variableDecl.binding else {
-      context.diagnose(
-        .init(
-          node: variableDecl.bindings,
-          message: diagnostics.onlySingleBinding()))
-      return []
-    }
+    let binding = try variableDecl.requireSingleBinding(context)
 
     // Binding identifier must be a simple identifier
     guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
       if binding.pattern.is(TuplePatternSyntax.self) {
         // Binding identifier must not be a tuple.
-        context.diagnose(
-          .init(
-            node: binding.pattern,
-            message: diagnostics.unexpectedTupleBindingIdentifier()))
+        context.error(
+          at: binding.pattern,
+          message: .unexpectedTupleBindingIdentifier())
         return []
       } else if binding.pattern.is(WildcardPatternSyntax.self) {
-        context.diagnose(
-          .init(
-            node: binding.pattern,
-            message: diagnostics.missingBindingIdentifier(),
-            fixIt: .insertBindingIdentifier(node: binding.pattern)))
+        context.error(
+          at: binding.pattern,
+          message: .expectedBindingIdentifier(),
+          fixIts: .insertBindingIdentifier(node: binding.pattern))
         return []
       } else {
-        context.diagnose(
-          .init(
-            node: binding.pattern,
-            message: diagnostics.internalError()))
+        context.error(
+          at: binding.pattern,
+          message: .internalError())
         return []
       }
     }
 
     // Binding identifier must not be "_" (implicitly named).
     guard identifierPattern.identifier.tokenKind != .wildcard else {
-      context.diagnose(
-        .init(
-          node: binding.pattern,
-          message: diagnostics.missingBindingIdentifier(),
-          fixIt: .insertBindingIdentifier(node: binding.pattern)))
+      context.error(
+        at: binding.pattern,
+        message: .expectedBindingIdentifier(),
+        fixIts: .insertBindingIdentifier(node: binding.pattern))
       return []
     }
 
     // Binding must have a type annotation.
-    guard let type = binding.typeAnnotation?.type else {
-      context.diagnose(
-        .init(
-          node: binding,
-          message: diagnostics.missingTypeAnnotation(),
-          fixIt: .insertBindingType(node: binding)))
-      return []
-    }
+    let type = try binding.requireType(context)
 
     // Binding type must be a simple identifier; not an optional, tuple,
     // array, etc...
     if let typeIdentifier = type.as(IdentifierTypeSyntax.self) {
       // Binding type must not be "_" (implicitly typed).
       guard typeIdentifier.name.tokenKind != .wildcard else {
-        context.diagnose(
-          .init(
-            node: type,
-            message: diagnostics.unexpectedInferredType(),
-            fixIt: .insertBindingType(node: binding)))
+        context.error(
+          at: type,
+          message: .unexpectedInferredType(),
+          fixIts: .insertBindingType(node: binding))
         return []
       }
     } else if type.is(MemberTypeSyntax.self) {
       // Ok
     } else {
-      context.diagnose(
-        .init(
-          node: type,
-          message: diagnostics.unexpectedBindingType()))
+      context.error(
+        at: type,
+        message: .unexpectedBindingType())
       return []
     }
 
     // Binding must not have any accessors.
-    if let accessorBlock = binding.accessorBlock {
-      context.diagnose(
-        .init(
-          node: accessorBlock,
-          message: diagnostics.unexpectedAccessor(),
-          fixIt: .removeAccessorBlock(node: binding)))
-      return []
-    }
+    try binding.requireNoAccessor(context)
 
     return [
       """
