@@ -55,6 +55,7 @@ extension Register {
 
 extension Register where Layout.Read == Layout.Write {
   // TODO: New feature request to make overload unavailable
+  // swift-format-ignore
   @available(
     *,
     deprecated,
