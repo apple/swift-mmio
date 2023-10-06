@@ -19,7 +19,7 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
   ],
   targets: [
-    .target(name: "MMIO", dependencies: ["MMIOMacros"]),
+    .target(name: "MMIO", dependencies: ["MMIOMacros", "MMIOVolatile"]),
     .macro(
       name: "MMIOMacros",
       dependencies: [
@@ -38,4 +38,5 @@ let package = Package(
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
+    .target(name: "MMIOVolatile"),
   ])

@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftSyntax
+import SwiftSyntaxMacros
 
 extension VariableDeclSyntax {
   var bindingKind: VariableBindingKind {
@@ -25,8 +26,36 @@ extension VariableDeclSyntax {
     }
   }
 
-  var binding: PatternBindingSyntax? {
+  func require(
+    bindingKind: VariableBindingKind,
+    _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    guard self.bindingKind == bindingKind else {
+      context.error(
+        at: self.bindingSpecifier,
+        message: .expectedBindingKind(bindingKind),
+        fixIts: .replaceWithVar(node: self.bindingSpecifier)
+      )
+      throw ExpansionError()
+    }
+  }
+}
+
+extension VariableDeclSyntax {
+  var singleBinding: PatternBindingSyntax? {
     guard self.bindings.count == 1 else { return nil }
     return self.bindings.first
+  }
+
+  func requireSingleBinding(
+    _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws -> PatternBindingSyntax {
+    guard let binding = self.singleBinding else {
+      context.error(
+        at: self.bindings,
+        message: .expectedSingleBinding())
+      throw ExpansionError()
+    }
+    return binding
   }
 }

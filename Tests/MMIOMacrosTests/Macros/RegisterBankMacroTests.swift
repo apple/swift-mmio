@@ -17,7 +17,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class RegisterBankMacroTests: XCTestCase {
-  typealias Diagnostics = RegisterBankMacro.Diagnostics
+  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBankMacro>
 
   static let macros: [String: Macro.Type] = [
     "RegisterBank": RegisterBankMacro.self
@@ -38,19 +38,19 @@ final class RegisterBankMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: Diagnostics.Errors.onlyStructDecl().message,
+          message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 1,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
-          message: Diagnostics.Errors.onlyStructDecl().message,
+          message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 2,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "class "),
         .init(
-          message: Diagnostics.Errors.onlyStructDecl().message,
+          message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 3,
           column: 15,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -58,6 +58,20 @@ final class RegisterBankMacroTests: XCTestCase {
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
+  }
+
+  func test_decl_onlyStruct_broken() {
+    assertMacroExpansion(
+      """
+      @RegisterBank var v: Int
+      """,
+      expandedSource: """
+        var v: Int
+        """,
+      diagnostics: [
+        // FIXME: https://github.com/apple/swift-syntax/issues/2206
+      ],
+      macros: Self.macros)
   }
 
   func test_members_varDeclsAreAnnotated() {
@@ -77,15 +91,27 @@ final class RegisterBankMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls().message,
+          message:
+            ErrorDiagnostic
+            .expectedMemberAnnotatedWithMacro(RegisterBankOffsetMacro.self)
+            .message,
           line: 3,
           column: 3,
-          highlight: "var v1: Int"),
+          highlight: "var v1: Int",
+          fixIts: [
+            .init(message: "Insert '@RegisterBank(offset:)' macro")
+          ]),
         .init(
-          message: Diagnostics.Errors.onlyAnnotatedMemberVarDecls().message,
+          message:
+            ErrorDiagnostic
+            .expectedMemberAnnotatedWithMacro(RegisterBankOffsetMacro.self)
+            .message,
           line: 4,
           column: 3,
-          highlight: "@OtherAttribute var v2: Int"),
+          highlight: "@OtherAttribute var v2: Int",
+          fixIts: [
+            .init(message: "Insert '@RegisterBank(offset:)' macro")
+          ]),
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -97,15 +123,15 @@ final class RegisterBankMacroTests: XCTestCase {
       @RegisterBank
       struct S {
         func f() {}
-        struct S {}
+        class C {}
       }
       """,
       expandedSource: """
         struct S {
           func f() {}
-          struct S {}
+          class C {}
 
-          var unsafeAddress: UInt
+          private (set) var unsafeAddress: UInt
 
           init(unsafeAddress: UInt) {
             self.unsafeAddress = unsafeAddress
