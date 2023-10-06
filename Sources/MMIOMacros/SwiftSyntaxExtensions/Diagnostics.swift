@@ -14,7 +14,7 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-struct ExpansionError: Error { }
+struct ExpansionError: Error {}
 
 struct ErrorDiagnostic<Macro> where Macro: ParsableMacro {
   var diagnosticID: MessageID

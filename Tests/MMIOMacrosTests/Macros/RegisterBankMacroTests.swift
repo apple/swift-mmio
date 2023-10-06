@@ -60,6 +60,20 @@ final class RegisterBankMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
+  func test_decl_onlyStruct_broken() {
+    assertMacroExpansion(
+      """
+      @RegisterBank var v: Int
+      """,
+      expandedSource: """
+        var v: Int
+        """,
+      diagnostics: [
+        // FIXME: https://github.com/apple/swift-syntax/issues/2206
+      ],
+      macros: Self.macros)
+  }
+
   func test_members_varDeclsAreAnnotated() {
     assertMacroExpansion(
       """

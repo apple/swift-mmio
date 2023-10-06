@@ -27,17 +27,7 @@ extension RegisterBankMacro: ParsableMacro {
 }
 
 extension RegisterBankMacro: MMIOMemberMacro {
-  /// Expand an attached declaration macro to produce a set of members.
-  ///
-  /// - Parameters:
-  ///   - node: The custom attribute describing the attached macro.
-  ///   - declaration: The declaration the macro attribute is attached to.
-  ///   - context: The context in which to perform the macro expansion.
-  ///
-  /// - Returns: the set of member declarations introduced by this macro, which
-  /// are nested inside the `attachedTo` declaration.
-  /// - Throws: any error encountered during macro expansion.
-  public static func mmioExpansion(
+  static func mmioExpansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: some MacroExpansionContext

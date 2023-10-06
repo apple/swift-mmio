@@ -31,10 +31,7 @@ extension RegisterBankOffsetMacro: ParsableMacro {
 }
 
 extension RegisterBankOffsetMacro: MMIOAccessorMacro {
-  /// Expand a macro that's expressed as a custom attribute attached to
-  /// the given declaration. The result is a set of accessors for the
-  /// declaration.
-  public static func mmioExpansion(
+  static func mmioExpansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
     in context: some MacroExpansionContext
@@ -83,6 +80,7 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
 
     // Binding identifier must not be "_" (implicitly named).
     guard identifierPattern.identifier.tokenKind != .wildcard else {
+      // FIXME: never reached
       context.error(
         at: binding.pattern,
         message: .expectedBindingIdentifier(),

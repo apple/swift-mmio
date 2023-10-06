@@ -54,7 +54,10 @@ extension Register {
 }
 
 extension Register where Layout.Read == Layout.Write {
-  // TODO: New feature request to make overload unavailable
+  // FIXME: Hide overload/base from code completion
+  // blocked-by: rdar://116586222 (Hide overload+base method if overload is
+  //   marked as deprecated in protocol specialization)
+  //
   // swift-format-ignore
   @available(
     *,

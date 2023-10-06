@@ -12,7 +12,8 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public protocol MMIOAccessorMacro: AccessorMacro {
+/// Wrapper around AccessorMacro used to suppress thrown expansion errors.
+protocol MMIOAccessorMacro: AccessorMacro {
   static func mmioExpansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
@@ -21,6 +22,7 @@ public protocol MMIOAccessorMacro: AccessorMacro {
 }
 
 extension MMIOAccessorMacro {
+  /// Calls the mmioExpansion customization point.
   public static func expansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,

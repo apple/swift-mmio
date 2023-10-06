@@ -43,7 +43,7 @@ final class BitFieldMacroTests: XCTestCase {
         func f() {}
         """,
       diagnostics: [
-        // FIXME: swift-syntax does not emit error
+        // FIXME: https://github.com/apple/swift-syntax/issues/2207
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)

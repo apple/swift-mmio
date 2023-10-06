@@ -36,15 +36,4 @@ extension FixedWidthInteger {
       self |= (Self(truncatingIfNeeded: newValue) & mask) << range.lowerBound
     }
   }
-
-  // When setting, we can always infer a type from newValue, but in a getter,
-  // we might not be able to (e.g. let x = y[bits: 2..<5]). It would be
-  // annoying and error-prone to make people always specify, so we provide a
-  // concrete getter overload that specifies `Self`, which is guaranteed to
-  // always be able to represent a bitfield.
-  subscript(
-    bits range: Range<Int>
-  ) -> Self {
-    @_transparent get { self[bits: range, as: Self.self] }
-  }
 }

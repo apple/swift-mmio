@@ -31,22 +31,12 @@ extension RegisterMacro: ParsableMacro {
 }
 
 extension RegisterMacro: MMIOMemberMacro {
-  /// Expand an attached declaration macro to produce a set of members.
-  ///
-  /// - Parameters:
-  ///   - node: The custom attribute describing the attached macro.
-  ///   - declaration: The declaration the macro attribute is attached to.
-  ///   - context: The context in which to perform the macro expansion.
-  ///
-  /// - Returns: the set of member declarations introduced by this macro, which
-  /// are nested inside the `attachedTo` declaration.
-  /// - Throws: any error encountered during macro expansion.
-  public static func mmioExpansion(
+  static func mmioExpansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
-    in expansionContext: some MacroExpansionContext
+    in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
-    let context = MacroContext(Self.self, expansionContext)
+    let context = MacroContext(Self.self, context)
 
     guard let arguments = Self.parse(from: node, in: context) else {
       return []
@@ -346,7 +336,7 @@ extension RegisterMacro: MMIOMemberMacro {
 }
 
 extension RegisterMacro: MMIOMemberAttributeMacro {
-  public static func mmioExpansion(
+  static func mmioExpansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingAttributesFor member: some DeclSyntaxProtocol,
@@ -366,7 +356,7 @@ extension RegisterMacro: MMIOMemberAttributeMacro {
 }
 
 extension RegisterMacro: MMIOExtensionMacro {
-  public static func mmioExpansion(
+  static func mmioExpansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingExtensionsOf type: some TypeSyntaxProtocol,

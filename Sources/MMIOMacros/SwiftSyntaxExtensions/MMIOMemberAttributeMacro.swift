@@ -12,7 +12,7 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public protocol MMIOMemberAttributeMacro: MemberAttributeMacro {
+protocol MMIOMemberAttributeMacro: MemberAttributeMacro {
   static func mmioExpansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
@@ -22,6 +22,7 @@ public protocol MMIOMemberAttributeMacro: MemberAttributeMacro {
 }
 
 extension MMIOMemberAttributeMacro {
+  /// Calls the mmioExpansion customization point.
   public static func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,

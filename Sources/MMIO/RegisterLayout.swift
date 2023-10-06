@@ -31,6 +31,11 @@ public protocol RegisterLayoutRead: MMIOVolatileValue {
 }
 
 extension RegisterLayoutRead {
+  /// Yields a view of the data underlying the read view, allowing for direct
+  /// manipulation of the register's bits.
+  ///
+  /// Mutation through the raw view are unchecked. The user is responsible for
+  /// ensuring the bit pattern is valid.
   public var raw: Layout.Raw {
     _read {
       yield Layout.Raw(self)
@@ -51,6 +56,11 @@ public protocol RegisterLayoutWrite: MMIOVolatileValue {
 }
 
 extension RegisterLayoutWrite {
+  /// Yields a view of the data underlying the read view, allowing for direct
+  /// manipulation of the register's bits.
+  ///
+  /// Mutation through the raw view are unchecked. The user is responsible for
+  /// ensuring the bit pattern is valid.
   public var raw: Layout.Raw {
     _read {
       yield Layout.Raw(self)
