@@ -202,6 +202,7 @@ extension FixIt {
   }
 
   static func insertBindingType(node: PatternBindingSyntax) -> FixIt {
+    // FIXME: https://github.com/apple/swift-syntax/issues/2205
     .replace(
       message: MacroExpansionFixItMessage(
         "Insert explicit type annotation"),
@@ -225,6 +226,7 @@ extension FixIt {
   static func insertMacro<Macro>(
     node: some WithAttributesSyntax, _: Macro.Type
   ) -> FixIt where Macro: ParsableMacro {
+    // FIXME: https://github.com/apple/swift-syntax/issues/2205
     var newNode = node
     newNode.attributes.append(Macro.placeholder)
     return .replace(
