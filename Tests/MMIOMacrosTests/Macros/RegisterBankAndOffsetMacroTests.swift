@@ -23,7 +23,7 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  func testPositiveExample() {
+  func test_expansion() {
     assertMacroExpansion(
       """
       @RegisterBankType
@@ -47,7 +47,7 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
             }
           }
 
-          var unsafeAddress: UInt
+          private (set) var unsafeAddress: UInt
 
           init(unsafeAddress: UInt) {
             self.unsafeAddress = unsafeAddress

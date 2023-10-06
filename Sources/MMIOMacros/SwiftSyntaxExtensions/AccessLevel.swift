@@ -31,9 +31,3 @@ extension WithModifiersSyntax {
       .first
   }
 }
-
-extension SyntaxStringInterpolation {
-  mutating func appendInterpolation(_ accessLevel: AccessLevel?) {
-    self.appendInterpolation(raw: accessLevel?.rawValue ?? "")
-  }
-}

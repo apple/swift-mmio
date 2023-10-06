@@ -16,4 +16,19 @@ enum VariableBindingKind {
   case unknown(String)
 }
 
+extension VariableBindingKind: CustomStringConvertible {
+  var description: String {
+    switch self {
+    case .var:
+      "var"
+    case .let:
+      "let"
+    case .inout:
+      "inout"
+    case .unknown(let string):
+      string
+    }
+  }
+}
+
 extension VariableBindingKind: Equatable {}
