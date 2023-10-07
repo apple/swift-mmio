@@ -4,7 +4,7 @@ about: A suggestion for a new feature
 ---
 
 <!--
-    Thanks for contributing to the Swift Argument Parser!
+    Thanks for contributing to the Swift MMIO!
 
     Before you submit your issue, please replace the paragraph
     below with information about your proposed feature.

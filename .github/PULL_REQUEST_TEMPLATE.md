@@ -1,5 +1,5 @@
 <!--
-    Thanks for contributing to the Swift Argument Parser!
+    Thanks for contributing to the Swift MMIO!
 
     If this pull request adds new API, please add '?template=new.md'
     to the URL to switch to the appropriate template.
