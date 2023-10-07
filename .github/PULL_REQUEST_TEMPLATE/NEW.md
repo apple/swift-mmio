@@ -1,5 +1,5 @@
 <!--
-    Thanks for contributing to the Swift Argument Parser!
+    Thanks for contributing to the Swift MMIO!
 
     Before you submit your request, please replace each paragraph
     below with the relevant details, and complete the steps in the

@@ -137,7 +137,7 @@ let bitFieldMacros: [any BitFieldMacro.Type] = [
   WriteOnlyMacro.self,
 ]
 
-struct ReservedMacro: BitFieldMacro {
+struct ReservedMacro: BitFieldMacro, Sendable {
   typealias Arguments = BitFieldMacroArguments
   static var baseName = "Reserved"
   static var isReadable: Bool { false }
@@ -145,7 +145,7 @@ struct ReservedMacro: BitFieldMacro {
   static var isSymmetric: Bool { true }
 }
 
-struct ReadWriteMacro: BitFieldMacro {
+struct ReadWriteMacro: BitFieldMacro, Sendable {
   typealias Arguments = BitFieldMacroArguments
   static var baseName = "ReadWrite"
   static var isReadable: Bool { true }
@@ -153,7 +153,7 @@ struct ReadWriteMacro: BitFieldMacro {
   static var isSymmetric: Bool { true }
 }
 
-struct ReadOnlyMacro: BitFieldMacro {
+struct ReadOnlyMacro: BitFieldMacro, Sendable {
   typealias Arguments = BitFieldMacroArguments
   static var baseName = "ReadOnly"
   static var isReadable: Bool { true }
@@ -161,7 +161,7 @@ struct ReadOnlyMacro: BitFieldMacro {
   static var isSymmetric: Bool { false }
 }
 
-struct WriteOnlyMacro: BitFieldMacro {
+struct WriteOnlyMacro: BitFieldMacro, Sendable {
   typealias Arguments = BitFieldMacroArguments
   static var baseName = "WriteOnly"
   static var isReadable: Bool { false }

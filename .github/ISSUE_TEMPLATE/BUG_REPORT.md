@@ -4,7 +4,7 @@ about: Something isn't working as expected
 ---
 
 <!--
-    Thanks for contributing to the Swift Argument Parser!
+    Thanks for contributing to the Swift MMIO!
 
     Before you submit your issue, please replace each paragraph
     below with the relevant details for your bug, and complete

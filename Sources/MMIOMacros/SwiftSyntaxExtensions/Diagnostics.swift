@@ -55,13 +55,12 @@ extension ErrorDiagnostic {
     precondition(values.count > 1)
     guard let last = values.last else { fatalError() }
 
-    let options =
+    let optionsPrefix =
       values
       .dropLast()
       .map { "'\($0)'" }
       .joined(separator: ", ")
-      .appending(", or ")
-      .appending("'\(last)'")
+    let options = "\(optionsPrefix), or '\(last)'"
 
     return .init(
       """
@@ -128,13 +127,12 @@ extension ErrorDiagnostic {
     precondition(macros.count > 1)
     guard let last = macros.last else { fatalError() }
 
-    let options =
+    let optionsPrefix =
       macros
       .dropLast()
       .map { "'\($0.signature)'" }
       .joined(separator: ", ")
-      .appending(", or ")
-      .appending("'\(last.signature)'")
+    let options = "\(optionsPrefix), or '\(last.signature)'"
 
     return .init(
       """
