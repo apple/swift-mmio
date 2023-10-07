@@ -17,6 +17,8 @@ import SwiftSyntaxMacros
 
 public enum RegisterBankMacro {}
 
+extension RegisterBankMacro: Sendable {}
+
 extension RegisterBankMacro: ParsableMacro {
   static let baseName = "RegisterBank"
   static let arguments = [(label: String, type: String)]()

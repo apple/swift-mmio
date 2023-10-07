@@ -17,6 +17,8 @@ import SwiftSyntaxMacros
 
 public enum RegisterMacro {}
 
+extension RegisterMacro: Sendable {}
+
 extension RegisterMacro: ParsableMacro {
   static let baseName = "Register"
   static let arguments: [(label: String, type: String)] = [("bitWidth", "Int")]

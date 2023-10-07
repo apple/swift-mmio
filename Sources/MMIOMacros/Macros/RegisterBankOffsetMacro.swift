@@ -17,6 +17,8 @@ import SwiftSyntaxMacros
 
 public enum RegisterBankOffsetMacro {}
 
+extension RegisterBankOffsetMacro: Sendable {}
+
 extension RegisterBankOffsetMacro: ParsableMacro {
   static let baseName = "RegisterBank"
   static let arguments: [(label: String, type: String)] = [("offset", "Int")]
