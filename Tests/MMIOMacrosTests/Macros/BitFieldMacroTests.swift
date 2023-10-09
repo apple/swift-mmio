@@ -18,18 +18,31 @@ import XCTest
 
 final class BitFieldMacroTests: XCTestCase {
   struct TestMacro: BitFieldMacro {
-    static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-    static var baseName: String { "Test" }
-    static var isReadable: Bool { true }
-    static var isWriteable: Bool { true }
-    static var isSymmetric: Bool { true }
+    static let accessorMacroSuppressParsingDiagnostics = false
+    static let baseName = "Test"
+    static let isReadable = true
+    static let isWriteable = true
+    static let isSymmetric = true
 
-    var bits: Range<Int>
-    var asType: Void?
+    @Argument(label: "bits")
+    var bitRange: Range<Int>
 
-    init(arguments: Arguments) {
-      self.bits = arguments.bits
-      self.asType = arguments.asType
+    @Argument(label: "as")
+    var projectedType: Int?
+
+    mutating func update(
+      label: String,
+      from expression: ExprSyntax,
+      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+    ) throws {
+      switch label {
+      case "bits":
+        try self._bitRange.update(from: expression, in: context)
+      case "as":
+        try self._projectedType.update(from: expression, in: context)
+      default:
+        fatalError()
+      }
     }
   }
 

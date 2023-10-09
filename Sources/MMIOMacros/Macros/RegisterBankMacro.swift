@@ -20,14 +20,12 @@ public struct RegisterBankMacro {}
 extension RegisterBankMacro: Sendable {}
 
 extension RegisterBankMacro: ParsableMacro {
-  static let baseName = "RegisterBank"
-  static let arguments = [(label: String, type: String)]()
-
-  struct Arguments: ParsableMacroArguments {
-    init(
-      arguments: [ExprSyntax],
-      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-    ) throws {}
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    fatalError()
   }
 
   init(arguments: Arguments) {}

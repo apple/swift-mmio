@@ -18,41 +18,19 @@ import SwiftSyntaxMacros
 struct BitField {
   var type: any BitFieldMacro.Type
   var fieldName: IdentifierPatternSyntax
-  var fieldTypeName: TypeSyntax
+  var fieldType: TypeSyntax
   var bitRange: Range<Int>
-  var projectedTypeName: Void?
+  var projectedType: Int?
 }
 
-struct BitFieldMacroArguments: ParsableMacroArguments {
-  var bits: Range<Int>
-  var asType: Void?
-
-  init(
-    arguments: [ExprSyntax],
-    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws {
-    self.bits = try Range<Int>(
-      argument: arguments[0],
-      label: "bits",
-      in: context)
-  }
-}
-
-// @BaseName(bits: 0..<1, as: Bool.self)
-protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro
-where Self.Arguments == BitFieldMacroArguments {
+// @BaseName(bits: 0..<1, 3..<4, as: Bool.self)
+protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
   static var isReadable: Bool { get }
   static var isWriteable: Bool { get }
   static var isSymmetric: Bool { get }
 
-  var bits: Range<Int> { get }
-  var asType: Void? { get }
-}
-
-extension BitFieldMacro {
-  static var arguments: [(label: String, type: String)] {
-    [("bits", "Range<Int>")]
-  }
+  var bitRange: Range<Int> { get }
+  var projectedType: Int? { get }
 }
 
 extension BitFieldMacro {
@@ -145,65 +123,117 @@ let bitFieldMacros: [any BitFieldMacro.Type] = [
 ]
 
 struct ReservedMacro: BitFieldMacro, Sendable {
-  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-  static var baseName: String { "Reserved" }
-  static var isReadable: Bool { false }
-  static var isWriteable: Bool { false }
-  static var isSymmetric: Bool { true }
+  static let accessorMacroSuppressParsingDiagnostics = false
+  static let baseName = "Reserved"
+  static let isReadable = false
+  static let isWriteable = false
+  static let isSymmetric = true
 
-  var bits: Range<Int>
-  var asType: Void?
+  @Argument(label: "bits")
+  var bitRange: Range<Int>
 
-  init(arguments: Arguments) {
-    self.bits = arguments.bits
-    self.asType = arguments.asType
+  @Argument(label: "as")
+  var projectedType: Int?
+
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    switch label {
+    case "bits":
+      try self._bitRange.update(from: expression, in: context)
+    case "as":
+      try self._projectedType.update(from: expression, in: context)
+    default:
+      fatalError()
+    }
   }
 }
 
 struct ReadWriteMacro: BitFieldMacro, Sendable {
-  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-  static var baseName: String { "ReadWrite" }
-  static var isReadable: Bool { true }
-  static var isWriteable: Bool { true }
-  static var isSymmetric: Bool { true }
+  static let accessorMacroSuppressParsingDiagnostics = false
+  static let baseName = "ReadWrite"
+  static let isReadable = true
+  static let isWriteable = true
+  static let isSymmetric = true
 
-  var bits: Range<Int>
-  var asType: Void?
+  @Argument(label: "bits")
+  var bitRange: Range<Int>
 
-  init(arguments: Arguments) {
-    self.bits = arguments.bits
-    self.asType = arguments.asType
+  @Argument(label: "as")
+  var projectedType: Int?
+
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    switch label {
+    case "bits":
+      try self._bitRange.update(from: expression, in: context)
+    case "as":
+      try self._projectedType.update(from: expression, in: context)
+    default:
+      fatalError()
+    }
   }
 }
 
 struct ReadOnlyMacro: BitFieldMacro, Sendable {
-  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-  static var baseName: String { "ReadOnly" }
-  static var isReadable: Bool { true }
-  static var isWriteable: Bool { false }
-  static var isSymmetric: Bool { false }
+  static let accessorMacroSuppressParsingDiagnostics = false
+  static let baseName = "ReadOnly"
+  static let isReadable = true
+  static let isWriteable = false
+  static let isSymmetric = false
 
-  var bits: Range<Int>
-  var asType: Void?
+  @Argument(label: "bits")
+  var bitRange: Range<Int>
 
-  init(arguments: Arguments) {
-    self.bits = arguments.bits
-    self.asType = arguments.asType
+  @Argument(label: "as")
+  var projectedType: Int?
+
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    switch label {
+    case "bits":
+      try self._bitRange.update(from: expression, in: context)
+    case "as":
+      try self._projectedType.update(from: expression, in: context)
+    default:
+      fatalError()
+    }
   }
 }
 
 struct WriteOnlyMacro: BitFieldMacro, Sendable {
-  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-  static var baseName: String { "WriteOnly" }
-  static var isReadable: Bool { false }
-  static var isWriteable: Bool { true }
-  static var isSymmetric: Bool { false }
+  static let accessorMacroSuppressParsingDiagnostics = false
+  static let baseName = "WriteOnly"
+  static let isReadable = false
+  static let isWriteable = true
+  static let isSymmetric = false
 
-  var bits: Range<Int>
-  var asType: Void?
+  @Argument(label: "bits")
+  var bitRange: Range<Int>
 
-  init(arguments: Arguments) {
-    self.bits = arguments.bits
-    self.asType = arguments.asType
+  @Argument(label: "as")
+  var projectedType: Int?
+
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    switch label {
+    case "bits":
+      try self._bitRange.update(from: expression, in: context)
+    case "as":
+      try self._projectedType.update(from: expression, in: context)
+    default:
+      fatalError()
+    }
   }
 }

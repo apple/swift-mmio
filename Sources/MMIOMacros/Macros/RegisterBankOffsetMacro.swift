@@ -16,6 +16,7 @@ import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 public struct RegisterBankOffsetMacro {
+  @Argument(label: "offset")
   var offset: Int
 }
 
@@ -23,19 +24,17 @@ extension RegisterBankOffsetMacro: Sendable {}
 
 extension RegisterBankOffsetMacro: ParsableMacro {
   static let baseName = "RegisterBank"
-  static let arguments: [(label: String, type: String)] = [("offset", "Int")]
 
-  struct Arguments: ParsableMacroArguments {
-    var offset: Int
-
-    init(
-      arguments: [ExprSyntax],
-      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-    ) throws {
-      self.offset = try Int(
-        argument: arguments[0],
-        label: "offset",
-        in: context)
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    switch label {
+    case "offset":
+      try self._offset.update(from: expression, in: context)
+    default:
+      fatalError()
     }
   }
 

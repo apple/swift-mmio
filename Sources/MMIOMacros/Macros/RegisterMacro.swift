@@ -16,36 +16,23 @@ import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 public struct RegisterMacro {
-  var bitWidth: Int
+  @Argument(label: "bitWidth")
+  var bitWidth: BitWidth
 }
 
 extension RegisterMacro: Sendable {}
 
 extension RegisterMacro: ParsableMacro {
-  static let baseName = "Register"
-  static let arguments: [(label: String, type: String)] = [("bitWidth", "Int")]
-
-  struct Arguments: ParsableMacroArguments {
-    var bitWidth: Int
-
-    init(
-      arguments: [ExprSyntax],
-      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-    ) throws {
-      self.bitWidth = try Int(
-        argument: arguments[0],
-        label: "bitWidth",
-        in: context)
-
-      let validBitWidths = [8, 16, 32, 64]
-      guard validBitWidths.contains(bitWidth) else {
-        context.error(
-          at: arguments[0],
-          message: .argumentValueMustBeOneOf(
-            label: "bitWidth",
-            values: validBitWidths))
-        throw ExpansionError()
-      }
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    switch label {
+    case "bitWidth":
+      try self._bitWidth.update(from: expression, in: context)
+    default:
+      fatalError()
     }
   }
 
@@ -78,20 +65,22 @@ extension RegisterMacro: MMIOMemberMacro {
         continue
       }
 
+      let suppressionContext = context.makeSuppressingDiagnostics()
       guard
         // Each declaration must be annotated with exactly one bitField macro.
         let value = try? variableDecl.requireMacro(bitFieldMacros, context),
 
         // Parse the arguments from the bitField macro.
-        // FIXME: wrong type.parse context; should be context(macroType)
-        let macro = try? value.type.init(from: value.attribute, in: context),
+        let macro = try? value.type.init(
+          from: value.attribute,
+          in: suppressionContext),
 
         // Grab the type of the variable declaration. Diagnostics will be
         // emitted by the handling of @attched(accessor) of the applied bitField
         // macro.
         let binding = variableDecl.singleBinding,
         let fieldName = binding.pattern.as(IdentifierPatternSyntax.self),
-        let fieldTypeName = binding.typeAnnotation?.type
+        let fieldType = binding.typeAnnotation?.type
       else {
         error = true
         continue
@@ -101,9 +90,9 @@ extension RegisterMacro: MMIOMemberMacro {
         BitField(
           type: value.type,
           fieldName: fieldName,
-          fieldTypeName: fieldTypeName,
-          bitRange: macro.bits,
-          projectedTypeName: macro.asType))
+          fieldType: fieldType,
+          bitRange: macro.bitRange,
+          projectedType: macro.projectedType))
     }
     guard !error else { return [] }
 
@@ -118,7 +107,6 @@ extension RegisterMacro: MMIOMemberMacro {
       contentsOf: bitFields.map {
         bitFieldType(
           acl: structDecl.accessLevel,
-          bitWidth: self.bitWidth,
           bitField: $0)
       })
 
@@ -131,7 +119,6 @@ extension RegisterMacro: MMIOMemberMacro {
         rawType(
           acl: structDecl.accessLevel,
           layout: structDecl.name,
-          bitWidth: self.bitWidth,
           bitFields: bitFields,
           isSymmetric: isSymmetric))
 
@@ -143,7 +130,6 @@ extension RegisterMacro: MMIOMemberMacro {
           readWriteType(
             acl: structDecl.accessLevel,
             layout: structDecl.name,
-            bitWidth: self.bitWidth,
             bitFields: bitFields))
     } else {
       // Create two asymmetric read and write types if any of the bit fields
@@ -153,14 +139,12 @@ extension RegisterMacro: MMIOMemberMacro {
           readType(
             acl: structDecl.accessLevel,
             layout: structDecl.name,
-            bitWidth: self.bitWidth,
             bitFields: bitFields))
       declarations.append(
         contentsOf:
           writeType(
             acl: structDecl.accessLevel,
             layout: structDecl.name,
-            bitWidth: self.bitWidth,
             bitFields: bitFields))
     }
 
@@ -169,12 +153,11 @@ extension RegisterMacro: MMIOMemberMacro {
 
   func bitFieldType(
     acl: AccessLevel?,
-    bitWidth: Int,
     bitField: BitField
   ) -> DeclSyntax {
     """
-    \(acl)enum \(bitField.fieldTypeName): BitField {
-      \(acl)typealias RawStorage = UInt\(raw: bitWidth)
+    \(acl)enum \(bitField.fieldType): BitField {
+      \(acl)typealias RawStorage = UInt\(raw: self.bitWidth.value)
       \(acl)static let bitRange = \(raw: bitField.bitRange.description)
     }
     """
@@ -183,7 +166,6 @@ extension RegisterMacro: MMIOMemberMacro {
   func rawType(
     acl: AccessLevel?,
     layout: TokenSyntax,
-    bitWidth: Int,
     bitFields: [BitField],
     isSymmetric: Bool
   ) -> [DeclSyntax] {
@@ -191,9 +173,9 @@ extension RegisterMacro: MMIOMemberMacro {
     // Create accessor declarations for each bitfield
     let bitFieldDeclarations: [DeclSyntax] = bitFields.map {
       """
-      \(acl)var \($0.fieldName): UInt\(raw: bitWidth) {
-        @inline(__always) get { self._rawStorage[bits: \($0.fieldTypeName).bitRange] }
-        @inline(__always) set { self._rawStorage[bits: \($0.fieldTypeName).bitRange] = newValue }
+      \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
+        @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
+        @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
       }
       """
     }
@@ -213,9 +195,9 @@ extension RegisterMacro: MMIOMemberMacro {
     declarations.append(
       """
       \(acl)struct Raw: RegisterLayoutRaw {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: bitWidth)
+        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
         \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: bitWidth)
+        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
         \(initDeclarations)
         \(bitFieldDeclarations)
       }
@@ -226,7 +208,6 @@ extension RegisterMacro: MMIOMemberMacro {
   func readWriteType(
     acl: AccessLevel?,
     layout: TokenSyntax,
-    bitWidth: Int,
     bitFields: [BitField]
   ) -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
@@ -240,9 +221,9 @@ extension RegisterMacro: MMIOMemberMacro {
       .filter { $0.type.isReadable && $0.type.isWriteable }
       .map {
         """
-        \(acl)var \($0.fieldName): UInt\(raw: bitWidth) {
-          @inline(__always) get { self._rawStorage[bits: \($0.fieldTypeName).bitRange] }
-          @inline(__always) set { self._rawStorage[bits: \($0.fieldTypeName).bitRange] = newValue }
+        \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
+          @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
+          @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
         }
         """
       }
@@ -250,9 +231,9 @@ extension RegisterMacro: MMIOMemberMacro {
     declarations.append(
       """
       \(acl)struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: bitWidth)
+        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
         \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: bitWidth)
+        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
         \(acl)init(_ value: ReadWrite) { self._rawStorage = value._rawStorage }
         \(acl)init(_ value: Raw) { self._rawStorage = value._rawStorage }
         \(bitFieldDeclarations)
@@ -264,7 +245,6 @@ extension RegisterMacro: MMIOMemberMacro {
   func readType(
     acl: AccessLevel?,
     layout: TokenSyntax,
-    bitWidth: Int,
     bitFields: [BitField]
   ) -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
@@ -274,9 +254,9 @@ extension RegisterMacro: MMIOMemberMacro {
       .filter { $0.type.isReadable }
       .map {
         """
-        \(acl)var \($0.fieldName): UInt\(raw: bitWidth) {
-          @inline(__always) get { self._rawStorage[bits: \($0.fieldTypeName).bitRange] }
-          @inline(__always) set { self._rawStorage[bits: \($0.fieldTypeName).bitRange] = newValue }
+        \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
+          @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
+          @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
         }
         """
       }
@@ -284,9 +264,9 @@ extension RegisterMacro: MMIOMemberMacro {
     declarations.append(
       """
       \(acl)struct Read: RegisterLayoutRead {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: bitWidth)
+        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
         \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: bitWidth)
+        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
         \(acl)init(_ value: Raw) { self._rawStorage = value._rawStorage }
         \(bitFieldDeclarations)
       }
@@ -297,7 +277,6 @@ extension RegisterMacro: MMIOMemberMacro {
   func writeType(
     acl: AccessLevel?,
     layout: TokenSyntax,
-    bitWidth: Int,
     bitFields: [BitField]
   ) -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
@@ -310,10 +289,10 @@ extension RegisterMacro: MMIOMemberMacro {
       .filter { $0.type.isWriteable }
       .map {
         """
-        \(acl)var \($0.fieldName): UInt\(raw: bitWidth) {
+        \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
           @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-          @inline(__always) get { self._rawStorage[bits: \($0.fieldTypeName).bitRange] }
-          @inline(__always) set { self._rawStorage[bits: \($0.fieldTypeName).bitRange] = newValue }
+          @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
+          @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
         }
         """
       }
@@ -321,9 +300,9 @@ extension RegisterMacro: MMIOMemberMacro {
     declarations.append(
       """
       \(acl)struct Write: RegisterLayoutWrite {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: bitWidth)
+        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
         \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: bitWidth)
+        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
         \(acl)init(_ value: Raw) { self._rawStorage = value._rawStorage }
         \(acl)init(_ value: Read) {
           // FIXME: mask off bits
