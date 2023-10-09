@@ -15,7 +15,9 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public enum RegisterMacro {}
+public struct RegisterMacro {
+  var bitWidth: Int
+}
 
 extension RegisterMacro: Sendable {}
 
@@ -24,46 +26,42 @@ extension RegisterMacro: ParsableMacro {
   static let arguments: [(label: String, type: String)] = [("bitWidth", "Int")]
 
   struct Arguments: ParsableMacroArguments {
-    var bitWidth: ExprSyntax
+    var bitWidth: Int
 
-    init(arguments: [ExprSyntax]) {
-      self.bitWidth = arguments[0]
+    init(
+      arguments: [ExprSyntax],
+      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+    ) throws {
+      self.bitWidth = try Int(
+        argument: arguments[0],
+        label: "bitWidth",
+        in: context)
+
+      let validBitWidths = [8, 16, 32, 64]
+      guard validBitWidths.contains(bitWidth) else {
+        context.error(
+          at: arguments[0],
+          message: .argumentValueMustBeOneOf(
+            label: "bitWidth",
+            values: validBitWidths))
+        throw ExpansionError()
+      }
     }
+  }
+
+  init(arguments: Arguments) {
+    self.bitWidth = arguments.bitWidth
   }
 }
 
 extension RegisterMacro: MMIOMemberMacro {
-  static func mmioExpansion(
+  static var memberMacroSuppressParsingDiagnostics: Bool { false }
+
+  func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    let context = MacroContext(Self.self, context)
-
-    guard let arguments = Self.parse(from: node, in: context) else {
-      return []
-    }
-
-    guard
-      let bitWidth = arguments.bitWidth.as(IntegerLiteralExprSyntax.self),
-      let bitWidth = bitWidth.value
-    else {
-      context.error(
-        at: arguments.bitWidth,
-        message: .argumentMustIntegerLiteral(label: "bitWidth"))
-      return []
-    }
-
-    let validBitWidths = [8, 16, 32, 64]
-    guard validBitWidths.contains(bitWidth) else {
-      context.error(
-        at: arguments.bitWidth,
-        message: .argumentValueMustBeOneOf(
-          label: "bitWidth",
-          values: validBitWidths))
-      return []
-    }
-
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
@@ -86,10 +84,11 @@ extension RegisterMacro: MMIOMemberMacro {
 
         // Parse the arguments from the bitField macro.
         // FIXME: wrong type.parse context; should be context(macroType)
-        let arguments = value.type.parse(from: value.attribute, in: context),
+        let macro = try? value.type.init(from: value.attribute, in: context),
 
-        // Grab the type of the variable declaration. Diagnostics will be emitted
-        // by the handling of @attched(accessor) of the applied bitField macro.
+        // Grab the type of the variable declaration. Diagnostics will be
+        // emitted by the handling of @attched(accessor) of the applied bitField
+        // macro.
         let binding = variableDecl.singleBinding,
         let fieldName = binding.pattern.as(IdentifierPatternSyntax.self),
         let fieldTypeName = binding.typeAnnotation?.type
@@ -103,8 +102,8 @@ extension RegisterMacro: MMIOMemberMacro {
           type: value.type,
           fieldName: fieldName,
           fieldTypeName: fieldTypeName,
-          bitRange: arguments.bits,
-          projectedTypeName: arguments.asType))
+          bitRange: macro.bits,
+          projectedTypeName: macro.asType))
     }
     guard !error else { return [] }
 
@@ -119,7 +118,7 @@ extension RegisterMacro: MMIOMemberMacro {
       contentsOf: bitFields.map {
         bitFieldType(
           acl: structDecl.accessLevel,
-          bitWidth: bitWidth,
+          bitWidth: self.bitWidth,
           bitField: $0)
       })
 
@@ -132,7 +131,7 @@ extension RegisterMacro: MMIOMemberMacro {
         rawType(
           acl: structDecl.accessLevel,
           layout: structDecl.name,
-          bitWidth: bitWidth,
+          bitWidth: self.bitWidth,
           bitFields: bitFields,
           isSymmetric: isSymmetric))
 
@@ -144,7 +143,7 @@ extension RegisterMacro: MMIOMemberMacro {
           readWriteType(
             acl: structDecl.accessLevel,
             layout: structDecl.name,
-            bitWidth: bitWidth,
+            bitWidth: self.bitWidth,
             bitFields: bitFields))
     } else {
       // Create two asymmetric read and write types if any of the bit fields
@@ -154,21 +153,21 @@ extension RegisterMacro: MMIOMemberMacro {
           readType(
             acl: structDecl.accessLevel,
             layout: structDecl.name,
-            bitWidth: bitWidth,
+            bitWidth: self.bitWidth,
             bitFields: bitFields))
       declarations.append(
         contentsOf:
           writeType(
             acl: structDecl.accessLevel,
             layout: structDecl.name,
-            bitWidth: bitWidth,
+            bitWidth: self.bitWidth,
             bitFields: bitFields))
     }
 
     return declarations
   }
 
-  static func bitFieldType(
+  func bitFieldType(
     acl: AccessLevel?,
     bitWidth: Int,
     bitField: BitField
@@ -176,12 +175,12 @@ extension RegisterMacro: MMIOMemberMacro {
     """
     \(acl)enum \(bitField.fieldTypeName): BitField {
       \(acl)typealias RawStorage = UInt\(raw: bitWidth)
-      \(acl)static let bitRange = \(bitField.bitRange)
+      \(acl)static let bitRange = \(raw: bitField.bitRange.description)
     }
     """
   }
 
-  static func rawType(
+  func rawType(
     acl: AccessLevel?,
     layout: TokenSyntax,
     bitWidth: Int,
@@ -224,7 +223,7 @@ extension RegisterMacro: MMIOMemberMacro {
     return declarations
   }
 
-  static func readWriteType(
+  func readWriteType(
     acl: AccessLevel?,
     layout: TokenSyntax,
     bitWidth: Int,
@@ -262,7 +261,7 @@ extension RegisterMacro: MMIOMemberMacro {
     return declarations
   }
 
-  static func readType(
+  func readType(
     acl: AccessLevel?,
     layout: TokenSyntax,
     bitWidth: Int,
@@ -295,7 +294,7 @@ extension RegisterMacro: MMIOMemberMacro {
     return declarations
   }
 
-  static func writeType(
+  func writeType(
     acl: AccessLevel?,
     layout: TokenSyntax,
     bitWidth: Int,
@@ -338,11 +337,13 @@ extension RegisterMacro: MMIOMemberMacro {
 }
 
 extension RegisterMacro: MMIOMemberAttributeMacro {
-  static func mmioExpansion(
+  static var memberAttributeMacroSuppressParsingDiagnostics: Bool { true }
+
+  func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingAttributesFor member: some DeclSyntaxProtocol,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [AttributeSyntax] {
     // Avoid duplicating diagnostics produced by `MemberMacro` conformance.
     let context = MacroContext.makeSuppressingDiagnostics(Self.self)
@@ -358,15 +359,15 @@ extension RegisterMacro: MMIOMemberAttributeMacro {
 }
 
 extension RegisterMacro: MMIOExtensionMacro {
-  static func mmioExpansion(
+  static var extensionMacroSuppressParsingDiagnostics: Bool { true }
+
+  func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingExtensionsOf type: some TypeSyntaxProtocol,
     conformingTo protocols: [TypeSyntax],
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [ExtensionDeclSyntax] {
-    let context = MacroContext(Self.self, context)
-
     // Avoid duplicating diagnostics produced by `MemberMacro` conformance.
     // Only create extension when applied to struct decls.
     guard declaration.is(StructDeclSyntax.self) else { return [] }

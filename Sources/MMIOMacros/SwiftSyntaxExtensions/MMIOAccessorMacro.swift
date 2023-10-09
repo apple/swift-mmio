@@ -13,23 +13,33 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 
 /// Wrapper around AccessorMacro used to suppress thrown expansion errors.
-protocol MMIOAccessorMacro: AccessorMacro {
-  static func mmioExpansion(
+protocol MMIOAccessorMacro: AccessorMacro, ParsableMacro {
+  static var accessorMacroSuppressParsingDiagnostics: Bool { get }
+
+  mutating func expansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [AccessorDeclSyntax]
 }
 
 extension MMIOAccessorMacro {
-  /// Calls the mmioExpansion customization point.
+  /// Calls the expansion instance method customization point.
   public static func expansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
     in context: some MacroExpansionContext
   ) -> [AccessorDeclSyntax] {
     do {
-      return try Self.mmioExpansion(
+      let context = MacroContext(Self.self, context)
+      var `self`: Self
+      if Self.accessorMacroSuppressParsingDiagnostics {
+        let context = MacroContext.makeSuppressingDiagnostics(Self.self)
+        `self` = try Self(from: node, in: context)
+      } else {
+        `self` = try Self(from: node, in: context)
+      }
+      return try self.expansion(
         of: node,
         providingAccessorsOf: declaration,
         in: context)

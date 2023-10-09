@@ -313,5 +313,4 @@ final class RegisterMacroTests: XCTestCase {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
-
 }

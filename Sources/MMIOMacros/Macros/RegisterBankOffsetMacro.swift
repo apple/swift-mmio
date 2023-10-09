@@ -15,7 +15,9 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public enum RegisterBankOffsetMacro {}
+public struct RegisterBankOffsetMacro {
+  var offset: Int
+}
 
 extension RegisterBankOffsetMacro: Sendable {}
 
@@ -24,26 +26,32 @@ extension RegisterBankOffsetMacro: ParsableMacro {
   static let arguments: [(label: String, type: String)] = [("offset", "Int")]
 
   struct Arguments: ParsableMacroArguments {
-    var offset: ExprSyntax
+    var offset: Int
 
-    init(arguments: [ExprSyntax]) {
-      self.offset = arguments[0]
+    init(
+      arguments: [ExprSyntax],
+      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+    ) throws {
+      self.offset = try Int(
+        argument: arguments[0],
+        label: "offset",
+        in: context)
     }
+  }
+
+  init(arguments: Arguments) {
+    self.offset = arguments.offset
   }
 }
 
 extension RegisterBankOffsetMacro: MMIOAccessorMacro {
-  static func mmioExpansion(
+  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
+
+  func expansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [AccessorDeclSyntax] {
-    let context = MacroContext(Self.self, context)
-
-    guard let arguments = Self.parse(from: node, in: context) else {
-      return []
-    }
-
     // Can only applied to variables.
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
       context.error(
@@ -118,7 +126,7 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
 
     return [
       """
-      @inline(__always) get { .init(unsafeAddress: self.unsafeAddress + (\(arguments.offset))) }
+      @inline(__always) get { .init(unsafeAddress: self.unsafeAddress + (\(raw: self.offset))) }
       """
     ]
   }
