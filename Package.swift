@@ -20,6 +20,8 @@ let package = Package(
   ],
   targets: [
     .target(name: "MMIO", dependencies: ["MMIOMacros", "MMIOVolatile"]),
+    .testTarget(name: "MMIOTests", dependencies: ["MMIO"]),
+
     .macro(
       name: "MMIOMacros",
       dependencies: [
@@ -38,5 +40,6 @@ let package = Package(
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
+
     .target(name: "MMIOVolatile"),
   ])

@@ -25,7 +25,8 @@ final class BitFieldMacroTests: XCTestCase {
     static let isSymmetric = true
 
     @Argument(label: "bits")
-    var bitRange: Range<Int>
+    var bitRanges: [Range<Int>]
+    var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
     @Argument(label: "as")
     var projectedType: Int?
@@ -37,7 +38,7 @@ final class BitFieldMacroTests: XCTestCase {
     ) throws {
       switch label {
       case "bits":
-        try self._bitRange.update(from: expression, in: context)
+        try self._bitRanges.update(from: expression, in: context)
       case "as":
         try self._projectedType.update(from: expression, in: context)
       default:

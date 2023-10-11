@@ -219,13 +219,13 @@ final class RegisterMacroTests: XCTestCase {
 
           private var _never: Never
 
-          enum V1: BitField {
-            typealias RawStorage = UInt8
+          enum V1: ContiguousBitField {
+            typealias Storage = UInt8
             static let bitRange = 0 ..< 1
           }
 
-          enum V2: BitField {
-            typealias RawStorage = UInt8
+          enum V2: ContiguousBitField {
+            typealias Storage = UInt8
             static let bitRange = 1 ..< 2
           }
 
@@ -238,18 +238,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inline(__always) get {
-                self._rawStorage[bits: V1.bitRange]
+                V1.extract(from: self._rawStorage)
               }
               @inline(__always) set {
-                self._rawStorage[bits: V1.bitRange] = newValue
+                V1.insert(newValue, into: &self._rawStorage)
               }
             }
             var v2: UInt8 {
               @inline(__always) get {
-                self._rawStorage[bits: V2.bitRange]
+                V2.extract(from: self._rawStorage)
               }
               @inline(__always) set {
-                self._rawStorage[bits: V2.bitRange] = newValue
+                V2.insert(newValue, into: &self._rawStorage)
               }
             }
           }
@@ -270,10 +270,88 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inline(__always) get {
-                self._rawStorage[bits: V1.bitRange]
+                V1.extract(from: self._rawStorage)
               }
               @inline(__always) set {
-                self._rawStorage[bits: V1.bitRange] = newValue
+                V1.insert(newValue, into: &self._rawStorage)
+              }
+            }
+          }
+        }
+
+        extension S: RegisterLayout {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_expansion_discontiguous() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @ReadWrite(bits: 0..<1, 3..<4)
+        var v1: V1
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V1: DiscontiguousBitField {
+            typealias Storage = UInt8
+            static let bitRange = [0 ..< 1, 3..<4]
+          }
+
+          struct Raw: RegisterLayoutRaw {
+            typealias MMIOVolatileRepresentation = UInt8
+            typealias Layout = S
+            var _rawStorage: UInt8
+            init(_ value: Layout.ReadWrite) {
+              self._rawStorage = value._rawStorage
+            }
+            var v1: UInt8 {
+              @inline(__always) get {
+                V1.extract(from: self._rawStorage)
+              }
+              @inline(__always) set {
+                V1.insert(newValue, into: &self._rawStorage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
+            typealias MMIOVolatileRepresentation = UInt8
+            typealias Layout = S
+            var _rawStorage: UInt8
+            init(_ value: ReadWrite) {
+              self._rawStorage = value._rawStorage
+            }
+            init(_ value: Raw) {
+              self._rawStorage = value._rawStorage
+            }
+            var v1: UInt8 {
+              @inline(__always) get {
+                V1.extract(from: self._rawStorage)
+              }
+              @inline(__always) set {
+                V1.insert(newValue, into: &self._rawStorage)
               }
             }
           }
@@ -311,8 +389,8 @@ final class RegisterMacroTests: XCTestCase {
 
           private var _never: Never
 
-          enum V1: BitField {
-            typealias RawStorage = UInt8
+          enum V1: ContiguousBitField {
+            typealias Storage = UInt8
             static let bitRange = 0 ..< 1
           }
 
@@ -325,10 +403,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inline(__always) get {
-                self._rawStorage[bits: V1.bitRange]
+                V1.extract(from: self._rawStorage)
               }
               @inline(__always) set {
-                self._rawStorage[bits: V1.bitRange] = newValue
+                V1.insert(newValue, into: &self._rawStorage)
               }
             }
           }
@@ -349,10 +427,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inline(__always) get {
-                self._rawStorage[bits: V1.bitRange]
+                V1.extract(from: self._rawStorage)
               }
               @inline(__always) set {
-                self._rawStorage[bits: V1.bitRange] = newValue
+                V1.insert(newValue, into: &self._rawStorage)
               }
             }
           }
