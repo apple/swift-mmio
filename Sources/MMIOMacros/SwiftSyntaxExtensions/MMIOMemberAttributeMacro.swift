@@ -12,17 +12,19 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-protocol MMIOMemberAttributeMacro: MemberAttributeMacro {
-  static func mmioExpansion(
+protocol MMIOMemberAttributeMacro: MemberAttributeMacro, ParsableMacro {
+  static var memberAttributeMacroSuppressParsingDiagnostics: Bool { get }
+
+  mutating func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingAttributesFor member: some DeclSyntaxProtocol,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [AttributeSyntax]
 }
 
 extension MMIOMemberAttributeMacro {
-  /// Calls the mmioExpansion customization point.
+  /// Calls the expansion customization point.
   public static func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
@@ -30,7 +32,15 @@ extension MMIOMemberAttributeMacro {
     in context: some MacroExpansionContext
   ) throws -> [AttributeSyntax] {
     do {
-      return try Self.mmioExpansion(
+      let context = MacroContext(Self.self, context)
+      var `self`: Self
+      if Self.memberAttributeMacroSuppressParsingDiagnostics {
+        let context = MacroContext.makeSuppressingDiagnostics(Self.self)
+        `self` = try Self(from: node, in: context)
+      } else {
+        `self` = try Self(from: node, in: context)
+      }
+      return try self.expansion(
         of: node,
         attachedTo: declaration,
         providingAttributesFor: member,

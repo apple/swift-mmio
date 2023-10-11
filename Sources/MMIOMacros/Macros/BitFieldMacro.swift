@@ -19,16 +19,22 @@ struct BitField {
   var type: any BitFieldMacro.Type
   var fieldName: IdentifierPatternSyntax
   var fieldTypeName: TypeSyntax
-  var bitRange: ExprSyntax
-  var projectedTypeName: ExprSyntax?
+  var bitRange: Range<Int>
+  var projectedTypeName: Void?
 }
 
 struct BitFieldMacroArguments: ParsableMacroArguments {
-  var bits: ExprSyntax
-  var asType: ExprSyntax?
+  var bits: Range<Int>
+  var asType: Void?
 
-  init(arguments: [ExprSyntax]) {
-    self.bits = arguments[0]
+  init(
+    arguments: [ExprSyntax],
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    self.bits = try Range<Int>(
+      argument: arguments[0],
+      label: "bits",
+      in: context)
   }
 }
 
@@ -38,6 +44,9 @@ where Self.Arguments == BitFieldMacroArguments {
   static var isReadable: Bool { get }
   static var isWriteable: Bool { get }
   static var isSymmetric: Bool { get }
+
+  var bits: Range<Int> { get }
+  var asType: Void? { get }
 }
 
 extension BitFieldMacro {
@@ -47,13 +56,11 @@ extension BitFieldMacro {
 }
 
 extension BitFieldMacro {
-  static func mmioExpansion(
+  func expansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [AccessorDeclSyntax] {
-    let context = MacroContext(Self.self, context)
-
     // Can only applied to variables.
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
       context.error(
@@ -138,33 +145,65 @@ let bitFieldMacros: [any BitFieldMacro.Type] = [
 ]
 
 struct ReservedMacro: BitFieldMacro, Sendable {
-  typealias Arguments = BitFieldMacroArguments
-  static var baseName = "Reserved"
+  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
+  static var baseName: String { "Reserved" }
   static var isReadable: Bool { false }
   static var isWriteable: Bool { false }
   static var isSymmetric: Bool { true }
+
+  var bits: Range<Int>
+  var asType: Void?
+
+  init(arguments: Arguments) {
+    self.bits = arguments.bits
+    self.asType = arguments.asType
+  }
 }
 
 struct ReadWriteMacro: BitFieldMacro, Sendable {
-  typealias Arguments = BitFieldMacroArguments
-  static var baseName = "ReadWrite"
+  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
+  static var baseName: String { "ReadWrite" }
   static var isReadable: Bool { true }
   static var isWriteable: Bool { true }
   static var isSymmetric: Bool { true }
+
+  var bits: Range<Int>
+  var asType: Void?
+
+  init(arguments: Arguments) {
+    self.bits = arguments.bits
+    self.asType = arguments.asType
+  }
 }
 
 struct ReadOnlyMacro: BitFieldMacro, Sendable {
-  typealias Arguments = BitFieldMacroArguments
-  static var baseName = "ReadOnly"
+  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
+  static var baseName: String { "ReadOnly" }
   static var isReadable: Bool { true }
   static var isWriteable: Bool { false }
   static var isSymmetric: Bool { false }
+
+  var bits: Range<Int>
+  var asType: Void?
+
+  init(arguments: Arguments) {
+    self.bits = arguments.bits
+    self.asType = arguments.asType
+  }
 }
 
 struct WriteOnlyMacro: BitFieldMacro, Sendable {
-  typealias Arguments = BitFieldMacroArguments
-  static var baseName = "WriteOnly"
+  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
+  static var baseName: String { "WriteOnly" }
   static var isReadable: Bool { false }
   static var isWriteable: Bool { true }
   static var isSymmetric: Bool { false }
+
+  var bits: Range<Int>
+  var asType: Void?
+
+  init(arguments: Arguments) {
+    self.bits = arguments.bits
+    self.asType = arguments.asType
+  }
 }

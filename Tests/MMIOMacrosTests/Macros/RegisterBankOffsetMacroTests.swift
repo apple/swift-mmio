@@ -250,7 +250,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       expandedSource: """
         var a: Reg<T> {
           @inline(__always) get {
-            .init(unsafeAddress: self.unsafeAddress + (0x0))
+            .init(unsafeAddress: self.unsafeAddress + (0))
           }
         }
         """,
@@ -266,7 +266,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       expandedSource: """
         var a: Swift.Int {
           @inline(__always) get {
-            .init(unsafeAddress: self.unsafeAddress + (0x0))
+            .init(unsafeAddress: self.unsafeAddress + (0))
           }
         }
         """,

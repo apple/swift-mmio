@@ -18,11 +18,19 @@ import XCTest
 
 final class BitFieldMacroTests: XCTestCase {
   struct TestMacro: BitFieldMacro {
-    typealias Arguments = BitFieldMacroArguments
-    static var baseName = "Test"
+    static var accessorMacroSuppressParsingDiagnostics: Bool { false }
+    static var baseName: String { "Test" }
     static var isReadable: Bool { true }
     static var isWriteable: Bool { true }
     static var isSymmetric: Bool { true }
+
+    var bits: Range<Int>
+    var asType: Void?
+
+    init(arguments: Arguments) {
+      self.bits = arguments.bits
+      self.asType = arguments.asType
+    }
   }
 
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<TestMacro>
@@ -300,6 +308,23 @@ final class BitFieldMacroTests: XCTestCase {
             .init(message: "Remove accessor block")
           ])
       ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_expansion() {
+    assertMacroExpansion(
+      """
+      @Test(bits: 0..<1) var a: Int
+      """,
+      expandedSource: """
+        var a: Int {
+          get {
+            fatalError()
+          }
+        }
+        """,
+      diagnostics: [],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }

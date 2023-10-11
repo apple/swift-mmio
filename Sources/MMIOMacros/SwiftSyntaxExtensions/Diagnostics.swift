@@ -46,8 +46,16 @@ extension ErrorDiagnostic {
   static func argumentMustIntegerLiteral(label: String) -> Self {
     .init(
       """
+      '\(Macro.signature)' value for argument '\(label)' must be an integer
+      literal
+      """)
+  }
+
+  static func argumentMustIntegerRangeLiteral(label: String) -> Self {
+    .init(
+      """
       '\(Macro.signature)' value for argument '\(label)' must be \
-      an integer literal
+      an integer range literal
       """)
   }
 

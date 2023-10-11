@@ -13,7 +13,10 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 
 protocol ParsableMacroArguments {
-  init(arguments: [ExprSyntax])
+  init(
+    arguments: [ExprSyntax],
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws
 }
 
 protocol ParsableMacro {
@@ -21,6 +24,8 @@ protocol ParsableMacro {
 
   static var baseName: String { get }
   static var arguments: [(label: String, type: String)] { get }
+
+  init(arguments: Arguments)
 }
 
 extension ParsableMacro {
@@ -60,10 +65,10 @@ extension ParsableMacro {
 
 extension ParsableMacro {
   // Does not support variadic arguments, omitted labels should be passed as "_"
-  static func parse(
+  init(
     from node: AttributeSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) -> Arguments? {
+  ) throws {
     let expectedArguments = Self.arguments
     let actualArguments = node.arguments?.as(LabeledExprListSyntax.self)
     let expectedArgumentCount = Self.arguments.count
@@ -74,28 +79,29 @@ extension ParsableMacro {
         message: .incorrectArgumentCount(
           expected: expectedArgumentCount,
           actual: actualArgumentCount))
-      return nil
+      throw ExpansionError()
     }
-
-    guard let actualArguments = actualArguments else { return nil }
 
     var parsedArguments = [ExprSyntax]()
-    let arguments = zip(expectedArguments, actualArguments)
-    for (index, (expectedArgument, actualArgument)) in arguments.enumerated() {
-      let expectedLabel = expectedArgument.label
-      let actualLabel = actualArgument.label?.text ?? "_"
-      guard actualLabel == expectedLabel else {
-        context.error(
-          at: Syntax(actualArgument.label) ?? Syntax(actualArgument),
-          message: .incorrectArgumentLabel(
-            index: index,
-            expected: expectedLabel,
-            actual: actualLabel))
-        return nil
+
+    if let actualArguments = actualArguments {
+      let arguments = zip(expectedArguments, actualArguments)
+      for (index, (expected, actual)) in arguments.enumerated() {
+        let expectedLabel = expected.label
+        let actualLabel = actual.label?.text ?? "_"
+        guard actualLabel == expectedLabel else {
+          context.error(
+            at: Syntax(actual.label) ?? Syntax(actual),
+            message: .incorrectArgumentLabel(
+              index: index,
+              expected: expectedLabel,
+              actual: actualLabel))
+          throw ExpansionError()
+        }
+        parsedArguments.append(actual.expression)
       }
-      parsedArguments.append(actualArgument.expression)
     }
 
-    return Arguments(arguments: parsedArguments)
+    try self.init(arguments: Arguments(arguments: parsedArguments, in: context))
   }
 }
