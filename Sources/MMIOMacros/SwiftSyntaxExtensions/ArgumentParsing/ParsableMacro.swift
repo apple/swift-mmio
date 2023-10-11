@@ -102,7 +102,6 @@ extension ParsableMacro {
     var childIndex = children.startIndex
     var previousLabelMatched = false
 
-    print("pre parse")
     // Walk the expressions and the children together, matching expressions to
     // children using argument labels.
     while expressionIndex != expressions.endIndex,
@@ -111,20 +110,14 @@ extension ParsableMacro {
 
       let expression = expressions[expressionIndex]
       let child = children[childIndex]
-      print("new parse iter")
-
-      print("child index: \(children.distance(from: children.startIndex, to: childIndex))")
-      print("expression index: \(expressions.distance(from: expressions.startIndex, to: expressionIndex))")
 
       // We only care about @Argument child properties so skip all others.
       guard let child = child.value as? any ArgumentProtocol else {
         children.formIndex(after: &childIndex)
-        print("increment childIndex")
         continue
       }
 
       func updateChildAndIncrementExpressionIndex() throws {
-        print("Inserting \(expression.expression) from \(expression.label?.text ?? "_") into property \(child.label)")
         // FIXME: Leverage reflection instead of user provided dispatch method
         // try child.update(from: expression.expression, in: context)
         try self.update(
@@ -136,7 +129,6 @@ extension ParsableMacro {
         // index forward.
         previousLabelMatched = true
         expressions.formIndex(after: &expressionIndex)
-        print("increment expressionIndex")
       }
 
       if expression.label?.text == child.label {
@@ -153,7 +145,6 @@ extension ParsableMacro {
         // it's label.
         previousLabelMatched = false
         children.formIndex(after: &childIndex)
-        print("increment childIndex")
       } else {
         context.error(
           at: expression,
@@ -163,12 +154,10 @@ extension ParsableMacro {
         throw ExpansionError()
       }
     }
-    print("post parse")
 
     // Move past the last child which was parsed.
     if previousLabelMatched {
       children.formIndex(after: &childIndex)
-      print("increment childIndex")
     }
 
     // Check that all expressions have been consumed.
@@ -188,7 +177,6 @@ extension ParsableMacro {
         !child.isParsed
       else {
         children.formIndex(after: &childIndex)
-        print("increment childIndex")
         continue
       }
       context.error(
