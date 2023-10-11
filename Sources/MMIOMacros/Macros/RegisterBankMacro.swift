@@ -15,7 +15,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public enum RegisterBankMacro {}
+public struct RegisterBankMacro {}
 
 extension RegisterBankMacro: Sendable {}
 
@@ -24,18 +24,23 @@ extension RegisterBankMacro: ParsableMacro {
   static let arguments = [(label: String, type: String)]()
 
   struct Arguments: ParsableMacroArguments {
-    init(arguments: [ExprSyntax]) {}
+    init(
+      arguments: [ExprSyntax],
+      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+    ) throws {}
   }
+
+  init(arguments: Arguments) {}
 }
 
 extension RegisterBankMacro: MMIOMemberMacro {
-  static func mmioExpansion(
+  static var memberMacroSuppressParsingDiagnostics: Bool = false
+
+  func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
-    in context: some MacroExpansionContext
+    in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    let context = MacroContext(Self.self, context)
-
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
