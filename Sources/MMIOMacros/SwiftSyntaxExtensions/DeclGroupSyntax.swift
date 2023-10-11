@@ -18,27 +18,27 @@ protocol DiagnosableDeclGroupSyntax: DeclGroupSyntax {
 }
 
 extension ActorDeclSyntax: DiagnosableDeclGroupSyntax {
-  static var declTypeName: String { "actor" }
+  static let declTypeName = "actor"
   var introducerKeyword: TokenSyntax { self.actorKeyword }
 }
 extension ClassDeclSyntax: DiagnosableDeclGroupSyntax {
-  static var declTypeName: String { "class" }
+  static let declTypeName = "class"
   var introducerKeyword: TokenSyntax { self.classKeyword }
 }
 extension EnumDeclSyntax: DiagnosableDeclGroupSyntax {
-  static var declTypeName: String { "enum" }
+  static let declTypeName = "enum"
   var introducerKeyword: TokenSyntax { self.enumKeyword }
 }
 extension ExtensionDeclSyntax: DiagnosableDeclGroupSyntax {
-  static var declTypeName: String { "extension" }
+  static let declTypeName = "extension"
   var introducerKeyword: TokenSyntax { self.extensionKeyword }
 }
 extension ProtocolDeclSyntax: DiagnosableDeclGroupSyntax {
-  static var declTypeName: String { "protocol" }
+  static let declTypeName = "protocol"
   var introducerKeyword: TokenSyntax { self.protocolKeyword }
 }
 extension StructDeclSyntax: DiagnosableDeclGroupSyntax {
-  static var declTypeName: String { "struct" }
+  static let declTypeName = "struct"
   var introducerKeyword: TokenSyntax { self.structKeyword }
 }
 

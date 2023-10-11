@@ -42,62 +42,6 @@ extension ErrorDiagnostic {
     .init("'\(Macro.signature)' internal error. \(Self.internalErrorSuffix)")
   }
 
-  // Argument Parsing Errors
-  static func argumentMustIntegerLiteral(label: String) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' value for argument '\(label)' must be an integer
-      literal
-      """)
-  }
-
-  static func argumentMustIntegerRangeLiteral(label: String) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' value for argument '\(label)' must be \
-      an integer range literal
-      """)
-  }
-
-  static func argumentValueMustBeOneOf(label: String, values: [Int]) -> Self {
-    precondition(values.count > 1)
-    guard let last = values.last else { fatalError() }
-
-    let optionsPrefix =
-      values
-      .dropLast()
-      .map { "'\($0)'" }
-      .joined(separator: ", ")
-    let options = "\(optionsPrefix), or '\(last)'"
-
-    return .init(
-      """
-      '\(Macro.signature)' value for argument '\(label)' must be one of
-      \(options)
-      """)
-  }
-
-  static func incorrectArgumentCount(
-    expected: Int, actual: Int
-  ) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' internal error. Incorrect number of arguments, \
-      expected '\(expected)' received '\(actual)'. \(Self.internalErrorSuffix)
-      """)
-  }
-
-  static func incorrectArgumentLabel(
-    index: Int, expected: String, actual: String
-  ) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' internal error. Incorrect label for argument \
-      \(index), expected '\(expected)' received '\(actual)'. \
-      \(Self.internalErrorSuffix)
-      """)
-  }
-
   // Declaration Errors
   static func expectedVarDecl() -> Self {
     .init("'\(Macro.signature)' can only be applied to properties")
@@ -280,7 +224,13 @@ extension MacroContext where Context == SuppressionContext {
   static func makeSuppressingDiagnostics(
     _: Macro.Type = Macro.self
   ) -> MacroContext<Macro, SuppressionContext> {
-    self.init(Macro.self, .init())
+    self.init(Macro.self, SuppressionContext())
+  }
+}
+
+extension MacroContext {
+  func makeSuppressingDiagnostics() -> MacroContext<Macro, SuppressionContext> {
+    .init(Macro.self, .init())
   }
 }
 
