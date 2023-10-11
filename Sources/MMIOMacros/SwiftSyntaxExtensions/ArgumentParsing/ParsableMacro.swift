@@ -148,9 +148,15 @@ extension ParsableMacro {
         // matched, then parse into the same child, e.g. a variadic argument.
         try updateChildAndIncrementExpressionIndex()
       } else if expression.label?.text != nil, previousLabelMatched {
-        // If the expression has no label and the previous expression's label
+        // If the expression has a label and the previous expression's label
         // matched, then we need to move to the next child and attempt to match
         // it's label.
+        previousLabelMatched = false
+        children.formIndex(after: &childIndex)
+      } else if child.isParsed {
+        // If the expression has a label and does not match the current child's
+        // label and child has already been parsed, then we need to move to the
+        // next child and attempt to match it's label.
         previousLabelMatched = false
         children.formIndex(after: &childIndex)
       } else {
