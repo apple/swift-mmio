@@ -132,7 +132,6 @@ struct ReservedMacro: BitFieldMacro, Sendable {
   @Argument(label: "bits")
   var bitRange: Range<Int>
 
-  @Argument(label: "as")
   var projectedType: Int?
 
   mutating func update(
@@ -143,8 +142,6 @@ struct ReservedMacro: BitFieldMacro, Sendable {
     switch label {
     case "bits":
       try self._bitRange.update(from: expression, in: context)
-    case "as":
-      try self._projectedType.update(from: expression, in: context)
     default:
       fatalError()
     }

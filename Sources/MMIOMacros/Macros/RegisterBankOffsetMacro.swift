@@ -37,10 +37,6 @@ extension RegisterBankOffsetMacro: ParsableMacro {
       fatalError()
     }
   }
-
-  init(arguments: Arguments) {
-    self.offset = arguments.offset
-  }
 }
 
 extension RegisterBankOffsetMacro: MMIOAccessorMacro {

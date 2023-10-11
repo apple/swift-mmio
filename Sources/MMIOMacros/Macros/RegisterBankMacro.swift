@@ -27,8 +27,6 @@ extension RegisterBankMacro: ParsableMacro {
   ) throws {
     fatalError()
   }
-
-  init(arguments: Arguments) {}
 }
 
 extension RegisterBankMacro: MMIOMemberMacro {

@@ -35,10 +35,6 @@ extension RegisterMacro: ParsableMacro {
       fatalError()
     }
   }
-
-  init(arguments: Arguments) {
-    self.bitWidth = arguments.bitWidth
-  }
 }
 
 extension RegisterMacro: MMIOMemberMacro {
