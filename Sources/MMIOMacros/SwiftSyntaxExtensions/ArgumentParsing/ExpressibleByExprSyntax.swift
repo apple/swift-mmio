@@ -14,81 +14,150 @@ import SwiftSyntaxMacros
 
 protocol ExpressibleByExprSyntax {
   init(
-    argument: ExprSyntax,
-    label: String,
+    expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws
 }
 
+extension ExprSyntax: ExpressibleByExprSyntax {
+  init(
+    expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    self = expression
+  }
+}
+
 extension Int: ExpressibleByExprSyntax {
   init(
-    argument: SwiftSyntax.ExprSyntax,
-    label: String,
+    expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
     guard
-      let intLiteral = argument.as(IntegerLiteralExprSyntax.self),
+      let intLiteral = expression.as(IntegerLiteralExprSyntax.self),
       let int = intLiteral.value
     else {
       context.error(
-        at: argument,
-        message: .argumentMustIntegerLiteral(label: label))
+        at: expression,
+        message: .expectedIntegerLiteral())
       throw ExpansionError()
     }
     self = int
   }
 }
 
-extension Range<Int>: ExpressibleByExprSyntax {
+struct BitWidth: Equatable, ExpressibleByExprSyntax {
+  var value: Int
+
+  init(value: Int) {
+    self.value = value
+  }
+
   init(
-    argument: ExprSyntax,
-    label: String,
+    expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
-    let value: Self?
-    if let infix = argument.as(InfixOperatorExprSyntax.self) {
-      value = Self.make(infix: infix)
-    } else if let sequence = argument.as(SequenceExprSyntax.self) {
-      value = Self.make(sequence: sequence)
-    } else {
-      value = nil
-    }
-    guard let value = value else {
+    let value = try Int(expression: expression, in: context)
+    let validBitWidths = [8, 16, 32, 64]
+    guard validBitWidths.contains(value) else {
       context.error(
-        at: argument,
-        message: .argumentMustIntegerRangeLiteral(label: label))
+        at: expression,
+        message: .expectedIntegerLiteral(in: validBitWidths))
       throw ExpansionError()
     }
-    self = value
+    self.value = value
+  }
+}
+
+extension Range: ExpressibleByExprSyntax where Bound: ExpressibleByExprSyntax {
+  init(
+    expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    if let infix = expression.as(InfixOperatorExprSyntax.self) {
+      self = try Self.make(
+        overall: infix,
+        left: infix.leftOperand,
+        op: infix.operator,
+        right: infix.rightOperand,
+        in: context)
+    } else if let sequence = expression.as(SequenceExprSyntax.self) {
+      let elements = sequence.elements
+      guard elements.count == 3 else {
+        context.error(
+          at: sequence,
+          message: .expectedRangeLiteral())
+        throw ExpansionError()
+      }
+
+      let index0 = elements.startIndex
+      let index1 = elements.index(after: index0)
+      let index2 = elements.index(after: index1)
+
+      self = try Self.make(
+        overall: sequence,
+        left: elements[index0],
+        op: elements[index1],
+        right: elements[index2],
+        in: context)
+    } else {
+      context.error(
+        at: expression,
+        message: .expectedRangeLiteral())
+      throw ExpansionError()
+    }
   }
 
-  private static func make(infix: InfixOperatorExprSyntax) -> Self? {
+  private static func make(
+    overall: some ExprSyntaxProtocol,
+    left: ExprSyntax,
+    op: ExprSyntax,
+    right: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws -> Self {
     guard
-      let left = infix.leftOperand.as(IntegerLiteralExprSyntax.self)?.value,
-      let right = infix.rightOperand.as(IntegerLiteralExprSyntax.self)?.value,
-      left < right,
-      let op = infix.operator.as(BinaryOperatorExprSyntax.self),
+      let op = op.as(BinaryOperatorExprSyntax.self),
       op.operator.text == "..<"
     else {
-      return nil
+      context.error(
+        at: overall,
+        message: .expectedRangeLiteral())
+      throw ExpansionError()
+    }
+
+    let left = try Bound(expression: left, in: context)
+    let right = try Bound(expression: right, in: context)
+    guard left < right else {
+      context.error(
+        at: overall,
+        message: .expectedRangeLiteral())
+      throw ExpansionError()
     }
     return Self(uncheckedBounds: (left, right))
   }
+}
 
-  private static func make(sequence: SequenceExprSyntax) -> Self? {
-    let elements = sequence.elements
-    guard elements.count == 3 else { return nil }
+extension ErrorDiagnostic {
+  static func expectedIntegerLiteral() -> Self {
+    .init("'\(Macro.signature)' requires expression to be an integer literal")
+  }
 
-    let index0 = elements.startIndex
-    let index1 = elements.index(after: index0)
-    let index2 = elements.index(after: index1)
-    guard
-      let left = elements[index0].as(IntegerLiteralExprSyntax.self)?.value,
-      let right = elements[index2].as(IntegerLiteralExprSyntax.self)?.value,
-      left < right,
-      let op = elements[index1].as(BinaryOperatorExprSyntax.self),
-      op.operator.text == "..<"
-    else { return nil }
-    return Self(uncheckedBounds: (left, right))
+  static func expectedIntegerLiteral(in values: [Int]) -> Self {
+    precondition(values.count > 1)
+    guard let last = values.last else { fatalError() }
+
+    let optionsPrefix =
+      values
+      .dropLast()
+      .map { "'\($0)'" }
+      .joined(separator: ", ")
+    let options = "\(optionsPrefix), or '\(last)'"
+
+    return .init(
+      "'\(Macro.signature)' requires expression to be one of \(options)")
+  }
+
+  static func expectedRangeLiteral() -> Self {
+    .init("'\(Macro.signature)' requires expression to be a range literal")
   }
 }

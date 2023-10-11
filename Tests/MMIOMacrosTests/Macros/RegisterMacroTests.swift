@@ -137,6 +137,56 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
+  func test_expansion_noFields() {
+    // FIXME: see expanded source formatting
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {}
+      """,
+      expandedSource: """
+        struct S {
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          struct Raw: RegisterLayoutRaw {
+            typealias MMIOVolatileRepresentation = UInt8
+            typealias Layout = S
+            var _rawStorage: UInt8
+            init(_ value: Layout.ReadWrite) {
+              self._rawStorage = value._rawStorage
+            }
+
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
+            typealias MMIOVolatileRepresentation = UInt8
+            typealias Layout = S
+            var _rawStorage: UInt8
+            init(_ value: ReadWrite) {
+              self._rawStorage = value._rawStorage
+            }
+            init(_ value: Raw) {
+              self._rawStorage = value._rawStorage
+            }
+
+          }}
+
+        extension S: RegisterLayout {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
   func test_expansion_symmetric() {
     assertMacroExpansion(
       """
@@ -237,6 +287,7 @@ final class RegisterMacroTests: XCTestCase {
   }
 
   func test_expansion_asymmetric() {
+    // FIXME: actually make this asymmetric
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
