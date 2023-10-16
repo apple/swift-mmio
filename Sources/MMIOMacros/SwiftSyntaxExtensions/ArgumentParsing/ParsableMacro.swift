@@ -42,34 +42,41 @@ extension ParsableMacro {
     let key = ObjectIdentifier(Self.self)
     if let signatures = signatureCache[key] { return signatures }
 
+    // Avoid calling computed property multiple times.
     let baseName = Self.baseName
-    var signature = "@\(baseName)"
-    var placeholder = "@\(baseName)"
 
-    var hasArguments = false
+    var signature = "@\(baseName)"
+    var attributeWithPlaceholders = AttributeSyntax(
+      atSign: .atSignToken(),
+      attributeName: TypeSyntax(stringLiteral: baseName))
+    var arguments: LabeledExprListSyntax? = nil
+
     for child in Mirror(reflecting: Self()).children {
       guard let child = child.value as? any ArgumentProtocol else { continue }
-      if !hasArguments {
+      if arguments == nil {
         signature += "("
-        placeholder += "("
-        hasArguments = true
+        attributeWithPlaceholders.leftParen = .leftParenToken()
+        arguments = .init()
       }
       signature.append(child.label)
       signature.append(":")
 
-      placeholder.append(child.label)
-      placeholder.append(": ")
-      placeholder.append(child.typePlaceholder)
-      placeholder.append(", ")
+      let argument = LabeledExprSyntax(
+        label: child.label,
+        expression: EditorPlaceholderExprSyntax(
+          placeholder: .identifier("<#\(child.typePlaceholder)#>")))
+
+      arguments?.append(argument)
     }
 
-    if hasArguments {
+    if let arguments = arguments {
       signature += ")"
-      placeholder.removeLast(2)
-      placeholder += ")"
+      attributeWithPlaceholders.arguments = .argumentList(arguments)
+      attributeWithPlaceholders.rightParen = .rightParenToken()
     }
+
     let attribute: AttributeListSyntax.Element =
-      .attribute(AttributeSyntax(stringLiteral: placeholder))
+      .attribute(attributeWithPlaceholders)
     signatureCache[key] = (signature, attribute)
     return (signature, attribute)
   }
@@ -78,7 +85,7 @@ extension ParsableMacro {
     Self.signatures().0
   }
 
-  static var placeholder: AttributeListSyntax.Element {
+  static var attributeWithPlaceholders: AttributeListSyntax.Element {
     Self.signatures().1
   }
 }
