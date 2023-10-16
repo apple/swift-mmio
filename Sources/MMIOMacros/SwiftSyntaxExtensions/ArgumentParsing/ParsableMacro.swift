@@ -62,7 +62,8 @@ extension ParsableMacro {
       signature.append(":")
 
       let argument = LabeledExprSyntax(
-        label: child.label,
+        label: .identifier(child.label),
+        colon: .colonToken(trailingTrivia: .space),
         expression: EditorPlaceholderExprSyntax(
           placeholder: .identifier("<#\(child.typePlaceholder)#>")))
 
