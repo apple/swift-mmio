@@ -178,7 +178,7 @@ extension FixIt {
   ) -> FixIt where Macro: ParsableMacro {
     // FIXME: https://github.com/apple/swift-syntax/issues/2205
     var newNode = node
-    newNode.attributes.append(Macro.placeholder)
+    newNode.attributes.append(Macro.attributeWithPlaceholders)
     return .replace(
       message: MacroExpansionFixItMessage("Insert '\(Macro.signature)' macro"),
       oldNode: node,

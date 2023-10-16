@@ -28,7 +28,7 @@ struct Argument<Container: ArgumentContainer>: ArgumentProtocol {
   var label: String
   var container: Container?
   var isParsed: Bool { self.container != nil }
-  var typePlaceholder: String { "<#\(Container.Value.self)#>" }
+  var typePlaceholder: String { "\(Container.Value.self)" }
 
   var wrappedValue: Container.WrappedValue {
     guard let container = self.container else {
