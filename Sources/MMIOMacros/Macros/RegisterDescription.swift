@@ -99,7 +99,8 @@ extension RegisterDescription {
       """
       \(self.accessLevel)struct Raw: RegisterValueRaw {
         \(self.accessLevel)typealias Value = \(self.name)
-        \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)typealias Storage = UInt\(raw: self.bitWidth)
+        \(self.accessLevel)var storage: Storage
         \(self.accessLevel)init(_ storage: Storage) {
           self.storage = storage
         }

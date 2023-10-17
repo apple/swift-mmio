@@ -250,7 +250,11 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       expandedSource: """
         var a: Reg<T> {
           @inlinable @inline(__always) get {
-            .init(unsafeAddress: self.unsafeAddress + (0))
+            #if FEATURE_INTERPOSABLE
+            return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
+            #else
+            return .init(unsafeAddress: self.unsafeAddress + (0x0))
+            #endif
           }
         }
         """,
@@ -266,7 +270,11 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       expandedSource: """
         var a: Swift.Int {
           @inlinable @inline(__always) get {
-            .init(unsafeAddress: self.unsafeAddress + (0))
+            #if FEATURE_INTERPOSABLE
+            return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
+            #else
+            return .init(unsafeAddress: self.unsafeAddress + (0x0))
+            #endif
           }
         }
         """,

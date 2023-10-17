@@ -14,8 +14,12 @@
 public struct Register<Value> where Value: RegisterValue {
   public let unsafeAddress: UInt
 
+  #if FEATURE_INTERPOSABLE
+  public var interposer: (any MMIOInterposer)?
+  #endif
+
   @inlinable @inline(__always)
-  public init(unsafeAddress: UInt) {
+  static func preconditionAligned(unsafeAddress: UInt) {
     let alignment = MemoryLayout<Value.Raw.Storage>.alignment
     #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
@@ -27,8 +31,22 @@ public struct Register<Value> where Value: RegisterValue {
       unsafeAddress.isMultiple(of: UInt(alignment)),
       "Misaligned address '\(unsafeAddress)' for data of type '\(Value.self)'")
     #endif
+  }
+
+  #if FEATURE_INTERPOSABLE
+  @inlinable @inline(__always)
+  public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
+    Self.preconditionAligned(unsafeAddress: unsafeAddress)
+    self.unsafeAddress = unsafeAddress
+    self.interposer = interposer
+  }
+  #else
+  @inlinable @inline(__always)
+  public init(unsafeAddress: UInt) {
+    Self.preconditionAligned(unsafeAddress: unsafeAddress)
     self.unsafeAddress = unsafeAddress
   }
+  #endif
 }
 
 extension Register {
@@ -39,12 +57,31 @@ extension Register {
 
   @inlinable @inline(__always)
   public func read() -> Value.Read {
-    Value.Read(Value.Raw(Value.Raw.Storage.load(from: self.pointer)))
+    let storage: Value.Raw.Storage
+    #if FEATURE_INTERPOSABLE
+    if let interposer = self.interposer {
+      storage = interposer.load(from: self.pointer)
+    } else {
+      storage = Value.Raw.Storage.load(from: self.pointer)
+    }
+    #else
+    storage = Value.Raw.Storage.load(from: self.pointer)
+    #endif
+    return Value.Read(Value.Raw(storage))
   }
 
   @inlinable @inline(__always)
   public func write(_ newValue: Value.Write) {
-    Value.Raw.Storage.store(Value.Raw(newValue).storage, to: self.pointer)
+    let storage = Value.Raw(newValue).storage
+    #if FEATURE_INTERPOSABLE
+    if let interposer = self.interposer {
+      interposer.store(storage, to: self.pointer)
+    } else {
+      Value.Raw.Storage.store(storage, to: self.pointer)
+    }
+    #else
+    Value.Raw.Storage.store(storage, to: self.pointer)
+    #endif
   }
 
   @inlinable @inline(__always) @_disfavoredOverload

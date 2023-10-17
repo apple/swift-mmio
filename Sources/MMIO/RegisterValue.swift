@@ -35,7 +35,7 @@ extension RegisterValueRead {
   /// manipulation of the register's bits.
   ///
   /// Mutation through the raw view are unchecked. The user is responsible for
-  /// ensuring the bit pattern is valid.
+  /// ensuring the bit pattern yielded back to the read view is valid.
   @_disfavoredOverload
   @inlinable @inline(__always)
   public var raw: Value.Raw {
@@ -61,7 +61,7 @@ extension RegisterValueWrite {
   /// manipulation of the register's bits.
   ///
   /// Mutation through the raw view are unchecked. The user is responsible for
-  /// ensuring the bit pattern is valid.
+  /// ensuring the bit pattern yielded back to the write view is valid.
   @inlinable @inline(__always)
   public var raw: Value.Raw {
     _read {

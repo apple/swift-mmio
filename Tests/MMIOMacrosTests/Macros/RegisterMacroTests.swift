@@ -155,7 +155,8 @@ final class RegisterMacroTests: XCTestCase {
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
-            var storage: UInt8
+            typealias Storage = UInt8
+            var storage: Storage
             init(_ storage: Storage) {
               self.storage = storage
             }
@@ -233,7 +234,8 @@ final class RegisterMacroTests: XCTestCase {
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
-            var storage: UInt8
+            typealias Storage = UInt8
+            var storage: Storage
             init(_ storage: Storage) {
               self.storage = storage
             }
@@ -326,7 +328,8 @@ final class RegisterMacroTests: XCTestCase {
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
-            var storage: UInt8
+            typealias Storage = UInt8
+            var storage: Storage
             init(_ storage: Storage) {
               self.storage = storage
             }
@@ -415,7 +418,8 @@ final class RegisterMacroTests: XCTestCase {
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
-            var storage: UInt8
+            typealias Storage = UInt8
+            var storage: Storage
             init(_ storage: Storage) {
               self.storage = storage
             }
@@ -509,7 +513,8 @@ final class RegisterMacroTests: XCTestCase {
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
-            var storage: UInt8
+            typealias Storage = UInt8
+            var storage: Storage
             init(_ storage: Storage) {
               self.storage = storage
             }
