@@ -81,7 +81,7 @@ final class RegisterMacroTests: XCTestCase {
           class C {}
         }
 
-        extension S: RegisterLayout {
+        extension S: RegisterValue {
         }
         """,
       diagnostics: [
@@ -118,7 +118,7 @@ final class RegisterMacroTests: XCTestCase {
           @OtherAttribute var v2: Int
         }
 
-        extension S: RegisterLayout {
+        extension S: RegisterValue {
         }
         """,
       diagnostics: [
@@ -153,12 +153,14 @@ final class RegisterMacroTests: XCTestCase {
 
           private var _never: Never
 
-          struct Raw: RegisterLayoutRaw {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct Raw: RegisterValueRaw {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
             init(_ value: Layout.ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
 
           }
@@ -167,20 +169,19 @@ final class RegisterMacroTests: XCTestCase {
 
           typealias Write = ReadWrite
 
-          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
             init(_ value: ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             init(_ value: Raw) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
 
           }}
 
-        extension S: RegisterLayout {
+        extension S: RegisterValue {
         }
         """,
       macros: Self.macros,
@@ -229,27 +230,29 @@ final class RegisterMacroTests: XCTestCase {
             static let bitRange = 1 ..< 2
           }
 
-          struct Raw: RegisterLayoutRaw {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct Raw: RegisterValueRaw {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
             init(_ value: Layout.ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             var v1: UInt8 {
               @inline(__always) get {
-                V1.extract(from: self._rawStorage)
+                V1.extract(from: self.storage)
               }
               @inline(__always) set {
-                V1.insert(newValue, into: &self._rawStorage)
+                V1.insert(newValue, into: &self.storage)
               }
             }
             var v2: UInt8 {
               @inline(__always) get {
-                V2.extract(from: self._rawStorage)
+                V2.extract(from: self.storage)
               }
               @inline(__always) set {
-                V2.insert(newValue, into: &self._rawStorage)
+                V2.insert(newValue, into: &self.storage)
               }
             }
           }
@@ -258,28 +261,27 @@ final class RegisterMacroTests: XCTestCase {
 
           typealias Write = ReadWrite
 
-          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
             init(_ value: ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             init(_ value: Raw) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             var v1: UInt8 {
               @inline(__always) get {
-                V1.extract(from: self._rawStorage)
+                V1.extract(from: self.storage)
               }
               @inline(__always) set {
-                V1.insert(newValue, into: &self._rawStorage)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
         }
 
-        extension S: RegisterLayout {
+        extension S: RegisterValue {
         }
         """,
       macros: Self.macros,
@@ -312,22 +314,24 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V1: DiscontiguousBitField {
             typealias Storage = UInt8
-            static let bitRange = [0 ..< 1, 3..<4]
+            static let bitRange = [0 ..< 1, 3 ..< 4]
           }
 
-          struct Raw: RegisterLayoutRaw {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct Raw: RegisterValueRaw {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
             init(_ value: Layout.ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             var v1: UInt8 {
               @inline(__always) get {
-                V1.extract(from: self._rawStorage)
+                V1.extract(from: self.storage)
               }
               @inline(__always) set {
-                V1.insert(newValue, into: &self._rawStorage)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
@@ -336,28 +340,27 @@ final class RegisterMacroTests: XCTestCase {
 
           typealias Write = ReadWrite
 
-          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
             init(_ value: ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             init(_ value: Raw) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             var v1: UInt8 {
               @inline(__always) get {
-                V1.extract(from: self._rawStorage)
+                V1.extract(from: self.storage)
               }
               @inline(__always) set {
-                V1.insert(newValue, into: &self._rawStorage)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
         }
 
-        extension S: RegisterLayout {
+        extension S: RegisterValue {
         }
         """,
       macros: Self.macros,
@@ -394,19 +397,21 @@ final class RegisterMacroTests: XCTestCase {
             static let bitRange = 0 ..< 1
           }
 
-          struct Raw: RegisterLayoutRaw {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct Raw: RegisterValueRaw {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
             init(_ value: Layout.ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             var v1: UInt8 {
               @inline(__always) get {
-                V1.extract(from: self._rawStorage)
+                V1.extract(from: self.storage)
               }
               @inline(__always) set {
-                V1.insert(newValue, into: &self._rawStorage)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
@@ -415,28 +420,27 @@ final class RegisterMacroTests: XCTestCase {
 
           typealias Write = ReadWrite
 
-          struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-            typealias MMIOVolatileRepresentation = UInt8
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Layout = S
-            var _rawStorage: UInt8
+            var storage: UInt8
             init(_ value: ReadWrite) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             init(_ value: Raw) {
-              self._rawStorage = value._rawStorage
+              self.storage = value.storage
             }
             var v1: UInt8 {
               @inline(__always) get {
-                V1.extract(from: self._rawStorage)
+                V1.extract(from: self.storage)
               }
               @inline(__always) set {
-                V1.insert(newValue, into: &self._rawStorage)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
         }
 
-        extension S: RegisterLayout {
+        extension S: RegisterValue {
         }
         """,
       macros: Self.macros,

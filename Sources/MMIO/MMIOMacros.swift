@@ -21,7 +21,7 @@ public macro RegisterBank(offset: Int) =
 // Register macros
 @attached(member, names: arbitrary)
 @attached(memberAttribute)
-@attached(extension, conformances: RegisterLayout)
+@attached(extension, conformances: RegisterValue)
 public macro Register(bitWidth: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterMacro")
 

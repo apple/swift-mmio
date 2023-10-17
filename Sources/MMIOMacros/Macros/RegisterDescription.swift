@@ -68,10 +68,10 @@ extension RegisterDescription {
       """
       \(accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
         @inline(__always) get {
-          \($0.fieldType).extract(from: self._rawStorage)
+          \($0.fieldType).extract(from: self.storage)
         }
         @inline(__always) set {
-          \($0.fieldType).insert(newValue, into: &self._rawStorage)
+          \($0.fieldType).insert(newValue, into: &self.storage)
         }
       }
       """
@@ -81,7 +81,7 @@ extension RegisterDescription {
         [
           """
           \(accessLevel)init(_ value: Layout.ReadWrite) {
-            self._rawStorage = value._rawStorage
+            self.storage = value.storage
           }
           """
         ]
@@ -89,12 +89,12 @@ extension RegisterDescription {
         [
           """
           \(accessLevel)init(_ value: Layout.Read) {
-            self._rawStorage = value._rawStorage
+            self.storage = value.storage
           }
           """,
           """
           \(accessLevel)init(_ value: Layout.Write) {
-            self._rawStorage = value._rawStorage
+            self.storage = value.storage
           }
           """,
         ]
@@ -103,10 +103,12 @@ extension RegisterDescription {
     // Produce Raw type declaration
     declarations.append(
       """
-      \(self.accessLevel)struct Raw: RegisterLayoutRaw {
-        \(self.accessLevel)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth)
+      \(self.accessLevel)struct Raw: RegisterValueRaw {
         \(self.accessLevel)typealias Layout = \(self.name)
-        \(self.accessLevel)var _rawStorage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)init(_ storage: Storage) {
+          self.storage = storage
+        }
         \(initDeclarations)
         \(bitFieldDeclarations)
       }
@@ -128,10 +130,10 @@ extension RegisterDescription {
         """
         \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
           @inline(__always) get {
-            \($0.fieldType).extract(from: self._rawStorage)
+            \($0.fieldType).extract(from: self.storage)
           }
           @inline(__always) set {
-            \($0.fieldType).insert(newValue, into: &self._rawStorage)
+            \($0.fieldType).insert(newValue, into: &self.storage)
           }
         }
         """
@@ -139,12 +141,15 @@ extension RegisterDescription {
     // Produce Read-Write type declaration
     declarations.append(
       """
-      \(self.accessLevel)struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-        \(self.accessLevel)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth)
+      \(self.accessLevel)struct ReadWrite: RegisterValueRead, RegisterValueWrite {
         \(self.accessLevel)typealias Layout = \(self.name)
-        \(self.accessLevel)var _rawStorage: UInt\(raw: self.bitWidth)
-        \(self.accessLevel)init(_ value: ReadWrite) { self._rawStorage = value._rawStorage }
-        \(self.accessLevel)init(_ value: Raw) { self._rawStorage = value._rawStorage }
+        var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)init(_ value: ReadWrite) {
+          self.storage = value.storage
+        }
+        \(self.accessLevel)init(_ value: Raw) {
+          self.storage = value.storage
+        }
         \(bitFieldDeclarations)
       }
       """)
@@ -161,10 +166,10 @@ extension RegisterDescription {
         """
         \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
           @inline(__always) get {
-            \($0.fieldType).extract(from: self._rawStorage)
+            \($0.fieldType).extract(from: self.storage)
           }
           @inline(__always) set {
-            \($0.fieldType).insert(newValue, into: &self._rawStorage)
+            \($0.fieldType).insert(newValue, into: &self.storage)
           }
         }
         """
@@ -172,11 +177,10 @@ extension RegisterDescription {
     // Produce Read type declaration
     declarations.append(
       """
-      \(self.accessLevel)struct Read: RegisterLayoutRead {
-        \(self.accessLevel)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth)
+      \(self.accessLevel)struct Read: RegisterValueRead {
         \(self.accessLevel)typealias Layout = \(self.name)
-        \(self.accessLevel)var _rawStorage: UInt\(raw: self.bitWidth)
-        \(self.accessLevel)init(_ value: Raw) { self._rawStorage = value._rawStorage }
+        var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)init(_ value: Raw) { self.storage = value.storage }
         \(bitFieldDeclarations)
       }
       """)
@@ -197,10 +201,10 @@ extension RegisterDescription {
         \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
           @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
           @inline(__always) get {
-            \($0.fieldType).extract(from: self._rawStorage)
+            \($0.fieldType).extract(from: self.storage)
           }
           @inline(__always) set {
-            \($0.fieldType).insert(newValue, into: &self._rawStorage)
+            \($0.fieldType).insert(newValue, into: &self.storage)
           }
         }
         """
@@ -208,14 +212,15 @@ extension RegisterDescription {
     // Produce Write type declaration
     declarations.append(
       """
-      \(self.accessLevel)struct Write: RegisterLayoutWrite {
-        \(self.accessLevel)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth)
+      \(self.accessLevel)struct Write: RegisterValueWrite {
         \(self.accessLevel)typealias Layout = \(self.name)
-        \(self.accessLevel)var _rawStorage: UInt\(raw: self.bitWidth)
-        \(self.accessLevel)init(_ value: Raw) { self._rawStorage = value._rawStorage }
+        var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)init(_ value: Raw) {
+          self.storage = value.storage
+        }
         \(self.accessLevel)init(_ value: Read) {
           // FIXME: mask off bits
-          self._rawStorage = value._rawStorage
+          self.storage = value.storage
         }
         \(bitFieldDeclarations)
       }
