@@ -10,43 +10,46 @@
 #===------------------------------------------------------------------------===#
 
 CONFIGURATION = debug
-
 SWIFT_FORMAT_CONFIGURATION := SupportingFiles/Tools/swift-format/.swift-format
+.DEFAULT_GOAL = build
+SKIP_LINT=
 
-.DEFAULT_GOAL=build
-
-.PHONY: all
+.PHONY: all lint format build test clean
 all: lint build test
 
-.PHONY: lint
+ifdef SKIP_LINT
+lint:
+	@echo "skipping linting..."
+else
 lint:
 	@echo "linting..."
 	@swift-format lint \
-		--configuration SupportingFiles/Tools/swift-format/.swift-format \
+		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
 		--recursive \
 		--strict \
 		Package.swift Sources Tests
+endif
 
-.PHONY: format
 format:
 	@echo "formatting..."
 	@swift-format format \
-		--configuration SupportingFiles/Tools/swift-format/.swift-format \
+		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
 		--recursive \
 		--in-place \
 		Package.swift Sources Tests
 
-.PHONY: build
 build: lint
 	@echo "building..."
-	@swift build --configuration $(CONFIGURATION)
+	@swift build \
+		--configuration $(CONFIGURATION) \
+		--explicit-target-dependency-import-check warn
 
-.PHONY: test
 test: build
 	@echo "testing..."
-	@swift test --parallel
+	@swift test \
+		--parallel \
+		--explicit-target-dependency-import-check warn
 
-.PHONY: clean
 clean:
 	@echo "cleaning..."
 	@swift package clean

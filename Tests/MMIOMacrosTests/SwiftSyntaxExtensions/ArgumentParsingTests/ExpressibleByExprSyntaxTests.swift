@@ -25,6 +25,7 @@ struct ExpressibleByExprSyntaxMacro: MMIOArgumentParsingMacro {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertParse<Value>(
   expression: ExprSyntax,
   expected: Value,
@@ -41,6 +42,7 @@ func XCTAssertParse<Value>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertNoParse<Value>(
   expression: ExprSyntax,
   as _: Value.Type,
