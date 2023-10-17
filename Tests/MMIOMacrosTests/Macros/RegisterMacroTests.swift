@@ -246,11 +246,11 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v2: UInt8 {
               @inline(__always) get {
-              self._rawStorage[bits: V2.bitRange]
-            }
+                self._rawStorage[bits: V2.bitRange]
+              }
               @inline(__always) set {
-              self._rawStorage[bits: V2.bitRange] = newValue
-            }
+                self._rawStorage[bits: V2.bitRange] = newValue
+              }
             }
           }
 

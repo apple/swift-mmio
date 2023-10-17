@@ -170,8 +170,12 @@ extension RegisterMacro: MMIOMemberMacro {
     let bitFieldDeclarations: [DeclSyntax] = bitFields.map {
       """
       \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-        @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
-        @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
+        @inline(__always) get {
+          self._rawStorage[bits: \($0.fieldType).bitRange]
+        }
+        @inline(__always) set {
+          self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
+        }
       }
       """
     }
@@ -218,8 +222,12 @@ extension RegisterMacro: MMIOMemberMacro {
       .map {
         """
         \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-          @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
-          @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
+          @inline(__always) get {
+            self._rawStorage[bits: \($0.fieldType).bitRange]
+          }
+          @inline(__always) set {
+            self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
+          }
         }
         """
       }
@@ -251,8 +259,12 @@ extension RegisterMacro: MMIOMemberMacro {
       .map {
         """
         \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-          @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
-          @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
+          @inline(__always) get {
+            self._rawStorage[bits: \($0.fieldType).bitRange]
+          }
+          @inline(__always) set {
+            self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
+          }
         }
         """
       }
@@ -287,8 +299,12 @@ extension RegisterMacro: MMIOMemberMacro {
         """
         \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
           @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-          @inline(__always) get { self._rawStorage[bits: \($0.fieldType).bitRange] }
-          @inline(__always) set { self._rawStorage[bits: \($0.fieldType).bitRange] = newValue }
+          @inline(__always) get {
+            self._rawStorage[bits: \($0.fieldType).bitRange]
+          }
+          @inline(__always) set {
+            self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
+          }
         }
         """
       }
