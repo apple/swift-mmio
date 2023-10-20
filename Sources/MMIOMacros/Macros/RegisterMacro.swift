@@ -47,10 +47,13 @@ extension RegisterMacro: MMIOMemberMacro {
   ) throws -> [DeclSyntax] {
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
+    let accessLevel = structDecl.accessLevel
+    let bitWidth = self.bitWidth.value
 
     // Walk all the members of the struct.
     var error = false
-    var bitFields = [BitField]()
+    var isSymmetric = true
+    var bitFields = [BitFieldDescription]()
     for member in structDecl.memberBlock.members {
       // Each member must be a variable declaration.
       guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
@@ -82,248 +85,30 @@ extension RegisterMacro: MMIOMemberMacro {
         continue
       }
 
+      isSymmetric = isSymmetric && value.type.isSymmetric
+
       bitFields.append(
-        BitField(
+        BitFieldDescription(
+          accessLevel: accessLevel,
+          bitWidth: bitWidth,
           type: value.type,
           fieldName: fieldName,
           fieldType: fieldType,
-          bitRange: macro.bitRange,
+          bitRanges: macro.bitRanges,
+          bitRangeExpressions: macro.bitRangeExpressions,
           projectedType: macro.projectedType))
     }
     guard !error else { return [] }
 
-    var declarations = [DeclSyntax]()
-    // Create a private init and a Never instance property to prevent users from
-    // instancing the layout type directly.
-    declarations.append("private init() { fatalError() }")
-    declarations.append("private var _never: Never")
+    let register = RegisterDescription(
+      name: structDecl.name,
+      accessLevel: structDecl.accessLevel,
+      bitWidth: self.bitWidth.value,
+      bitFields: bitFields,
+      isSymmetric: isSymmetric)
 
-    // Create bit field types for each field contained in the layout type.
-    declarations.append(
-      contentsOf: bitFields.map {
-        bitFieldType(
-          acl: structDecl.accessLevel,
-          bitField: $0)
-      })
-
-    let isSymmetric = bitFields.allSatisfy { $0.type.isSymmetric }
-
-    // Create a symmetric raw type ignoring read and write constraints as unsafe
-    // escape hatch.
-    declarations.append(
-      contentsOf:
-        rawType(
-          acl: structDecl.accessLevel,
-          layout: structDecl.name,
-          bitFields: bitFields,
-          isSymmetric: isSymmetric))
-
-    if isSymmetric {
-      // Create a single symmetric read-write type if all bit fields provide
-      // symmetric views.
-      declarations.append(
-        contentsOf:
-          readWriteType(
-            acl: structDecl.accessLevel,
-            layout: structDecl.name,
-            bitFields: bitFields))
-    } else {
-      // Create two asymmetric read and write types if any of the bit fields
-      // provide asymmetric views.
-      declarations.append(
-        contentsOf:
-          readType(
-            acl: structDecl.accessLevel,
-            layout: structDecl.name,
-            bitFields: bitFields))
-      declarations.append(
-        contentsOf:
-          writeType(
-            acl: structDecl.accessLevel,
-            layout: structDecl.name,
-            bitFields: bitFields))
-    }
-
-    return declarations
-  }
-
-  func bitFieldType(
-    acl: AccessLevel?,
-    bitField: BitField
-  ) -> DeclSyntax {
-    """
-    \(acl)enum \(bitField.fieldType): BitField {
-      \(acl)typealias RawStorage = UInt\(raw: self.bitWidth.value)
-      \(acl)static let bitRange = \(raw: bitField.bitRange.description)
-    }
-    """
-  }
-
-  func rawType(
-    acl: AccessLevel?,
-    layout: TokenSyntax,
-    bitFields: [BitField],
-    isSymmetric: Bool
-  ) -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
-    // Create accessor declarations for each bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields.map {
-      """
-      \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-        @inline(__always) get {
-          self._rawStorage[bits: \($0.fieldType).bitRange]
-        }
-        @inline(__always) set {
-          self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
-        }
-      }
-      """
-    }
-    let initDeclarations: [DeclSyntax] =
-      if isSymmetric {
-        [
-          "\(acl)init(_ value: Layout.ReadWrite) { self._rawStorage = value._rawStorage }"
-        ]
-      } else {
-        [
-          "\(acl)init(_ value: Layout.Read) { self._rawStorage = value._rawStorage }",
-          "\(acl)init(_ value: Layout.Write) { self._rawStorage = value._rawStorage }",
-        ]
-      }
-
-    // Produce Raw type declaration
-    declarations.append(
-      """
-      \(acl)struct Raw: RegisterLayoutRaw {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
-        \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
-        \(initDeclarations)
-        \(bitFieldDeclarations)
-      }
-      """)
-    return declarations
-  }
-
-  func readWriteType(
-    acl: AccessLevel?,
-    layout: TokenSyntax,
-    bitFields: [BitField]
-  ) -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
-    // Alias Read to ReadWrite
-    declarations.append("\(acl)typealias Read = ReadWrite")
-    // Alias Write to ReadWrite
-    declarations.append("\(acl)typealias Write = ReadWrite")
-    // Create accessor declarations for each readable bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields
-      .lazy
-      .filter { $0.type.isReadable && $0.type.isWriteable }
-      .map {
-        """
-        \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-          @inline(__always) get {
-            self._rawStorage[bits: \($0.fieldType).bitRange]
-          }
-          @inline(__always) set {
-            self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
-          }
-        }
-        """
-      }
-    // Produce Read-Write type declaration
-    declarations.append(
-      """
-      \(acl)struct ReadWrite: RegisterLayoutRead, RegisterLayoutWrite {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
-        \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
-        \(acl)init(_ value: ReadWrite) { self._rawStorage = value._rawStorage }
-        \(acl)init(_ value: Raw) { self._rawStorage = value._rawStorage }
-        \(bitFieldDeclarations)
-      }
-      """)
-    return declarations
-  }
-
-  func readType(
-    acl: AccessLevel?,
-    layout: TokenSyntax,
-    bitFields: [BitField]
-  ) -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
-    // Create accessor declarations for each readable bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields
-      .lazy
-      .filter { $0.type.isReadable }
-      .map {
-        """
-        \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-          @inline(__always) get {
-            self._rawStorage[bits: \($0.fieldType).bitRange]
-          }
-          @inline(__always) set {
-            self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
-          }
-        }
-        """
-      }
-    // Produce Read type declaration
-    declarations.append(
-      """
-      \(acl)struct Read: RegisterLayoutRead {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
-        \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
-        \(acl)init(_ value: Raw) { self._rawStorage = value._rawStorage }
-        \(bitFieldDeclarations)
-      }
-      """)
-    return declarations
-  }
-
-  func writeType(
-    acl: AccessLevel?,
-    layout: TokenSyntax,
-    bitFields: [BitField]
-  ) -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
-    // FIXME: improve warning message
-    // blocked-by: rdar://116130327 (Customizable deprecation messages)
-
-    // Create accessor declarations for each readable bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields
-      .lazy
-      .filter { $0.type.isWriteable }
-      .map {
-        """
-        \(acl)var \($0.fieldName): UInt\(raw: self.bitWidth.value) {
-          @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-          @inline(__always) get {
-            self._rawStorage[bits: \($0.fieldType).bitRange]
-          }
-          @inline(__always) set {
-            self._rawStorage[bits: \($0.fieldType).bitRange] = newValue
-          }
-        }
-        """
-      }
-    // Produce Write type declaration
-    declarations.append(
-      """
-      \(acl)struct Write: RegisterLayoutWrite {
-        \(acl)typealias MMIOVolatileRepresentation = UInt\(raw: self.bitWidth.value)
-        \(acl)typealias Layout = \(layout)
-        \(acl)var _rawStorage: UInt\(raw: self.bitWidth.value)
-        \(acl)init(_ value: Raw) { self._rawStorage = value._rawStorage }
-        \(acl)init(_ value: Read) {
-          // FIXME: mask off bits
-          self._rawStorage = value._rawStorage
-        }
-        \(bitFieldDeclarations)
-      }
-      """)
-    return declarations
+    try register.validate()
+    return register.declarations()
   }
 }
 

@@ -16,7 +16,7 @@ import MMIOVolatile
 /// The set of types which conform to this protocol restricts the the set of
 /// volatile operations available on the platform. As such, user code must
 /// _never_ conform new types to this protocol.
-public protocol MMIOVolatileStorage: BitFieldStorage {
+public protocol MMIOVolatileStorage: FixedWidthInteger & UnsignedInteger {
   /// Loads an instance of `self` from the address pointed to by pointer.
   static func load(from pointer: UnsafePointer<Self>) -> Self
   /// Stores an instance of `self` to the address pointed to by pointer.

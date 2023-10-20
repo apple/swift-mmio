@@ -15,21 +15,15 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-struct BitField {
-  var type: any BitFieldMacro.Type
-  var fieldName: IdentifierPatternSyntax
-  var fieldType: TypeSyntax
-  var bitRange: Range<Int>
-  var projectedType: Int?
-}
-
-// @BaseName(bits: 0..<1, 3..<4, as: Bool.self)
+// @BaseName(bits: 3..<4, 0..<1, as: Bool.self)
 protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
   static var isReadable: Bool { get }
   static var isWriteable: Bool { get }
   static var isSymmetric: Bool { get }
 
-  var bitRange: Range<Int> { get }
+  var bitRanges: [Range<Int>] { get }
+  var bitRangeExpressions: [ExprSyntax] { get }
+
   var projectedType: Int? { get }
 }
 
@@ -130,7 +124,8 @@ struct ReservedMacro: BitFieldMacro, Sendable {
   static let isSymmetric = true
 
   @Argument(label: "bits")
-  var bitRange: Range<Int>
+  var bitRanges: [Range<Int>]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   var projectedType: Int?
 
@@ -141,7 +136,7 @@ struct ReservedMacro: BitFieldMacro, Sendable {
   ) throws {
     switch label {
     case "bits":
-      try self._bitRange.update(from: expression, in: context)
+      try self._bitRanges.update(from: expression, in: context)
     default:
       fatalError()
     }
@@ -156,7 +151,8 @@ struct ReadWriteMacro: BitFieldMacro, Sendable {
   static let isSymmetric = true
 
   @Argument(label: "bits")
-  var bitRange: Range<Int>
+  var bitRanges: [Range<Int>]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
   var projectedType: Int?
@@ -168,7 +164,7 @@ struct ReadWriteMacro: BitFieldMacro, Sendable {
   ) throws {
     switch label {
     case "bits":
-      try self._bitRange.update(from: expression, in: context)
+      try self._bitRanges.update(from: expression, in: context)
     case "as":
       try self._projectedType.update(from: expression, in: context)
     default:
@@ -185,7 +181,8 @@ struct ReadOnlyMacro: BitFieldMacro, Sendable {
   static let isSymmetric = false
 
   @Argument(label: "bits")
-  var bitRange: Range<Int>
+  var bitRanges: [Range<Int>]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
   var projectedType: Int?
@@ -197,7 +194,7 @@ struct ReadOnlyMacro: BitFieldMacro, Sendable {
   ) throws {
     switch label {
     case "bits":
-      try self._bitRange.update(from: expression, in: context)
+      try self._bitRanges.update(from: expression, in: context)
     case "as":
       try self._projectedType.update(from: expression, in: context)
     default:
@@ -214,7 +211,8 @@ struct WriteOnlyMacro: BitFieldMacro, Sendable {
   static let isSymmetric = false
 
   @Argument(label: "bits")
-  var bitRange: Range<Int>
+  var bitRanges: [Range<Int>]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
   var projectedType: Int?
@@ -226,7 +224,7 @@ struct WriteOnlyMacro: BitFieldMacro, Sendable {
   ) throws {
     switch label {
     case "bits":
-      try self._bitRange.update(from: expression, in: context)
+      try self._bitRanges.update(from: expression, in: context)
     case "as":
       try self._projectedType.update(from: expression, in: context)
     default:
