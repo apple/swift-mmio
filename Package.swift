@@ -51,6 +51,8 @@ var package = Package(
       ]),
 
     .target(name: "MMIOVolatile"),
+
+    .target(name: "IntervalTreeModule"),
   ])
 
 // Replace this with a native spm feature flag if/when supported
