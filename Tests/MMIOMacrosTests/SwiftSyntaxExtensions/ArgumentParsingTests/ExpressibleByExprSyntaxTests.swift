@@ -27,29 +27,33 @@ struct ExpressibleByExprSyntaxMacro: MMIOArgumentParsingMacro {
 
 func XCTAssertParse<Value>(
   expression: ExprSyntax,
-  expected: Value
+  expected: Value,
+  file: StaticString = #filePath,
+  line: UInt = #line
 ) where Value: ExpressibleByExprSyntax, Value: Equatable {
   do {
     let context = MacroContext.makeSuppressingDiagnostics(
       ExpressibleByExprSyntaxMacro.self)
     let actual = try Value(expression: expression, in: context)
-    XCTAssertEqual(expected, actual)
+    XCTAssertEqual(expected, actual, file: file, line: line)
   } catch {
-    XCTFail("Unexpected error: \(error)")
+    XCTFail("Unexpected error: \(error)", file: file, line: line)
   }
 }
 
 func XCTAssertNoParse<Value>(
   expression: ExprSyntax,
-  as _: Value.Type
+  as _: Value.Type,
+  file: StaticString = #filePath,
+  line: UInt = #line
 ) where Value: ExpressibleByExprSyntax {
   do {
     let context = MacroContext.makeSuppressingDiagnostics(
       ExpressibleByExprSyntaxMacro.self)
     let actual = try Value(expression: expression, in: context)
-    XCTFail("Expected error, but got: \(actual)")
+    XCTFail("Expected error, but got: \(actual)", file: file, line: line)
   } catch {
-    XCTAssert(error is ExpansionError)
+    XCTAssert(error is ExpansionError, file: file, line: line)
   }
 }
 

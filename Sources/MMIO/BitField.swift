@@ -9,18 +9,128 @@
 //
 //===----------------------------------------------------------------------===//
 
-public typealias BitFieldStorage = FixedWidthInteger & UnsignedInteger
+// Explore bit field refactor:
+// * requires variadic pack iteration
+// * requires no metadata-less variadic packs
+// - protocol BitField with (least|most) significant bit requirements
+// - FixedWidthInteger.subscript[(variadic T: BitField)] -> Storage
+
+extension FixedWidthInteger {
+  @inline(__always)
+  static func bitRangeWithinBounds(bits bitRange: Range<Int>) -> Bool {
+    bitRange.lowerBound >= 0 && bitRange.upperBound <= Self.bitWidth
+  }
+
+  subscript(bits bitRange: Range<Int>) -> Self {
+    @inline(__always) get {
+      precondition(Self.bitRangeWithinBounds(bits: bitRange))
+      let bitWidth = bitRange.upperBound - bitRange.lowerBound
+      let bitMask: Self = 1 << bitWidth &- 1
+      return (self >> bitRange.lowerBound) & bitMask
+    }
+
+    @inline(__always) set {
+      precondition(Self.bitRangeWithinBounds(bits: bitRange))
+      let bitWidth = bitRange.upperBound - bitRange.lowerBound
+      let bitMask: Self = 1 << bitWidth &- 1
+      self &= ~(bitMask << bitRange.lowerBound)
+      self |= (newValue & bitMask) << bitRange.lowerBound
+    }
+  }
+}
+
+extension FixedWidthInteger {
+  static func bitRangesCoalesced(bits bitRanges: [Range<Int>]) -> Bool {
+    let bitRanges = bitRanges.sorted { $0.lowerBound < $1.lowerBound }
+    var lowerBound = -1
+    for bitRange in bitRanges {
+      // Specifically ensure that the bit ranges dont overlap, e.g. the
+      // following ranges are not valid: 0..<1, 0..<2. This is to ensure ranges
+      // are coalesced before iterating reduce the number of mask and shift
+      // operations needed.
+      guard lowerBound <= bitRange.lowerBound else { return false }
+      lowerBound = bitRange.upperBound
+    }
+    return true
+  }
+
+  subscript(bits bitRanges: [Range<Int>]) -> Self {
+    @inline(__always) get {
+      precondition(Self.bitRangesCoalesced(bits: bitRanges))
+
+      var currentShift = 0
+      var value: Self = 0
+      for bitRange in bitRanges {
+        let valueSlice = self[bits: bitRange]
+        value |= valueSlice << currentShift
+        let bitWidth = bitRange.upperBound - bitRange.lowerBound
+        currentShift += bitWidth
+      }
+      return value
+    }
+
+    @inline(__always) set {
+      precondition(Self.bitRangesCoalesced(bits: bitRanges))
+
+      var newValue = newValue
+      for bitRange in bitRanges {
+        self[bits: bitRange] = newValue
+        let bitWidth = bitRange.upperBound - bitRange.lowerBound
+        newValue >>= bitWidth
+      }
+    }
+  }
+}
 
 public protocol BitField {
-  associatedtype RawStorage: BitFieldStorage
+  associatedtype Storage: FixedWidthInteger & UnsignedInteger
+
+  static func insert(_ value: Storage, into storage: inout Storage)
+  static func extract(from storage: Storage) -> Storage
+}
+
+public protocol ContiguousBitField: BitField {
   static var bitRange: Range<Int> { get }
   static var bitWidth: Int { get }
   static var bitOffset: Int { get }
-  static var bitMask: RawStorage { get }
+  static var bitMask: Storage { get }
 }
 
-extension BitField {
-  public static var bitWidth: Int { self.bitRange.count }
-  public static var bitOffset: Int { self.bitRange.lowerBound }
-  public static var bitMask: RawStorage { (1 << self.bitWidth) - 1 }
+extension ContiguousBitField {
+  public static var bitWidth: Int {
+    Self.bitRange.upperBound - Self.bitRange.lowerBound
+  }
+  public static var bitOffset: Int { Self.bitRange.lowerBound }
+  public static var bitMask: Storage { (1 << Self.bitWidth) &- 1 }
+}
+
+extension ContiguousBitField {
+  // FIXME: value.bitWidth <= Self.bitWidth <= Storage.bitWidth
+  @inline(__always)
+  public static func insert(_ value: Storage, into storage: inout Storage) {
+    storage[bits: Self.bitRange] = value
+  }
+
+  @inline(__always)
+  public static func extract(from storage: Storage) -> Storage {
+    storage[bits: Self.bitRange]
+  }
+}
+
+public protocol DiscontiguousBitField: BitField {
+  /// - Precondition: Bit bitRanges must not overlap and must be sorted by from
+  /// lowest to highest bit index
+  static var bitRanges: [Range<Int>] { get }
+}
+
+extension DiscontiguousBitField {
+  @inline(__always)
+  public static func insert(_ value: Storage, into storage: inout Storage) {
+    storage[bits: Self.bitRanges] = value
+  }
+
+  @inline(__always)
+  public static func extract(from storage: Storage) -> Storage {
+    storage[bits: Self.bitRanges]
+  }
 }
