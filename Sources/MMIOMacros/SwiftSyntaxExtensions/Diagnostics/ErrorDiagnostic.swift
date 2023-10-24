@@ -10,11 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftDiagnostics
-import SwiftSyntax
-import SwiftSyntaxMacroExpansion
-import SwiftSyntaxMacros
-
-struct ExpansionError: Error {}
 
 struct ErrorDiagnostic<Macro> where Macro: ParsableMacro {
   var diagnosticID: MessageID
@@ -57,10 +52,7 @@ extension ErrorDiagnostic {
 
   // Declaration Member Errors
   static func onlyMemberVarDecls() -> Self {
-    .init(
-      """
-      '\(Macro.signature)' type can only contain properties
-      """)
+    .init("'\(Macro.signature)' type can only contain properties")
   }
 
   static func expectedMemberAnnotatedWithMacro<OtherMacro>(
@@ -97,7 +89,7 @@ extension ErrorDiagnostic {
   static func expectedBindingKind(_ bindingKind: VariableBindingKind) -> Self {
     .init(
       """
-      '\(Macro.signature)' can only be applied to '\(bindingKind)' properties
+      "'\(Macro.signature)' can only be applied to '\(bindingKind)' properties"
       """)
   }
 
@@ -135,119 +127,6 @@ extension ErrorDiagnostic {
   }
 
   static func expectedStoredProperty() -> Self {
-    .init(
-      """
-      '\(Macro.signature)' cannot be applied properties with accessors
-      """)
-  }
-}
-
-extension FixIt {
-  static func replaceWithVar(node: TokenSyntax) -> FixIt {
-    .replace(
-      message: MacroExpansionFixItMessage(
-        "Replace '\(node.trimmed)' with 'var'"),
-      oldNode: node,
-      newNode: TokenSyntax.keyword(.var))
-  }
-
-  static func insertBindingType(node: PatternBindingSyntax) -> FixIt {
-    // FIXME: https://github.com/apple/swift-syntax/issues/2205
-    .replace(
-      message: MacroExpansionFixItMessage(
-        "Insert explicit type annotation"),
-      oldNode: node,
-      newNode: node.with(
-        \.typeAnnotation,
-        .init(
-          EditorPlaceholderDeclSyntax(
-            placeholder: .identifier("<#Type#>")))))
-  }
-
-  static func insertBindingIdentifier(node: PatternSyntax) -> FixIt {
-    .replace(
-      message: MacroExpansionFixItMessage(
-        "Insert explicit property identifier"),
-      oldNode: node,
-      newNode: EditorPlaceholderDeclSyntax(
-        placeholder: .identifier("<#Identifier#>")))
-  }
-
-  static func insertMacro<Macro>(
-    node: some WithAttributesSyntax, _: Macro.Type
-  ) -> FixIt where Macro: ParsableMacro {
-    // FIXME: https://github.com/apple/swift-syntax/issues/2205
-    var newNode = node
-    newNode.attributes.append(Macro.attributeWithPlaceholders)
-    return .replace(
-      message: MacroExpansionFixItMessage("Insert '\(Macro.signature)' macro"),
-      oldNode: node,
-      newNode: newNode)
-  }
-
-  static func removeAccessorBlock(node: PatternBindingSyntax) -> FixIt {
-    .replace(
-      message: MacroExpansionFixItMessage(
-        "Remove accessor block"),
-      oldNode: node,
-      newNode: node.with(\.accessorBlock, nil))
-  }
-}
-
-struct MacroContext<Macro, Context>
-where Macro: ParsableMacro, Context: MacroExpansionContext {
-  var context: Context
-
-  init(_: Macro.Type = Macro.self, _ context: Context) {
-    self.context = context
-  }
-
-  func error(
-    at node: some SyntaxProtocol,
-    message: ErrorDiagnostic<Macro>,
-    highlights: [Syntax]? = nil,
-    notes: [Note] = [],
-    fixIts: FixIt...
-  ) {
-    self.context.diagnose(
-      .init(
-        node: node,
-        position: nil,
-        message: message,
-        highlights: highlights,
-        notes: notes,
-        fixIts: fixIts))
-  }
-}
-
-extension MacroContext where Context == SuppressionContext {
-  static func makeSuppressingDiagnostics(
-    _: Macro.Type = Macro.self
-  ) -> MacroContext<Macro, SuppressionContext> {
-    self.init(Macro.self, SuppressionContext())
-  }
-}
-
-extension MacroContext {
-  func makeSuppressingDiagnostics() -> MacroContext<Macro, SuppressionContext> {
-    .init(Macro.self, .init())
-  }
-}
-
-class SuppressionContext: MacroExpansionContext {
-  func location(
-    of node: some SyntaxProtocol,
-    at position: PositionInSyntaxNode,
-    filePathMode: SourceLocationFilePathMode
-  ) -> SwiftSyntaxMacros.AbstractSourceLocation? {
-    nil
-  }
-
-  func makeUniqueName(_ name: String) -> TokenSyntax {
-    fatalError("Unsupported")
-  }
-
-  func diagnose(_ diagnostic: SwiftDiagnostics.Diagnostic) {
-    // ignore
+    .init("'\(Macro.signature)' cannot be applied properties with accessors")
   }
 }
