@@ -9,28 +9,27 @@
 //
 //===----------------------------------------------------------------------===//
 
-public protocol RegisterLayout {
-  associatedtype Raw: RegisterLayoutRaw where Raw.Layout == Self
-  associatedtype Read: RegisterLayoutRead
-  where Read.Layout == Self, Read.MMIOVolatileRepresentation == Raw.MMIOVolatileRepresentation
-  associatedtype Write: RegisterLayoutWrite
-  where Write.Layout == Self, Write.MMIOVolatileRepresentation == Raw.MMIOVolatileRepresentation
+public protocol RegisterValue {
+  associatedtype Raw: RegisterValueRaw where Raw.Layout == Self
+  associatedtype Read: RegisterValueRead where Read.Layout == Self
+  associatedtype Write: RegisterValueWrite where Write.Layout == Self
 }
 
-public protocol RegisterLayoutRaw: MMIOVolatileValue {
-  associatedtype Layout: RegisterLayout where Layout.Raw == Self
-  var _rawStorage: Self.MMIOVolatileRepresentation { get set }
+public protocol RegisterValueRaw {
+  associatedtype Layout: RegisterValue where Layout.Raw == Self
+  associatedtype Storage: FixedWidthInteger & UnsignedInteger & _RegisterStorage
+  var storage: Storage { get set }
+  init(_ storage: Storage)
   init(_ value: Layout.Read)
   init(_ value: Layout.Write)
 }
 
-public protocol RegisterLayoutRead: MMIOVolatileValue {
-  associatedtype Layout: RegisterLayout where Layout.Read == Self
-  var _rawStorage: Self.MMIOVolatileRepresentation { get set }
+public protocol RegisterValueRead {
+  associatedtype Layout: RegisterValue where Layout.Read == Self
   init(_ value: Layout.Raw)
 }
 
-extension RegisterLayoutRead {
+extension RegisterValueRead {
   /// Yields a view of the data underlying the read view, allowing for direct
   /// manipulation of the register's bits.
   ///
@@ -48,14 +47,13 @@ extension RegisterLayoutRead {
   }
 }
 
-public protocol RegisterLayoutWrite: MMIOVolatileValue {
-  associatedtype Layout: RegisterLayout where Layout.Write == Self
-  var _rawStorage: Self.MMIOVolatileRepresentation { get set }
+public protocol RegisterValueWrite {
+  associatedtype Layout: RegisterValue where Layout.Write == Self
   init(_ value: Layout.Raw)
   init(_ read: Layout.Read)
 }
 
-extension RegisterLayoutWrite {
+extension RegisterValueWrite {
   /// Yields a view of the data underlying the read view, allowing for direct
   /// manipulation of the register's bits.
   ///
