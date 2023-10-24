@@ -148,7 +148,7 @@ extension RegisterMacro: MMIOExtensionMacro {
     // Only create extension when applied to struct decls.
     guard declaration.is(StructDeclSyntax.self) else { return [] }
 
-    let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterLayout {}"
+    let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterValue {}"
 
     guard let extensionDecl = `extension`.as(ExtensionDeclSyntax.self) else {
       context.error(

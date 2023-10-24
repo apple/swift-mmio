@@ -11,7 +11,7 @@
 
 // Explore bit field refactor:
 // * requires variadic pack iteration
-// * requires no metadata-less variadic packs
+// * requires metadata-less variadic packs
 // - protocol BitField with (least|most) significant bit requirements
 // - FixedWidthInteger.subscript[(variadic T: BitField)] -> Storage
 
