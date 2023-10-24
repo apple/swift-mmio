@@ -62,7 +62,7 @@ struct BitWidth: Equatable, ExpressibleByExprSyntax {
     guard validBitWidths.contains(value) else {
       context.error(
         at: expression,
-        message: .expectedIntegerLiteral(in: validBitWidths))
+        message: .expectedLiteralValue(in: validBitWidths))
       throw ExpansionError()
     }
     self.value = value
@@ -142,7 +142,7 @@ extension ErrorDiagnostic {
     .init("'\(Macro.signature)' requires expression to be an integer literal")
   }
 
-  static func expectedIntegerLiteral(in values: [Int]) -> Self {
+  static func expectedLiteralValue<T>(in values: [T]) -> Self {
     precondition(values.count > 1)
     guard let last = values.last else { fatalError() }
 
