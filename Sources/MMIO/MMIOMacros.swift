@@ -34,13 +34,13 @@ public macro Reserved(bits: Range<Int>) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
 
 @attached(accessor)
-public macro ReadWrite(bits: Range<Int>) =
+public macro ReadWrite(bits: Range<Int>, as: Any? = nil) =
   #externalMacro(module: "MMIOMacros", type: "ReadWriteMacro")
 
 @attached(accessor)
-public macro ReadOnly(bits: Range<Int>) =
+public macro ReadOnly(bits: Range<Int>, as: Any? = nil) =
   #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
 
 @attached(accessor)
-public macro WriteOnly(bits: Range<Int>) =
+public macro WriteOnly(bits: Range<Int>, as: Any? = nil) =
   #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
