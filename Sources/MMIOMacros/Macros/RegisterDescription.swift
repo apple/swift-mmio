@@ -13,7 +13,7 @@ import SwiftSyntax
 
 struct RegisterDescription {
   var name: TokenSyntax
-  var accessLevel: AccessLevel?
+  var accessLevel: DeclModifierSyntax?
   var bitWidth: Int
   var bitFields: [BitFieldDescription]
   var isSymmetric: Bool
@@ -66,7 +66,7 @@ extension RegisterDescription {
     // Create accessor declarations for each bitfield
     let bitFieldDeclarations: [DeclSyntax] = bitFields.map {
       """
-      \(accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
+      \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
         @inline(__always) get {
           \($0.fieldType).extract(from: self.storage)
         }
@@ -80,7 +80,7 @@ extension RegisterDescription {
       if isSymmetric {
         [
           """
-          \(accessLevel)init(_ value: Layout.ReadWrite) {
+          \(self.accessLevel)init(_ value: Layout.ReadWrite) {
             self.storage = value.storage
           }
           """
@@ -88,12 +88,12 @@ extension RegisterDescription {
       } else {
         [
           """
-          \(accessLevel)init(_ value: Layout.Read) {
+          \(self.accessLevel)init(_ value: Layout.Read) {
             self.storage = value.storage
           }
           """,
           """
-          \(accessLevel)init(_ value: Layout.Write) {
+          \(self.accessLevel)init(_ value: Layout.Write) {
             self.storage = value.storage
           }
           """,

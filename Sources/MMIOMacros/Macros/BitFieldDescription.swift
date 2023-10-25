@@ -12,7 +12,7 @@
 import SwiftSyntax
 
 struct BitFieldDescription {
-  var accessLevel: AccessLevel?
+  var accessLevel: DeclModifierSyntax?
   var bitWidth: Int
   var type: any BitFieldMacro.Type
   var fieldName: IdentifierPatternSyntax
