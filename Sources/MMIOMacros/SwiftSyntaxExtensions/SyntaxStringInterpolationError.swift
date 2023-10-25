@@ -13,20 +13,23 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 
 extension SyntaxStringInterpolation {
-  mutating func appendInterpolation(_ accessLevel: AccessLevel?) {
-    if let accessLevel = accessLevel {
-      self.appendInterpolation(raw: accessLevel.rawValue)
-      self.appendInterpolation(raw: " ")
-    }
+  mutating func appendInterpolation(
+    _ node: (some SyntaxProtocol)?,
+    trailingTrivia: Trivia = .space
+  ) {
+    guard let node = node else { return }
+    self.appendInterpolation(node)
+    self.appendInterpolation(trailingTrivia)
   }
 
-  mutating func appendInterpolation<Node: SyntaxProtocol>(
-    _ nodes: [Node]
+  mutating func appendInterpolation(
+    _ nodes: [some SyntaxProtocol],
+    intermediateTrivia: Trivia = .newline
   ) {
     guard let first = nodes.first else { return }
     self.appendInterpolation(first)
     for node in nodes.dropFirst() {
-      self.appendInterpolation(.newline)
+      self.appendInterpolation(intermediateTrivia)
       self.appendInterpolation(node)
     }
   }

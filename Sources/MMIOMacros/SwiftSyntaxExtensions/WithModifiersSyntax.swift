@@ -12,22 +12,23 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-enum AccessLevel: String {
-  case `open`
-  case `public`
-  case `package`
-  case `internal`
-  case `fileprivate`
-  case `private`
-}
-
-extension AccessLevel: CaseIterable {}
-
 extension WithModifiersSyntax {
-  var accessLevel: AccessLevel? {
+  var accessLevel: DeclModifierSyntax? {
     self.modifiers
       .lazy
-      .compactMap { AccessLevel(rawValue: $0.name.text) }
+      .filter {
+        switch $0.name.tokenKind {
+        case .keyword(.open),
+            .keyword(.public),
+            .keyword(.package),
+            .keyword(.internal),
+            .keyword(.fileprivate),
+            .keyword(.private):
+          true
+        default:
+          false
+        }
+      }
       .first
   }
 }
