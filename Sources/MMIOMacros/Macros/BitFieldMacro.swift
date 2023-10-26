@@ -116,7 +116,7 @@ let bitFieldMacros: [any BitFieldMacro.Type] = [
   WriteOnlyMacro.self,
 ]
 
-struct ReservedMacro: BitFieldMacro, Sendable {
+public struct ReservedMacro: BitFieldMacro, Sendable {
   static let accessorMacroSuppressParsingDiagnostics = false
   static let baseName = "Reserved"
   static let isReadable = false
@@ -143,7 +143,7 @@ struct ReservedMacro: BitFieldMacro, Sendable {
   }
 }
 
-struct ReadWriteMacro: BitFieldMacro, Sendable {
+public struct ReadWriteMacro: BitFieldMacro, Sendable {
   static let accessorMacroSuppressParsingDiagnostics = false
   static let baseName = "ReadWrite"
   static let isReadable = true
@@ -173,7 +173,7 @@ struct ReadWriteMacro: BitFieldMacro, Sendable {
   }
 }
 
-struct ReadOnlyMacro: BitFieldMacro, Sendable {
+public struct ReadOnlyMacro: BitFieldMacro, Sendable {
   static let accessorMacroSuppressParsingDiagnostics = false
   static let baseName = "ReadOnly"
   static let isReadable = true
@@ -203,7 +203,7 @@ struct ReadOnlyMacro: BitFieldMacro, Sendable {
   }
 }
 
-struct WriteOnlyMacro: BitFieldMacro, Sendable {
+public struct WriteOnlyMacro: BitFieldMacro, Sendable {
   static let accessorMacroSuppressParsingDiagnostics = false
   static let baseName = "WriteOnly"
   static let isReadable = false
