@@ -154,12 +154,12 @@ final class RegisterMacroTests: XCTestCase {
           private var _never: Never
 
           struct Raw: RegisterValueRaw {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ storage: Storage) {
               self.storage = storage
             }
-            init(_ value: Layout.ReadWrite) {
+            init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
 
@@ -170,7 +170,7 @@ final class RegisterMacroTests: XCTestCase {
           typealias Write = ReadWrite
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ value: ReadWrite) {
               self.storage = value.storage
@@ -231,12 +231,12 @@ final class RegisterMacroTests: XCTestCase {
           }
 
           struct Raw: RegisterValueRaw {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ storage: Storage) {
               self.storage = storage
             }
-            init(_ value: Layout.ReadWrite) {
+            init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
             var v1: UInt8 {
@@ -262,7 +262,7 @@ final class RegisterMacroTests: XCTestCase {
           typealias Write = ReadWrite
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ value: ReadWrite) {
               self.storage = value.storage
@@ -318,12 +318,12 @@ final class RegisterMacroTests: XCTestCase {
           }
 
           struct Raw: RegisterValueRaw {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ storage: Storage) {
               self.storage = storage
             }
-            init(_ value: Layout.ReadWrite) {
+            init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
             var v1: UInt8 {
@@ -341,7 +341,7 @@ final class RegisterMacroTests: XCTestCase {
           typealias Write = ReadWrite
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ value: ReadWrite) {
               self.storage = value.storage
@@ -398,12 +398,12 @@ final class RegisterMacroTests: XCTestCase {
           }
 
           struct Raw: RegisterValueRaw {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ storage: Storage) {
               self.storage = storage
             }
-            init(_ value: Layout.ReadWrite) {
+            init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
             var v1: UInt8 {
@@ -421,7 +421,7 @@ final class RegisterMacroTests: XCTestCase {
           typealias Write = ReadWrite
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
-            typealias Layout = S
+            typealias Value = S
             var storage: UInt8
             init(_ value: ReadWrite) {
               self.storage = value.storage
