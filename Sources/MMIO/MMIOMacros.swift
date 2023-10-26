@@ -30,17 +30,17 @@ public macro Register(bitWidth: Int) =
 // external macro declarations. However, this parameter will never be used by
 // expansion for reserved bitfields, so it is omitted to avoid programmer use.
 @attached(accessor)
-public macro Reserved(bits: Range<Int>) =
+public macro Reserved(bits: Range<Int>...) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
 
 @attached(accessor)
-public macro ReadWrite(bits: Range<Int>, as: Any? = nil) =
+public macro ReadWrite(bits: Range<Int>..., as: Any? = nil) =
   #externalMacro(module: "MMIOMacros", type: "ReadWriteMacro")
 
 @attached(accessor)
-public macro ReadOnly(bits: Range<Int>, as: Any? = nil) =
+public macro ReadOnly(bits: Range<Int>..., as: Any? = nil) =
   #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
 
 @attached(accessor)
-public macro WriteOnly(bits: Range<Int>, as: Any? = nil) =
+public macro WriteOnly(bits: Range<Int>..., as: Any? = nil) =
   #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
