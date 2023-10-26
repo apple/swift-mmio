@@ -80,7 +80,7 @@ extension RegisterDescription {
       if isSymmetric {
         [
           """
-          \(self.accessLevel)init(_ value: Layout.ReadWrite) {
+          \(self.accessLevel)init(_ value: Value.ReadWrite) {
             self.storage = value.storage
           }
           """
@@ -88,12 +88,12 @@ extension RegisterDescription {
       } else {
         [
           """
-          \(self.accessLevel)init(_ value: Layout.Read) {
+          \(self.accessLevel)init(_ value: Value.Read) {
             self.storage = value.storage
           }
           """,
           """
-          \(self.accessLevel)init(_ value: Layout.Write) {
+          \(self.accessLevel)init(_ value: Value.Write) {
             self.storage = value.storage
           }
           """,
@@ -104,7 +104,7 @@ extension RegisterDescription {
     declarations.append(
       """
       \(self.accessLevel)struct Raw: RegisterValueRaw {
-        \(self.accessLevel)typealias Layout = \(self.name)
+        \(self.accessLevel)typealias Value = \(self.name)
         \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ storage: Storage) {
           self.storage = storage
@@ -142,7 +142,7 @@ extension RegisterDescription {
     declarations.append(
       """
       \(self.accessLevel)struct ReadWrite: RegisterValueRead, RegisterValueWrite {
-        \(self.accessLevel)typealias Layout = \(self.name)
+        \(self.accessLevel)typealias Value = \(self.name)
         var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: ReadWrite) {
           self.storage = value.storage
@@ -178,7 +178,7 @@ extension RegisterDescription {
     declarations.append(
       """
       \(self.accessLevel)struct Read: RegisterValueRead {
-        \(self.accessLevel)typealias Layout = \(self.name)
+        \(self.accessLevel)typealias Value = \(self.name)
         var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: Raw) { self.storage = value.storage }
         \(bitFieldDeclarations)
@@ -213,7 +213,7 @@ extension RegisterDescription {
     declarations.append(
       """
       \(self.accessLevel)struct Write: RegisterValueWrite {
-        \(self.accessLevel)typealias Layout = \(self.name)
+        \(self.accessLevel)typealias Value = \(self.name)
         var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: Raw) {
           self.storage = value.storage

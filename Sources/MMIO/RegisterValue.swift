@@ -10,23 +10,23 @@
 //===----------------------------------------------------------------------===//
 
 public protocol RegisterValue {
-  associatedtype Raw: RegisterValueRaw where Raw.Layout == Self
-  associatedtype Read: RegisterValueRead where Read.Layout == Self
-  associatedtype Write: RegisterValueWrite where Write.Layout == Self
+  associatedtype Raw: RegisterValueRaw where Raw.Value == Self
+  associatedtype Read: RegisterValueRead where Read.Value == Self
+  associatedtype Write: RegisterValueWrite where Write.Value == Self
 }
 
 public protocol RegisterValueRaw {
-  associatedtype Layout: RegisterValue where Layout.Raw == Self
+  associatedtype Value: RegisterValue where Value.Raw == Self
   associatedtype Storage: FixedWidthInteger & UnsignedInteger & _RegisterStorage
   var storage: Storage { get set }
   init(_ storage: Storage)
-  init(_ value: Layout.Read)
-  init(_ value: Layout.Write)
+  init(_ value: Value.Read)
+  init(_ value: Value.Write)
 }
 
 public protocol RegisterValueRead {
-  associatedtype Layout: RegisterValue where Layout.Read == Self
-  init(_ value: Layout.Raw)
+  associatedtype Value: RegisterValue where Value.Read == Self
+  init(_ value: Value.Raw)
 }
 
 extension RegisterValueRead {
@@ -35,12 +35,12 @@ extension RegisterValueRead {
   ///
   /// Mutation through the raw view are unchecked. The user is responsible for
   /// ensuring the bit pattern is valid.
-  public var raw: Layout.Raw {
+  public var raw: Value.Raw {
     _read {
-      yield Layout.Raw(self)
+      yield Value.Raw(self)
     }
     _modify {
-      var raw = Layout.Raw(self)
+      var raw = Value.Raw(self)
       yield &raw
       self = Self(raw)
     }
@@ -48,9 +48,9 @@ extension RegisterValueRead {
 }
 
 public protocol RegisterValueWrite {
-  associatedtype Layout: RegisterValue where Layout.Write == Self
-  init(_ value: Layout.Raw)
-  init(_ read: Layout.Read)
+  associatedtype Value: RegisterValue where Value.Write == Self
+  init(_ value: Value.Raw)
+  init(_ read: Value.Read)
 }
 
 extension RegisterValueWrite {
@@ -59,12 +59,12 @@ extension RegisterValueWrite {
   ///
   /// Mutation through the raw view are unchecked. The user is responsible for
   /// ensuring the bit pattern is valid.
-  public var raw: Layout.Raw {
+  public var raw: Value.Raw {
     _read {
-      yield Layout.Raw(self)
+      yield Value.Raw(self)
     }
     _modify {
-      var raw = Layout.Raw(self)
+      var raw = Value.Raw(self)
       yield &raw
       self = Self(raw)
     }
