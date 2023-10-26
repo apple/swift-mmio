@@ -5,7 +5,7 @@
   "indentation" : {
     "spaces" : 2
   },
-  "indentConditionalCompilationBlocks" : true,
+  "indentConditionalCompilationBlocks" : false,
   "indentSwitchCaseLabels" : false,
   "lineBreakAroundMultilineExpressionChainComponents" : false,
   "lineBreakBeforeControlFlowKeywords" : false,
@@ -22,9 +22,9 @@
   "prioritizeKeepingFunctionOutputTogether" : false,
   "respectsExistingLineBreaks" : true,
   "rules" : {
-    "AllPublicDeclarationsHaveDocumentation" : true,
+    "AllPublicDeclarationsHaveDocumentation" : false,
     "AlwaysUseLowerCamelCase" : true,
-    "AmbiguousTrailingClosureOverload" : true,
+    "AmbiguousTrailingClosureOverload" : false,
     "BeginDocumentationCommentWithOneLineSummary" : false,
     "DoNotUseSemicolons" : true,
     "DontRepeatTypeInStaticProperties" : true,

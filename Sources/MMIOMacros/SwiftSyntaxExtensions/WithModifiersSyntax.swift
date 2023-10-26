@@ -19,11 +19,11 @@ extension WithModifiersSyntax {
       .filter {
         switch $0.name.tokenKind {
         case .keyword(.open),
-            .keyword(.public),
-            .keyword(.package),
-            .keyword(.internal),
-            .keyword(.fileprivate),
-            .keyword(.private):
+          .keyword(.public),
+          .keyword(.package),
+          .keyword(.internal),
+          .keyword(.fileprivate),
+          .keyword(.private):
           true
         default:
           false

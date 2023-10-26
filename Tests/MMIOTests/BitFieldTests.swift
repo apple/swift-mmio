@@ -54,6 +54,7 @@ extension String.StringInterpolation {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertExtract<Storage>(
   bitRanges: Range<Int>...,
   from storage: Storage,
@@ -78,6 +79,7 @@ func XCTAssertExtract<Storage>(
     line: line)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertInsert<Storage>(
   value: Storage,
   bitRanges: Range<Int>...,
