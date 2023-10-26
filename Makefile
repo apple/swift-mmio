@@ -42,13 +42,13 @@ build: lint
 	@echo "building..."
 	@swift build \
 		--configuration $(CONFIGURATION) \
-		--explicit-target-dependency-import-check warn
+		--explicit-target-dependency-import-check error
 
 test: build
 	@echo "testing..."
 	@swift test \
 		--parallel \
-		--explicit-target-dependency-import-check warn
+		--explicit-target-dependency-import-check error
 
 clean:
 	@echo "cleaning..."
