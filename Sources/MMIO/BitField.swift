@@ -34,6 +34,7 @@ extension FixedWidthInteger {
       let bitWidth = bitRange.upperBound - bitRange.lowerBound
       let bitMask: Self = 1 << bitWidth &- 1
       self &= ~(bitMask << bitRange.lowerBound)
+      precondition((newValue & (~bitMask)) == 0)
       self |= (newValue & bitMask) << bitRange.lowerBound
     }
   }
@@ -61,9 +62,11 @@ extension FixedWidthInteger {
       var currentShift = 0
       var value: Self = 0
       for bitRange in bitRanges {
-        let valueSlice = self[bits: bitRange]
-        value |= valueSlice << currentShift
+        precondition(Self.bitRangeWithinBounds(bits: bitRange))
         let bitWidth = bitRange.upperBound - bitRange.lowerBound
+        let bitMask: Self = 1 << bitWidth &- 1
+        let valueSlice = (self >> bitRange.lowerBound) & bitMask
+        value |= valueSlice << currentShift
         currentShift += bitWidth
       }
       return value
@@ -71,11 +74,20 @@ extension FixedWidthInteger {
 
     @inline(__always) set {
       precondition(Self.bitRangesCoalesced(bits: bitRanges))
+      var fullBitWidth = 0
+      for bitRange in bitRanges {
+        fullBitWidth += bitRange.upperBound - bitRange.lowerBound
+      }
+      let fullBitMask: Self = 1 << fullBitWidth &- 1
+      precondition((newValue & (~fullBitMask)) == 0)
 
       var newValue = newValue
       for bitRange in bitRanges {
-        self[bits: bitRange] = newValue
+        precondition(Self.bitRangeWithinBounds(bits: bitRange))
         let bitWidth = bitRange.upperBound - bitRange.lowerBound
+        let bitMask: Self = 1 << bitWidth &- 1
+        self &= ~(bitMask << bitRange.lowerBound)
+        self |= (newValue & bitMask) << bitRange.lowerBound
         newValue >>= bitWidth
       }
     }

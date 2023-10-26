@@ -225,3 +225,5 @@ final class BitFieldTests: XCTestCase {
       equals: 0xff00_ff00)
   }
 }
+
+// FIXME: Add tests to check crash on out of bounds operation
