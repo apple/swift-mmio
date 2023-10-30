@@ -25,13 +25,13 @@ public protocol _RegisterStorage {
 
 extension UInt8: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     mmio_volatile_load_uint8_t(pointer)
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
@@ -42,13 +42,13 @@ extension UInt8: _RegisterStorage {
 
 extension UInt16: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     mmio_volatile_load_uint16_t(pointer)
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
@@ -59,13 +59,13 @@ extension UInt16: _RegisterStorage {
 
 extension UInt32: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     mmio_volatile_load_uint32_t(pointer)
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
@@ -77,13 +77,13 @@ extension UInt32: _RegisterStorage {
 #if arch(x86_64) || arch(arm64)
 extension UInt64: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     mmio_volatile_load_uint64_t(pointer)
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
