@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+
+  runtime-setup:
+    image: swift-mmio:22.04-5.9.1
+    build:
+      args:
+        namespace: "swift"
+        ubuntu_version: "jammy"
+        swift_version: "5.9.1"
+
+  soundness:
+    image: swift-mmio:22.04-5.9.1
+
+  test:
+    image: swift-mmio:22.04-5.9.1
+
+  shell:
+    image: swift-mmio:22.04-5.9.1
