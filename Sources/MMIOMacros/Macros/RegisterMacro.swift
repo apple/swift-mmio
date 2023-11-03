@@ -95,8 +95,7 @@ extension RegisterMacro: MMIOMemberMacro {
           fieldName: fieldName,
           fieldType: fieldType,
           bitRanges: macro.bitRanges,
-          bitRangeExpressions: macro.bitRangeExpressions,
-          projectedType: macro.projectedType))
+          bitRangeExpressions: macro.bitRangeExpressions))
     }
     guard !error else { return [] }
 

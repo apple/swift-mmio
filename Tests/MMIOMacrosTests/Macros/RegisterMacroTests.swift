@@ -272,10 +272,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                self.raw.v1
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                self.raw.v1 = newValue
               }
             }
           }
@@ -314,7 +314,7 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V1: DiscontiguousBitField {
             typealias Storage = UInt8
-            static let bitRange = [0 ..< 1, 3 ..< 4]
+            static let bitRanges = [0 ..< 1, 3 ..< 4]
           }
 
           struct Raw: RegisterValueRaw {
@@ -351,10 +351,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                self.raw.v1
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                self.raw.v1 = newValue
               }
             }
           }
@@ -431,10 +431,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                self.raw.v1
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                self.raw.v1 = newValue
               }
             }
           }
