@@ -14,7 +14,7 @@
 public struct Register<Value> where Value: RegisterValue {
   public let unsafeAddress: UInt
 
-  @inline(__always)
+  @inlinable @inline(__always)
   public init(unsafeAddress: UInt) {
     let alignment = MemoryLayout<Value.Raw.Storage>.alignment
     precondition(
@@ -25,22 +25,22 @@ public struct Register<Value> where Value: RegisterValue {
 }
 
 extension Register {
-  @inline(__always) @usableFromInline
+  @inlinable @inline(__always)
   var pointer: UnsafeMutablePointer<Value.Raw.Storage> {
     .init(bitPattern: self.unsafeAddress).unsafelyUnwrapped
   }
 
-  @inline(__always)
+  @inlinable @inline(__always)
   public func read() -> Value.Read {
     Value.Read(Value.Raw(Value.Raw.Storage.load(from: self.pointer)))
   }
 
-  @inline(__always)
+  @inlinable @inline(__always)
   public func write(_ newValue: Value.Write) {
     Value.Raw.Storage.store(Value.Raw(newValue).storage, to: self.pointer)
   }
 
-  @inline(__always) @_disfavoredOverload
+  @inlinable @inline(__always) @_disfavoredOverload
   public func modify<T>(_ body: (Value.Read, inout Value.Write) -> (T)) -> T {
     let value = self.read()
     var newValue = Value.Write(value)
@@ -64,7 +64,7 @@ extension Register where Value.Read == Value.Write {
       modify method with single parameter closure instead. e.g. \
       'modify { rw in ... }'.
       """)
-  @inline(__always) @_disfavoredOverload
+  @inlinable @inline(__always) @_disfavoredOverload
   public func modify<T>(_ body: (Value.Read, inout Value.Write) -> (T)) -> T {
     var value = self.read()
     let returnValue = body(value, &value)
@@ -72,7 +72,7 @@ extension Register where Value.Read == Value.Write {
     return returnValue
   }
 
-  @inline(__always)
+  @inlinable @inline(__always)
   public func modify<T>(_ body: (inout Value.Write) -> (T)) -> T {
     var value = self.read()
     let returnValue = body(&value)

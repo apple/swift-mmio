@@ -37,12 +37,12 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
       expandedSource: """
         struct I2C {
           var control: Control {
-            @inline(__always) get {
+            @inlinable @inline(__always) get {
               .init(unsafeAddress: self.unsafeAddress + (0))
             }
           }
           var dr: Register<DR> {
-            @inline(__always) get {
+            @inlinable @inline(__always) get {
               .init(unsafeAddress: self.unsafeAddress + (8))
             }
           }

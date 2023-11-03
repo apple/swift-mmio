@@ -240,18 +240,18 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
             var v1: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V1.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
             var v2: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V2.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V2.insert(newValue, into: &self.storage)
               }
             }
@@ -271,10 +271,10 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
             var v1: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V1.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -327,10 +327,10 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
             var v1: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V1.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -350,10 +350,10 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
             var v1: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V1.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -407,10 +407,10 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
             var v1: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V1.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -430,10 +430,10 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
             var v1: UInt8 {
-              @inline(__always) get {
+              @inlinable @inline(__always) get {
                 V1.extract(from: self.storage)
               }
-              @inline(__always) set {
+              @inlinable @inline(__always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }

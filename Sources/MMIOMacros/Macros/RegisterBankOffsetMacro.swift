@@ -121,7 +121,7 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
 
     return [
       """
-      @inline(__always) get { .init(unsafeAddress: self.unsafeAddress + (\(raw: self.offset))) }
+      @inlinable @inline(__always) get { .init(unsafeAddress: self.unsafeAddress + (\(raw: self.offset))) }
       """
     ]
   }
