@@ -99,6 +99,7 @@ extension FixedWidthInteger {
 
 public protocol BitField {
   associatedtype Storage: FixedWidthInteger & UnsignedInteger
+  static var bitWidth: Int { get }
 
   static func insert(_ value: Storage, into storage: inout Storage)
   static func extract(from storage: Storage) -> Storage
@@ -106,20 +107,22 @@ public protocol BitField {
 
 public protocol ContiguousBitField: BitField {
   static var bitRange: Range<Int> { get }
-  static var bitWidth: Int { get }
   static var bitOffset: Int { get }
   static var bitMask: Storage { get }
 }
 
 extension ContiguousBitField {
+  @inlinable @inline(__always)
   public static var bitWidth: Int {
     Self.bitRange.upperBound - Self.bitRange.lowerBound
   }
-  public static var bitOffset: Int { Self.bitRange.lowerBound }
-  public static var bitMask: Storage { (1 << Self.bitWidth) &- 1 }
-}
 
-extension ContiguousBitField {
+  @inlinable @inline(__always)
+  public static var bitOffset: Int { Self.bitRange.lowerBound }
+
+  @inlinable @inline(__always)
+  public static var bitMask: Storage { (1 << Self.bitWidth) &- 1 }
+
   // FIXME: value.bitWidth <= Self.bitWidth <= Storage.bitWidth
   @inlinable @inline(__always)
   public static func insert(_ value: Storage, into storage: inout Storage) {
@@ -139,6 +142,15 @@ public protocol DiscontiguousBitField: BitField {
 }
 
 extension DiscontiguousBitField {
+  @inlinable @inline(__always)
+  public static var bitWidth: Int {
+    var bitWidth = 0
+    for bitRange in Self.bitRanges {
+      bitWidth += bitRange.upperBound - bitRange.lowerBound
+    }
+    return bitWidth
+  }
+
   @inlinable @inline(__always)
   public static func insert(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRanges] = value

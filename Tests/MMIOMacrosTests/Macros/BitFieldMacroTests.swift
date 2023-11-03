@@ -29,7 +29,7 @@ final class BitFieldMacroTests: XCTestCase {
     var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
     @Argument(label: "as")
-    var projectedType: Int?
+    var projectedType: BitFieldTypeProjection?
 
     mutating func update(
       label: String,

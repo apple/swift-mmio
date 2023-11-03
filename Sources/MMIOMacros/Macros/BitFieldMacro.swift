@@ -23,6 +23,8 @@ protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
 
   var bitRanges: [Range<Int>] { get }
   var bitRangeExpressions: [ExprSyntax] { get }
+
+  var projectedType: BitFieldTypeProjection? { get }
 }
 
 extension BitFieldMacro {
@@ -125,7 +127,7 @@ public struct ReservedMacro: BitFieldMacro, Sendable {
   var bitRanges: [Range<Int>]
   var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
-  var projectedType: Int?
+  var projectedType: BitFieldTypeProjection?
 
   mutating func update(
     label: String,
@@ -153,7 +155,7 @@ public struct ReadWriteMacro: BitFieldMacro, Sendable {
   var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
-  var projectedType: Int?
+  var projectedType: BitFieldTypeProjection?
 
   mutating func update(
     label: String,
@@ -183,7 +185,7 @@ public struct ReadOnlyMacro: BitFieldMacro, Sendable {
   var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
-  var projectedType: Int?
+  var projectedType: BitFieldTypeProjection?
 
   mutating func update(
     label: String,
@@ -213,7 +215,7 @@ public struct WriteOnlyMacro: BitFieldMacro, Sendable {
   var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
-  var projectedType: Int?
+  var projectedType: BitFieldTypeProjection?
 
   mutating func update(
     label: String,
