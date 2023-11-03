@@ -97,10 +97,9 @@ class MMIOFileCheckTestCaseCommonSetup {
     print("Building MMIO...")
     _ = try sh(
       """
-      #swift build \
+      swift build \
         --configuration release \
         --triple arm64-apple-macosx14.0 \
-        --product MMIO \
         --scratch-path \(self.buildDirectoryURL.path) \
         --package-path \(self.packageDirectoryURL.path)
       """)

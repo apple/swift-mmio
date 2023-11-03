@@ -15,7 +15,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-// @BaseName(bits: 3..<4, 0..<1, as: Bool.self)
+// @BaseName(bits: 3..<4, 0..<1, as: Swift.Bool.self)
 protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
   static var isReadable: Bool { get }
   static var isWriteable: Bool { get }
@@ -23,8 +23,6 @@ protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
 
   var bitRanges: [Range<Int>] { get }
   var bitRangeExpressions: [ExprSyntax] { get }
-
-  var projectedType: Int? { get }
 }
 
 extension BitFieldMacro {
