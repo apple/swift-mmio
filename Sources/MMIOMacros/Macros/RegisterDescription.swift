@@ -63,19 +63,13 @@ extension RegisterDescription {
 extension RegisterDescription {
   func rawTypeDeclarations() -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
-    // Create accessor declarations for each bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields.map {
-      """
-      \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-        @inlinable @inline(__always) get {
-          \($0.fieldType).extract(from: self.storage)
-        }
-        @inlinable @inline(__always) set {
-          \($0.fieldType).insert(newValue, into: &self.storage)
-        }
-      }
-      """
-    }
+    // Create variable declaration for each bitfield.
+    let bitFieldDeclarations: [DeclSyntax] = self
+      .bitFields
+      .map { $0.rawVariableDeclaration() }
+
+    // Create an initializer to convert from the Read/Write types to the
+    // Raw code.
     let initDeclarations: [DeclSyntax] =
       if isSymmetric {
         [
@@ -100,7 +94,7 @@ extension RegisterDescription {
         ]
       }
 
-    // Produce Raw type declaration
+    // Produce Raw type declaration.
     declarations.append(
       """
       \(self.accessLevel)struct Raw: RegisterValueRaw {
@@ -118,30 +112,21 @@ extension RegisterDescription {
 
   func readWriteTypeDeclarations() -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
-    // Alias Read to ReadWrite
+    // Alias Read to ReadWrite.
     declarations.append("\(self.accessLevel)typealias Read = ReadWrite")
-    // Alias Write to ReadWrite
+    // Alias Write to ReadWrite.
     declarations.append("\(self.accessLevel)typealias Write = ReadWrite")
-    // Create accessor declarations for each readable bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields
-      .lazy
-      .filter { $0.type.isReadable && $0.type.isWriteable }
-      .map {
-        """
-        \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-          @inlinable @inline(__always) get {
-            \($0.fieldType).extract(from: self.storage)
-          }
-          @inlinable @inline(__always) set {
-            \($0.fieldType).insert(newValue, into: &self.storage)
-          }
-        }
-        """
-      }
-    // Produce Read-Write type declaration
+
+    // Create variable declaration for each readable and writable bitfield.
+    let bitFieldDeclarations: [DeclSyntax] = self
+      .bitFields
+      .compactMap { $0.readWriteVariableDeclaration() }
+
+    // Produce Read-Write type declaration.
     declarations.append(
       """
-      \(self.accessLevel)struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+      \(self.accessLevel)\
+      struct ReadWrite: RegisterValueRead, RegisterValueWrite {
         \(self.accessLevel)typealias Value = \(self.name)
         var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: ReadWrite) {
@@ -158,23 +143,13 @@ extension RegisterDescription {
 
   func readTypeDeclarations() -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
-    // Create accessor declarations for each readable bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields
-      .lazy
-      .filter { $0.type.isReadable }
-      .map {
-        """
-        \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-          @inlinable @inline(__always) get {
-            \($0.fieldType).extract(from: self.storage)
-          }
-          @inlinable @inline(__always) set {
-            \($0.fieldType).insert(newValue, into: &self.storage)
-          }
-        }
-        """
-      }
-    // Produce Read type declaration
+
+    // Create variable declaration for each readable bitfield.
+    let bitFieldDeclarations: [DeclSyntax] = self
+      .bitFields
+      .compactMap { $0.readVariableDeclaration() }
+
+    // Produce Read type declaration.
     declarations.append(
       """
       \(self.accessLevel)struct Read: RegisterValueRead {
@@ -189,27 +164,13 @@ extension RegisterDescription {
 
   func writeTypeDeclarations() -> [DeclSyntax] {
     var declarations = [DeclSyntax]()
-    // FIXME: improve warning message
-    // blocked-by: rdar://116130327 (Customizable deprecation messages)
 
-    // Create accessor declarations for each readable bitfield
-    let bitFieldDeclarations: [DeclSyntax] = bitFields
-      .lazy
-      .filter { $0.type.isWriteable }
-      .map {
-        """
-        \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-          @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-          @inlinable @inline(__always) get {
-            \($0.fieldType).extract(from: self.storage)
-          }
-          @inlinable @inline(__always) set {
-            \($0.fieldType).insert(newValue, into: &self.storage)
-          }
-        }
-        """
-      }
-    // Produce Write type declaration
+    // Create accessor declarations for each writable bitfield.
+    let bitFieldDeclarations: [DeclSyntax] = self
+      .bitFields
+      .compactMap { $0.writeVariableDeclaration() }
+
+    // Produce Write type declaration.
     declarations.append(
       """
       \(self.accessLevel)struct Write: RegisterValueWrite {

@@ -30,11 +30,14 @@ public protocol RegisterValueRead {
 }
 
 extension RegisterValueRead {
+  // FIXME: Avoid @_disfavoredOverload if possible
   /// Yields a view of the data underlying the read view, allowing for direct
   /// manipulation of the register's bits.
   ///
   /// Mutation through the raw view are unchecked. The user is responsible for
   /// ensuring the bit pattern is valid.
+  @_disfavoredOverload
+  @inlinable @inline(__always)
   public var raw: Value.Raw {
     _read {
       yield Value.Raw(self)
@@ -59,6 +62,7 @@ extension RegisterValueWrite {
   ///
   /// Mutation through the raw view are unchecked. The user is responsible for
   /// ensuring the bit pattern is valid.
+  @inlinable @inline(__always)
   public var raw: Value.Raw {
     _read {
       yield Value.Raw(self)
