@@ -73,21 +73,3 @@ extension Argument {
     self.container = nil
   }
 }
-
-extension ErrorDiagnostic {
-  static func expectedExactlyOneArgument(label: String) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' argument '\(label)' must be passed exactly one \
-      argument
-      """)
-  }
-
-  static func expectedZeroOrOneArgument(label: String) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' argument '\(label)' must be passed zero or one \
-      arguments
-      """)
-  }
-}

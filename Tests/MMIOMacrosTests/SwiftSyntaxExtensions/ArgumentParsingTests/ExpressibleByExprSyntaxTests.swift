@@ -77,15 +77,6 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertNoParse(expression: "(1234)", as: Int.self)
   }
 
-  func test_bitWidth() throws {
-    XCTAssertParse(expression: "8", expected: BitWidth(value: 8))
-    XCTAssertParse(expression: "16", expected: BitWidth(value: 16))
-    XCTAssertParse(expression: "32", expected: BitWidth(value: 32))
-    XCTAssertParse(expression: "64", expected: BitWidth(value: 64))
-
-    XCTAssertNoParse(expression: "7", as: BitWidth.self)
-  }
-
   func test_rangeInt() throws {
     XCTAssertParse(expression: "0..<1", expected: 0..<1)
     XCTAssertParse(expression: "0 ..< 1", expected: 0..<1)
@@ -95,5 +86,14 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertNoParse(expression: "(0)..<1", as: Range<Int>.self)
     XCTAssertNoParse(expression: "0..<(1)", as: Range<Int>.self)
     XCTAssertNoParse(expression: "(0)..<(1)", as: Range<Int>.self)
+  }
+
+  func test_bitWidth() throws {
+    XCTAssertParse(expression: "8", expected: BitWidth(value: 8))
+    XCTAssertParse(expression: "16", expected: BitWidth(value: 16))
+    XCTAssertParse(expression: "32", expected: BitWidth(value: 32))
+    XCTAssertParse(expression: "64", expected: BitWidth(value: 64))
+
+    XCTAssertNoParse(expression: "7", as: BitWidth.self)
   }
 }

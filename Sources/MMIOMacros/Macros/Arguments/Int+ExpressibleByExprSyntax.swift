@@ -12,9 +12,26 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-protocol ExpressibleByExprSyntax {
+extension Int: ExpressibleByExprSyntax {
   init(
     expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws
+  ) throws {
+    guard
+      let intLiteral = expression.as(IntegerLiteralExprSyntax.self),
+      let int = intLiteral.value
+    else {
+      context.error(
+        at: expression,
+        message: .expectedIntegerLiteral())
+      throw ExpansionError()
+    }
+    self = int
+  }
+}
+
+extension ErrorDiagnostic {
+  static func expectedIntegerLiteral() -> Self {
+    .init("'\(Macro.signature)' requires expression to be an integer literal")
+  }
 }

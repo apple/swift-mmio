@@ -51,7 +51,7 @@ extension ExactlyOne: ArgumentContainer {
     guard initial == nil else {
       context.error(
         at: expression,
-        message: .expectedExactlyOneArgument(label: label))
+        message: .expectedExactlyOneArgumentValue(label: label))
       throw ExpansionError()
     }
     let value = try Value(expression: expression, in: context)
@@ -78,7 +78,7 @@ extension ZeroOrOne: ArgumentContainer {
     if let initial = initial, initial.parsed != nil {
       context.error(
         at: expression,
-        message: .expectedZeroOrOneArgument(label: label))
+        message: .expectedZeroOrOneArgumentValues(label: label))
       throw ExpansionError()
     }
     let value = try Value(expression: expression, in: context)
@@ -105,5 +105,21 @@ extension OneOrMore: ArgumentContainer {
     self = initial ?? .init(parsed: [])
     let value = try Value(expression: expression, in: context)
     self.parsed.append(.init(value: value, expression: expression))
+  }
+}
+
+extension ErrorDiagnostic {
+  static func expectedExactlyOneArgumentValue(label: String) -> Self {
+    .init(
+      """
+      '\(Macro.signature)' argument '\(label)' must be passed exactly one value
+      """)
+  }
+
+  static func expectedZeroOrOneArgumentValues(label: String) -> Self {
+    .init(
+      """
+      '\(Macro.signature)' argument '\(label)' must be passed zero or one values
+      """)
   }
 }
