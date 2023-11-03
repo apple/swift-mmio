@@ -12,9 +12,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-protocol ExpressibleByExprSyntax {
+extension ExprSyntax: ExpressibleByExprSyntax {
   init(
     expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws
+  ) throws {
+    self = expression
+  }
 }
