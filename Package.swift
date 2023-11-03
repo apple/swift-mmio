@@ -19,8 +19,16 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.1")
   ],
   targets: [
-    .target(name: "MMIO", dependencies: ["MMIOMacros", "MMIOVolatile"]),
-    .testTarget(name: "MMIOTests", dependencies: ["MMIO"]),
+    .target(
+      name: "MMIO",
+      dependencies: ["MMIOMacros", "MMIOVolatile"]),
+    .testTarget(
+      name: "MMIOFileCheckTests",
+      dependencies: ["MMIO"],
+      exclude: ["Tests"]),
+    .testTarget(
+      name: "MMIOTests",
+      dependencies: ["MMIO"]),
 
     .macro(
       name: "MMIOMacros",

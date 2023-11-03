@@ -16,20 +16,21 @@
 // - FixedWidthInteger.subscript[(variadic T: BitField)] -> Storage
 
 extension FixedWidthInteger {
-  @inline(__always)
+  @inlinable @inline(__always)
   static func bitRangeWithinBounds(bits bitRange: Range<Int>) -> Bool {
     bitRange.lowerBound >= 0 && bitRange.upperBound <= Self.bitWidth
   }
 
+  @inlinable @inline(__always)
   subscript(bits bitRange: Range<Int>) -> Self {
-    @inline(__always) get {
+    @inlinable @inline(__always) get {
       precondition(Self.bitRangeWithinBounds(bits: bitRange))
       let bitWidth = bitRange.upperBound - bitRange.lowerBound
       let bitMask: Self = 1 << bitWidth &- 1
       return (self >> bitRange.lowerBound) & bitMask
     }
 
-    @inline(__always) set {
+    @inlinable @inline(__always) set {
       precondition(Self.bitRangeWithinBounds(bits: bitRange))
       let bitWidth = bitRange.upperBound - bitRange.lowerBound
       let bitMask: Self = 1 << bitWidth &- 1
@@ -41,6 +42,7 @@ extension FixedWidthInteger {
 }
 
 extension FixedWidthInteger {
+  @inlinable @inline(__always)
   static func bitRangesCoalesced(bits bitRanges: [Range<Int>]) -> Bool {
     let bitRanges = bitRanges.sorted { $0.lowerBound < $1.lowerBound }
     var lowerBound = -1
@@ -55,8 +57,9 @@ extension FixedWidthInteger {
     return true
   }
 
+  @inlinable @inline(__always)
   subscript(bits bitRanges: [Range<Int>]) -> Self {
-    @inline(__always) get {
+    @inlinable @inline(__always) get {
       precondition(Self.bitRangesCoalesced(bits: bitRanges))
 
       var currentShift = 0
@@ -72,7 +75,7 @@ extension FixedWidthInteger {
       return value
     }
 
-    @inline(__always) set {
+    @inlinable @inline(__always) set {
       precondition(Self.bitRangesCoalesced(bits: bitRanges))
       var fullBitWidth = 0
       for bitRange in bitRanges {
@@ -118,12 +121,12 @@ extension ContiguousBitField {
 
 extension ContiguousBitField {
   // FIXME: value.bitWidth <= Self.bitWidth <= Storage.bitWidth
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func insert(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRange] = value
   }
 
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func extract(from storage: Storage) -> Storage {
     storage[bits: Self.bitRange]
   }
@@ -136,12 +139,12 @@ public protocol DiscontiguousBitField: BitField {
 }
 
 extension DiscontiguousBitField {
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func insert(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRanges] = value
   }
 
-  @inline(__always)
+  @inlinable @inline(__always)
   public static func extract(from storage: Storage) -> Storage {
     storage[bits: Self.bitRanges]
   }

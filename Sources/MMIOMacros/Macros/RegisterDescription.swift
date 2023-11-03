@@ -67,10 +67,10 @@ extension RegisterDescription {
     let bitFieldDeclarations: [DeclSyntax] = bitFields.map {
       """
       \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-        @inline(__always) get {
+        @inlinable @inline(__always) get {
           \($0.fieldType).extract(from: self.storage)
         }
-        @inline(__always) set {
+        @inlinable @inline(__always) set {
           \($0.fieldType).insert(newValue, into: &self.storage)
         }
       }
@@ -129,10 +129,10 @@ extension RegisterDescription {
       .map {
         """
         \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-          @inline(__always) get {
+          @inlinable @inline(__always) get {
             \($0.fieldType).extract(from: self.storage)
           }
-          @inline(__always) set {
+          @inlinable @inline(__always) set {
             \($0.fieldType).insert(newValue, into: &self.storage)
           }
         }
@@ -165,10 +165,10 @@ extension RegisterDescription {
       .map {
         """
         \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
-          @inline(__always) get {
+          @inlinable @inline(__always) get {
             \($0.fieldType).extract(from: self.storage)
           }
-          @inline(__always) set {
+          @inlinable @inline(__always) set {
             \($0.fieldType).insert(newValue, into: &self.storage)
           }
         }
@@ -200,10 +200,10 @@ extension RegisterDescription {
         """
         \(self.accessLevel)var \($0.fieldName): UInt\(raw: self.bitWidth) {
           @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-          @inline(__always) get {
+          @inlinable @inline(__always) get {
             \($0.fieldType).extract(from: self.storage)
           }
-          @inline(__always) set {
+          @inlinable @inline(__always) set {
             \($0.fieldType).insert(newValue, into: &self.storage)
           }
         }
