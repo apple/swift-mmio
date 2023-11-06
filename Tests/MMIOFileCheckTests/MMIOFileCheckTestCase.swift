@@ -13,6 +13,7 @@
 // FIXME: switch over to swift-testing
 // XCTest is really painful for dynamic test lists
 
+import Dispatch
 import Foundation
 import XCTest
 
@@ -60,7 +61,8 @@ final class MMIOFileCheckTests: XCTestCase {
           includeDirectoryURL: includeDirectoryURL))
     }
 
-    for test in tests {
+    DispatchQueue.concurrentPerform(iterations: tests.count) { index in
+      let test = tests[index]
       for issue in test.run() {
         self.record(issue)
       }
@@ -84,7 +86,10 @@ class MMIOFileCheckTestCaseCommonSetup {
   func setup() throws {
     try self.lock.withLock {
       if let buildResult = buildResult { return try buildResult.get() }
+      let start = DispatchTime.now()
       let buildResult = Result { try self._setup() }
+      let end = DispatchTime.now()
+      print("Setup took \(start.distance(to: end))")
       self.buildResult = buildResult
       return try buildResult.get()
     }
@@ -119,6 +124,8 @@ struct MMIOFileCheckTestCase {
       XCTFail("Setup failed: \(error)")
       return []
     }
+
+    print("Running: \(self.testFileURL.lastPathComponent)")
 
     let outputFileURL = self.buildDirectoryURL
       .appending(path: self.testFileURL.lastPathComponent)
