@@ -28,7 +28,7 @@ struct ExpressibleByExprSyntaxMacro: MMIOArgumentParsingMacro {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertParse<Value>(
   expression: ExprSyntax,
-  expected: Value,
+  expected: Value?,
   file: StaticString = #filePath,
   line: UInt = #line
 ) where Value: ExpressibleByExprSyntax, Value: Equatable {
@@ -40,6 +40,20 @@ func XCTAssertParse<Value>(
   } catch {
     XCTFail("Unexpected error: \(error)", file: file, line: line)
   }
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+func XCTAssertParseBitFieldTypeProjection(
+  expression: ExprSyntax,
+  file: StaticString = #filePath,
+  line: UInt = #line
+) {
+  let base = expression.as(MemberAccessExprSyntax.self)?.base
+  XCTAssertParse(
+    expression: expression,
+    expected: base.map { BitFieldTypeProjection(expression: $0) },
+    file: file,
+    line: line)
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -95,5 +109,15 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertParse(expression: "64", expected: BitWidth(value: 64))
 
     XCTAssertNoParse(expression: "7", as: BitWidth.self)
+  }
+
+  func test_bitFieldTypeProjection() throws {
+    XCTAssertParseBitFieldTypeProjection(expression: "Bool.self")
+    XCTAssertParseBitFieldTypeProjection(expression: "Swift.Bool.self")
+    XCTAssertParseBitFieldTypeProjection(expression: "Array<Int>.self")
+    XCTAssertParseBitFieldTypeProjection(expression: "Swift.Array<Int>.self")
+
+    XCTAssertNoParse(expression: "Bool", as: BitFieldTypeProjection.self)
+    XCTAssertNoParse(expression: "1", as: BitFieldTypeProjection.self)
   }
 }
