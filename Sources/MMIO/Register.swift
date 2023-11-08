@@ -17,9 +17,16 @@ public struct Register<Value> where Value: RegisterValue {
   @inlinable @inline(__always)
   public init(unsafeAddress: UInt) {
     let alignment = MemoryLayout<Value.Raw.Storage>.alignment
+    #if hasFeature(Embedded)
+    // FIXME: Embedded doesn't have static interpolated strings yet
+    precondition(
+      unsafeAddress.isMultiple(of: UInt(alignment)),
+      "Misaligned address")
+    #else
     precondition(
       unsafeAddress.isMultiple(of: UInt(alignment)),
       "Misaligned address '\(unsafeAddress)' for data of type '\(Value.self)'")
+    #endif
     self.unsafeAddress = unsafeAddress
   }
 }

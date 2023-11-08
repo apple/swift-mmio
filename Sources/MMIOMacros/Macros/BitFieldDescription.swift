@@ -19,6 +19,7 @@ struct BitFieldDescription {
   var fieldType: TypeSyntax
   var bitRanges: [Range<Int>]
   var bitRangeExpressions: [ExprSyntax]
+  var projectedType: ExprSyntax?
 }
 
 extension BitFieldDescription {
@@ -80,18 +81,21 @@ extension BitFieldDescription {
   func readWriteVariableDeclaration() -> DeclSyntax? {
     guard
       self.type.isReadable,
-      self.type.isWriteable
+      self.type.isWriteable,
+      let projectedType = self.projectedType
     else {
       return nil
     }
 
     return """
-      \(self.accessLevel)var \(self.fieldName): \(self.storageType()) {
+      \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @inlinable @inline(__always) get {
-          self.raw.\(self.fieldName)
+          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
+          return \(projectedType)(storage: self.raw.\(self.fieldName))
         }
         @inlinable @inline(__always) set {
-          self.raw.\(self.fieldName) = newValue
+          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
+          self.raw.\(self.fieldName) = newValue.storage(Self.Value.Raw.Storage.self)
         }
       }
       """
@@ -99,15 +103,17 @@ extension BitFieldDescription {
 
   func readVariableDeclaration() -> DeclSyntax? {
     guard
-      self.type.isReadable
+      self.type.isReadable,
+      let projectedType = self.projectedType
     else {
       return nil
     }
 
     return """
-      \(self.accessLevel)var \(self.fieldName): \(self.storageType()) {
+      \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @inlinable @inline(__always) get {
-          self.raw.\(self.fieldName)
+          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
+          return \(projectedType)(storage: self.raw.\(self.fieldName))
         }
       }
       """
@@ -115,7 +121,8 @@ extension BitFieldDescription {
 
   func writeVariableDeclaration() -> DeclSyntax? {
     guard
-      self.type.isWriteable
+      self.type.isWriteable,
+      let projectedType = self.projectedType
     else {
       return nil
     }
@@ -124,13 +131,15 @@ extension BitFieldDescription {
     // blocked-by: rdar://116130327 (Customizable deprecation messages)
 
     return """
-      \(self.accessLevel)var \(self.fieldName): \(self.storageType()) {
+      \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
         @inlinable @inline(__always) get {
-          self.raw.\(self.fieldName)
+          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
+          return \(projectedType)(storage: self.raw.\(self.fieldName))
         }
         @inlinable @inline(__always) set {
-          self.raw.\(self.fieldName) = newValue
+          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
+          self.raw.\(self.fieldName) = newValue.storage(Self.Value.Raw.Storage.self)
         }
       }
       """

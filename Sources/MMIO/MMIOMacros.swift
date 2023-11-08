@@ -34,13 +34,16 @@ public macro Reserved(bits: Range<Int>...) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
 
 @attached(accessor)
-public macro ReadWrite(bits: Range<Int>..., as: Any? = nil) =
+public macro ReadWrite<Value>(bits: Range<Int>..., as: Value.Type = Never.self) =
   #externalMacro(module: "MMIOMacros", type: "ReadWriteMacro")
+where Value: BitFieldProjectable
 
 @attached(accessor)
-public macro ReadOnly(bits: Range<Int>..., as: Any? = nil) =
+public macro ReadOnly<Value>(bits: Range<Int>..., as: Value.Type = Never.self) =
   #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
+where Value: BitFieldProjectable
 
 @attached(accessor)
-public macro WriteOnly(bits: Range<Int>..., as: Any? = nil) =
+public macro WriteOnly<Value>(bits: Range<Int>..., as: Value.Type = Never.self) =
   #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
+where Value: BitFieldProjectable
