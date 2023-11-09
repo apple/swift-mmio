@@ -74,19 +74,21 @@ final class RegisterBankMacroTests: XCTestCase {
       macros: Self.macros)
   }
 
-  func test_members_varDeclsAreAnnotated() {
+  func test_members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
       @RegisterBank
       struct S {
         var v1: Int
         @OtherAttribute var v2: Int
+        var v3: Int { willSet {} }
       }
       """,
       expandedSource: """
         struct S {
           var v1: Int
           @OtherAttribute var v2: Int
+          var v3: Int { willSet {} }
         }
         """,
       diagnostics: [
@@ -112,26 +114,47 @@ final class RegisterBankMacroTests: XCTestCase {
           fixIts: [
             .init(message: "Insert '@RegisterBank(offset:)' macro")
           ]),
+        .init(
+          message:
+            ErrorDiagnostic
+            .expectedMemberAnnotatedWithMacro([RegisterBankOffsetMacro.self])
+            .message,
+          line: 5,
+          column: 3,
+          highlight: "var v3: Int { willSet {} }",
+          fixIts: [
+            .init(message: "Insert '@RegisterBank(offset:)' macro")
+          ]),
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_members_nonVarDeclIsOk() {
+  func test_members_nonStoredVarDeclsAreOk() {
     assertMacroExpansion(
       """
       @RegisterBank
       struct S {
         func f() {}
         class C {}
+        var v: Void {}
+        var v: Void { get {} }
+        var v: Void { set {} }
+        var v: Void { _read {} }
+        var v: Void { _modify {} }
       }
       """,
       expandedSource: """
         struct S {
           func f() {}
           class C {}
+          var v: Void {}
+          var v: Void { get {} }
+          var v: Void { set {} }
+          var v: Void { _read {} }
+          var v: Void { _modify {} }
 
-          private (set) var unsafeAddress: UInt
+          let unsafeAddress: UInt
 
           #if FEATURE_INTERPOSABLE
           var interposer: (any MMIOInterposer)?

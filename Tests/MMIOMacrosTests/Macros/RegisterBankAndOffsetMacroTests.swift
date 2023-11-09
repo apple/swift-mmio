@@ -55,7 +55,7 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
             }
           }
 
-          private (set) var unsafeAddress: UInt
+          let unsafeAddress: UInt
 
           #if FEATURE_INTERPOSABLE
           var interposer: (any MMIOInterposer)?

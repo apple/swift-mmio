@@ -51,6 +51,36 @@ extension VariableDeclSyntax {
   }
 }
 
+extension VariableDeclSyntax {
+  var isComputedProperty: Bool {
+    guard
+      self.bindings.count == 1,
+      let binding = self.bindings.first
+    else {
+      // Computed properties cannot have multiple bindings.
+      return false
+    }
+
+    // Computed properties must have an accessor block
+    guard let accessorBlock = binding.accessorBlock else { return false }
+
+    switch accessorBlock.accessors {
+    case .accessors(let accessors):
+      for accessor in accessors {
+        switch accessor.accessorSpecifier.tokenKind {
+        case .keyword(.willSet), .keyword(.didSet):
+          return false
+        default:
+          return true
+        }
+      }
+      return false
+    case .getter:
+      return true
+    }
+  }
+}
+
 extension ErrorDiagnostic {
   static func expectedBindingSpecifier(_ node: Keyword) -> Self {
     .init("'\(Macro.signature)' can only be applied to '\(node)' bindings")

@@ -46,10 +46,15 @@ extension RegisterBankMacro: MMIOMemberMacro {
     // Walk all the members of the struct.
     var error = false
     for member in structDecl.memberBlock.members {
-      // Ignore non-variable declaration.
-      guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
+      guard
+        // Ignore non-variable declarations.
+        let variableDecl = member.decl.as(VariableDeclSyntax.self),
+        // Ignore non-stored properties.
+        !variableDecl.isComputedProperty
+      else {
         continue
       }
+
       // Each variable declaration must be annotated with the
       // RegisterBankOffsetMacro. Further syntactic checking will be performed
       // by that macro.
@@ -64,10 +69,10 @@ extension RegisterBankMacro: MMIOMemberMacro {
 
     // Retrieve the access level of the struct, so we can use the same
     // access level for the unsafeAddress property and initializer.
-    let acl = structDecl.accessLevel
+    let acl = structDecl.accessLevel?.trimmed
 
     return [
-      "\(acl)private(set) var unsafeAddress: UInt",
+      "\(acl) let unsafeAddress: UInt",
       """
       #if FEATURE_INTERPOSABLE
       var interposer: (any MMIOInterposer)?
