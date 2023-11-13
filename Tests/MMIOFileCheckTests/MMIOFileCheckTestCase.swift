@@ -67,6 +67,8 @@ final class MMIOFileCheckTests: XCTestCase {
         self.record(issue)
       }
     }
+
+    print("Finished running \(tests.count) tests")
   }
 }
 
