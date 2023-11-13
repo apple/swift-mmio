@@ -13,32 +13,32 @@ public protocol BitFieldProjectable {
   static var bitWidth: Int { get }
 
   init<Storage>(storage: Storage)
-  where Storage: FixedWidthInteger, Storage: UnsignedInteger
+  where Storage: FixedWidthInteger & UnsignedInteger
 
   func storage<Storage>(_: Storage.Type) -> Storage
-  where Storage: FixedWidthInteger, Storage: UnsignedInteger
+  where Storage: FixedWidthInteger & UnsignedInteger
 }
 
 extension Never: BitFieldProjectable {
   public static var bitWidth: Int { fatalError() }
 
   public init<Storage>(storage: Storage)
-  where Storage: FixedWidthInteger, Storage: UnsignedInteger { fatalError() }
+  where Storage: FixedWidthInteger & UnsignedInteger { fatalError() }
 
   public func storage<Storage>(_: Storage.Type) -> Storage
-  where Storage: FixedWidthInteger, Storage: UnsignedInteger { fatalError() }
+  where Storage: FixedWidthInteger & UnsignedInteger { fatalError() }
 }
 
 extension Bool: BitFieldProjectable {
   public static let bitWidth = 1
 
   public init<Storage>(storage: Storage)
-  where Storage: FixedWidthInteger, Storage: UnsignedInteger {
+  where Storage: FixedWidthInteger & UnsignedInteger {
     self = storage != 0b0
   }
 
   public func storage<Storage>(_: Storage.Type) -> Storage
-  where Storage: FixedWidthInteger, Storage: UnsignedInteger {
+  where Storage: FixedWidthInteger & UnsignedInteger {
     self ? 0b1 : 0b0
   }
 }

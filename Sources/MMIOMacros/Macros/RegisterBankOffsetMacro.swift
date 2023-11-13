@@ -121,7 +121,13 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
 
     return [
       """
-      @inlinable @inline(__always) get { .init(unsafeAddress: self.unsafeAddress + (\(raw: self.offset))) }
+      @inlinable @inline(__always) get {
+        #if FEATURE_INTERPOSABLE
+        return .init(unsafeAddress: self.unsafeAddress + (\(raw: self.$offset)), interposer: self.interposer)
+        #else
+        return .init(unsafeAddress: self.unsafeAddress + (\(raw: self.$offset)))
+        #endif
+      }
       """
     ]
   }

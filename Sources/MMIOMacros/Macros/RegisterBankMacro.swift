@@ -65,9 +65,23 @@ extension RegisterBankMacro: MMIOMemberMacro {
     return [
       "\(acl)private(set) var unsafeAddress: UInt",
       """
+      #if FEATURE_INTERPOSABLE
+      var interposer: (any MMIOInterposer)?
+      #endif
+      """,
+      """
+      #if FEATURE_INTERPOSABLE
+      @inlinable @inline(__always)
+      \(acl)init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
+        self.unsafeAddress = unsafeAddress
+        self.interposer = interposer
+      }
+      #else
+      @inlinable @inline(__always)
       \(acl)init(unsafeAddress: UInt) {
         self.unsafeAddress = unsafeAddress
       }
+      #endif
       """,
     ]
   }

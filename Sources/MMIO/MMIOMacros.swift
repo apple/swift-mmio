@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 // RegisterBank macros
-@attached(member, names: named(unsafeAddress), named(init))
+@attached(member, names: named(unsafeAddress), named(init), named(interposer))
 public macro RegisterBank() =
   #externalMacro(module: "MMIOMacros", type: "RegisterBankMacro")
 
