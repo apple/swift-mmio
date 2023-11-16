@@ -17,7 +17,8 @@ struct CompilerPluginMain: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
     // RegisterBank macros
     RegisterBankMacro.self,
-    RegisterBankOffsetMacro.self,
+    RegisterBankScalarMemberMacro.self,
+    RegisterBankArrayMemberMacro.self,
     // Register macros
     RegisterMacro.self,
     ReservedMacro.self,
