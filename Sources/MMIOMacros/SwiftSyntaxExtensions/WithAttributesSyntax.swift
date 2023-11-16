@@ -44,17 +44,11 @@ extension WithAttributesSyntax {
       }
     }
     guard matches.count == 1 else {
-      switch macros.count {
-      case 1:
-        throw context.error(
-          at: self,
-          message: .expectedMemberAnnotatedWithMacro(macros),
-          fixIts: .insertMacro(node: self, macros[0]))
-      default:
-        throw context.error(
-          at: self,
-          message: .expectedMemberAnnotatedWithMacro(macros))
-      }
+      // FIXME: if matches.count > 1 then a different error should be emitted.
+      throw context.error(
+        at: self,
+        message: .expectedMemberAnnotatedWithMacro(macros),
+        fixIts: macros.map { .insertMacro(node: self, $0) })
     }
     return matches[0]
   }
@@ -75,14 +69,14 @@ extension ErrorDiagnostic {
 
       return .init(
         """
-        '\(Macro.signature)' type member must be annotated with exactly one \
-        macro of \(options)
+        '\(Macro.signature)' type member must be annotated with exactly one of \
+        \(options)
         """)
     }
     return .init(
       """
       '\(Macro.signature)' type member must be annotated with \
-      '\(macros[0].signature)' macro
+      '\(macros[0].signature)'
       """)
   }
 }

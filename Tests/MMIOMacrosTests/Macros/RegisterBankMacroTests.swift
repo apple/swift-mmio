@@ -94,36 +94,33 @@ final class RegisterBankMacroTests: XCTestCase {
       diagnostics: [
         .init(
           message:
-            ErrorDiagnostic
-            .expectedMemberAnnotatedWithMacro([RegisterBankOffsetMacro.self])
-            .message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBankMemberMacros).message,
           line: 3,
           column: 3,
           highlight: "var v1: Int",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro")
+            .init(message: "Insert '@RegisterBank(offset:)' macro"),
+            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
-            ErrorDiagnostic
-            .expectedMemberAnnotatedWithMacro([RegisterBankOffsetMacro.self])
-            .message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBankMemberMacros).message,
           line: 4,
           column: 3,
           highlight: "@OtherAttribute var v2: Int",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro")
+            .init(message: "Insert '@RegisterBank(offset:)' macro"),
+            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
-            ErrorDiagnostic
-            .expectedMemberAnnotatedWithMacro([RegisterBankOffsetMacro.self])
-            .message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBankMemberMacros).message,
           line: 5,
           column: 3,
           highlight: "var v3: Int { willSet {} }",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro")
+            .init(message: "Insert '@RegisterBank(offset:)' macro"),
+            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
           ]),
       ],
       macros: Self.macros,

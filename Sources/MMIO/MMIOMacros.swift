@@ -16,7 +16,11 @@ public macro RegisterBank() =
 
 @attached(accessor)
 public macro RegisterBank(offset: Int) =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBankOffsetMacro")
+  #externalMacro(module: "MMIOMacros", type: "RegisterBankScalarMemberMacro")
+
+@attached(accessor)
+public macro RegisterBank(offset: Int, stride: Int, count: Int) =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBankArrayMemberMacro")
 
 // Register macros
 @attached(member, names: arbitrary)

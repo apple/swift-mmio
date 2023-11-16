@@ -18,19 +18,20 @@ import XCTest
 
 final class RegisterBankAndOffsetMacroTests: XCTestCase {
   static let macros: [String: Macro.Type] = [
-    "RegisterBankType": RegisterBankMacro.self,
-    "RegisterBank": RegisterBankOffsetMacro.self,
+    "RegisterBank": RegisterBankMacro.self,
+    "ScalarMember": RegisterBankScalarMemberMacro.self,
+    "ArrayMember": RegisterBankArrayMemberMacro.self,
   ]
   static let indentationWidth = Trivia.spaces(2)
 
   func test_expansion() {
     assertMacroExpansion(
       """
-      @RegisterBankType
+      @RegisterBank
       struct I2C {
-        @RegisterBank(offset: 0x0)
+        @ScalarMember(offset: 0x0)
         var control: Control
-        @RegisterBank(offset: 0x8)
+        @ScalarMember(offset: 0x8)
         var dr: Register<DR>
       }
       """,

@@ -12,7 +12,7 @@
 /// A container type referencing of a region of memory whose layout is defined
 /// by another type.
 public struct Register<Value> where Value: RegisterValue {
-  public let unsafeAddress: UInt
+  public var unsafeAddress: UInt
 
   #if FEATURE_INTERPOSABLE
   public var interposer: (any MMIOInterposer)?

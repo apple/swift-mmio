@@ -38,6 +38,25 @@ where Macro: ParsableMacro, Context: MacroExpansionContext {
         fixIts: fixIts))
     return ExpansionError()
   }
+
+  func error(
+    at node: some SyntaxProtocol,
+    message: ErrorDiagnostic<Macro>,
+    highlights: [Syntax]? = nil,
+    notes: [Note] = [],
+    fixIts: [FixIt]
+  ) -> ExpansionError {
+    self.context.diagnose(
+      .init(
+        node: node,
+        position: nil,
+        message: message,
+        highlights: highlights,
+        notes: notes,
+        fixIts: fixIts))
+    return ExpansionError()
+  }
+
 }
 
 extension MacroContext where Context == SuppressionContext {

@@ -84,6 +84,6 @@ struct OtherRangeTypes2 {
 struct Bank {
   @RegisterBank(offset: 0x4)
   var otgHprt: Register<OTG_HPRT>
-  @RegisterBank(offset: 0x8)
-  var asym: Register<SampleAsym>
+  @RegisterBank(offset: 0x8, stride: 0x10, count: 100)
+  var asym: RegisterArray<SampleAsym>
 }

@@ -36,9 +36,4 @@ extension ErrorDiagnostic {
   static func internalError() -> Self {
     .init("'\(Macro.signature)' internal error. \(Self.internalErrorSuffix)")
   }
-
-  // Declaration Member Errors
-  static func onlyMemberVarDecls() -> Self {
-    .init("'\(Macro.signature)' type can only contain properties")
-  }
 }

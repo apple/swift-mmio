@@ -105,17 +105,35 @@ final class RegisterMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 3,
           column: 3,
-          highlight: "var v1: Int"),
+          highlight: "var v1: Int",
+          fixIts: [
+            .init(message: "Insert '@Reserved(bits:)' macro"),
+            .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
+            .init(message: "Insert '@ReadOnly(bits:as:)' macro"),
+            .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
+          ]),
         .init(
           message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 4,
           column: 3,
-          highlight: "@OtherAttribute var v2: Int"),
+          highlight: "@OtherAttribute var v2: Int",
+          fixIts: [
+            .init(message: "Insert '@Reserved(bits:)' macro"),
+            .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
+            .init(message: "Insert '@ReadOnly(bits:as:)' macro"),
+            .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
+          ]),
         .init(
           message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 5,
           column: 3,
-          highlight: "var v3: Int { willSet {} }"),
+          highlight: "var v3: Int { willSet {} }",
+          fixIts: [
+            .init(message: "Insert '@Reserved(bits:)' macro"),
+            .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
+            .init(message: "Insert '@ReadOnly(bits:as:)' macro"),
+            .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
+          ]),
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
