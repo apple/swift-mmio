@@ -52,10 +52,8 @@ extension DeclGroupSyntax {
     let node: any SyntaxProtocol =
       (self as? DiagnosableDeclGroupSyntax)?.introducerKeyword ?? self
 
-    context.error(
+    throw context.error(
       at: node,
       message: .expectedDecl(Other.self))
-
-    throw ExpansionError()
   }
 }

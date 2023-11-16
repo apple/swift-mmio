@@ -21,10 +21,9 @@ extension Int: ExpressibleByExprSyntax {
       let intLiteral = expression.as(IntegerLiteralExprSyntax.self),
       let int = intLiteral.value
     else {
-      context.error(
+      throw context.error(
         at: expression,
         message: .expectedIntegerLiteral())
-      throw ExpansionError()
     }
     self = int
   }
