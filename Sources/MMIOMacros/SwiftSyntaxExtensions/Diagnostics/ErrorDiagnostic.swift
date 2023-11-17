@@ -37,19 +37,6 @@ extension ErrorDiagnostic {
     .init("'\(Macro.signature)' internal error. \(Self.internalErrorSuffix)")
   }
 
-  // Declaration Errors
-  static func expectedVarDecl() -> Self {
-    .init("'\(Macro.signature)' can only be applied to properties")
-  }
-
-  static func expectedDecl(_ decl: DiagnosableDeclGroupSyntax.Type) -> Self {
-    .init(
-      """
-      '\(Macro.signature)' can only be applied to \(decl.declTypeName) \
-      declarations
-      """)
-  }
-
   // Declaration Member Errors
   static func onlyMemberVarDecls() -> Self {
     .init("'\(Macro.signature)' type can only contain properties")
