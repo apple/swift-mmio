@@ -49,10 +49,7 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
   ) throws -> [AccessorDeclSyntax] {
     // Can only applied to variables.
     guard let variableDecl = declaration.as(VariableDeclSyntax.self) else {
-      context.error(
-        at: declaration,
-        message: .expectedVarDecl())
-      return []
+      throw context.error(at: declaration, message: .expectedVarDecl())
     }
 
     // Must be `var` binding.
@@ -65,32 +62,28 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
     guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
       if binding.pattern.is(TuplePatternSyntax.self) {
         // Binding identifier must not be a tuple.
-        context.error(
+        throw context.error(
           at: binding.pattern,
           message: .unexpectedTupleBindingIdentifier())
-        return []
       } else if binding.pattern.is(WildcardPatternSyntax.self) {
-        context.error(
+        throw context.error(
           at: binding.pattern,
           message: .expectedBindingIdentifier(),
           fixIts: .insertBindingIdentifier(node: binding.pattern))
-        return []
       } else {
-        context.error(
+        throw context.error(
           at: binding.pattern,
           message: .internalError())
-        return []
       }
     }
 
     // Binding identifier must not be "_" (implicitly named).
     guard identifierPattern.identifier.tokenKind != .wildcard else {
       // FIXME: never reached
-      context.error(
+      throw context.error(
         at: binding.pattern,
         message: .expectedBindingIdentifier(),
         fixIts: .insertBindingIdentifier(node: binding.pattern))
-      return []
     }
 
     // Binding must have a type annotation.
@@ -101,19 +94,17 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
     if let typeIdentifier = type.as(IdentifierTypeSyntax.self) {
       // Binding type must not be "_" (implicitly typed).
       guard typeIdentifier.name.tokenKind != .wildcard else {
-        context.error(
+        throw context.error(
           at: type,
           message: .unexpectedInferredType(),
           fixIts: .insertBindingType(node: binding))
-        return []
       }
     } else if type.is(MemberTypeSyntax.self) {
       // Ok
     } else {
-      context.error(
+      throw context.error(
         at: type,
         message: .unexpectedBindingType())
-      return []
     }
 
     // Binding must not have any accessors.

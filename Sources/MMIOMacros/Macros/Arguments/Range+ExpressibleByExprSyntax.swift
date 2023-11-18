@@ -27,10 +27,9 @@ extension Range: ExpressibleByExprSyntax where Bound: ExpressibleByExprSyntax {
     } else if let sequence = expression.as(SequenceExprSyntax.self) {
       let elements = sequence.elements
       guard elements.count == 3 else {
-        context.error(
+        throw context.error(
           at: sequence,
           message: .expectedRangeLiteral())
-        throw ExpansionError()
       }
 
       let index0 = elements.startIndex
@@ -44,10 +43,9 @@ extension Range: ExpressibleByExprSyntax where Bound: ExpressibleByExprSyntax {
         right: elements[index2],
         in: context)
     } else {
-      context.error(
+      throw context.error(
         at: expression,
         message: .expectedRangeLiteral())
-      throw ExpansionError()
     }
   }
 
@@ -62,19 +60,17 @@ extension Range: ExpressibleByExprSyntax where Bound: ExpressibleByExprSyntax {
       let op = op.as(BinaryOperatorExprSyntax.self),
       op.operator.text == "..<"
     else {
-      context.error(
+      throw context.error(
         at: overall,
         message: .expectedRangeLiteral())
-      throw ExpansionError()
     }
 
     let left = try Bound(expression: left, in: context)
     let right = try Bound(expression: right, in: context)
     guard left < right else {
-      context.error(
+      throw context.error(
         at: overall,
         message: .expectedRangeLiteral())
-      throw ExpansionError()
     }
     return Self(uncheckedBounds: (left, right))
   }

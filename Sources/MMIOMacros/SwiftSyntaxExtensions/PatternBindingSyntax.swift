@@ -17,11 +17,10 @@ extension PatternBindingSyntax {
     _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws -> TypeSyntax {
     guard let type = self.typeAnnotation?.type else {
-      context.error(
+      throw context.error(
         at: self,
         message: .expectedTypeAnnotation(),
         fixIts: .insertBindingType(node: self))
-      throw ExpansionError()
     }
     return type
   }
@@ -30,11 +29,10 @@ extension PatternBindingSyntax {
     _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
     if let accessorBlock = self.accessorBlock {
-      context.error(
+      throw context.error(
         at: accessorBlock,
         message: .expectedStoredProperty(),
         fixIts: .removeAccessorBlock(node: self))
-      throw ExpansionError()
     }
   }
 }

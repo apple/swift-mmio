@@ -27,7 +27,7 @@ where Macro: ParsableMacro, Context: MacroExpansionContext {
     highlights: [Syntax]? = nil,
     notes: [Note] = [],
     fixIts: FixIt...
-  ) {
+  ) -> ExpansionError {
     self.context.diagnose(
       .init(
         node: node,
@@ -36,6 +36,7 @@ where Macro: ParsableMacro, Context: MacroExpansionContext {
         highlights: highlights,
         notes: notes,
         fixIts: fixIts))
+    return ExpansionError()
   }
 }
 

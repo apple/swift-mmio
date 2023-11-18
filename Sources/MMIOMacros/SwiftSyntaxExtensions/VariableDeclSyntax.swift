@@ -31,12 +31,10 @@ extension VariableDeclSyntax {
     _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
     guard self.bindingKind == bindingKind else {
-      context.error(
+      throw context.error(
         at: self.bindingSpecifier,
         message: .expectedBindingKind(bindingKind),
-        fixIts: .replaceWithVar(node: self.bindingSpecifier)
-      )
-      throw ExpansionError()
+        fixIts: .replaceWithVar(node: self.bindingSpecifier))
     }
   }
 }
@@ -51,10 +49,9 @@ extension VariableDeclSyntax {
     _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws -> PatternBindingSyntax {
     guard let binding = self.singleBinding else {
-      context.error(
+      throw context.error(
         at: self.bindings,
         message: .expectedSingleBinding())
-      throw ExpansionError()
     }
     return binding
   }

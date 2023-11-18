@@ -49,10 +49,9 @@ extension ExactlyOne: ArgumentContainer {
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
     guard initial == nil else {
-      context.error(
+      throw context.error(
         at: expression,
         message: .expectedExactlyOneArgumentValue(label: label))
-      throw ExpansionError()
     }
     let value = try Value(expression: expression, in: context)
     self.init(parsed: .init(value: value, expression: expression))
@@ -76,10 +75,9 @@ extension ZeroOrOne: ArgumentContainer {
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
     if let initial = initial, initial.parsed != nil {
-      context.error(
+      throw context.error(
         at: expression,
         message: .expectedZeroOrOneArgumentValues(label: label))
-      throw ExpansionError()
     }
     let value = try Value(expression: expression, in: context)
     self.init(parsed: .init(value: value, expression: expression))

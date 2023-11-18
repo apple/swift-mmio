@@ -154,12 +154,11 @@ extension ParsableMacro {
         previousLabelMatched = false
         children.formIndex(after: &childIndex)
       } else {
-        context.error(
+        throw context.error(
           at: expression,
           message: .unexpectedArgumentLabel(
             expected: child.label,
             actual: expression.label?.text ?? "_"))
-        throw ExpansionError()
       }
     }
 
@@ -171,10 +170,9 @@ extension ParsableMacro {
     // Check that all expressions have been consumed.
     if expressionIndex != expressions.endIndex {
       let expression = expressions[expressionIndex]
-      context.error(
+      throw context.error(
         at: expression,
         message: .unexpectedExtraArgument(label: expression.label?.text ?? "_"))
-      throw ExpansionError()
     }
 
     // Check that all children have been parsed.
@@ -187,10 +185,9 @@ extension ParsableMacro {
         children.formIndex(after: &childIndex)
         continue
       }
-      context.error(
+      throw context.error(
         at: expressions.isEmpty ? Syntax(node) : Syntax(expressions),
         message: .unexpectedMissingArgument(label: child.label))
-      throw ExpansionError()
     }
   }
 }

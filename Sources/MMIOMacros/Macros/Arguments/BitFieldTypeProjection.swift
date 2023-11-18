@@ -30,11 +30,10 @@ extension BitFieldTypeProjection: ExpressibleByExprSyntax {
       let base = memberAccess.base,
       memberAccess.declName.baseName.tokenKind == .keyword(.`self`)
     else {
-      context.error(
+      throw context.error(
         at: expression,
         message: .expectedTypeReferenceLiteral(),
         fixIts: .replaceExpressionWithTypeReference(node: expression))
-      throw ExpansionError()
     }
     self.expression = base
   }

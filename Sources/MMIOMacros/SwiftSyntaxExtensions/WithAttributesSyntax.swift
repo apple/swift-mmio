@@ -28,12 +28,10 @@ extension WithAttributesSyntax {
       if identifier.name.text == Macro.baseName { return }
     }
 
-    context.error(
+    throw context.error(
       at: self,
       message: .expectedMemberAnnotatedWithMacro(Macro.self),
       fixIts: .insertMacro(node: self, Macro.self))
-
-    throw ExpansionError()
   }
 
   func requireMacro(
@@ -57,10 +55,9 @@ extension WithAttributesSyntax {
       }
     }
     guard matches.count == 1 else {
-      context.error(
+      throw context.error(
         at: self,
         message: .expectedMemberAnnotatedWithOneOf(macros))
-      throw ExpansionError()
     }
     return matches[0]
   }

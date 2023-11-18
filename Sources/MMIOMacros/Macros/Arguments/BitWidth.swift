@@ -26,10 +26,9 @@ extension BitWidth: ExpressibleByExprSyntax {
     let value = try Int(expression: expression, in: context)
     let validBitWidths = [8, 16, 32, 64]
     guard validBitWidths.contains(value) else {
-      context.error(
+      throw context.error(
         at: expression,
         message: .expectedLiteralValue(in: validBitWidths))
-      throw ExpansionError()
     }
     self.value = value
   }

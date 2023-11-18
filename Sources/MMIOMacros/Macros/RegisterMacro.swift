@@ -57,7 +57,7 @@ extension RegisterMacro: MMIOMemberMacro {
     for member in structDecl.memberBlock.members {
       // Each member must be a variable declaration.
       guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
-        context.error(
+        _ = context.error(
           at: member.decl,
           message: .onlyMemberVarDecls())
         error = true
@@ -151,10 +151,7 @@ extension RegisterMacro: MMIOExtensionMacro {
     let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterValue {}"
 
     guard let extensionDecl = `extension`.as(ExtensionDeclSyntax.self) else {
-      context.error(
-        at: `extension`,
-        message: .internalError())
-      return []
+      throw context.error(at: `extension`, message: .internalError())
     }
 
     return [extensionDecl]

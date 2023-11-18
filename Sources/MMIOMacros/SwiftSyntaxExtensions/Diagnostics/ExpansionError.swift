@@ -10,4 +10,8 @@
 //===----------------------------------------------------------------------===//
 
 /// A marker error used as an early exit for a failed macro expansion.
+///
+/// Expansion errors should not be directly created, instead calls to
+/// ``MacroContext.error`` will return an expansion error which can be thrown
+/// to early exit.
 struct ExpansionError: Error {}
