@@ -38,6 +38,9 @@ extension RegisterBankMacro: MMIOMemberMacro {
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
     // Can only applied to structs.
+    // FIXME: https://github.com/apple/swift-syntax/pull/2366
+    // swift-format-ignore: NeverForceUnwrap
+    let declaration = declaration as! DeclSyntaxProtocol
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
     // Walk all the members of the struct.

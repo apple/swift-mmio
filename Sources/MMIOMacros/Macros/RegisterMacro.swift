@@ -46,6 +46,9 @@ extension RegisterMacro: MMIOMemberMacro {
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
     // Can only applied to structs.
+    // FIXME: https://github.com/apple/swift-syntax/pull/2366
+    // swift-format-ignore: NeverForceUnwrap
+    let declaration = declaration as! DeclSyntaxProtocol
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
     let accessLevel = structDecl.accessLevel
     let bitWidth = self.bitWidth.value
@@ -150,10 +153,6 @@ extension RegisterMacro: MMIOExtensionMacro {
 
     let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterValue {}"
 
-    guard let extensionDecl = `extension`.as(ExtensionDeclSyntax.self) else {
-      throw context.error(at: `extension`, message: .internalError())
-    }
-
-    return [extensionDecl]
+    return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
   }
 }
