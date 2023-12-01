@@ -115,44 +115,34 @@ extension RegisterMacro: MMIOMemberMacro {
   }
 }
 
-extension RegisterMacro: MMIOMemberAttributeMacro {
-  static var memberAttributeMacroSuppressParsingDiagnostics: Bool { true }
-
-  func expansion(
+extension RegisterMacro: MemberAttributeMacro {
+  public static func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingAttributesFor member: some DeclSyntaxProtocol,
-    in context: MacroContext<Self, some MacroExpansionContext>
+    in context: some MacroExpansionContext
   ) throws -> [AttributeSyntax] {
-    // Avoid duplicating diagnostics produced by `MemberMacro` conformance.
-    let context = MacroContext.makeSuppressingDiagnostics(Self.self)
-    // Only apply unavailable annotations to var member decls of a struct decl
-    // with exactly one bitField attribute.
-    guard
-      declaration.is(StructDeclSyntax.self),
-      let variableDecl = member.as(VariableDeclSyntax.self),
-      (try? variableDecl.requireMacro(bitFieldMacros, context)) != nil
-    else { return [] }
-    return ["@available(*, unavailable)"]
+    ["@available(*, unavailable)"]
   }
 }
 
-extension RegisterMacro: MMIOExtensionMacro {
-  static var extensionMacroSuppressParsingDiagnostics: Bool { true }
-
-  func expansion(
+extension RegisterMacro: ExtensionMacro {
+  public static func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some DeclGroupSyntax,
     providingExtensionsOf type: some TypeSyntaxProtocol,
     conformingTo protocols: [TypeSyntax],
-    in context: MacroContext<Self, some MacroExpansionContext>
+    in context: some MacroExpansionContext
   ) throws -> [ExtensionDeclSyntax] {
-    // Avoid duplicating diagnostics produced by `MemberMacro` conformance.
-    // Only create extension when applied to struct decls.
-    guard declaration.is(StructDeclSyntax.self) else { return [] }
-
-    let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterValue {}"
-
-    return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
+    [
+      ExtensionDeclSyntax(
+        extendedType: type,
+        inheritanceClause: InheritanceClauseSyntax(
+          inheritedTypes: InheritedTypeListSyntax([
+            InheritedTypeSyntax(
+              type: TypeSyntax(stringLiteral: "RegisterValue"))
+          ])),
+        memberBlock: MemberBlockSyntax(members: .init([])))
+    ]
   }
 }

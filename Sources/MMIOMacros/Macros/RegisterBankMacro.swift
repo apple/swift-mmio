@@ -43,24 +43,6 @@ extension RegisterBankMacro: MMIOMemberMacro {
     let declaration = declaration as! DeclSyntaxProtocol
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
-    // Walk all the members of the struct.
-    var error = false
-    for member in structDecl.memberBlock.members {
-      // Ignore non-variable declaration.
-      guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
-        continue
-      }
-      // Each variable declaration must be annotated with the
-      // RegisterBankOffsetMacro. Further syntactic checking will be performed
-      // by that macro.
-      do {
-        try variableDecl.requireMacro(RegisterBankOffsetMacro.self, context)
-      } catch _ {
-        error = true
-      }
-    }
-    guard !error else { return [] }
-
     // Retrieve the access level of the struct, so we can use the same
     // access level for the unsafeAddress property and initializer.
     let acl = structDecl.accessLevel

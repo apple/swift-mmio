@@ -47,75 +47,13 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [AccessorDeclSyntax] {
-    // Can only applied to variables.
-    let variableDecl =
-      try declaration.requireAs(VariableDeclSyntax.self, context)
-
-    // Must be `var` binding.
-    try variableDecl.require(bindingKind: .var, context)
-
-    // Exactly one binding for the variable.
-    let binding = try variableDecl.requireSingleBinding(context)
-
-    // Binding identifier must be a simple identifier
-    guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-      if binding.pattern.is(TuplePatternSyntax.self) {
-        // Binding identifier must not be a tuple.
-        throw context.error(
-          at: binding.pattern,
-          message: .unexpectedTupleBindingIdentifier())
-      } else if binding.pattern.is(WildcardPatternSyntax.self) {
-        throw context.error(
-          at: binding.pattern,
-          message: .expectedBindingIdentifier(),
-          fixIts: .insertBindingIdentifier(node: binding.pattern))
-      } else {
-        throw context.error(
-          at: binding.pattern,
-          message: .internalError())
-      }
-    }
-
-    // Binding identifier must not be "_" (implicitly named).
-    guard identifierPattern.identifier.tokenKind != .wildcard else {
-      // FIXME: never reached
-      throw context.error(
-        at: binding.pattern,
-        message: .expectedBindingIdentifier(),
-        fixIts: .insertBindingIdentifier(node: binding.pattern))
-    }
-
-    // Binding must have a type annotation.
-    let type = try binding.requireType(context)
-
-    // Binding type must be a simple identifier; not an optional, tuple,
-    // array, etc...
-    if let typeIdentifier = type.as(IdentifierTypeSyntax.self) {
-      // Binding type must not be "_" (implicitly typed).
-      guard typeIdentifier.name.tokenKind != .wildcard else {
-        throw context.error(
-          at: type,
-          message: .unexpectedInferredType(),
-          fixIts: .insertBindingType(node: binding))
-      }
-    } else if type.is(MemberTypeSyntax.self) {
-      // Ok
-    } else {
-      throw context.error(
-        at: type,
-        message: .unexpectedBindingType())
-    }
-
-    // Binding must not have any accessors.
-    try binding.requireNoAccessor(context)
-
     return [
       """
       @inlinable @inline(__always) get {
         #if FEATURE_INTERPOSABLE
-        return .init(unsafeAddress: self.unsafeAddress + (\(raw: self.$offset)), interposer: self.interposer)
+        return .init(unsafeAddress: self.unsafeAddress + (\(self.$offset)), interposer: self.interposer)
         #else
-        return .init(unsafeAddress: self.unsafeAddress + (\(raw: self.$offset)))
+        return .init(unsafeAddress: self.unsafeAddress + (\(self.$offset)))
         #endif
       }
       """

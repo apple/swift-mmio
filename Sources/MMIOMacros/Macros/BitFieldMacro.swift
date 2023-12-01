@@ -16,7 +16,7 @@ import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 // @BaseName(bits: 3..<4, 0..<1, as: Swift.Bool.self)
-protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
+protocol BitFieldMacro: AccessorMacro, ParsableMacro {
   static var isReadable: Bool { get }
   static var isWriteable: Bool { get }
   static var isSymmetric: Bool { get }
@@ -28,74 +28,11 @@ protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
 }
 
 extension BitFieldMacro {
-  func expansion(
+  public static func expansion(
     of node: AttributeSyntax,
     providingAccessorsOf declaration: some DeclSyntaxProtocol,
-    in context: MacroContext<Self, some MacroExpansionContext>
+    in context: some MacroExpansionContext
   ) throws -> [AccessorDeclSyntax] {
-    // Can only applied to variables.
-    let variableDecl =
-      try declaration
-      .requireAs(VariableDeclSyntax.self, context)
-
-    // Must be `var` binding.
-    try variableDecl.require(bindingKind: .var, context)
-
-    // Exactly one binding for the variable.
-    let binding = try variableDecl.requireSingleBinding(context)
-
-    // Binding identifier must be a simple identifier
-    guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-      if binding.pattern.is(TuplePatternSyntax.self) {
-        // Binding identifier must not be a tuple.
-        throw context.error(
-          at: binding.pattern,
-          message: .unexpectedTupleBindingIdentifier())
-      } else if binding.pattern.is(WildcardPatternSyntax.self) {
-        throw context.error(
-          at: binding.pattern,
-          message: .expectedBindingIdentifier(),
-          fixIts: .insertBindingIdentifier(node: binding.pattern))
-      } else {
-        throw context.error(
-          at: binding.pattern,
-          message: .internalError())
-      }
-    }
-
-    // Binding identifier must not be "_" (implicitly named).
-    guard identifierPattern.identifier.tokenKind != .wildcard else {
-      // FIXME: never reached
-      throw context.error(
-        at: binding.pattern,
-        message: .expectedBindingIdentifier(),
-        fixIts: .insertBindingIdentifier(node: binding.pattern))
-    }
-
-    // Binding must have a type annotation.
-    let type = try binding.requireType(context)
-
-    // Binding type must be a simple identifier; not an optional, tuple,
-    // array, etc...
-    if let typeIdentifier = type.as(IdentifierTypeSyntax.self) {
-      // Binding type must not be "_" (implicitly typed).
-      guard typeIdentifier.name.tokenKind != .wildcard else {
-        throw context.error(
-          at: type,
-          message: .unexpectedInferredType(),
-          fixIts: .insertBindingType(node: binding))
-      }
-    } else if type.is(MemberTypeSyntax.self) {
-      // Ok
-    } else {
-      throw context.error(
-        at: type,
-        message: .unexpectedBindingType())
-    }
-
-    // Binding must not have any accessors.
-    try binding.requireNoAccessor(context)
-
     return ["get { fatalError() }"]
   }
 }
