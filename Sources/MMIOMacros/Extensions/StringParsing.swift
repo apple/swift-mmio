@@ -18,6 +18,11 @@ extension Substring {
     return false
   }
 
+  mutating func consumeCharacter() -> Character? {
+    guard !self.isEmpty else { return nil }
+    return self.removeFirst()
+  }
+
   mutating func consumeBinaryDigit() -> Int? {
     guard let first = self.first else { return nil }
     guard let ascii = first.asciiValue else { return nil }
@@ -70,5 +75,42 @@ extension Substring {
     default:
       return nil
     }
+  }
+
+  // This isn't strictly correct but is good enough for our uses.
+  mutating func consumeInteger() -> Int? {
+    var value = 0
+    let initialCount = self.count
+    switch self.prefix(2) {
+    case "0b":
+      self.removeFirst(2)
+      while !self.isEmpty {
+        if self.drop(character: "_") { continue }
+        guard let digit = self.consumeBinaryDigit() else { break }
+        value = value * 2 + digit
+      }
+    case "0o":
+      self.removeFirst(2)
+      while !self.isEmpty {
+        if self.drop(character: "_") { continue }
+        guard let digit = self.consumeOctalDigit() else { break }
+        value = value * 8 + digit
+      }
+    case "0x":
+      self.removeFirst(2)
+      while !self.isEmpty {
+        if self.drop(character: "_") { continue }
+        guard let digit = self.consumeHexadecimalDigit() else { break }
+        value = value * 16 + digit
+      }
+    default:
+      while !self.isEmpty {
+        if self.drop(character: "_") { continue }
+        guard let digit = self.consumeDecimalDigit() else { break }
+        value = value * 10 + digit
+      }
+    }
+    guard self.count != initialCount else { return nil }
+    return value
   }
 }
