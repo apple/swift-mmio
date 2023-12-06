@@ -33,11 +33,10 @@ extension BitFieldMacro {
   ) throws -> [AccessorDeclSyntax] {
     // Can only applied to variables.
     let variableDecl =
-      try declaration
-      .requireAs(VariableDeclSyntax.self, context)
+      try declaration.requireAs(VariableDeclSyntax.self, context)
 
     // Must be `var` binding.
-    try variableDecl.require(bindingKind: .var, context)
+    try variableDecl.requireBindingSpecifier(.var, context)
 
     // Exactly one binding for the variable.
     let binding = try variableDecl.requireSingleBinding(context)

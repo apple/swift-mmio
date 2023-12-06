@@ -72,18 +72,6 @@ extension ErrorDiagnostic {
       """)
   }
 
-  // Binding Errors
-  static func expectedBindingKind(_ bindingKind: VariableBindingKind) -> Self {
-    .init(
-      """
-      "'\(Macro.signature)' can only be applied to '\(bindingKind)' properties"
-      """)
-  }
-
-  static func expectedSingleBinding() -> Self {
-    .init("'\(Macro.signature)' cannot be applied to compound properties")
-  }
-
   // Binding Identifier Errors
   static func expectedBindingIdentifier() -> Self {
     .init("'\(Macro.signature)' cannot be applied to anonymous properties")

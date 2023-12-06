@@ -101,9 +101,3 @@ func sh(
 
   return outputData.asUTF8String()
 }
-
-extension String {
-  var escapingSpaces: String {
-    replacingOccurrences(of: " ", with: "\\ ")
-  }
-}

@@ -82,7 +82,7 @@ final class BitFieldMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedBindingKind(.var).message,
+          message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 1,
           column: 20,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -91,7 +91,7 @@ final class BitFieldMacroTests: XCTestCase {
             .init(message: "Replace 'inout' with 'var'")
           ]),
         .init(
-          message: ErrorDiagnostic.expectedBindingKind(.var).message,
+          message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 2,
           column: 20,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
@@ -153,10 +153,10 @@ final class BitFieldMacroTests: XCTestCase {
   func test_bindingIdentifier_noTuple() {
     assertMacroExpansion(
       """
-      @Test(bits: 0..<1) var (a, b): (Int, Int)
+      @Test(bits: 0..<1) var (a, b): Int
       """,
       expandedSource: """
-        var (a, b): (Int, Int)
+        var (a, b): Int
         """,
       diagnostics: [
         .init(
