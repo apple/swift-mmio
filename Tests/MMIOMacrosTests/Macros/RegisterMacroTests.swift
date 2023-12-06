@@ -586,4 +586,265 @@ final class RegisterMacroTests: XCTestCase {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+
+  func test_expansion_otherRangeTypes0() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 32)
+      struct OtherRangeTypes0 {
+        @Reserved(bits: ...)
+        var unbounded: Unbounded
+      }
+      """,
+      expandedSource: """
+        struct OtherRangeTypes0 {
+          @available(*, unavailable)
+          var unbounded: Unbounded {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum Unbounded: ContiguousBitField {
+            typealias Storage = UInt32
+            static let bitRange = 0 ..< 32
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = OtherRangeTypes0
+            typealias Storage = UInt32
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var unbounded: UInt32 {
+              @inlinable @inline(__always) get {
+                Unbounded.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Unbounded.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = OtherRangeTypes0
+            var storage: UInt32
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension OtherRangeTypes0: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_expansion_otherRangeTypes1() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 32)
+      struct OtherRangeTypes1 {
+        @Reserved(bits: ...16)
+        var partialThrough: PartialThrough
+        @Reserved(bits: 17...)
+        var partialFrom: PartialFrom
+      }
+      """,
+      expandedSource: """
+        struct OtherRangeTypes1 {
+          @available(*, unavailable)
+          var partialThrough: PartialThrough {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var partialFrom: PartialFrom {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum PartialThrough: ContiguousBitField {
+            typealias Storage = UInt32
+            static let bitRange = 0 ..< 17
+          }
+
+          enum PartialFrom: ContiguousBitField {
+            typealias Storage = UInt32
+            static let bitRange = 17 ..< 32
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = OtherRangeTypes1
+            typealias Storage = UInt32
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var partialThrough: UInt32 {
+              @inlinable @inline(__always) get {
+                PartialThrough.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                PartialThrough.insert(newValue, into: &self.storage)
+              }
+            }
+            var partialFrom: UInt32 {
+              @inlinable @inline(__always) get {
+                PartialFrom.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                PartialFrom.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = OtherRangeTypes1
+            var storage: UInt32
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension OtherRangeTypes1: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_expansion_otherRangeTypes2() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 32)
+      struct OtherRangeTypes2 {
+        @Reserved(bits: ..<16)
+        var partialUpTo: PartialUpTo
+        @Reserved(bits: 16...31)
+        var closed: Closed
+      }
+      """,
+      expandedSource: """
+        struct OtherRangeTypes2 {
+          @available(*, unavailable)
+          var partialUpTo: PartialUpTo {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var closed: Closed {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum PartialUpTo: ContiguousBitField {
+            typealias Storage = UInt32
+            static let bitRange = 0 ..< 16
+          }
+
+          enum Closed: ContiguousBitField {
+            typealias Storage = UInt32
+            static let bitRange = 16 ..< 32
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = OtherRangeTypes2
+            typealias Storage = UInt32
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var partialUpTo: UInt32 {
+              @inlinable @inline(__always) get {
+                PartialUpTo.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                PartialUpTo.insert(newValue, into: &self.storage)
+              }
+            }
+            var closed: UInt32 {
+              @inlinable @inline(__always) get {
+                Closed.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Closed.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = OtherRangeTypes2
+            var storage: UInt32
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension OtherRangeTypes2: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }

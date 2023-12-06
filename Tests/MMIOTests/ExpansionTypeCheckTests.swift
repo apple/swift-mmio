@@ -58,6 +58,28 @@ struct SampleAsym {
   var rw: RW
 }
 
+@Register(bitWidth: 32)
+struct OtherRangeTypes0 {
+  @Reserved(bits: ...)
+  var unbounded: Unbounded
+}
+
+@Register(bitWidth: 32)
+struct OtherRangeTypes1 {
+  @Reserved(bits: ...16)
+  var partialThrough: PartialThrough
+  @Reserved(bits: 17...)
+  var partialFrom: PartialFrom
+}
+
+@Register(bitWidth: 32)
+struct OtherRangeTypes2 {
+  @Reserved(bits: ..<16)
+  var partialUpTo: PartialUpTo
+  @Reserved(bits: 16...31)
+  var closed: Closed
+}
+
 @RegisterBank
 struct Bank {
   @RegisterBank(offset: 0x4)
