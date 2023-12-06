@@ -14,14 +14,6 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 
 extension FixIt {
-  static func replaceWithVar(node: TokenSyntax) -> FixIt {
-    .replace(
-      message: MacroExpansionFixItMessage(
-        "Replace '\(node.trimmed)' with 'var'"),
-      oldNode: node,
-      newNode: TokenSyntax.keyword(.var))
-  }
-
   static func insertBindingType(node: PatternBindingSyntax) -> FixIt {
     // FIXME: https://github.com/apple/swift-syntax/issues/2205
     .replace(
