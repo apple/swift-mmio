@@ -60,14 +60,11 @@ extension RegisterMacro: MMIOMemberMacro {
     for member in structDecl.memberBlock.members {
       // Each member must be a variable declaration.
       guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
-        _ = context.error(
-          at: member.decl,
-          message: .onlyMemberVarDecls())
+        _ = context.error(at: member.decl, message: .onlyMemberVarDecls())
         error = true
         continue
       }
 
-      let suppressionContext = context.makeSuppressingDiagnostics()
       guard
         // Each declaration must be annotated with exactly one bitField macro.
         let value = try? variableDecl.requireMacro(bitFieldMacros, context),
@@ -75,7 +72,7 @@ extension RegisterMacro: MMIOMemberMacro {
         // Parse the arguments from the bitField macro.
         let macro = try? value.type.init(
           from: value.attribute,
-          in: suppressionContext),
+          in: context.makeSuppressingDiagnostics()),
 
         // Grab the type of the variable declaration. Diagnostics will be
         // emitted by the handling of @attched(accessor) of the applied bitField

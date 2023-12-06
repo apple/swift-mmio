@@ -52,7 +52,7 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
       try declaration.requireAs(VariableDeclSyntax.self, context)
 
     // Must be `var` binding.
-    try variableDecl.require(bindingKind: .var, context)
+    try variableDecl.requireBindingSpecifier(.var, context)
 
     // Exactly one binding for the variable.
     let binding = try variableDecl.requireSingleBinding(context)
