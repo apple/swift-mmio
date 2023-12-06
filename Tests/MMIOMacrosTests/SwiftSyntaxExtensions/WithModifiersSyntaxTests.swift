@@ -10,8 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftSyntax
-import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 @testable import MMIOMacros
