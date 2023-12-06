@@ -24,7 +24,9 @@ extension VariableDeclSyntax {
       throw context.error(
         at: self.bindingSpecifier,
         message: .expectedBindingSpecifier(bindingSpecifier),
-        fixIts: .replaceWithVar(node: self.bindingSpecifier))
+        fixIts: .replaceBindingSpecifier(
+          node: self.bindingSpecifier,
+          with: bindingSpecifier))
     }
   }
 }
