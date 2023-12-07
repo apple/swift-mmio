@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import SwiftOperators
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -154,51 +155,45 @@ extension BitRange: ExpressibleByStringLiteral {
 }
 
 extension BitRange: LosslessStringConvertible {
-  // FIXME: replace with parser-combinator
   init?(_ description: String) {
-    var description = description[...]
+    var input = description[...]
 
-    do {
-      let inclusive: Bool
-      switch description.consumeCharacter() {
-      case "(":
-        inclusive = false
-      case "[":
-        inclusive = true
-      default:
-        return nil
-      }
+    if let _ = Parser("(-∞").run(&input) {
+      self.lowerBound = nil
+    } else {
+      let parser =
+        Parser
+        .take(
+          .oneOf([
+            Parser("(").map { false },
+            Parser("[").map { true },
+          ])
+        )
+        .take(.swiftInteger)
 
-      if description.drop(character: "-"), description.drop(character: "∞") {
-        self.lowerBound = nil
-      } else {
-        guard let value = description.consumeInteger() else { return nil }
-        self.lowerBound = .init(value: value, inclusive: inclusive)
-      }
+      guard let value = parser.run(&input) else { return nil }
+      self.lowerBound = .init(value: value.1, inclusive: value.0)
     }
 
-    guard description.drop(character: ",") else { return nil }
-    guard description.drop(character: " ") else { return nil }
+    guard let _ = Parser(", ").run(&input) else { return nil }
 
-    do {
-      if description.drop(character: "+"), description.drop(character: "∞") {
-        self.upperBound = nil
-      } else {
-        guard let value = description.consumeInteger() else { return nil }
+    if let _ = Parser("+∞)").run(&input) {
+      self.upperBound = nil
+    } else {
+      let parser =
+        Parser
+        .take(.swiftInteger)
+        .take(
+          .oneOf([
+            Parser(")").map { false },
+            Parser("]").map { true },
+          ]))
 
-        let inclusive: Bool
-        switch description.consumeCharacter() {
-        case ")":
-          inclusive = false
-        case "]":
-          inclusive = true
-        default:
-          return nil
-        }
-
-        self.upperBound = .init(value: value, inclusive: inclusive)
-      }
+      guard let value = parser.run(&input) else { return nil }
+      self.upperBound = .init(value: value.0, inclusive: value.1)
     }
+
+    guard input.isEmpty else { return nil }
   }
 }
 

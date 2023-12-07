@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import MMIO
+import MMIOUtilities
 
 struct MMIOTracingInterposerEvent {
   var load: Bool

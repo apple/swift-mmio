@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import XCTest
 
 final class FileCheckParsingTests: XCTestCase {
@@ -65,7 +66,7 @@ final class FileCheckParsingTests: XCTestCase {
     ]
 
     var input = error[...]
-    let (parsed, rest) = Parser.fileCheckDiagnostics.parse(&input)
+    let parsed = Parser.fileCheckDiagnostics.run(&input)
     let actual = parsed ?? []
     XCTAssertEqual(actual.count, expected.count)
     if actual.count == expected.count {
@@ -73,6 +74,6 @@ final class FileCheckParsingTests: XCTestCase {
         XCTAssertEqual(actual, expected)
       }
     }
-    XCTAssert(rest.isEmpty)
+    XCTAssert(input.isEmpty)
   }
 }

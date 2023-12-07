@@ -14,6 +14,8 @@ enum FileCheckDiagnosticKind: String {
   case note
 }
 
+extension FileCheckDiagnosticKind: CaseIterable {}
+
 extension FileCheckDiagnosticKind: Equatable {}
 
 struct FileCheckDiagnostic {
