@@ -162,7 +162,7 @@ struct MMIOFileCheckTestCase {
         swiftc \
           -emit-ir \(self.testFileURL.path) \
           -o \(testOutputFileURL.path) \
-          -O \
+          -O -wmo \
           -I \(paths.buildOutputsURL.path) \
           -I \(paths.buildOutputsURL.path)/Modules \
           -I \(mmioVolatileDirectoryURL.path) \
@@ -189,7 +189,6 @@ struct MMIOFileCheckTestCase {
         }
       }
 
-      _ = try sh("rm \(testOutputFileURL.path)")
     } catch let error as ShellCommandError {
       // Parse the errors.
       var message = error.error[...]
