@@ -43,6 +43,16 @@ extension Bool: BitFieldProjectable {
   }
 }
 
+extension RawRepresentable where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
+  public init<Storage>(storage: Storage) where Storage: FixedWidthInteger & UnsignedInteger {
+      self.init(rawValue: RawValue(storage))!
+  }
+
+  public func storage<Storage>(_: Storage.Type) -> Storage where Storage: FixedWidthInteger & UnsignedInteger {
+    Storage(rawValue)
+  }
+}
+
 @inline(__always)
 public func preconditionMatchingBitWidth(
   _ fieldType: (some BitField).Type,
