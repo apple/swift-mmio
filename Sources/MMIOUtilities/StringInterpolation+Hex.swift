@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 extension String.StringInterpolation {
-  mutating func appendInterpolation(hexNibble value: UInt8) {
+  public mutating func appendInterpolation(hexNibble value: UInt8) {
     let ascii: UInt8
     switch value {
     case 0..<10:
@@ -24,7 +24,7 @@ extension String.StringInterpolation {
     self.appendInterpolation(character)
   }
 
-  mutating func appendInterpolation<Value>(
+  public mutating func appendInterpolation<Value>(
     hex value: Value,
     bytes size: Int? = nil
   ) where Value: FixedWidthInteger {

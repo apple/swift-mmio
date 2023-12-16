@@ -9,13 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if !os(Linux)
+#if os(macOS)
 // FIXME: switch over to swift-testing
 // XCTest is really painful for dynamic test lists
 
 import Dispatch
 import Foundation
 import XCTest
+import MMIOUtilities
 
 final class MMIOFileCheckTests: XCTestCase {
   func test() {
@@ -176,9 +177,9 @@ struct MMIOFileCheckTestCase {
     } catch let shellCommandError as ShellCommandError {
       // Parse the error, emit diagnostic if parsing failed.
       var message = shellCommandError.error[...]
-      let (diagnostics, rest) = Parser.fileCheckDiagnostics.parse(&message)
+      let diagnostics = Parser.fileCheckDiagnostics.run(&message)
 
-      guard let diagnostics = diagnostics, rest.isEmpty else {
+      guard let diagnostics = diagnostics, message.isEmpty else {
         XCTFail("Failed to parse FileCheck error output")
         return [
           XCTIssue(

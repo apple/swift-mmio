@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import XCTest
 
 final class StringInterpolationTests: XCTestCase {

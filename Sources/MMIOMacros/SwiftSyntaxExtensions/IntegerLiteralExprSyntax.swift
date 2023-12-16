@@ -9,12 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import SwiftSyntax
 
 extension IntegerLiteralExprSyntax {
   var value: Int? {
     var literal = self.literal.text[...]
-    let value = literal.consumeInteger()
+    let value = Parser.swiftInteger.run(&literal)
     guard literal.isEmpty else { return nil }
     return value
   }

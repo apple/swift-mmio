@@ -9,18 +9,19 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
+
 extension Parser where Input == Substring, Output == Int {
   static let fileCheckDiagnosticInteger = Self { input in
     var match = 0
     var index = input.startIndex
     while index < input.endIndex {
-      let character = input[index]
       guard
-        let asciiValue = character.asciiValue,
-        UInt8(ascii: "0") <= asciiValue,
-        asciiValue <= UInt8(ascii: "9")
+        let ascii = input[index].asciiValue,
+        UInt8(ascii: "0") <= ascii,
+        ascii <= UInt8(ascii: "9")
       else { break }
-      match = (match * 10) + Int(asciiValue - UInt8(ascii: "0"))
+      match = (match * 10) + Int(ascii - UInt8(ascii: "0"))
       input.formIndex(after: &index)
     }
     guard index != input.startIndex else { return nil }
@@ -30,19 +31,7 @@ extension Parser where Input == Substring, Output == Int {
 }
 
 extension Parser where Input == Substring, Output == FileCheckDiagnosticKind {
-  static let fileCheckDiagnosticKind = Self { input in
-    if input.hasPrefix(FileCheckDiagnosticKind.error.rawValue) {
-      input.removeFirst(FileCheckDiagnosticKind.error.rawValue.count)
-      return .error
-    }
-
-    if input.hasPrefix(FileCheckDiagnosticKind.note.rawValue) {
-      input.removeFirst(FileCheckDiagnosticKind.note.rawValue.count)
-      return .note
-    }
-
-    return nil
-  }
+  static let fileCheckDiagnosticKind = Parser.cases()
 }
 
 extension Parser where Input == Substring, Output == FileCheckDiagnostic {
@@ -69,16 +58,16 @@ extension Parser where Input == Substring, Output == FileCheckDiagnostic {
 extension Parser where Input == Substring, Output == [FileCheckDiagnostic] {
   static var fileCheckDiagnostics: Self {
     Self { input in
-      let element = Parser<Substring, FileCheckDiagnostic>.fileCheckDiagnostic
-      let separator = Parser<Substring, Void>.dropPrefix("\n")
-      guard let match = element.parse(&input) else { return nil }
+      let element = Parser<Input, FileCheckDiagnostic>.fileCheckDiagnostic
+      let separator = Parser<Input, Void>.dropPrefix("\n")
+      guard let match = element.run(&input) else { return nil }
 
       var matches = [match]
       while true {
         let remaining = input
         guard
-          separator.parse(&input) != nil,
-          let match = element.parse(&input)
+          separator.run(&input) != nil,
+          let match = element.run(&input)
         else {
           input = remaining
           break
