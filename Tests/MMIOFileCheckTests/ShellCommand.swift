@@ -51,11 +51,9 @@ extension ShellCommandError: LocalizedError {
 }
 
 func sh(
-  _ commands: String...,
+  _ command: String,
   at path: String? = nil
 ) throws -> String {
-  let command = commands.joined(separator: " && ")
-
   let process = Process()
   process.executableURL = URL(fileURLWithPath: "/bin/sh")
   process.arguments = ["-ic", "export PATH=$PATH:~/bin; \(command)"]
