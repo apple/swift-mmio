@@ -11,11 +11,10 @@
 
 CONFIGURATION = debug
 SWIFT_FORMAT_CONFIGURATION := SupportingFiles/Tools/swift-format/.swift-format
-.DEFAULT_GOAL = build
 SKIP_LINT=
 
 .PHONY: all lint format build test clean
-all: lint build test
+all: test
 
 ifdef SKIP_LINT
 lint:
@@ -47,9 +46,11 @@ build: lint
 test: build
 	@echo "testing..."
 	@swift test \
+		--configuration $(CONFIGURATION) \
 		--parallel \
 		--explicit-target-dependency-import-check error
 	@SWIFT_MMIO_FEATURE_INTERPOSABLE=1 swift test \
+		--configuration $(CONFIGURATION) \
 		--parallel \
 		--explicit-target-dependency-import-check error
 

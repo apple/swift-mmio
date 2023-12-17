@@ -25,7 +25,7 @@ protocol ArgumentContainer {
   var expression: WrappedExpression { get }
 
   init(
-    initial: consuming Self?,
+    initial: Self?,
     label: String,
     from expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
@@ -43,7 +43,7 @@ extension ExactlyOne: ArgumentContainer {
   var expression: WrappedExpression { self.parsed.expression }
 
   init(
-    initial: consuming Self?,
+    initial: Self?,
     label: String,
     from expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
@@ -69,7 +69,7 @@ extension ZeroOrOne: ArgumentContainer {
   var expression: WrappedExpression { self.parsed?.expression }
 
   init(
-    initial: consuming Self?,
+    initial: Self?,
     label: String,
     from expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
@@ -95,7 +95,7 @@ extension OneOrMore: ArgumentContainer {
   var expression: WrappedExpression { self.parsed.map(\.expression) }
 
   init(
-    initial: consuming Self?,
+    initial: Self?,
     label: String,
     from expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>

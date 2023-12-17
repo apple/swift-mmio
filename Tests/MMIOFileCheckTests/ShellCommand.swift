@@ -82,7 +82,7 @@ func sh(
   }
 
   // Launch the process and wait for it to complete.
-  process.launch()
+  try? process.run()
   process.waitUntilExit()
 
   outputPipe.fileHandleForReading.readabilityHandler = nil
