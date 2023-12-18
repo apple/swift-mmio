@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import Dispatch
 import Foundation
 
@@ -82,7 +83,7 @@ func sh(
   }
 
   // Launch the process and wait for it to complete.
-  process.launch()
+  try? process.run()
   process.waitUntilExit()
 
   outputPipe.fileHandleForReading.readabilityHandler = nil
@@ -101,3 +102,4 @@ func sh(
 
   return outputData.asUTF8String()
 }
+#endif

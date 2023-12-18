@@ -69,7 +69,7 @@ where
 {
   public static func prefix(upTo element: Input.Element) -> Self {
     Self { input in
-      guard let endIndex = input.firstIndex(of: element) else { return nil }
+      let endIndex = input.firstIndex(of: element) ?? input.endIndex
       let match = input[..<endIndex]
       input = input[endIndex...]
       return match
@@ -169,111 +169,25 @@ extension Parser where Input == Substring {
   }
 }
 
-// MARK: - Int
-enum IntPrefix: String, CaseIterable {
-  case binary = "0b"
-  case octal = "0o"
-  case hexadecimal = "0x"
-}
-
-extension Parser where Input == Substring, Output == Int {
-  public static let swiftInteger = Self { input in
-    let original = input
-
-    var positive = true
-    switch input.first?.asciiValue {
-    case UInt8(ascii: "-"):
-      positive = false
-      input.removeFirst()
-    case UInt8(ascii: "+"):
-      positive = true
-      input.removeFirst()
-    default:
-      break
-    }
-
-    let intPrefix = Parser<Input, IntPrefix>.cases().run(&input)
-
-    var value = 0
-    var digitsConsumed = false
-    loop: while !input.isEmpty {
-      switch intPrefix {
-      case .binary:
-        guard let digit = Parser.binaryDigit.run(&input) else { break loop }
-        value = value * 2 + digit
-      case .octal:
-        guard let digit = Parser.octalDigit.run(&input) else { break loop }
-        value = value * 8 + digit
-      case nil:
-        guard let digit = Parser.decimalDigit.run(&input) else { break loop }
-        value = value * 10 + digit
-      case .hexadecimal:
-        guard let digit = Parser.hexadecimalDigit.run(&input) else { break loop }
-        value = value * 16 + digit
+extension Parser {
+  public func oneOrMore(
+    separatedBy separator: Parser<Input, Void>
+  ) -> Parser<Input, [Output]> {
+    Parser<Input, [Output]> { input in
+      guard let match = self.run(&input) else { return nil }
+      var matches = [match]
+      while true {
+        let remaining = input
+        guard
+          let _ = separator.run(&input),
+          let match = self.run(&input)
+        else {
+          input = remaining
+          break
+        }
+        matches.append(match)
       }
-      digitsConsumed = true
-      while input.first?.asciiValue == UInt8(ascii: "_") {
-        _ = input.removeFirst()
-      }
-    }
-
-    guard digitsConsumed else {
-      input = original
-      return nil
-    }
-
-    return positive ? value : -value
-  }
-}
-
-extension Parser where Input == Substring, Output == Int {
-  public static let binaryDigit = Self { input in
-    guard let ascii = input.first?.asciiValue else { return nil }
-    switch ascii {
-    case UInt8(ascii: "0"), UInt8(ascii: "1"):
-      _ = input.removeFirst()
-      return Int(ascii - UInt8(ascii: "0"))
-    default:
-      return nil
-    }
-  }
-
-  public static let octalDigit = Self { input in
-    guard let ascii = input.first?.asciiValue else { return nil }
-    switch ascii {
-    case UInt8(ascii: "0")..<UInt8(ascii: "8"):
-      _ = input.removeFirst()
-      return Int(ascii - UInt8(ascii: "0"))
-    default:
-      return nil
-    }
-  }
-
-  public static let decimalDigit = Self { input in
-    guard let ascii = input.first?.asciiValue else { return nil }
-    switch ascii {
-    case UInt8(ascii: "0")...UInt8(ascii: "9"):
-      _ = input.removeFirst()
-      return Int(ascii - UInt8(ascii: "0"))
-    default:
-      return nil
-    }
-  }
-
-  public static let hexadecimalDigit = Self { input in
-    guard let ascii = input.first?.asciiValue else { return nil }
-    switch ascii {
-    case UInt8(ascii: "0")...UInt8(ascii: "9"):
-      _ = input.removeFirst()
-      return Int(ascii - UInt8(ascii: "0"))
-    case UInt8(ascii: "a")...UInt8(ascii: "f"):
-      _ = input.removeFirst()
-      return Int(ascii - UInt8(ascii: "a") + 10)
-    case UInt8(ascii: "A")...UInt8(ascii: "F"):
-      _ = input.removeFirst()
-      return Int(ascii - UInt8(ascii: "A") + 10)
-    default:
-      return nil
+      return matches
     }
   }
 }

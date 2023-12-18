@@ -9,10 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-
 extension Parser where Input == Substring, Output == Int {
-  static let fileCheckDiagnosticInteger = Self { input in
+  static let llvmDiagnosticInteger = Self { input in
     var match = 0
     var index = input.startIndex
     while index < input.endIndex {
@@ -30,22 +28,22 @@ extension Parser where Input == Substring, Output == Int {
   }
 }
 
-extension Parser where Input == Substring, Output == FileCheckDiagnosticKind {
-  static let fileCheckDiagnosticKind = Parser.cases()
+extension Parser where Input == Substring, Output == LLVMDiagnosticKind {
+  static let llvmDiagnosticKind = Parser.cases()
 }
 
-extension Parser where Input == Substring, Output == FileCheckDiagnostic {
-  static var fileCheckDiagnostic: Self {
+extension Parser where Input == Substring, Output == LLVMDiagnostic {
+  static var llvmDiagnostic: Self {
     Parser<Substring, Substring>
       .take(.prefix(upTo: ":")).skip(":")  // file
-      .take(.fileCheckDiagnosticInteger).skip(":")  // line
-      .take(.fileCheckDiagnosticInteger).skip(": ")  // column
-      .take(.fileCheckDiagnosticKind).skip(": ")  // kind
+      .take(.llvmDiagnosticInteger).skip(":")  // line
+      .take(.llvmDiagnosticInteger).skip(": ")  // column
+      .take(.llvmDiagnosticKind).skip(": ")  // kind
       .take(.prefix(upTo: "\n")).skip("\n")  // message
       .skip(.prefix(upTo: "\n")).skip("\n")  // source line
-      .skip(.prefix(upTo: "^")).skip("^")  // trailing carrot
+      .skip(.prefix(upTo: "\n"))  // highlight line
       .map { parsed in
-        FileCheckDiagnostic(
+        LLVMDiagnostic(
           file: String(parsed.0),
           line: parsed.1,
           column: parsed.2,
@@ -53,29 +51,7 @@ extension Parser where Input == Substring, Output == FileCheckDiagnostic {
           message: String(parsed.4))
       }
   }
-}
 
-extension Parser where Input == Substring, Output == [FileCheckDiagnostic] {
-  static var fileCheckDiagnostics: Self {
-    Self { input in
-      let element = Parser<Input, FileCheckDiagnostic>.fileCheckDiagnostic
-      let separator = Parser<Input, Void>.dropPrefix("\n")
-      guard let match = element.run(&input) else { return nil }
-
-      var matches = [match]
-      while true {
-        let remaining = input
-        guard
-          separator.run(&input) != nil,
-          let match = element.run(&input)
-        else {
-          input = remaining
-          break
-        }
-        matches.append(match)
-      }
-
-      return matches
-    }
-  }
+  public static let llvmDiagnostics = Self
+    .llvmDiagnostic.oneOrMore(separatedBy: "\n")
 }
