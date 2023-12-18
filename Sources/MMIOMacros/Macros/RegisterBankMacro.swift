@@ -54,11 +54,12 @@ extension RegisterBankMacro: MMIOMemberMacro {
       // RegisterBankOffsetMacro. Further syntactic checking will be performed
       // by that macro.
       do {
-        try variableDecl.requireMacro(RegisterBankOffsetMacro.self, context)
+        try variableDecl.requireMacro([RegisterBankOffsetMacro.self], context)
       } catch _ {
         error = true
       }
     }
+
     guard !error else { return [] }
 
     // Retrieve the access level of the struct, so we can use the same

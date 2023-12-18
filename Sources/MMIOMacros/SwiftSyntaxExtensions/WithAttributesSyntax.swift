@@ -9,39 +9,28 @@
 //
 //===----------------------------------------------------------------------===//
 
+import SwiftDiagnostics
 import SwiftSyntax
+import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
+struct MatchingAttributeAndMacro {
+  var attribute: AttributeSyntax
+  var macroType: any (ParsableMacro.Type)
+}
+
 extension WithAttributesSyntax {
-  func requireMacro<Macro>(
-    _: Macro.Type,
-    _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws where Macro: ParsableMacro {
-    for attribute in self.attributes {
-      // Ignore `#if` conditional attributes
-      guard case .attribute(let attribute) = attribute else { continue }
-
-      let name = attribute.attributeName
-      guard let identifier = name.as(IdentifierTypeSyntax.self) else {
-        continue
-      }
-      if identifier.name.text == Macro.baseName { return }
-    }
-
-    throw context.error(
-      at: self,
-      message: .expectedMemberAnnotatedWithMacro(Macro.self),
-      fixIts: .insertMacro(node: self, Macro.self))
-  }
-
+  @discardableResult
   func requireMacro(
-    _ macros: [any BitFieldMacro.Type],
+    _ macros: [any (ParsableMacro.Type)],
     _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws -> (attribute: AttributeSyntax, type: any BitFieldMacro.Type) {
-    let map = macros.reduce(into: [String: any BitFieldMacro.Type]()) {
+  ) throws -> (MatchingAttributeAndMacro) {
+    precondition(!macros.isEmpty)
+    let baseNames = macros.reduce(into: [String: any ParsableMacro.Type]()) {
       $0[$1.baseName] = $1
     }
-    var matches = [(AttributeSyntax, any BitFieldMacro.Type)]()
+
+    var matches = [MatchingAttributeAndMacro]()
     for attribute in self.attributes {
       // Ignore `#if` conditional attributes
       guard case .attribute(let attribute) = attribute else { continue }
@@ -50,15 +39,64 @@ extension WithAttributesSyntax {
       guard let identifier = name.as(IdentifierTypeSyntax.self) else {
         continue
       }
-      if let value = map[identifier.name.text] {
-        matches.append((attribute, value))
+      if let macroType = baseNames[identifier.name.text] {
+        matches.append(.init(attribute: attribute, macroType: macroType))
       }
     }
     guard matches.count == 1 else {
-      throw context.error(
-        at: self,
-        message: .expectedMemberAnnotatedWithOneOf(macros))
+      switch macros.count {
+      case 1:
+        throw context.error(
+          at: self,
+          message: .expectedMemberAnnotatedWithMacro(macros),
+          fixIts: .insertMacro(node: self, macros[0]))
+      default:
+        throw context.error(
+          at: self,
+          message: .expectedMemberAnnotatedWithMacro(macros))
+      }
     }
     return matches[0]
+  }
+}
+
+extension ErrorDiagnostic {
+  static func expectedMemberAnnotatedWithMacro(
+    _ macros: [any (ParsableMacro.Type)]
+  ) -> Self {
+    guard macros.count == 1 else {
+      guard let last = macros.last else { fatalError() }
+      let optionsPrefix =
+        macros
+        .dropLast()
+        .map { "'\($0.signature)'" }
+        .joined(separator: ", ")
+      let options = "\(optionsPrefix), or '\(last.signature)'"
+
+      return .init(
+        """
+        '\(Macro.signature)' type member must be annotated with exactly one \
+        macro of \(options)
+        """)
+    }
+    return .init(
+      """
+      '\(Macro.signature)' type member must be annotated with \
+      '\(macros[0].signature)' macro
+      """)
+  }
+}
+
+extension FixIt {
+  static func insertMacro(
+    node: some WithAttributesSyntax, _ macro: any (ParsableMacro.Type)
+  ) -> FixIt {
+    // FIXME: https://github.com/apple/swift-syntax/issues/2205
+    var newNode = node
+    newNode.attributes.append(macro.attributeWithPlaceholders)
+    return .replace(
+      message: MacroExpansionFixItMessage("Insert '\(macro.signature)' macro"),
+      oldNode: node,
+      newNode: newNode)
   }
 }

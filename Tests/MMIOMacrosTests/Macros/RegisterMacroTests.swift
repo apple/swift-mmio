@@ -123,12 +123,12 @@ final class RegisterMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedMemberAnnotatedWithOneOf(bitFieldMacros).message,
+          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 3,
           column: 3,
           highlight: "var v1: Int"),
         .init(
-          message: ErrorDiagnostic.expectedMemberAnnotatedWithOneOf(bitFieldMacros).message,
+          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 4,
           column: 3,
           highlight: "@OtherAttribute var v2: Int"),
