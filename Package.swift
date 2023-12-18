@@ -63,7 +63,7 @@ var package = Package(
       name: "MMIOUtilitiesTests",
       dependencies: ["MMIOUtilities"]),
 
-    .target(name: "MMIOVolatile"),
+    .systemLibrary(name: "MMIOVolatile"),
   ])
 
 // Replace this with a native spm feature flag if/when supported
@@ -76,7 +76,7 @@ if featureIsEnabled(named: interposable, override: nil) {
   package.targets = package.targets.filter {
     allowedTargets.contains($0.name)
   }
-  for target in package.targets {
+  for target in package.targets where target.type != .system {
     target.swiftDefine(interposable)
   }
 } else {

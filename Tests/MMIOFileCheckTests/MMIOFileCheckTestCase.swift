@@ -45,7 +45,10 @@ final class MMIOFileCheckTests: XCTestCase {
     let setup = MMIOFileCheckTestCaseSetup(
       packageDirectoryURL: packageDirectoryURL)
     let tests = testFileURLs.map {
-      MMIOFileCheckTestCase(setup: setup, testFileURL: $0)
+      MMIOFileCheckTestCase(
+        setup: setup,
+        packageDirectoryURL: packageDirectoryURL,
+        testFileURL: $0)
     }
 
     DispatchQueue.concurrentPerform(iterations: tests.count) { index in
@@ -123,6 +126,7 @@ class MMIOFileCheckTestCaseSetup {
 
 struct MMIOFileCheckTestCase {
   var setup: MMIOFileCheckTestCaseSetup
+  var packageDirectoryURL: URL
   var testFileURL: URL
 
   func run() -> [LLVMDiagnostic] {
@@ -132,8 +136,11 @@ struct MMIOFileCheckTestCase {
       print("Running: \(self.testFileURL.lastPathComponent)")
 
       let testOutputFileURL = paths.buildOutputsURL
-        .appending(path: self.testFileURL.lastPathComponent)
+        .appendingPathComponent(self.testFileURL.lastPathComponent)
         .appendingPathExtension("ll")
+      let mmioVolatileDirectoryURL = self.packageDirectoryURL
+        .appendingPathComponent("Sources")
+        .appendingPathComponent("MMIOVolatile")
 
       _ = try sh(
         """
@@ -142,6 +149,7 @@ struct MMIOFileCheckTestCase {
           -o \(testOutputFileURL.path) \
           -O \
           -I \(paths.buildOutputsURL.path) \
+          -I \(mmioVolatileDirectoryURL.path) \
           -load-plugin-executable \
             \(paths.buildOutputsURL.path)/MMIOMacros#MMIOMacros \
           -parse-as-library
