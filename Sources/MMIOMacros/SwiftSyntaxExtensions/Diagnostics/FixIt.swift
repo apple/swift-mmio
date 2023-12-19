@@ -36,18 +36,6 @@ extension FixIt {
         placeholder: .identifier("<#Identifier#>")))
   }
 
-  static func insertMacro<Macro>(
-    node: some WithAttributesSyntax, _: Macro.Type
-  ) -> FixIt where Macro: ParsableMacro {
-    // FIXME: https://github.com/apple/swift-syntax/issues/2205
-    var newNode = node
-    newNode.attributes.append(Macro.attributeWithPlaceholders)
-    return .replace(
-      message: MacroExpansionFixItMessage("Insert '\(Macro.signature)' macro"),
-      oldNode: node,
-      newNode: newNode)
-  }
-
   static func removeAccessorBlock(node: PatternBindingSyntax) -> FixIt {
     .replace(
       message: MacroExpansionFixItMessage(

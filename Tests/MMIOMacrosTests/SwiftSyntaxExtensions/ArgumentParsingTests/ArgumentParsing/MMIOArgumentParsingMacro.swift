@@ -15,7 +15,7 @@ import XCTest
 
 @testable import MMIOMacros
 
-protocol MMIOArgumentParsingMacro: ParsableMacro, MMIOMemberMacro {}
+protocol MMIOArgumentParsingMacro: MMIOMemberMacro {}
 extension MMIOArgumentParsingMacro {
   static var memberMacroSuppressParsingDiagnostics: Bool { false }
   mutating func expansion(

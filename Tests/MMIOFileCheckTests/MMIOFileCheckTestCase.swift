@@ -168,9 +168,12 @@ struct MMIOFileCheckTestCase {
       // Parse the errors.
       var message = error.error[...]
       let diagnostics = Parser.llvmDiagnostics.run(&message)
-      guard let diagnostics = diagnostics, message.isEmpty else {
+      guard let diagnostics = diagnostics else {
         XCTFail("Test failed: \(error)")
         return []
+      }
+      if !message.isEmpty {
+        XCTFail("Failed to parse all error diagnostics, remaining: \(message)")
       }
       return diagnostics
     } catch {

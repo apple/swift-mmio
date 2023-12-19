@@ -68,9 +68,11 @@ extension RegisterMacro: MMIOMemberMacro {
       guard
         // Each declaration must be annotated with exactly one bitField macro.
         let value = try? variableDecl.requireMacro(bitFieldMacros, context),
+        // This will always succeed.
+        let macroType = value.macroType as? any (BitFieldMacro.Type),
 
         // Parse the arguments from the bitField macro.
-        let macro = try? value.type.init(
+        let macro = try? macroType.init(
           from: value.attribute,
           in: context.makeSuppressingDiagnostics()),
 
@@ -85,13 +87,13 @@ extension RegisterMacro: MMIOMemberMacro {
         continue
       }
 
-      isSymmetric = isSymmetric && value.type.isSymmetric
+      isSymmetric = isSymmetric && macroType.isSymmetric
 
       bitFields.append(
         BitFieldDescription(
           accessLevel: accessLevel,
           bitWidth: bitWidth,
-          type: value.type,
+          type: macroType,
           fieldName: fieldName,
           fieldType: fieldType,
           bitRanges: macro.bitRanges,
