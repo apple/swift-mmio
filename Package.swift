@@ -17,7 +17,7 @@ var package = Package(
     .library(name: "MMIO", targets: ["MMIO"])
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.1")
+    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.2")
   ],
   targets: [
     .target(
