@@ -45,11 +45,17 @@ extension Bool: BitFieldProjectable {
 
 extension RawRepresentable where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
   public init<Storage>(storage: Storage) where Storage: FixedWidthInteger & UnsignedInteger {
-      self.init(rawValue: RawValue(storage))!
+    guard let value = Self(rawValue: RawValue(storage)) else {
+      preconditionFailure("Initialization failed: Storage value cannot be converted to RawValue")
+    }
+    self = value
   }
 
   public func storage<Storage>(_: Storage.Type) -> Storage where Storage: FixedWidthInteger & UnsignedInteger {
-    Storage(rawValue)
+    precondition(
+      MemoryLayout<Storage>.size * 8 >= Self.bitWidth,
+      "Storage type does not have enough bits to represent the bitWidth")
+    return Storage(rawValue)
   }
 }
 
