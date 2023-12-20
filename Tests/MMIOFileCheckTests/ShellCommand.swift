@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import Dispatch
 import Foundation
 
@@ -50,11 +51,9 @@ extension ShellCommandError: LocalizedError {
 }
 
 func sh(
-  _ commands: String...,
+  _ command: String,
   at path: String? = nil
 ) throws -> String {
-  let command = commands.joined(separator: " && ")
-
   let process = Process()
   process.executableURL = URL(fileURLWithPath: "/bin/sh")
   process.arguments = ["-ic", "export PATH=$PATH:~/bin; \(command)"]
@@ -82,7 +81,7 @@ func sh(
   }
 
   // Launch the process and wait for it to complete.
-  process.launch()
+  try? process.run()
   process.waitUntilExit()
 
   outputPipe.fileHandleForReading.readabilityHandler = nil
@@ -101,9 +100,4 @@ func sh(
 
   return outputData.asUTF8String()
 }
-
-extension String {
-  var escapingSpaces: String {
-    replacingOccurrences(of: " ", with: "\\ ")
-  }
-}
+#endif

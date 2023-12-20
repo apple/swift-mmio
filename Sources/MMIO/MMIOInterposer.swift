@@ -21,12 +21,18 @@
 public protocol MMIOInterposer: AnyObject {
   /// An interposition function to modify the behavior of a register read.
   ///
+  /// - Parameter pointer: The original address the load was performed against.
+  ///
   /// - Returns: A `Value` from the address referenced by `pointer`.
   func load<Value>(
     from pointer: UnsafePointer<Value>
   ) -> Value where Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage
 
   /// An interposition function to modify the behavior of a register write.
+  ///
+  /// - Parameters:
+  ///   - value: A `Value` to be stored in the address referenced by `pointer`.
+  ///   - pointer: The original address the store was performed against.
   func store<Value>(
     _ value: Value,
     to pointer: UnsafeMutablePointer<Value>

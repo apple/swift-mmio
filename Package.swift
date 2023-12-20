@@ -17,7 +17,7 @@ var package = Package(
     .library(name: "MMIO", targets: ["MMIO"])
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.1")
+    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.2")
   ],
   targets: [
     .target(
@@ -25,17 +25,22 @@ var package = Package(
       dependencies: ["MMIOMacros", "MMIOVolatile"]),
     .testTarget(
       name: "MMIOFileCheckTests",
-      dependencies: ["MMIO"],
+      dependencies: ["MMIOUtilities"],
       exclude: ["Tests"]),
     .testTarget(
+      name: "MMIOInterposableTests",
+      dependencies: ["MMIO", "MMIOUtilities"]),
+    .testTarget(
       name: "MMIOTests",
-      dependencies: ["MMIO"]),
+      dependencies: ["MMIO", "MMIOUtilities"]),
 
     .macro(
       name: "MMIOMacros",
       dependencies: [
+        "MMIOUtilities",
         .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
         .product(name: "SwiftDiagnostics", package: "swift-syntax"),
+        .product(name: "SwiftOperators", package: "swift-syntax"),
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxBuilder", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacroExpansion", package: "swift-syntax"),
@@ -45,38 +50,46 @@ var package = Package(
       name: "MMIOMacrosTests",
       dependencies: [
         "MMIOMacros",
+        // FIXME: rdar://119344431 (XPM drops transitive dependency causing linker errors)
+        // Remove this dependency when Xcode bug is resolved
+        "MMIOUtilities",
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
 
-    .target(name: "MMIOVolatile"),
+    .target(name: "MMIOUtilities"),
+    .testTarget(
+      name: "MMIOUtilitiesTests",
+      dependencies: ["MMIOUtilities"]),
+
+    .systemLibrary(name: "MMIOVolatile"),
   ])
 
 // Replace this with a native spm feature flag if/when supported
 let interposable = "FEATURE_INTERPOSABLE"
-try package.defineFeature(named: interposable, override: nil) { package in
-  let targetAllowSet = Set(["MMIO", "MMIOVolatile", "MMIOMacros"])
-  package.targets = package.targets.filter { targetAllowSet.contains($0.name) }
-  package.targets.append(
-    .testTarget(name: "MMIOInterposableTests", dependencies: ["MMIO"]))
-  for target in package.targets {
+if featureIsEnabled(named: interposable, override: nil) {
+  let allowedTargets = Set([
+    "MMIO", "MMIOVolatile", "MMIOMacros", "MMIOUtilities",
+    "MMIOInterposableTests",
+  ])
+  package.targets = package.targets.filter {
+    allowedTargets.contains($0.name)
+  }
+  for target in package.targets where target.type != .system {
     target.swiftDefine(interposable)
+  }
+} else {
+  let disallowedTargets = Set(["MMIOInterposableTests"])
+  package.targets = package.targets.filter {
+    !disallowedTargets.contains($0.name)
   }
 }
 
-extension Package {
-  func defineFeature(
-    named featureName: String,
-    override: Bool?,
-    body: (Package) throws -> Void
-  ) throws {
-    let key = "SWIFT_MMIO_\(featureName)"
-    let environment = ProcessInfo.processInfo.environment[key] != nil
-    if override ?? environment {
-      try body(self)
-    }
-  }
+func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
+  let key = "SWIFT_MMIO_\(featureName)"
+  let environment = ProcessInfo.processInfo.environment[key] != nil
+  return override ?? environment
 }
 
 extension Target {

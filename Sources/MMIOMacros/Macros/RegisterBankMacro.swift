@@ -37,10 +37,10 @@ extension RegisterBankMacro: MMIOMemberMacro {
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    // Can only applied to structs.
     // FIXME: https://github.com/apple/swift-syntax/pull/2366
     // swift-format-ignore: NeverForceUnwrap
     let declaration = declaration as! DeclSyntaxProtocol
+    // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
     // Walk all the members of the struct.
@@ -54,11 +54,12 @@ extension RegisterBankMacro: MMIOMemberMacro {
       // RegisterBankOffsetMacro. Further syntactic checking will be performed
       // by that macro.
       do {
-        try variableDecl.requireMacro(RegisterBankOffsetMacro.self, context)
+        try variableDecl.requireMacro([RegisterBankOffsetMacro.self], context)
       } catch _ {
         error = true
       }
     }
+
     guard !error else { return [] }
 
     // Retrieve the access level of the struct, so we can use the same

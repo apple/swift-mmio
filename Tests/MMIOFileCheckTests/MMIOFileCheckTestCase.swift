@@ -9,17 +9,18 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if !os(Linux)
+#if os(macOS)
 // FIXME: switch over to swift-testing
 // XCTest is really painful for dynamic test lists
 
 import Dispatch
 import Foundation
 import XCTest
+import MMIOUtilities
 
 final class MMIOFileCheckTests: XCTestCase {
   func test() {
-    let selfFileURL = URL(filePath: #file)
+    let selfFileURL = URL(fileURLWithPath: #file)
     let selfDirectoryURL =
       selfFileURL
       .deletingLastPathComponent()
@@ -27,16 +28,9 @@ final class MMIOFileCheckTests: XCTestCase {
       selfDirectoryURL
       .deletingLastPathComponent()
       .deletingLastPathComponent()
-    let buildDirectoryURL =
-      packageDirectoryURL
-      .appending(path: ".build")
-      .appending(path: "FileCheck")
-    let includeDirectoryURL =
-      buildDirectoryURL
-      .appending(path: "release")
     let testsDirectoryURL =
       selfDirectoryURL
-      .appending(path: "Tests")
+      .appendingPathComponent("Tests")
 
     // Get a list of the test files from disk.
     let testFileURLs =
@@ -48,23 +42,20 @@ final class MMIOFileCheckTests: XCTestCase {
       )
       .filter { $0.pathExtension == "swift" }
 
-    let commonSetup = MMIOFileCheckTestCaseCommonSetup(
-      buildDirectoryURL: buildDirectoryURL,
+    let setup = MMIOFileCheckTestCaseSetup(
       packageDirectoryURL: packageDirectoryURL)
-    var tests = [MMIOFileCheckTestCase]()
-    for testFileURL in testFileURLs {
-      tests.append(
-        MMIOFileCheckTestCase(
-          commonSetup: commonSetup,
-          testFileURL: testFileURL,
-          buildDirectoryURL: buildDirectoryURL,
-          includeDirectoryURL: includeDirectoryURL))
+    let tests = testFileURLs.map {
+      MMIOFileCheckTestCase(
+        setup: setup,
+        packageDirectoryURL: packageDirectoryURL,
+        testFileURL: $0)
     }
 
     DispatchQueue.concurrentPerform(iterations: tests.count) { index in
       let test = tests[index]
-      for issue in test.run() {
-        self.record(issue)
+      let diagnostics = test.run()
+      for diagnostic in diagnostics {
+        self.record(diagnostic: diagnostic)
       }
     }
 
@@ -72,145 +63,142 @@ final class MMIOFileCheckTests: XCTestCase {
   }
 }
 
-class MMIOFileCheckTestCaseCommonSetup {
-  var buildDirectoryURL: URL
+class MMIOFileCheckTestCaseSetup {
+  struct Result {
+    var buildOutputsURL: URL
+  }
+
   var packageDirectoryURL: URL
   var lock: NSLock
-  var buildResult: Result<Void, Error>?
+  var result: Swift.Result<Result, Error>?
 
-  init(buildDirectoryURL: URL, packageDirectoryURL: URL) {
-    self.buildDirectoryURL = buildDirectoryURL
+  init(packageDirectoryURL: URL) {
     self.packageDirectoryURL = packageDirectoryURL
     self.lock = .init()
-    self.buildResult = nil
+    self.result = nil
   }
 
-  func setup() throws {
-    try self.lock.withLock {
-      if let buildResult = buildResult { return try buildResult.get() }
-      let start = DispatchTime.now()
-      let buildResult = Result { try self._setup() }
-      let end = DispatchTime.now()
-      print("Setup took \(start.distance(to: end))")
-      self.buildResult = buildResult
-      return try buildResult.get()
-    }
+  func run() throws -> Result {
+    // `NSLock.withLock(_:)` is unavailable on linux.
+    self.lock.lock()
+    defer { self.lock.unlock() }
+    if let result = self.result { return try result.get() }
+
+    // Run the common setup phase and record the time it took.
+    let start = DispatchTime.now()
+    let result = Swift.Result { try self._run() }
+    let end = DispatchTime.now()
+
+    // `DispatchTime.distance(to:)` is unavailable on linux.
+    let duration = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("Setup took \(duration) nanoseconds")
+
+    // Cache the setup result.
+    self.result = result
+    return try result.get()
   }
 
-  private func _setup() throws {
+  private func _run() throws -> Result {
     print("Locating FileCheck...")
     _ = try sh("which FileCheck")
+
+    print("Determining Dependency Paths...")
+    let buildOutputsURL = URL(
+      fileURLWithPath: try sh(
+        """
+        swift build \
+          --configuration release \
+          --package-path \(self.packageDirectoryURL.path) \
+          --show-bin-path
+        """))
 
     print("Building MMIO...")
     _ = try sh(
       """
       swift build \
         --configuration release \
-        --triple arm64-apple-macosx14.0 \
-        --scratch-path \(self.buildDirectoryURL.path) \
         --package-path \(self.packageDirectoryURL.path)
       """)
+
+    return .init(buildOutputsURL: buildOutputsURL)
   }
 }
 
 struct MMIOFileCheckTestCase {
-  var commonSetup: MMIOFileCheckTestCaseCommonSetup
+  var setup: MMIOFileCheckTestCaseSetup
+  var packageDirectoryURL: URL
   var testFileURL: URL
-  var buildDirectoryURL: URL
-  var includeDirectoryURL: URL
 
-  func run() -> [XCTIssue] {
+  func run() -> [LLVMDiagnostic] {
     do {
-      try self.commonSetup.setup()
-    } catch {
-      XCTFail("Setup failed: \(error)")
-      return []
-    }
+      let paths = try self.setup.run()
 
-    print("Running: \(self.testFileURL.lastPathComponent)")
+      print("Running: \(self.testFileURL.lastPathComponent)")
 
-    let outputFileURL = self.buildDirectoryURL
-      .appending(path: self.testFileURL.lastPathComponent)
-      .appendingPathExtension("ll")
+      let testOutputFileURL = paths.buildOutputsURL
+        .appendingPathComponent(self.testFileURL.lastPathComponent)
+        .appendingPathExtension("ll")
+      let mmioVolatileDirectoryURL = self.packageDirectoryURL
+        .appendingPathComponent("Sources")
+        .appendingPathComponent("MMIOVolatile")
 
-    do {
       _ = try sh(
         """
         swiftc \
           -emit-ir \(self.testFileURL.path) \
-          -o \(outputFileURL.path) \
-          -target arm64-apple-macosx14.0 \
+          -o \(testOutputFileURL.path) \
           -O \
-          -I \(self.includeDirectoryURL.path) \
+          -I \(paths.buildOutputsURL.path) \
+          -I \(mmioVolatileDirectoryURL.path) \
           -load-plugin-executable \
-            \(self.includeDirectoryURL.path)/MMIOMacros#MMIOMacros \
+            \(paths.buildOutputsURL.path)/MMIOMacros#MMIOMacros \
           -parse-as-library
         """)
-    } catch {
-      return [
-        XCTIssue(
-          type: .assertionFailure,
-          compactDescription: "\(error)",
-          detailedDescription: nil,
-          sourceCodeContext: .init(
-            callStack: [],
-            location: .init(filePath: self.testFileURL.path, lineNumber: 1)),
-          associatedError: error,
-          attachments: [])
-      ]
-    }
 
-    do {
       _ = try sh(
         """
         FileCheck \
           \(self.testFileURL.path) \
-          --input-file \(outputFileURL.path) \
+          --input-file \(testOutputFileURL.path) \
           --dump-input never
         """)
-      _ = try sh(
-        """
-        rm \(outputFileURL.path)
-        """)
 
-    } catch let shellCommandError as ShellCommandError {
-      // Parse the error, emit diagnostic if parsing failed.
-      var message = shellCommandError.error[...]
-      let (diagnostics, rest) = Parser.fileCheckDiagnostics.parse(&message)
-
-      guard let diagnostics = diagnostics, rest.isEmpty else {
-        XCTFail("Failed to parse FileCheck error output")
-        return [
-          XCTIssue(
-            type: .assertionFailure,
-            compactDescription: "\(shellCommandError)",
-            detailedDescription: nil,
-            sourceCodeContext: .init(
-              callStack: [],
-              location: .init(filePath: testFileURL.path, lineNumber: 1)),
-            associatedError: shellCommandError,
-            attachments: [])
-        ]
+      _ = try sh("rm \(testOutputFileURL.path)")
+    } catch let error as ShellCommandError {
+      // Parse the errors.
+      var message = error.error[...]
+      let diagnostics = Parser.llvmDiagnostics.run(&message)
+      guard let diagnostics = diagnostics else {
+        XCTFail("Test failed: \(error)")
+        return []
       }
-
-      return diagnostics.map { diagnostic in
-        XCTIssue(
-          type: .assertionFailure,  // FIXME: this emits notes as errors
-          compactDescription: diagnostic.message,
-          detailedDescription: nil,
-          sourceCodeContext: .init(
-            callStack: [],
-            location: .init(
-              filePath: diagnostic.file,
-              lineNumber: diagnostic.line)),
-          associatedError: shellCommandError,
-          attachments: [])
+      if !message.isEmpty {
+        XCTFail("Failed to parse all error diagnostics, remaining: \(message)")
       }
+      return diagnostics
     } catch {
       fatalError("Unexpected error: \(error)")
     }
 
     return []
+  }
+}
+
+extension XCTestCase {
+  func record(diagnostic: LLVMDiagnostic) {
+    #if os(Linux)
+    XCTFail("Test failed with error: \(diagnostic)")
+    #else
+    let issue = XCTIssue(
+      type: .assertionFailure,  // FIXME: this emits notes as errors
+      compactDescription: diagnostic.message,
+      sourceCodeContext: .init(
+        location: .init(
+          filePath: diagnostic.file,
+          lineNumber: diagnostic.line))
+    )
+    self.record(issue)
+    #endif
   }
 }
 

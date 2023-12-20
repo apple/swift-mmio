@@ -21,9 +21,7 @@ protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
   static var isWriteable: Bool { get }
   static var isSymmetric: Bool { get }
 
-  var bitRanges: [Range<Int>] { get }
-  var bitRangeExpressions: [ExprSyntax] { get }
-
+  var bitRanges: [BitRange] { get }
   var projectedType: BitFieldTypeProjection? { get }
 }
 
@@ -35,11 +33,10 @@ extension BitFieldMacro {
   ) throws -> [AccessorDeclSyntax] {
     // Can only applied to variables.
     let variableDecl =
-      try declaration
-      .requireAs(VariableDeclSyntax.self, context)
+      try declaration.requireAs(VariableDeclSyntax.self, context)
 
     // Must be `var` binding.
-    try variableDecl.require(bindingKind: .var, context)
+    try variableDecl.requireBindingSpecifier(.var, context)
 
     // Exactly one binding for the variable.
     let binding = try variableDecl.requireSingleBinding(context)
@@ -115,8 +112,7 @@ public struct ReservedMacro: BitFieldMacro, Sendable {
   static let isSymmetric = true
 
   @Argument(label: "bits")
-  var bitRanges: [Range<Int>]
-  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
+  var bitRanges: [BitRange]
 
   var projectedType: BitFieldTypeProjection?
 
@@ -142,8 +138,7 @@ public struct ReadWriteMacro: BitFieldMacro, Sendable {
   static let isSymmetric = true
 
   @Argument(label: "bits")
-  var bitRanges: [Range<Int>]
-  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
+  var bitRanges: [BitRange]
 
   @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?
@@ -172,8 +167,7 @@ public struct ReadOnlyMacro: BitFieldMacro, Sendable {
   static let isSymmetric = false
 
   @Argument(label: "bits")
-  var bitRanges: [Range<Int>]
-  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
+  var bitRanges: [BitRange]
 
   @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?
@@ -202,8 +196,7 @@ public struct WriteOnlyMacro: BitFieldMacro, Sendable {
   static let isSymmetric = false
 
   @Argument(label: "bits")
-  var bitRanges: [Range<Int>]
-  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
+  var bitRanges: [BitRange]
 
   @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?

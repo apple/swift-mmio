@@ -42,48 +42,6 @@ extension ErrorDiagnostic {
     .init("'\(Macro.signature)' type can only contain properties")
   }
 
-  static func expectedMemberAnnotatedWithMacro<OtherMacro>(
-    _ macro: OtherMacro.Type
-  ) -> Self where OtherMacro: ParsableMacro {
-    .init(
-      """
-      '\(Macro.signature)' type member must be annotated with \
-      '\(OtherMacro.signature)' macro
-      """)
-  }
-
-  static func expectedMemberAnnotatedWithOneOf(
-    _ macros: [any ParsableMacro.Type]
-  ) -> Self {
-    precondition(macros.count > 1)
-    guard let last = macros.last else { fatalError() }
-
-    let optionsPrefix =
-      macros
-      .dropLast()
-      .map { "'\($0.signature)'" }
-      .joined(separator: ", ")
-    let options = "\(optionsPrefix), or '\(last.signature)'"
-
-    return .init(
-      """
-      '\(Macro.signature)' type member must be annotated with exactly one \
-      macro of \(options)
-      """)
-  }
-
-  // Binding Errors
-  static func expectedBindingKind(_ bindingKind: VariableBindingKind) -> Self {
-    .init(
-      """
-      "'\(Macro.signature)' can only be applied to '\(bindingKind)' properties"
-      """)
-  }
-
-  static func expectedSingleBinding() -> Self {
-    .init("'\(Macro.signature)' cannot be applied to compound properties")
-  }
-
   // Binding Identifier Errors
   static func expectedBindingIdentifier() -> Self {
     .init("'\(Macro.signature)' cannot be applied to anonymous properties")

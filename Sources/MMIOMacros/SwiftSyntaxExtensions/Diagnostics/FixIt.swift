@@ -14,14 +14,6 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 
 extension FixIt {
-  static func replaceWithVar(node: TokenSyntax) -> FixIt {
-    .replace(
-      message: MacroExpansionFixItMessage(
-        "Replace '\(node.trimmed)' with 'var'"),
-      oldNode: node,
-      newNode: TokenSyntax.keyword(.var))
-  }
-
   static func insertBindingType(node: PatternBindingSyntax) -> FixIt {
     // FIXME: https://github.com/apple/swift-syntax/issues/2205
     .replace(
@@ -42,18 +34,6 @@ extension FixIt {
       oldNode: node,
       newNode: EditorPlaceholderDeclSyntax(
         placeholder: .identifier("<#Identifier#>")))
-  }
-
-  static func insertMacro<Macro>(
-    node: some WithAttributesSyntax, _: Macro.Type
-  ) -> FixIt where Macro: ParsableMacro {
-    // FIXME: https://github.com/apple/swift-syntax/issues/2205
-    var newNode = node
-    newNode.attributes.append(Macro.attributeWithPlaceholders)
-    return .replace(
-      message: MacroExpansionFixItMessage("Insert '\(Macro.signature)' macro"),
-      oldNode: node,
-      newNode: newNode)
   }
 
   static func removeAccessorBlock(node: PatternBindingSyntax) -> FixIt {

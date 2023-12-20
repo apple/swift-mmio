@@ -9,25 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-enum FileCheckDiagnosticKind: String {
+public enum LLVMDiagnosticKind: String {
   case error
+  case warning
   case note
 }
 
-extension FileCheckDiagnosticKind: Equatable {}
+extension LLVMDiagnosticKind: CaseIterable {}
 
-struct FileCheckDiagnostic {
-  var file: String
-  var line: Int
-  var column: Int
-  var kind: FileCheckDiagnosticKind
-  var message: String
-}
-
-extension FileCheckDiagnostic: CustomStringConvertible {
-  var description: String {
-    "\(self.file):\(self.line):\(self.column): \(self.kind): \(self.message)"
-  }
-}
-
-extension FileCheckDiagnostic: Equatable {}
+extension LLVMDiagnosticKind: Equatable {}

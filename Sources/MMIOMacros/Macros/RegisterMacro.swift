@@ -45,10 +45,10 @@ extension RegisterMacro: MMIOMemberMacro {
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    // Can only applied to structs.
     // FIXME: https://github.com/apple/swift-syntax/pull/2366
     // swift-format-ignore: NeverForceUnwrap
     let declaration = declaration as! DeclSyntaxProtocol
+    // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
     let accessLevel = structDecl.accessLevel
     let bitWidth = self.bitWidth.value
@@ -60,22 +60,21 @@ extension RegisterMacro: MMIOMemberMacro {
     for member in structDecl.memberBlock.members {
       // Each member must be a variable declaration.
       guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
-        _ = context.error(
-          at: member.decl,
-          message: .onlyMemberVarDecls())
+        _ = context.error(at: member.decl, message: .onlyMemberVarDecls())
         error = true
         continue
       }
 
-      let suppressionContext = context.makeSuppressingDiagnostics()
       guard
         // Each declaration must be annotated with exactly one bitField macro.
         let value = try? variableDecl.requireMacro(bitFieldMacros, context),
+        // This will always succeed.
+        let macroType = value.macroType as? any (BitFieldMacro.Type),
 
         // Parse the arguments from the bitField macro.
-        let macro = try? value.type.init(
+        let macro = try? macroType.init(
           from: value.attribute,
-          in: suppressionContext),
+          in: context.makeSuppressingDiagnostics()),
 
         // Grab the type of the variable declaration. Diagnostics will be
         // emitted by the handling of @attched(accessor) of the applied bitField
@@ -88,17 +87,16 @@ extension RegisterMacro: MMIOMemberMacro {
         continue
       }
 
-      isSymmetric = isSymmetric && value.type.isSymmetric
+      isSymmetric = isSymmetric && macroType.isSymmetric
 
       bitFields.append(
         BitFieldDescription(
           accessLevel: accessLevel,
           bitWidth: bitWidth,
-          type: value.type,
+          type: macroType,
           fieldName: fieldName,
           fieldType: fieldType,
           bitRanges: macro.bitRanges,
-          bitRangeExpressions: macro.bitRangeExpressions,
           projectedType: macro.projectedType?.expression))
     }
     guard !error else { return [] }

@@ -1,0 +1,4 @@
+module MMIOVolatile {
+    header "MMIOVolatile.h"
+    export *
+}

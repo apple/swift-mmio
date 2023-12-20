@@ -17,8 +17,7 @@ struct BitFieldDescription {
   var type: any BitFieldMacro.Type
   var fieldName: IdentifierPatternSyntax
   var fieldType: TypeSyntax
-  var bitRanges: [Range<Int>]
-  var bitRangeExpressions: [ExprSyntax]
+  var bitRanges: [BitRange]
   var projectedType: ExprSyntax?
 }
 
@@ -36,27 +35,44 @@ extension BitFieldDescription {
 }
 
 extension BitFieldDescription {
+  func bitRangeExpression(_ bitRange: BitRange) -> ExprSyntax {
+    let clampedRange = bitRange
+      .canonicalizedClosedRange
+      .clamped(to: 0...(self.bitWidth - 1))
+    let infix = InfixOperatorExprSyntax(
+      leftOperand: IntegerLiteralExprSyntax(clampedRange.lowerBound),
+      operator: BinaryOperatorExprSyntax(operator: .binaryOperator("..<")),
+      rightOperand: IntegerLiteralExprSyntax(clampedRange.upperBound + 1)
+    )
+    guard let expression = infix.as(ExprSyntax.self) else {
+      preconditionFailure("InfixOperatorExprSyntax must be an ExprSyntax")
+    }
+    return expression
+  }
+
   func declarations() -> [DeclSyntax] {
-    switch bitRangeExpressions.count {
+    switch bitRanges.count {
     case 0:
       preconditionFailure()
     case 1:
-      let bitRange = self.bitRangeExpressions[0]
+      let bitRangeExpression = self.bitRangeExpression(self.bitRanges[0])
       return [
         """
         \(self.accessLevel)enum \(self.fieldType): ContiguousBitField {
           \(self.accessLevel)typealias Storage = \(self.storageType())
-          \(self.accessLevel)static let bitRange = \(bitRange)
+          \(self.accessLevel)static let bitRange = \(bitRangeExpression)
         }
         """
       ]
     default:
-      let bitRanges = ArrayExprSyntax(expressions: self.bitRangeExpressions)
+      let bitRangeExpressions = self
+        .bitRanges
+        .map { self.bitRangeExpression($0) }
       return [
         """
         \(self.accessLevel)enum \(self.fieldType): DiscontiguousBitField {
           \(self.accessLevel)typealias Storage = \(self.storageType())
-          \(self.accessLevel)static let bitRanges = \(bitRanges)
+          \(self.accessLevel)static let bitRanges = \(ArrayExprSyntax(expressions: bitRangeExpressions))
         }
         """
       ]

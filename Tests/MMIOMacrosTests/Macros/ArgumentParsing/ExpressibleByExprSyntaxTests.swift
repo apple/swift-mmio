@@ -28,7 +28,7 @@ struct ExpressibleByExprSyntaxMacro: MMIOArgumentParsingMacro {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertParse<Value>(
   expression: ExprSyntax,
-  expected: Value?,
+  expected: Value,
   file: StaticString = #filePath,
   line: UInt = #line
 ) where Value: ExpressibleByExprSyntax, Value: Equatable {
@@ -48,10 +48,10 @@ func XCTAssertParseBitFieldTypeProjection(
   file: StaticString = #filePath,
   line: UInt = #line
 ) {
-  let base = expression.as(MemberAccessExprSyntax.self)?.base
+  let base = expression.as(MemberAccessExprSyntax.self)!.base!
   XCTAssertParse(
     expression: expression,
-    expected: base.map { BitFieldTypeProjection(expression: $0) },
+    expected: BitFieldTypeProjection(expression: base),
     file: file,
     line: line)
 }
@@ -87,19 +87,33 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
 
     XCTAssertNoParse(expression: "1 + 1", as: Int.self)
     // This could be made to work, but its a slippery slope to becoming an
-    // arbitrary in expression evaluator, so for now parens are banned.
+    // arbitrary expression evaluator, so for now parens are banned.
     XCTAssertNoParse(expression: "(1234)", as: Int.self)
   }
 
-  func test_rangeInt() throws {
-    XCTAssertParse(expression: "0..<1", expected: 0..<1)
-    XCTAssertParse(expression: "0 ..< 1", expected: 0..<1)
+  func test_bitRange() throws {
+    // UnboundedRange_
+    let unboundedRange = DeclReferenceExprSyntax(
+      baseName: .binaryOperator("...")
+    ).as(ExprSyntax.self)!
+    XCTAssertParse(expression: unboundedRange, expected: "(-∞, +∞)" as BitRange)
+    // PartialRangeThrough
+    XCTAssertParse(expression: "...0", expected: "(-∞, 0]" as BitRange)
+    // PartialRangeFrom
+    XCTAssertParse(expression: "0...", expected: "[0, +∞)" as BitRange)
+    // ClosedRange
+    XCTAssertParse(expression: "0...1", expected: "[0, 1]" as BitRange)
+    // PartialRangeUpTo
+    XCTAssertParse(expression: "..<0", expected: "(-∞, 0)" as BitRange)
+    // Range
+    XCTAssertParse(expression: "0..<1", expected: "[0, 1)" as BitRange)
 
-    XCTAssertNoParse(expression: "1..<0", as: Range<Int>.self)
-    XCTAssertNoParse(expression: "0...1", as: Range<Int>.self)
-    XCTAssertNoParse(expression: "(0)..<1", as: Range<Int>.self)
-    XCTAssertNoParse(expression: "0..<(1)", as: Range<Int>.self)
-    XCTAssertNoParse(expression: "(0)..<(1)", as: Range<Int>.self)
+    XCTAssertNoParse(expression: "1...0", as: BitRange.self)
+    XCTAssertNoParse(expression: "1..<0", as: BitRange.self)
+    XCTAssertNoParse(expression: "1..<1", as: BitRange.self)
+    XCTAssertNoParse(expression: "(0)..<1", as: BitRange.self)
+    XCTAssertNoParse(expression: "0..<(1)", as: BitRange.self)
+    XCTAssertNoParse(expression: "(0)..<(1)", as: BitRange.self)
   }
 
   func test_bitWidth() throws {

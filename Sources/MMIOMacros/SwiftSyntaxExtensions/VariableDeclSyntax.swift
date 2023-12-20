@@ -9,37 +9,31 @@
 //
 //===----------------------------------------------------------------------===//
 
+import SwiftDiagnostics
 import SwiftSyntax
+import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 extension VariableDeclSyntax {
-  var bindingKind: VariableBindingKind {
-    switch self.bindingSpecifier.tokenKind {
-    case .keyword(.let):
-      return .let
-    case .keyword(.inout):
-      return .inout
-    case .keyword(.var):
-      return .var
-    default:
-      return .unknown(self.bindingSpecifier.text)
-    }
-  }
-
-  func require(
-    bindingKind: VariableBindingKind,
+  // Bindings can be `let`s, `var`s, etc...
+  func requireBindingSpecifier(
+    _ bindingSpecifier: Keyword,
     _ context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
-    guard self.bindingKind == bindingKind else {
+    guard self.bindingSpecifier.tokenKind == .keyword(bindingSpecifier) else {
       throw context.error(
         at: self.bindingSpecifier,
-        message: .expectedBindingKind(bindingKind),
-        fixIts: .replaceWithVar(node: self.bindingSpecifier))
+        message: .expectedBindingSpecifier(bindingSpecifier),
+        fixIts: .replaceBindingSpecifier(
+          node: self.bindingSpecifier,
+          with: bindingSpecifier))
     }
   }
 }
 
 extension VariableDeclSyntax {
+  // Multiple bindings can occur for variable declarations like:
+  // `var a, b: Int`
   var singleBinding: PatternBindingSyntax? {
     guard self.bindings.count == 1 else { return nil }
     return self.bindings.first
@@ -54,5 +48,28 @@ extension VariableDeclSyntax {
         message: .expectedSingleBinding())
     }
     return binding
+  }
+}
+
+extension ErrorDiagnostic {
+  static func expectedBindingSpecifier(_ node: Keyword) -> Self {
+    .init("'\(Macro.signature)' can only be applied to '\(node)' bindings")
+  }
+
+  static func expectedSingleBinding() -> Self {
+    .init("'\(Macro.signature)' cannot be applied to compound properties")
+  }
+}
+
+extension FixIt {
+  static func replaceBindingSpecifier(
+    node: TokenSyntax,
+    with bindingSpecifier: Keyword
+  ) -> FixIt {
+    .replace(
+      message: MacroExpansionFixItMessage(
+        "Replace '\(node.trimmed)' with '\(bindingSpecifier)'"),
+      oldNode: node,
+      newNode: TokenSyntax.keyword(bindingSpecifier))
   }
 }

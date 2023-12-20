@@ -9,9 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import XCTest
 
-final class FileCheckParsingTests: XCTestCase {
+final class LLVMParsingTests: XCTestCase {
   func testParseErrorOutput() {
     let error = """
       /tests/TestModifyBitSetCoalesced.swift:56:17: error: CHECK-NEXT: expected string not found in input
@@ -29,43 +30,52 @@ final class FileCheckParsingTests: XCTestCase {
       /build/TestModifyBitSetCoalesced.swift.ll:2565:3: note: possible intended match here
       %1 = or i8 %0, -127
       ^
+      /build/TestModifyBitSetCoalesced.swift:21:10: warning: cannot find 'resister' in scope
+      let r8 = resister<R8>(unsafeAddress: 0x1000)
+          ~~   ^~~~~~~~
       """
 
     let expected = [
-      FileCheckDiagnostic(
+      LLVMDiagnostic(
         file: "/tests/TestModifyBitSetCoalesced.swift",
         line: 56,
         column: 17,
         kind: .error,
         message: "CHECK-NEXT: expected string not found in input"),
-      FileCheckDiagnostic(
+      LLVMDiagnostic(
         file: "/build/TestModifyBitSetCoalesced.swift.ll",
         line: 2564,
         column: 23,
         kind: .note,
         message: "scanning from here"),
-      FileCheckDiagnostic(
+      LLVMDiagnostic(
         file: "/build/TestModifyBitSetCoalesced.swift.ll",
         line: 2564,
         column: 23,
         kind: .note,
         message: #"with "REG+1" equal to "1""#),
-      FileCheckDiagnostic(
+      LLVMDiagnostic(
         file: "/build/TestModifyBitSetCoalesced.swift.ll",
         line: 2564,
         column: 23,
         kind: .note,
         message: #"with "REG" equal to "0""#),
-      FileCheckDiagnostic(
+      LLVMDiagnostic(
         file: "/build/TestModifyBitSetCoalesced.swift.ll",
         line: 2565,
         column: 3,
         kind: .note,
         message: "possible intended match here"),
+      LLVMDiagnostic(
+        file: "/build/TestModifyBitSetCoalesced.swift",
+        line: 21,
+        column: 10,
+        kind: .warning,
+        message: "cannot find 'resister' in scope"),
     ]
 
     var input = error[...]
-    let (parsed, rest) = Parser.fileCheckDiagnostics.parse(&input)
+    let parsed = Parser.llvmDiagnostics.run(&input)
     let actual = parsed ?? []
     XCTAssertEqual(actual.count, expected.count)
     if actual.count == expected.count {
@@ -73,6 +83,6 @@ final class FileCheckParsingTests: XCTestCase {
         XCTAssertEqual(actual, expected)
       }
     }
-    XCTAssert(rest.isEmpty)
+    XCTAssert(input.isEmpty)
   }
 }

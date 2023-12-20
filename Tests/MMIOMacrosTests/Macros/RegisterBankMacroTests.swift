@@ -93,7 +93,7 @@ final class RegisterBankMacroTests: XCTestCase {
         .init(
           message:
             ErrorDiagnostic
-            .expectedMemberAnnotatedWithMacro(RegisterBankOffsetMacro.self)
+            .expectedMemberAnnotatedWithMacro([RegisterBankOffsetMacro.self])
             .message,
           line: 3,
           column: 3,
@@ -104,7 +104,7 @@ final class RegisterBankMacroTests: XCTestCase {
         .init(
           message:
             ErrorDiagnostic
-            .expectedMemberAnnotatedWithMacro(RegisterBankOffsetMacro.self)
+            .expectedMemberAnnotatedWithMacro([RegisterBankOffsetMacro.self])
             .message,
           line: 4,
           column: 3,

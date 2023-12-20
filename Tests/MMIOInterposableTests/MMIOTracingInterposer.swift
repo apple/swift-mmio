@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import MMIO
+import MMIOUtilities
 import XCTest
 
 class MMIOTracingInterposer {

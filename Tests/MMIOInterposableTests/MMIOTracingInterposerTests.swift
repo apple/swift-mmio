@@ -86,8 +86,10 @@ final class MMIOTracingInterposerTests: XCTestCase {
   }
 
   func test_XCTAssertMMIOAlignment_fail() {
+    #if !os(Linux)
     XCTExpectFailure("testing negative case")
     XCTAssertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x1)!)
+    #endif
   }
 
   func test_XCTAssertMMIOInterposerTrace_pass() {
@@ -105,6 +107,7 @@ final class MMIOTracingInterposerTests: XCTestCase {
   }
 
   func test_XCTAssertMMIOInterposerTrace_fail() {
+    #if !os(Linux)
     XCTExpectFailure("testing negative case")
     let interposer = MMIOTracingInterposer()
     interposer.trace = [
@@ -117,5 +120,6 @@ final class MMIOTracingInterposerTests: XCTestCase {
         .load(of: UInt8(0x5a), from: 0x20),
         .load(of: UInt8(0xa6), from: 0x30),
       ])
+    #endif
   }
 }
