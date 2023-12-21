@@ -18,38 +18,6 @@ import XCTest
 @testable import MMIOMacros
 
 final class WithAttributesSyntaxTests: XCTestCase {
-  struct Macro0: MMIOMemberMacro {
-    static var memberMacroSuppressParsingDiagnostics: Bool { false }
-
-    mutating func update(
-      label: String,
-      from expression: ExprSyntax,
-      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-    ) throws {}
-
-    mutating func expansion(
-      of node: AttributeSyntax,
-      providingMembersOf declaration: some DeclGroupSyntax,
-      in context: MacroContext<Self, some MacroExpansionContext>
-    ) throws -> [DeclSyntax] { [] }
-  }
-
-  struct Macro1: MMIOMemberMacro {
-    static var memberMacroSuppressParsingDiagnostics: Bool { false }
-
-    mutating func update(
-      label: String,
-      from expression: ExprSyntax,
-      in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-    ) throws {}
-
-    mutating func expansion(
-      of node: AttributeSyntax,
-      providingMembersOf declaration: some DeclGroupSyntax,
-      in context: MacroContext<Self, some MacroExpansionContext>
-    ) throws -> [DeclSyntax] { [] }
-  }
-
   func test_requireMacro() throws {
     struct Vector {
       var decl: any WithAttributesSyntax
@@ -140,11 +108,11 @@ final class WithAttributesSyntaxTests: XCTestCase {
             file: vector.file,
             line: vector.line)
         } else {
-          XCTFail("Unexpectedly found match", file: vector.file, line: vector.line)
+          XCTFail("expected no match", file: vector.file, line: vector.line)
         }
       } catch {
         if vector.match != nil {
-          XCTFail("Unexpectedly did not find match")
+          XCTFail("expected match", file: vector.file, line: vector.line)
         }
       }
     }
