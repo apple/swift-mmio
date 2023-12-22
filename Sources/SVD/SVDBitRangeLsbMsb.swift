@@ -9,14 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import Foundation
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+/// Specifies the bit position of a field within a register by specifying the
+/// least significant and the most significant bit position.
+@XMLElement
+public struct SVDBitRangeLsbMsb {
+  public var lsb: UInt64
+  public var msb: UInt64
 }

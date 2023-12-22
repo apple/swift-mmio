@@ -9,14 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
 import SwiftSyntax
+import SwiftSyntaxMacros
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+enum XMLAttributeMacro: PeerMacro {
+  static func expansion(
+    of node: AttributeSyntax,
+    providingPeersOf declaration: some DeclSyntaxProtocol,
+    in context: some MacroExpansionContext
+  ) throws -> [DeclSyntax] { [] }
 }

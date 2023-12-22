@@ -9,14 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
-
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+public enum SVDSAUAccess: String {
+  /// Secure callable.
+  case secureCallable = "c"
+  /// Non-secure.
+  case nonSecure = "n"
 }
+
+extension SVDSAUAccess: XMLNodeInitializable {}

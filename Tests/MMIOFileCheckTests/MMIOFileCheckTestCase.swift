@@ -240,8 +240,7 @@ extension XCTestCase {
       sourceCodeContext: .init(
         location: .init(
           filePath: diagnostic.file,
-          lineNumber: diagnostic.line))
-    )
+          lineNumber: diagnostic.line)))
     self.record(issue)
     #endif
   }

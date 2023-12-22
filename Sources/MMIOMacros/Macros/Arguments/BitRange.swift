@@ -169,7 +169,7 @@ extension BitRange: LosslessStringConvertible {
             Parser("[").map { true },
           ])
         )
-        .take(.swiftInteger)
+        .take(.swiftInteger(Int.self))
 
       guard let value = parser.run(&input) else { return nil }
       self.lowerBound = .init(value: value.1, inclusive: value.0)
@@ -182,7 +182,7 @@ extension BitRange: LosslessStringConvertible {
     } else {
       let parser =
         Parser
-        .take(.swiftInteger)
+        .take(.swiftInteger(Int.self))
         .take(
           .oneOf([
             Parser(")").map { false },

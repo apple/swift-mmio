@@ -15,12 +15,25 @@ var package = Package(
     .visionOS(.v1),
   ],
   products: [
-    .library(name: "MMIO", targets: ["MMIO"])
+    // MMIO
+    .library(name: "MMIO", targets: ["MMIO"]),
+
+    // SVD
+    .executable(
+      // FIXME: rdar://112530586
+      // XPM skips build plugin if product and target names are not identical.
+      // Rename this target to "SVD2Swift" when Xcode bug is resolved.
+      name: "SVD2Swift",
+      targets: ["SVD2Swift"]),
+    .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
+    .library(name: "SVD", targets: ["SVD"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.2")
+    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
+    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.2"),
   ],
   targets: [
+    // MMIO
     .target(
       name: "MMIO",
       dependencies: ["MMIOMacros", "MMIOVolatile"]),
@@ -51,8 +64,9 @@ var package = Package(
       name: "MMIOMacrosTests",
       dependencies: [
         "MMIOMacros",
-        // FIXME: rdar://119344431 (XPM drops transitive dependency causing linker errors)
-        // Remove this dependency when Xcode bug is resolved
+        // FIXME: rdar://119344431
+        // XPM drops transitive dependency causing linker errors.
+        // Remove this dependency when Xcode bug is resolved.
         "MMIOUtilities",
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
@@ -65,9 +79,50 @@ var package = Package(
       dependencies: ["MMIOUtilities"]),
 
     .systemLibrary(name: "MMIOVolatile"),
+
+    // SVD
+    .target(
+      name: "SVD",
+      dependencies: ["MMIOUtilities", "SVDMacros"]),
+
+    .executableTarget(
+      name: "SVD2Swift",
+      dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        "SVD",
+      ]),
+    .testTarget(
+      name: "SVD2SwiftTests",
+      dependencies: ["MMIO"],
+      // FIXME: rdar://113256834,apple/swift-package-manager#6935
+      // SPM 5.9 produces warnings for plugin input files.
+      // Remove this exclude list when Swift Package Manager bug is resolved.
+      exclude: ["ARM_Sample.svd", "svd2swift.json"],
+      plugins: ["SVD2SwiftPlugin"]),
+
+    .plugin(
+      name: "SVD2SwiftPlugin",
+      capability: .buildTool,
+      dependencies: ["SVD2Swift"]),
+
+    .macro(
+      name: "SVDMacros",
+      dependencies: [
+        .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+        .product(name: "SwiftSyntax", package: "swift-syntax"),
+        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+      ]),
+    .testTarget(
+      name: "SVDMacrosTests",
+      dependencies: [
+        "SVDMacros",
+        .product(name: "SwiftSyntax", package: "swift-syntax"),
+        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+        .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+      ]),
   ])
 
-// Replace this with a native spm feature flag if/when supported
+// Replace this with a native SPM feature flag if/when supported.
 let interposable = "FEATURE_INTERPOSABLE"
 if featureIsEnabled(named: interposable, override: nil) {
   let allowedTargets = Set([

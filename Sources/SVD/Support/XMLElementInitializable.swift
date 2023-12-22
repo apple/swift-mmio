@@ -9,14 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import Foundation
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+protocol XMLElementInitializable {
+  init(_ element: XMLElement) throws
 }

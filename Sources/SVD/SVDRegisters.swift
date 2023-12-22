@@ -9,14 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import Foundation
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+/// All registers of a peripheral are enclosed between the `<registers>` opening
+/// and closing tags. Clusters define a set of registers. You can either use the
+/// `<cluster>` or the `<register>` element.
+@XMLElement
+public struct SVDRegisters {
+  /// Define the sequence of register clusters.
+  public var cluster: [SVDCluster]
+  /// Define the sequence of registers.
+  public var register: [SVDRegister]
 }

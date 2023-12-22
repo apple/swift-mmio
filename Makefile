@@ -26,7 +26,7 @@ lint:
 		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
 		--recursive \
 		--strict \
-		Package.swift Sources Tests
+		Package.swift Plugins Sources Tests
 endif
 
 format:
@@ -35,7 +35,7 @@ format:
 		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
 		--recursive \
 		--in-place \
-		Package.swift Sources Tests
+		Package.swift Plugins Sources Tests
 
 build: lint
 	@echo "building..."

@@ -9,14 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import Foundation
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+/// All peripherals of a device are enclosed within the tag `<peripherals>`.
+@XMLElement
+public struct SVDPeripherals {
+  /// Define the sequence of peripherals.
+  public var peripheral: [SVDPeripheral]
 }

@@ -109,6 +109,12 @@ extension Parser {
   }
 }
 
+extension Parser where Output == Void {
+  public func take<B>(_ p: Parser<Input, B>) -> Parser<Input, B> {
+    zip(self, p).map { a, b in b }
+  }
+}
+
 extension Parser {
   public static func take(_ p: Self) -> Self { p }
 
