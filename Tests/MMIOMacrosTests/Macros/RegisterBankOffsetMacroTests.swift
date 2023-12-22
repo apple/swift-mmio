@@ -109,13 +109,10 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedBindingIdentifier().message,
+          message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
           column: 32,
-          highlight: "_",
-          fixIts: [
-            .init(message: "Insert explicit property identifier")
-          ])
+          highlight: "_")
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -131,7 +128,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.unexpectedTupleBindingIdentifier().message,
+          message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
           column: 32,
           highlight: "(a, b)")
@@ -150,7 +147,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedTypeAnnotation().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 32,
           highlight: "v",
@@ -172,7 +169,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.unexpectedInferredType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 35,
           highlight: "_",

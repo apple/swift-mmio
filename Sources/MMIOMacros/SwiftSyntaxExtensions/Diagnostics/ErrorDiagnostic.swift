@@ -41,37 +41,4 @@ extension ErrorDiagnostic {
   static func onlyMemberVarDecls() -> Self {
     .init("'\(Macro.signature)' type can only contain properties")
   }
-
-  // Binding Identifier Errors
-  static func expectedBindingIdentifier() -> Self {
-    .init("'\(Macro.signature)' cannot be applied to anonymous properties")
-  }
-
-  static func unexpectedTupleBindingIdentifier() -> Self {
-    .init("'\(Macro.signature)' cannot be applied to tuple properties")
-  }
-
-  // Binding Type Errors
-  static func expectedTypeAnnotation() -> Self {
-    .init("'\(Macro.signature)' cannot be applied to untyped properties")
-  }
-
-  static func unexpectedInferredType() -> Self {
-    .init(
-      """
-      '\(Macro.signature)' cannot be applied to implicitly typed properties
-      """)
-  }
-
-  // FIXME: Improve diagnostic, what is a "simple type"?
-  static func unexpectedBindingType() -> Self {
-    .init(
-      """
-      '\(Macro.signature)' can only be applied to properties with simple types
-      """)
-  }
-
-  static func expectedStoredProperty() -> Self {
-    .init("'\(Macro.signature)' cannot be applied properties with accessors")
-  }
 }

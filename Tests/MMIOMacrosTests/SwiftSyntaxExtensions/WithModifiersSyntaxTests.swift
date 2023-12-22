@@ -57,7 +57,6 @@ final class WithModifiersSyntaxTests: XCTestCase {
       .init(
         decl: "final private class C {}",
         accessLevel: .init(name: .keyword(.private))),
-
       .init(
         decl: "final private public class C {}",
         accessLevel: .init(name: .keyword(.private))),

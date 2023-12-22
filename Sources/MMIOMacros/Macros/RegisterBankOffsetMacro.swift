@@ -57,54 +57,11 @@ extension RegisterBankOffsetMacro: MMIOAccessorMacro {
     // Exactly one binding for the variable.
     let binding = try variableDecl.requireSingleBinding(context)
 
-    // Binding identifier must be a simple identifier
-    guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-      if binding.pattern.is(TuplePatternSyntax.self) {
-        // Binding identifier must not be a tuple.
-        throw context.error(
-          at: binding.pattern,
-          message: .unexpectedTupleBindingIdentifier())
-      } else if binding.pattern.is(WildcardPatternSyntax.self) {
-        throw context.error(
-          at: binding.pattern,
-          message: .expectedBindingIdentifier(),
-          fixIts: .insertBindingIdentifier(node: binding.pattern))
-      } else {
-        throw context.error(
-          at: binding.pattern,
-          message: .internalError())
-      }
-    }
+    // Binding identifier must be a simple identifier.
+    _ = try binding.requireSimpleBindingIdentifier(context)
 
-    // Binding identifier must not be "_" (implicitly named).
-    guard identifierPattern.identifier.tokenKind != .wildcard else {
-      // FIXME: never reached
-      throw context.error(
-        at: binding.pattern,
-        message: .expectedBindingIdentifier(),
-        fixIts: .insertBindingIdentifier(node: binding.pattern))
-    }
-
-    // Binding must have a type annotation.
-    let type = try binding.requireType(context)
-
-    // Binding type must be a simple identifier; not an optional, tuple,
-    // array, etc...
-    if let typeIdentifier = type.as(IdentifierTypeSyntax.self) {
-      // Binding type must not be "_" (implicitly typed).
-      guard typeIdentifier.name.tokenKind != .wildcard else {
-        throw context.error(
-          at: type,
-          message: .unexpectedInferredType(),
-          fixIts: .insertBindingType(node: binding))
-      }
-    } else if type.is(MemberTypeSyntax.self) {
-      // Ok
-    } else {
-      throw context.error(
-        at: type,
-        message: .unexpectedBindingType())
-    }
+    // Binding must have a simple type annotation.
+    _ = try binding.requireSimpleTypeIdentifier(context)
 
     // Binding must not have any accessors.
     try binding.requireNoAccessor(context)

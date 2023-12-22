@@ -79,13 +79,13 @@ final class VariableDeclSyntaxTests: XCTestCase {
   func test_requireSingleBinding() {
     struct Vector {
       var decl: VariableDeclSyntax
-      var singleBinding: PatternBindingSyntax?
+      var singleBinding: String?
       var file: StaticString
       var line: UInt
 
       init(
         decl: DeclSyntax,
-        singleBinding: PatternBindingSyntax?,
+        singleBinding: String?,
         file: StaticString = #file,
         line: UInt = #line
       ) {
@@ -99,31 +99,13 @@ final class VariableDeclSyntaxTests: XCTestCase {
     let vectors: [Vector] = [
       .init(
         decl: "var v: Int",
-        singleBinding: .init(
-          pattern: IdentifierPatternSyntax(identifier: .identifier("v")),
-          typeAnnotation: TypeAnnotationSyntax(
-            colon: .colonToken(trailingTrivia: .space),
-            type: IdentifierTypeSyntax(name: .identifier("Int"))))),
+        singleBinding: "v: Int"),
       .init(
         decl: "var _: Int",
-        singleBinding: .init(
-          pattern: WildcardPatternSyntax(),
-          typeAnnotation: TypeAnnotationSyntax(
-            colon: .colonToken(trailingTrivia: .space),
-            type: IdentifierTypeSyntax(name: .identifier("Int"))))),
+        singleBinding: "_: Int"),
       .init(
-        decl: "var (v, w): Int",
-        singleBinding: .init(
-          pattern: TuplePatternSyntax(elements: [
-            TuplePatternElementSyntax(
-              pattern: IdentifierPatternSyntax(identifier: .identifier("v")),
-              trailingComma: .commaToken(trailingTrivia: .space)),
-            TuplePatternElementSyntax(
-              pattern: IdentifierPatternSyntax(identifier: .identifier("w"))),
-          ]),
-          typeAnnotation: TypeAnnotationSyntax(
-            colon: .colonToken(trailingTrivia: .space),
-            type: IdentifierTypeSyntax(name: .identifier("Int"))))),
+        decl: "var (v, v): Int",
+        singleBinding: "(v, v): Int"),
       .init(
         decl: "var v, w: Int",
         singleBinding: nil),
@@ -139,11 +121,11 @@ final class VariableDeclSyntaxTests: XCTestCase {
         if let expected = vector.singleBinding {
           XCTAssertEqual(
             actual.description,
-            expected.description,
+            expected,
             file: vector.file,
             line: vector.line)
         } else {
-          XCTFail("expected no binding", file: vector.file, line: vector.line)
+          XCTFail("unexpected binding", file: vector.file, line: vector.line)
         }
       } catch {
         if vector.singleBinding != nil {

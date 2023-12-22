@@ -138,13 +138,10 @@ final class BitFieldMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedBindingIdentifier().message,
+          message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
           column: 24,
-          highlight: "_",
-          fixIts: [
-            .init(message: "Insert explicit property identifier")
-          ])
+          highlight: "_")
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -160,7 +157,7 @@ final class BitFieldMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.unexpectedTupleBindingIdentifier().message,
+          message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
           column: 24,
           highlight: "(a, b)")
@@ -179,7 +176,7 @@ final class BitFieldMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedTypeAnnotation().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 24,
           highlight: "v",
@@ -201,7 +198,7 @@ final class BitFieldMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.unexpectedInferredType().message,
+          message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 27,
           highlight: "_",
