@@ -127,7 +127,7 @@ extension Peripheral {
     context.outputWriter.append(
       """
       \(comment: self.description)
-      @RegisterBank
+      @RegisterBlock
       \(context.accessLevel)struct \(self.name) {
 
       """)
@@ -176,7 +176,7 @@ extension Register {
       context.outputWriter.append(
         """
         \(comment: self.description)
-        @RegisterBank(offset: \(hex: self.addressOffset), stride: \(hex: vector.stride), count: \(vector.count))
+        @RegisterBlock(offset: \(hex: self.addressOffset), stride: \(hex: vector.stride), count: \(vector.count))
         \(context.accessLevel)var \(identifier: self.name.lowercased()): RegisterArray<\(self.name)>
 
         """)
@@ -184,7 +184,7 @@ extension Register {
       context.outputWriter.append(
         """
         \(comment: self.description)
-        @RegisterBank(offset: \(hex: self.addressOffset))
+        @RegisterBlock(offset: \(hex: self.addressOffset))
         \(context.accessLevel)var \(identifier: self.name.lowercased()): Register<\(self.name)>
 
         """)

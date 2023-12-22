@@ -84,6 +84,9 @@ var package = Package(
     .target(
       name: "SVD",
       dependencies: ["MMIOUtilities", "SVDMacros"]),
+    .testTarget(
+      name: "SVDTests",
+      dependencies: ["MMIOUtilities", "SVD"]),
 
     .executableTarget(
       name: "SVD2Swift",
