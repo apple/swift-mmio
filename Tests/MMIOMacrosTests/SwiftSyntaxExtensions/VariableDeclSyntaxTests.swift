@@ -134,4 +134,57 @@ final class VariableDeclSyntaxTests: XCTestCase {
       }
     }
   }
+
+  func test_isComputedProperty() {
+    struct Vector {
+      var decl: VariableDeclSyntax
+      var isComputedProperty: Bool
+      var file: StaticString
+      var line: UInt
+
+      init(
+        decl: DeclSyntax,
+        isComputedProperty: Bool,
+        file: StaticString = #file,
+        line: UInt = #line
+      ) {
+        self.decl = decl.as(VariableDeclSyntax.self)!
+        self.isComputedProperty = isComputedProperty
+        self.file = file
+        self.line = line
+      }
+    }
+
+    let vectors: [Vector] = [
+      .init(decl: "var v: Int", isComputedProperty: false),
+      .init(decl: "inout v: Int", isComputedProperty: false),
+      .init(decl: "let v: Int", isComputedProperty: false),
+      .init(decl: "var v, w: Int", isComputedProperty: false),
+      .init(decl: "var v: Int, b: Int", isComputedProperty: false),
+      .init(decl: "var _: Int", isComputedProperty: false),
+      .init(decl: "var (v, w): Int", isComputedProperty: false),
+      .init(decl: "var a", isComputedProperty: false),
+      .init(decl: "var v: _", isComputedProperty: false),
+      .init(decl: "var v: Int?", isComputedProperty: false),
+      .init(decl: "var v: [Int]", isComputedProperty: false),
+      .init(decl: "var v: (Int, Int)", isComputedProperty: false),
+      .init(decl: "var v: Reg<T>", isComputedProperty: false),
+      .init(decl: "var v: Swift.Int", isComputedProperty: false),
+      .init(decl: "var v: Int { willSet {} }", isComputedProperty: false),
+      .init(decl: "var v: Int { didSet {} }", isComputedProperty: false),
+      .init(decl: "var v: Void {}", isComputedProperty: true),
+      .init(decl: "var v: Void { get {} }", isComputedProperty: true),
+      .init(decl: "var v: Void { set {} }", isComputedProperty: true),
+      .init(decl: "var v: Void { _read {} }", isComputedProperty: true),
+      .init(decl: "var v: Void { _modify {} }", isComputedProperty: true),
+    ]
+
+    for vector in vectors {
+      XCTAssertEqual(
+        vector.decl.isComputedProperty,
+        vector.isComputedProperty,
+        file: vector.file,
+        line: vector.line)
+    }
+  }
 }

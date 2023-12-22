@@ -50,7 +50,7 @@ extension RegisterMacro: MMIOMemberMacro {
     let declaration = declaration as! DeclSyntaxProtocol
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
-    let accessLevel = structDecl.accessLevel
+    let accessLevel = structDecl.accessLevel?.trimmed
     let bitWidth = self.bitWidth.value
 
     // Walk all the members of the struct.
@@ -58,15 +58,18 @@ extension RegisterMacro: MMIOMemberMacro {
     var isSymmetric = true
     var bitFields = [BitFieldDescription]()
     for member in structDecl.memberBlock.members {
-      // Each member must be a variable declaration.
-      guard let variableDecl = member.decl.as(VariableDeclSyntax.self) else {
-        _ = context.error(at: member.decl, message: .onlyMemberVarDecls())
-        error = true
+      guard
+        // Ignore non-variable declarations.
+        let variableDecl = member.decl.as(VariableDeclSyntax.self),
+        // Ignore non-stored properties.
+        !variableDecl.isComputedProperty
+      else {
         continue
       }
 
       guard
         // Each declaration must be annotated with exactly one bitField macro.
+        // Further syntactic checking will be performed by that macro.
         let value = try? variableDecl.requireMacro(bitFieldMacros, context),
         // This will always succeed.
         let macroType = value.macroType as? any (BitFieldMacro.Type),

@@ -66,56 +66,35 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_members_onlyVarDecls() {
+  func test_decl_onlyStruct_broken() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
-      struct S {
-        func f() {}
-        class C {}
-      }
+      @Register(bitWidth: 0x8) var v: Int
       """,
       expandedSource: """
-        struct S {
-          func f() {}
-          class C {}
-        }
-
-        extension S: RegisterValue {
-        }
+        var v: Int
         """,
       diagnostics: [
-        .init(
-          message: ErrorDiagnostic.onlyMemberVarDecls().message,
-          line: 3,
-          column: 3,
-          // FIXME: Improve this highlight
-          highlight: "func f() {}"),
-        .init(
-          message: ErrorDiagnostic.onlyMemberVarDecls().message,
-          line: 4,
-          column: 3,
-          // FIXME: Improve this highlight
-          highlight: "class C {}"),
-
+        // FIXME: https://github.com/apple/swift-syntax/issues/2206
       ],
-      macros: Self.macros,
-      indentationWidth: Self.indentationWidth)
+      macros: Self.macros)
   }
 
-  func test_members_varDeclsAreAnnotated() {
+  func test_members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
       struct S {
         var v1: Int
         @OtherAttribute var v2: Int
+        var v3: Int { willSet {} }
       }
       """,
       expandedSource: """
         struct S {
           var v1: Int
           @OtherAttribute var v2: Int
+          var v3: Int { willSet {} }
         }
 
         extension S: RegisterValue {
@@ -132,7 +111,80 @@ final class RegisterMacroTests: XCTestCase {
           line: 4,
           column: 3,
           highlight: "@OtherAttribute var v2: Int"),
+        .init(
+          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
+          line: 5,
+          column: 3,
+          highlight: "var v3: Int { willSet {} }"),
       ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_members_nonStoredVarDeclsAreOk() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        func f() {}
+        class C {}
+        var v: Void {}
+        var v: Void { get {} }
+        var v: Void { set {} }
+        var v: Void { _read {} }
+        var v: Void { _modify {} }
+      }
+      """,
+      expandedSource: """
+        struct S {
+          func f() {}
+          class C {}
+          var v: Void {}
+          var v: Void { get {} }
+          var v: Void { set {} }
+          var v: Void { _read {} }
+          var v: Void { _modify {} }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
@@ -190,7 +242,6 @@ final class RegisterMacroTests: XCTestCase {
   }
 
   func test_expansion_noTypedFields() {
-    // FIXME: see expanded source formatting
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
