@@ -50,7 +50,7 @@ public func preconditionMatchingBitWidth(
   file: StaticString = #file,
   line: UInt = #line
 ) {
-  #if hasFeature(Embedded)
+  #if $Embedded
   // FIXME: Embedded doesn't have static interpolated strings yet
   precondition(
     fieldType.bitWidth == projectedType.bitWidth,
