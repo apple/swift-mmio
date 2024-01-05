@@ -16,6 +16,16 @@ import XCTest
 
 @testable import MMIOMacros
 
+protocol MMIOArgumentParsingMacro: MMIOMemberMacro {}
+extension MMIOArgumentParsingMacro {
+  static var memberMacroSuppressParsingDiagnostics: Bool { false }
+  mutating func expansion(
+    of node: AttributeSyntax,
+    providingMembersOf declaration: some DeclGroupSyntax,
+    in context: MacroContext<Self, some MacroExpansionContext>
+  ) throws -> [DeclSyntax] { [] }
+}
+
 final class ParsableMacroTests: XCTestCase {
   func test_noArguments_parse() {
     struct A: MMIOArgumentParsingMacro {

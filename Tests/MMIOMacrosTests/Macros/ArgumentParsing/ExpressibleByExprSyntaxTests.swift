@@ -15,16 +15,6 @@ import XCTest
 
 @testable import MMIOMacros
 
-struct ExpressibleByExprSyntaxMacro: MMIOArgumentParsingMacro {
-  mutating func update(
-    label: String,
-    from expression: ExprSyntax,
-    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws {
-    fatalError()
-  }
-}
-
 // swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertParse<Value>(
   expression: ExprSyntax,
@@ -33,8 +23,7 @@ func XCTAssertParse<Value>(
   line: UInt = #line
 ) where Value: ExpressibleByExprSyntax, Value: Equatable {
   do {
-    let context = MacroContext.makeSuppressingDiagnostics(
-      ExpressibleByExprSyntaxMacro.self)
+    let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
     let actual = try Value(expression: expression, in: context)
     XCTAssertEqual(expected, actual, file: file, line: line)
   } catch {
@@ -64,8 +53,7 @@ func XCTAssertNoParse<Value>(
   line: UInt = #line
 ) where Value: ExpressibleByExprSyntax {
   do {
-    let context = MacroContext.makeSuppressingDiagnostics(
-      ExpressibleByExprSyntaxMacro.self)
+    let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
     let actual = try Value(expression: expression, in: context)
     XCTFail("Expected error, but got: \(actual)", file: file, line: line)
   } catch {
