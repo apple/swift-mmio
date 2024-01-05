@@ -49,11 +49,11 @@ extension ParsableMacro {
     var attributeWithPlaceholders = AttributeSyntax(
       atSign: .atSignToken(),
       attributeName: TypeSyntax(stringLiteral: baseName))
-    var arguments: LabeledExprListSyntax? = nil
+    var arguments = LabeledExprListSyntax()
 
     for child in Mirror(reflecting: Self()).children {
       guard let child = child.value as? any ArgumentProtocol else { continue }
-      if arguments == nil {
+      if arguments.isEmpty {
         signature += "("
         attributeWithPlaceholders.leftParen = .leftParenToken()
         arguments = .init()
@@ -67,10 +67,15 @@ extension ParsableMacro {
         expression: EditorPlaceholderExprSyntax(
           placeholder: .identifier("<#\(child.typePlaceholder)#>")))
 
-      arguments?.append(argument)
+      if !arguments.isEmpty {
+        let lastIndex = arguments.index(before: arguments.endIndex)
+        arguments[lastIndex].trailingComma = .commaToken(trailingTrivia: .space)
+      }
+
+      arguments.append(argument)
     }
 
-    if let arguments = arguments {
+    if !arguments.isEmpty {
       signature += ")"
       attributeWithPlaceholders.arguments = .argumentList(arguments)
       attributeWithPlaceholders.rightParen = .rightParenToken()

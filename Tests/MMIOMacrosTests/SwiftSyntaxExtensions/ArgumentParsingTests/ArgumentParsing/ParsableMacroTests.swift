@@ -19,24 +19,25 @@ import XCTest
 protocol MMIOArgumentParsingMacro: MMIOMemberMacro {}
 extension MMIOArgumentParsingMacro {
   static var memberMacroSuppressParsingDiagnostics: Bool { false }
+
   mutating func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] { [] }
+
+  mutating func update(
+    label: String,
+    from expression: ExprSyntax,
+    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
+  ) throws {
+    fatalError()
+  }
 }
 
 final class ParsableMacroTests: XCTestCase {
   func test_noArguments_parse() {
-    struct A: MMIOArgumentParsingMacro {
-      mutating func update(
-        label: String,
-        from expression: ExprSyntax,
-        in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-      ) throws {
-        fatalError()
-      }
-    }
+    struct A: MMIOArgumentParsingMacro {}
 
     // Good...
     assertMacroExpansion(
@@ -525,5 +526,46 @@ final class ParsableMacroTests: XCTestCase {
           highlight: "baz: 1")
       ],
       macros: ["A": A.self])
+  }
+
+  func test_many_signatures() {
+    struct A: MMIOArgumentParsingMacro {}
+    struct B: MMIOArgumentParsingMacro {
+      @Argument(label: "foo")
+      var foo: Int
+    }
+    struct C: MMIOArgumentParsingMacro {
+      @Argument(label: "foo")
+      var foo: Int
+
+      @Argument(label: "bar")
+      var bar: Int
+    }
+    struct D: MMIOArgumentParsingMacro {
+      @Argument(label: "foo")
+      var foo: Int
+    }
+    struct E: MMIOArgumentParsingMacro {
+      @Argument(label: "foo")
+      var foo: Int?
+    }
+    struct F: MMIOArgumentParsingMacro {
+      @Argument(label: "foo")
+      var foo: [Int]
+    }
+
+    XCTAssertEqual(A.signature, "@A")
+    XCTAssertEqual(B.signature, "@B(foo:)")
+    XCTAssertEqual(C.signature, "@C(foo:bar:)")
+    XCTAssertEqual(D.signature, "@D(foo:)")
+    XCTAssertEqual(E.signature, "@E(foo:)")
+    XCTAssertEqual(F.signature, "@F(foo:)")
+
+    XCTAssertEqual("\(A.attributeWithPlaceholders)", "@A")
+    XCTAssertEqual("\(B.attributeWithPlaceholders)", "@B(foo: <#Int#>)")
+    XCTAssertEqual("\(C.attributeWithPlaceholders)", "@C(foo: <#Int#>, bar: <#Int#>)")
+    XCTAssertEqual("\(D.attributeWithPlaceholders)", "@D(foo: <#Int#>)")
+    XCTAssertEqual("\(E.attributeWithPlaceholders)", "@E(foo: <#Int#>)")
+    XCTAssertEqual("\(F.attributeWithPlaceholders)", "@F(foo: <#Int#>)")
   }
 }
