@@ -43,20 +43,20 @@ extension WithAttributesSyntax {
         matches.append(.init(attribute: attribute, macroType: macroType))
       }
     }
-    guard matches.count == 1 else {
-      switch macros.count {
-      case 1:
-        throw context.error(
-          at: self,
-          message: .expectedMemberAnnotatedWithMacro(macros),
-          fixIts: .insertMacro(node: self, macros[0]))
-      default:
-        throw context.error(
-          at: self,
-          message: .expectedMemberAnnotatedWithMacro(macros))
-      }
+
+    switch matches.count {
+    case 0:
+      throw context.error(
+        at: self,
+        message: .expectedMemberAnnotatedWithMacro(macros),
+        fixIts: macros.map { .insertMacro(node: self, $0) })
+    case 1:
+      return matches[0]
+    default:
+      throw context.error(
+        at: self,
+        message: .expectedMemberAnnotatedWithMacro(macros))
     }
-    return matches[0]
   }
 }
 
@@ -64,7 +64,16 @@ extension ErrorDiagnostic {
   static func expectedMemberAnnotatedWithMacro(
     _ macros: [any (ParsableMacro.Type)]
   ) -> Self {
-    guard macros.count == 1 else {
+    switch macros.count {
+    case 0:
+      preconditionFailure("Expected at at least one macro")
+    case 1:
+      return .init(
+        """
+        '\(Macro.signature)' type member must be annotated with \
+        '\(macros[0].signature)'
+        """)
+    default:
       guard let last = macros.last else { fatalError() }
       let optionsPrefix =
         macros
@@ -75,15 +84,10 @@ extension ErrorDiagnostic {
 
       return .init(
         """
-        '\(Macro.signature)' type member must be annotated with exactly one \
-        macro of \(options)
+        '\(Macro.signature)' type member must be annotated with exactly one of \
+        \(options)
         """)
     }
-    return .init(
-      """
-      '\(Macro.signature)' type member must be annotated with \
-      '\(macros[0].signature)' macro
-      """)
   }
 }
 
