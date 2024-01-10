@@ -59,7 +59,7 @@ extension RegisterBankMacro: MMIOMemberMacro {
       // RegisterBankOffsetMacro. Further syntactic checking will be performed
       // by that macro.
       do {
-        try variableDecl.requireMacro([RegisterBankOffsetMacro.self], context)
+        try variableDecl.requireMacro(registerBankMemberMacros, context)
       } catch _ {
         error = true
       }
