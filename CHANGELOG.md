@@ -27,9 +27,9 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ### Additions
 
-- Introduces `@RegisterBank` and `@RegisterBank(offset:)` macros, enabling you
+- Introduces `@RegisterDescriptorBank` and `@RegisterDescriptorBank(offset:)` macros, enabling you
   to define register groups directly in Swift code. [#2]
-- Introduces `@Register` macro and bit field macros (`@Reserved`, `@ReadWrite`,
+- Introduces `@RegisterDescriptor` macro and bit field macros (`@Reserved`, `@ReadWrite`,
   `@ReadOnly`, `@WriteOnly`) for declaring registers composed of bit fields. Bit 
   field macros take a range parameter which describes the subset of bits they
   reference (e.g., `@ReadWrite(bits: 3..<7)`). [#4]

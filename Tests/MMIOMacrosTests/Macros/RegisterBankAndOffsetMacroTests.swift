@@ -32,11 +32,11 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
   func test_expansion_scalarMembers() {
     assertMacroExpansion(
       """
-      @RegisterBankType
+      @RegisterDescriptorBankType
       struct I2C {
-        @RegisterBank(offset: 0x0)
+        @RegisterDescriptorBank(offset: 0x0)
         var control: Control
-        @RegisterBank(offset: 0x8)
+        @RegisterDescriptorBank(offset: 0x8)
         var dr: Register<DR>
       }
       """,
@@ -88,11 +88,11 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
   func test_expansion_arrayMembers() {
     assertMacroExpansion(
       """
-      @RegisterBankType
+      @RegisterDescriptorBankType
       struct I2C {
-        @RegisterBank(offset: 0x000, stride: 0x10, count: 0x08)
+        @RegisterDescriptorBank(offset: 0x000, stride: 0x10, count: 0x08)
         var control: Control
-        @RegisterBank(offset: 0x100, stride: 0x10, count: 0x10)
+        @RegisterDescriptorBank(offset: 0x100, stride: 0x10, count: 0x10)
         var dr: Register<DR>
       }
       """,

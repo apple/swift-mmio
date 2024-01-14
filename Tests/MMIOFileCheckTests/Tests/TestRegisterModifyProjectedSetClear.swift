@@ -11,7 +11,7 @@
 
 import MMIO
 
-@Register(bitWidth: 8)
+@RegisterDescriptor(bitWidth: 8)
 struct R8 {
   @ReadWrite(bits: 0..<1, as: Bool.self)
   var lo: LO
@@ -20,7 +20,7 @@ struct R8 {
 }
 let r8 = Register<R8>(unsafeAddress: 0x1000)
 
-@Register(bitWidth: 16)
+@RegisterDescriptor(bitWidth: 16)
 struct R16 {
   @ReadWrite(bits: 0..<1, as: Bool.self)
   var lo: LO
@@ -29,7 +29,7 @@ struct R16 {
 }
 let r16 = Register<R16>(unsafeAddress: 0x1000)
 
-@Register(bitWidth: 32)
+@RegisterDescriptor(bitWidth: 32)
 struct R32 {
   @ReadWrite(bits: 0..<1, as: Bool.self)
   var lo: LO
@@ -38,7 +38,7 @@ struct R32 {
 }
 let r32 = Register<R32>(unsafeAddress: 0x1000)
 
-@Register(bitWidth: 64)
+@RegisterDescriptor(bitWidth: 64)
 struct R64 {
   @ReadWrite(bits: 0..<1, as: Bool.self)
   var lo: LO

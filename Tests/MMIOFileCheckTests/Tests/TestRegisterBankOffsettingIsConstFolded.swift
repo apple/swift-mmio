@@ -11,27 +11,27 @@
 
 import MMIO
 
-@RegisterBank
+@RegisterDescriptorBank
 struct A {
-  @RegisterBank(offset: 0x100)
+  @RegisterDescriptorBank(offset: 0x100)
   var b: B
-  @RegisterBank(offset: 0x800)
+  @RegisterDescriptorBank(offset: 0x800)
   var c: C
 }
 
-@RegisterBank
+@RegisterDescriptorBank
 struct B {
-  @RegisterBank(offset: 0x300)
+  @RegisterDescriptorBank(offset: 0x300)
   var r: Register<R>
 }
 
-@RegisterBank
+@RegisterDescriptorBank
 struct C {
-  @RegisterBank(offset: 0x400)
+  @RegisterDescriptorBank(offset: 0x400)
   var r: Register<R>
 }
 
-@Register(bitWidth: 64)
+@RegisterDescriptor(bitWidth: 64)
 struct R {
   @ReadWrite(bits: 0..<1)
   var lo: LO

@@ -27,9 +27,9 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_decl_onlyStruct() {
     assertMacroExpansion(
       """
-      @RegisterBank actor A {}
-      @RegisterBank class C {}
-      @RegisterBank enum E {}
+      @RegisterDescriptorBank actor A {}
+      @RegisterDescriptorBank class C {}
+      @RegisterDescriptorBank enum E {}
       """,
       expandedSource: """
         actor A {}
@@ -63,7 +63,7 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_decl_onlyStruct_broken() {
     assertMacroExpansion(
       """
-      @RegisterBank var v: Int
+      @RegisterDescriptorBank var v: Int
       """,
       expandedSource: """
         var v: Int
@@ -77,7 +77,7 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
-      @RegisterBank
+      @RegisterDescriptorBank
       struct S {
         var v1: Int
         @OtherAttribute var v2: Int
@@ -99,8 +99,8 @@ final class RegisterBankMacroTests: XCTestCase {
           column: 3,
           highlight: "var v1: Int",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
+            .init(message: "Insert '@RegisterDescriptorBank(offset:)' macro"),
+            .init(message: "Insert '@RegisterDescriptorBank(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
@@ -109,8 +109,8 @@ final class RegisterBankMacroTests: XCTestCase {
           column: 3,
           highlight: "@OtherAttribute var v2: Int",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
+            .init(message: "Insert '@RegisterDescriptorBank(offset:)' macro"),
+            .init(message: "Insert '@RegisterDescriptorBank(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
@@ -119,8 +119,8 @@ final class RegisterBankMacroTests: XCTestCase {
           column: 3,
           highlight: "var v3: Int { willSet {} }",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
+            .init(message: "Insert '@RegisterDescriptorBank(offset:)' macro"),
+            .init(message: "Insert '@RegisterDescriptorBank(offset:stride:count:)' macro"),
           ]),
       ],
       macros: Self.macros,
@@ -130,7 +130,7 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_members_nonStoredVarDeclsAreOk() {
     assertMacroExpansion(
       """
-      @RegisterBank
+      @RegisterDescriptorBank
       struct S {
         func f() {}
         class C {}

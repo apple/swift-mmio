@@ -12,7 +12,7 @@
 import MMIO
 
 // Sample register from an STM32F746
-@Register(bitWidth: 32)
+@RegisterDescriptor(bitWidth: 32)
 struct OTG_HPRT {
   @ReadWrite(bits: 0..<1)
   var pcsts: PCSTS
@@ -46,7 +46,7 @@ struct OTG_HPRT {
   var reserved1: Reserved1
 }
 
-@Register(bitWidth: 32)
+@RegisterDescriptor(bitWidth: 32)
 struct SampleAsym {
   @Reserved(bits: 0..<1)
   var re: RE
@@ -58,13 +58,13 @@ struct SampleAsym {
   var rw: RW
 }
 
-@Register(bitWidth: 32)
+@RegisterDescriptor(bitWidth: 32)
 struct OtherRangeTypes0 {
   @Reserved(bits: ...)
   var unbounded: Unbounded
 }
 
-@Register(bitWidth: 32)
+@RegisterDescriptor(bitWidth: 32)
 struct OtherRangeTypes1 {
   @Reserved(bits: ...16)
   var partialThrough: PartialThrough
@@ -72,7 +72,7 @@ struct OtherRangeTypes1 {
   var partialFrom: PartialFrom
 }
 
-@Register(bitWidth: 32)
+@RegisterDescriptor(bitWidth: 32)
 struct OtherRangeTypes2 {
   @Reserved(bits: ..<16)
   var partialUpTo: PartialUpTo
@@ -80,10 +80,10 @@ struct OtherRangeTypes2 {
   var closed: Closed
 }
 
-@RegisterBank
+@RegisterDescriptorBank
 struct Bank {
-  @RegisterBank(offset: 0x4)
+  @RegisterDescriptorBank(offset: 0x4)
   var otgHprt: Register<OTG_HPRT>
-  @RegisterBank(offset: 0x8, stride: 0x10, count: 100)
+  @RegisterDescriptorBank(offset: 0x8, stride: 0x10, count: 100)
   var asym: RegisterArray<SampleAsym>
 }

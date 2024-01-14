@@ -14,15 +14,15 @@ import XCTest
 @testable import MMIO
 
 final class MMIOInterposableTests: XCTestCase {
-  @RegisterBank
+  @RegisterDescriptorBank
   struct Example {
-    @RegisterBank(offset: 0x0)
+    @RegisterDescriptorBank(offset: 0x0)
     var regA: Register<RegA>
-    @RegisterBank(offset: 0x4)
+    @RegisterDescriptorBank(offset: 0x4)
     var regB: Register<RegB>
   }
 
-  @Register(bitWidth: 32)
+  @RegisterDescriptor(bitWidth: 32)
   struct RegA {
     @ReadWrite(bits: 0..<1, as: Bool.self)
     var en: EN
@@ -30,7 +30,7 @@ final class MMIOInterposableTests: XCTestCase {
     var reserved0: Reserved0
   }
 
-  @Register(bitWidth: 16)
+  @RegisterDescriptor(bitWidth: 16)
   struct RegB {
     @ReadOnly(bits: 0..<1, as: Bool.self)
     var en: EN

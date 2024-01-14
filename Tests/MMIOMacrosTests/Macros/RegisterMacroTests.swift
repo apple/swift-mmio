@@ -33,9 +33,9 @@ final class RegisterMacroTests: XCTestCase {
   func test_decl_onlyStruct() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8) actor A {}
-      @Register(bitWidth: 0x8) class C {}
-      @Register(bitWidth: 0x8) enum E {}
+      @RegisterDescriptor(bitWidth: 0x8) actor A {}
+      @RegisterDescriptor(bitWidth: 0x8) class C {}
+      @RegisterDescriptor(bitWidth: 0x8) enum E {}
       """,
       expandedSource: """
         actor A {}
@@ -69,7 +69,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_decl_onlyStruct_broken() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8) var v: Int
+      @RegisterDescriptor(bitWidth: 0x8) var v: Int
       """,
       expandedSource: """
         var v: Int
@@ -83,7 +83,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {
         var v1: Int
         @OtherAttribute var v2: Int
@@ -142,7 +142,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_members_nonStoredVarDeclsAreOk() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {
         func f() {}
         class C {}
@@ -211,7 +211,7 @@ final class RegisterMacroTests: XCTestCase {
     // FIXME: see expanded source formatting
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {}
       """,
       expandedSource: """
@@ -262,7 +262,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_noTypedFields() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {
         @ReadWrite(bits: 0..<1)
         var v1: V1
@@ -356,7 +356,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_symmetric() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {
         @ReadWrite(bits: 0..<1, as: Bool.self)
         var v1: V1
@@ -459,7 +459,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_discontiguous() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {
         @ReadWrite(bits: 0..<1, 3..<4, as: UInt8.self)
         var v1: V1
@@ -541,7 +541,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_asymmetric() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 0x8)
+      @RegisterDescriptor(bitWidth: 0x8)
       struct S {
         @ReadOnly(bits: 0..<1, as: Bool.self)
         var v1: V1
@@ -659,7 +659,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_otherRangeTypes0() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 32)
+      @RegisterDescriptor(bitWidth: 32)
       struct OtherRangeTypes0 {
         @Reserved(bits: ...)
         var unbounded: Unbounded
@@ -732,7 +732,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_otherRangeTypes1() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 32)
+      @RegisterDescriptor(bitWidth: 32)
       struct OtherRangeTypes1 {
         @Reserved(bits: ...16)
         var partialThrough: PartialThrough
@@ -826,7 +826,7 @@ final class RegisterMacroTests: XCTestCase {
   func test_expansion_otherRangeTypes2() {
     assertMacroExpansion(
       """
-      @Register(bitWidth: 32)
+      @RegisterDescriptor(bitWidth: 32)
       struct OtherRangeTypes2 {
         @Reserved(bits: ..<16)
         var partialUpTo: PartialUpTo

@@ -27,8 +27,8 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_decl_onlyVar() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) struct S {}
-      @RegisterBank(offset: 0x0) func f() {}
+      @RegisterDescriptorBank(offset: 0x0) struct S {}
+      @RegisterDescriptorBank(offset: 0x0) func f() {}
       """,
       expandedSource: """
         struct S {}
@@ -44,8 +44,8 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_binding_onlyVar() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) inout a: Int
-      @RegisterBank(offset: 0x0) let b: Int
+      @RegisterDescriptorBank(offset: 0x0) inout a: Int
+      @RegisterDescriptorBank(offset: 0x0) let b: Int
       """,
       expandedSource: """
         inout a: Int
@@ -84,8 +84,8 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       """
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a, b: Int
-      @RegisterBank(offset: 0x0) var c: Int, d: Int
+      @RegisterDescriptorBank(offset: 0x0) var a, b: Int
+      @RegisterDescriptorBank(offset: 0x0) var c: Int, d: Int
       """,
       expandedSource: """
         var a, b: Int
@@ -102,7 +102,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingIdentifier_noImplicit() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var _: Int
+      @RegisterDescriptorBank(offset: 0x0) var _: Int
       """,
       expandedSource: """
         var _: Int
@@ -121,7 +121,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingIdentifier_noTuple() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var (a, b): Int
+      @RegisterDescriptorBank(offset: 0x0) var (a, b): Int
       """,
       expandedSource: """
         var (a, b): Int
@@ -140,7 +140,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noOmitted() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var v
+      @RegisterDescriptorBank(offset: 0x0) var v
       """,
       expandedSource: """
         var v
@@ -162,7 +162,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noImplicit() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var v: _
+      @RegisterDescriptorBank(offset: 0x0) var v: _
       """,
       expandedSource: """
         var v: _
@@ -185,7 +185,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noOptional() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Int?
+      @RegisterDescriptorBank(offset: 0x0) var a: Int?
       """,
       expandedSource: """
         var a: Int?
@@ -204,7 +204,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noArray() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: [Int]
+      @RegisterDescriptorBank(offset: 0x0) var a: [Int]
       """,
       expandedSource: """
         var a: [Int]
@@ -223,7 +223,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noTuple() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: (Int, Int)
+      @RegisterDescriptorBank(offset: 0x0) var a: (Int, Int)
       """,
       expandedSource: """
         var a: (Int, Int)
@@ -242,7 +242,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_genericOK() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Reg<T>
+      @RegisterDescriptorBank(offset: 0x0) var a: Reg<T>
       """,
       expandedSource: """
         var a: Reg<T> {
@@ -262,7 +262,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_nestedOK() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Swift.Int
+      @RegisterDescriptorBank(offset: 0x0) var a: Swift.Int
       """,
       expandedSource: """
         var a: Swift.Int {
@@ -282,7 +282,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingAccessor_omitted() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Int {}
+      @RegisterDescriptorBank(offset: 0x0) var a: Int {}
       """,
       expandedSource: """
         var a: Int {}
