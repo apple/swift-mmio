@@ -87,7 +87,9 @@ extension Register {
   @inlinable @inline(__always)
   public func write<T>(_ body: (inout Value.Write) -> (T)) -> T {
     var newValue = Value.Write(Value.Raw(0))
-    return body(&newValue)
+    let returnValue = body(&newValue)
+    self.write(newValue)
+    return returnValue
   }
 
   @inlinable @inline(__always) @_disfavoredOverload

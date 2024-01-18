@@ -50,19 +50,27 @@ let r64 = Register<R64>(unsafeAddress: 0x1000)
 public func main8() {
   r8.write(unsafeBitCast(0 as UInt8, to: R8.Write.self))
   // CHECK: store volatile i8 0
+  r8.write { $0.raw.hi = 1 }
+  // CHECK: store volatile i8 -128
 }
 
 public func main16() {
   r16.write(unsafeBitCast(1 as UInt16, to: R16.Write.self))
   // CHECK: store volatile i16 1
+  r16.write { $0.raw.hi = 1 }
+  // CHECK: store volatile i16 -32768
 }
 
 public func main32() {
   r32.write(unsafeBitCast(2 as UInt32, to: R32.Write.self))
   // CHECK: store volatile i32 2
+  r32.write { $0.raw.hi = 1 }
+  // CHECK: store volatile i32 -2147483648
 }
 
 public func main64() {
   r64.write(unsafeBitCast(3 as UInt64, to: R64.Write.self))
   // CHECK: store volatile i64 3
+  r64.write { $0.raw.hi = 1 }
+  // CHECK: store volatile i64 -9223372036854775808
 }
