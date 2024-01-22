@@ -64,13 +64,13 @@ final class MMIOFileCheckTests: XCTestCase {
 }
 
 class MMIOFileCheckTestCaseSetup {
-  struct Result {
+  struct SetupResult {
     var buildOutputsURL: URL
   }
 
   var packageDirectoryURL: URL
   var lock: NSLock
-  var result: Swift.Result<Result, Error>?
+  var result: Result<SetupResult?, Error>?
 
   init(packageDirectoryURL: URL) {
     self.packageDirectoryURL = packageDirectoryURL
@@ -78,7 +78,7 @@ class MMIOFileCheckTestCaseSetup {
     self.result = nil
   }
 
-  func run() throws -> Result {
+  func run() throws -> SetupResult? {
     // `NSLock.withLock(_:)` is unavailable on linux.
     self.lock.lock()
     defer { self.lock.unlock() }
@@ -86,7 +86,7 @@ class MMIOFileCheckTestCaseSetup {
 
     // Run the common setup phase and record the time it took.
     let start = DispatchTime.now()
-    let result = Swift.Result { try self._run() }
+    let result = Result { try self._run() }
     let end = DispatchTime.now()
 
     // `DispatchTime.distance(to:)` is unavailable on linux.
@@ -98,9 +98,14 @@ class MMIOFileCheckTestCaseSetup {
     return try result.get()
   }
 
-  private func _run() throws -> Result {
-    print("Locating FileCheck...")
-    _ = try sh("which FileCheck")
+  private func _run() throws -> SetupResult? {
+    do {
+      print("Locating FileCheck...")
+      _ = try sh("which FileCheck")
+    } catch {
+      print("Failed to locate FileCheck...")
+      return nil
+    }
 
     print("Determining Dependency Paths...")
     let buildOutputsURL = URL(
@@ -131,7 +136,10 @@ struct MMIOFileCheckTestCase {
 
   func run() -> [LLVMDiagnostic] {
     do {
-      let paths = try self.setup.run()
+      guard let paths = try self.setup.run() else {
+        print("Skipping test: missing FileCheck")
+        return []
+      }
 
       print("Running: \(self.testFileURL.lastPathComponent)")
 
