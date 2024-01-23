@@ -3,18 +3,18 @@ version: "3"
 services:
 
   runtime-setup:
-    image: swift-mmio:22.04-5.9.1
+    image: swift-mmio:22.04-5.9.2
     build:
       args:
         namespace: "swift"
         ubuntu_version: "jammy"
-        swift_version: "5.9.1"
+        swift_version: "5.9.2"
 
   soundness:
-    image: swift-mmio:22.04-5.9.1
+    image: swift-mmio:22.04-5.9.2
 
   test:
-    image: swift-mmio:22.04-5.9.1
+    image: swift-mmio:22.04-5.9.2
 
   shell:
-    image: swift-mmio:22.04-5.9.1
+    image: swift-mmio:22.04-5.9.2
