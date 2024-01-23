@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import XCTest
 
@@ -68,3 +69,4 @@ final class SyntaxStringInterpolationTests: XCTestCase {
     XCTAssertEqual(expected.description, actual.description)
   }
 }
+#endif

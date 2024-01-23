@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
@@ -301,3 +302,4 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 }
+#endif

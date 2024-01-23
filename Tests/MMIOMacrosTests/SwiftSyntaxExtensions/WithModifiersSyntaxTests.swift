@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import XCTest
 
@@ -69,3 +70,4 @@ final class WithModifiersSyntaxTests: XCTestCase {
     }
   }
 }
+#endif

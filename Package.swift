@@ -12,6 +12,7 @@ var package = Package(
     .tvOS(.v13),
     .watchOS(.v6),
     .macCatalyst(.v13),
+    .visionOS(.v1),
   ],
   products: [
     .library(name: "MMIO", targets: ["MMIO"])

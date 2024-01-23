@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
@@ -188,3 +189,4 @@ final class VariableDeclSyntaxTests: XCTestCase {
     }
   }
 }
+#endif

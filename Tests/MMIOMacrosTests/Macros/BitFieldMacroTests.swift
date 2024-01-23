@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
@@ -339,3 +340,4 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 }
+#endif
