@@ -65,12 +65,13 @@ final class MMIOFileCheckTests: XCTestCase {
 
 class MMIOFileCheckTestCaseSetup {
   struct SetupResult {
+    var hasLLVMFileCheck: Bool
     var buildOutputsURL: URL
   }
 
   var packageDirectoryURL: URL
   var lock: NSLock
-  var result: Result<SetupResult?, Error>?
+  var result: Result<SetupResult, Error>?
 
   init(packageDirectoryURL: URL) {
     self.packageDirectoryURL = packageDirectoryURL
@@ -78,7 +79,7 @@ class MMIOFileCheckTestCaseSetup {
     self.result = nil
   }
 
-  func run() throws -> SetupResult? {
+  func run() throws -> SetupResult {
     // `NSLock.withLock(_:)` is unavailable on linux.
     self.lock.lock()
     defer { self.lock.unlock() }
@@ -98,13 +99,22 @@ class MMIOFileCheckTestCaseSetup {
     return try result.get()
   }
 
-  private func _run() throws -> SetupResult? {
+  private func _run() throws -> SetupResult {
+    let hasLLVMFileCheck: Bool
     do {
       print("Locating FileCheck...")
       _ = try sh("which FileCheck")
+      hasLLVMFileCheck =
+        ProcessInfo().environment["SWIFT_MMIO_USE_SIMPLE_FILECHECK"] == nil
     } catch {
       print("Failed to locate FileCheck...")
-      return nil
+      hasLLVMFileCheck = false
+    }
+
+    if hasLLVMFileCheck {
+      print("Using LLVM FileCheck")
+    } else {
+      print("Using Simple FileCheck")
     }
 
     print("Determining Dependency Paths...")
@@ -125,7 +135,7 @@ class MMIOFileCheckTestCaseSetup {
         --package-path \(self.packageDirectoryURL.path)
       """)
 
-    return .init(buildOutputsURL: buildOutputsURL)
+    return .init(hasLLVMFileCheck: hasLLVMFileCheck, buildOutputsURL: buildOutputsURL)
   }
 }
 
@@ -136,10 +146,7 @@ struct MMIOFileCheckTestCase {
 
   func run() -> [LLVMDiagnostic] {
     do {
-      guard let paths = try self.setup.run() else {
-        print("Skipping test: missing FileCheck")
-        return []
-      }
+      let paths = try self.setup.run()
 
       print("Running: \(self.testFileURL.lastPathComponent)")
 
@@ -163,13 +170,23 @@ struct MMIOFileCheckTestCase {
           -parse-as-library
         """)
 
-      _ = try sh(
-        """
-        FileCheck \
-          \(self.testFileURL.path) \
-          --input-file \(testOutputFileURL.path) \
-          --dump-input never
-        """)
+      if paths.hasLLVMFileCheck && false {
+        _ = try sh(
+          """
+          FileCheck \
+            \(self.testFileURL.path) \
+            --input-file \(testOutputFileURL.path) \
+            --dump-input never
+          """)
+      } else {
+        let fileCheck = SimpleFileCheck(
+          inputFileURL: self.testFileURL,
+          outputFileURL: testOutputFileURL)
+        let diagnostics = fileCheck.run()
+        guard diagnostics.isEmpty else {
+          return diagnostics
+        }
+      }
 
       _ = try sh("rm \(testOutputFileURL.path)")
     } catch let error as ShellCommandError {

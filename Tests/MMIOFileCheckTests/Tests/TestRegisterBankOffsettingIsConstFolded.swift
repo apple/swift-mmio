@@ -42,15 +42,16 @@ struct R {
 let a = A(unsafeAddress: 0x1000)
 
 public func main() {
+  // CHECK-LABEL: void @"$s4mainAAyyF"()
   a.b.r.modify { _ in }
-  // CHECK: %[[#REG:]] = load volatile i64
+  // CHECK: %0 = load volatile i64
   // CHECK-SAME: 5120
-  // CHECK-NEXT: store volatile i64 %[[#REG]]
+  // CHECK-NEXT: store volatile i64 %0
   // CHECK-SAME: 5120
 
   a.c.r.modify { _ in }
-  // CHECK-NEXT: %[[#REG:]] = load volatile i64
+  // CHECK-NEXT: %1 = load volatile i64
   // CHECK-SAME: 7168
-  // CHECK-NEXT: store volatile i64 %[[#REG]]
+  // CHECK-NEXT: store volatile i64 %1
   // CHECK-SAME: 7168
 }

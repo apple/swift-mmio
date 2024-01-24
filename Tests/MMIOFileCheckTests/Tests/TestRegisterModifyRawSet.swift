@@ -48,41 +48,45 @@ struct R64 {
 let r64 = Register<R64>(unsafeAddress: 0x1000)
 
 public func main8() {
+  // CHECK-LABEL: void @"$s4main5main8yyF"()
   r8.modify {
     $0.raw.lo = 1
     $0.raw.hi = 1
   }
-  // CHECK: %[[#REG:]] = load volatile i8
-  // CHECK-NEXT: %[[#REG+1]] = or i8 %[[#REG]], -127
-  // CHECK-NEXT: store volatile i8 %[[#REG+1]]
+  // CHECK: %0 = load volatile i8
+  // CHECK-NEXT: %1 = or i8 %0, -127
+  // CHECK-NEXT: store volatile i8 %1
 }
 
 public func main16() {
+  // CHECK-LABEL: void @"$s4main6main16yyF"()
   r16.modify {
     $0.raw.lo = 1
     $0.raw.hi = 1
   }
-  // CHECK: %[[#REG:]] = load volatile i16
-  // CHECK-NEXT: %[[#REG+1]] = or i16 %[[#REG]], -32767
-  // CHECK-NEXT: store volatile i16 %[[#REG+1]]
+  // CHECK: %0 = load volatile i16
+  // CHECK-NEXT: %1 = or i16 %0, -32767
+  // CHECK-NEXT: store volatile i16 %1
 }
 
 public func main32() {
+  // CHECK-LABEL: void @"$s4main6main32yyF"()
   r32.modify {
     $0.raw.lo = 1
     $0.raw.hi = 1
   }
-  // CHECK: %[[#REG:]] = load volatile i32
-  // CHECK-NEXT: %[[#REG+1]] = or i32 %[[#REG]], -2147483647
-  // CHECK-NEXT: store volatile i32 %[[#REG+1]]
+  // CHECK: %0 = load volatile i32
+  // CHECK-NEXT: %1 = or i32 %0, -2147483647
+  // CHECK-NEXT: store volatile i32 %1
 }
 
 public func main64() {
+  // CHECK-LABEL: void @"$s4main6main64yyF"()
   r64.modify {
     $0.raw.lo = 1
     $0.raw.hi = 1
   }
-  // CHECK: %[[#REG:]] = load volatile i64
-  // CHECK-NEXT: %[[#REG+1]] = or i64 %[[#REG]], -9223372036854775807
-  // CHECK-NEXT: store volatile i64 %[[#REG+1]]
+  // CHECK: %0 = load volatile i64
+  // CHECK-NEXT: %1 = or i64 %0, -9223372036854775807
+  // CHECK-NEXT: store volatile i64 %1
 }
