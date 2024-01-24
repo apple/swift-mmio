@@ -15,10 +15,10 @@ import SwiftSyntaxMacros
 @main
 struct CompilerPluginMain: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
-    // RegisterBank macros
-    RegisterBankMacro.self,
-    RegisterBankScalarMemberMacro.self,
-    RegisterBankArrayMemberMacro.self,
+    // RegisterBlock macros
+    RegisterBlockMacro.self,
+    RegisterBlockScalarMemberMacro.self,
+    RegisterBlockArrayMemberMacro.self,
     // Register macros
     RegisterMacro.self,
     ReservedMacro.self,

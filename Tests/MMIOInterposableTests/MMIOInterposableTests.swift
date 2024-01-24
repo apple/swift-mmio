@@ -14,11 +14,11 @@ import XCTest
 @testable import MMIO
 
 final class MMIOInterposableTests: XCTestCase {
-  @RegisterBank
+  @RegisterBlock
   struct Example {
-    @RegisterBank(offset: 0x0)
+    @RegisterBlock(offset: 0x0)
     var regA: Register<RegA>
-    @RegisterBank(offset: 0x4)
+    @RegisterBlock(offset: 0x4)
     var regB: Register<RegB>
   }
 
@@ -40,24 +40,24 @@ final class MMIOInterposableTests: XCTestCase {
     var reserved0: Reserved0
   }
 
-  func test_registerBank_passesInterposerToChildren() {
+  func test_registerBlock_passesInterposerToChildren() {
     let interposer = MMIOTracingInterposer()
-    let bank = Example(unsafeAddress: 0x1000, interposer: interposer)
-    XCTAssertTrue(bank.interposer === bank.regA.interposer)
+    let example = Example(unsafeAddress: 0x1000, interposer: interposer)
+    XCTAssertTrue(example.interposer === example.regA.interposer)
   }
 
   func test_tracingInterposer_producesExpectedTrace() {
     let interposer = MMIOTracingInterposer()
-    let bank = Example(unsafeAddress: 0x1000, interposer: interposer)
-    _ = bank.regA.read()
-    bank.regA.modify { $0.en = true }
-    bank.regA.write(unsafeBitCast(UInt32(0x5a5a_a5a5), to: RegA.ReadWrite.self))
+    let example = Example(unsafeAddress: 0x1000, interposer: interposer)
+    _ = example.regA.read()
+    example.regA.modify { $0.en = true }
+    example.regA.write(.init(.init(0x5a5a_a5a5)))
 
-    bank.regB.modify { r, w in
+    example.regB.modify { r, w in
       w.rst = true
       w.raw.en = 1
     }
-    bank.regB.modify { r, w in
+    example.regB.modify { r, w in
       w.rst = false
     }
     XCTAssertMMIOInterposerTrace(

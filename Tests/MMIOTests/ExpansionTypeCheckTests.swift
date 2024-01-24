@@ -80,10 +80,10 @@ struct OtherRangeTypes2 {
   var closed: Closed
 }
 
-@RegisterBank
-struct Bank {
-  @RegisterBank(offset: 0x4)
+@RegisterBlock
+struct Block {
+  @RegisterBlock(offset: 0x4)
   var otgHprt: Register<OTG_HPRT>
-  @RegisterBank(offset: 0x8, stride: 0x10, count: 100)
+  @RegisterBlock(offset: 0x8, stride: 0x10, count: 100)
   var asym: RegisterArray<SampleAsym>
 }

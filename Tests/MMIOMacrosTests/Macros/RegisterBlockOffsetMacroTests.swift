@@ -17,19 +17,19 @@ import XCTest
 
 @testable import MMIOMacros
 
-final class RegisterBankOffsetMacroTests: XCTestCase {
-  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBankScalarMemberMacro>
+final class RegisterBlockOffsetMacroTests: XCTestCase {
+  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBlockScalarMemberMacro>
 
   static let macros: [String: Macro.Type] = [
-    "RegisterBank": RegisterBankScalarMemberMacro.self
+    "RegisterBlock": RegisterBlockScalarMemberMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
 
   func test_decl_onlyVar() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) struct S {}
-      @RegisterBank(offset: 0x0) func f() {}
+      @RegisterBlock(offset: 0x0) struct S {}
+      @RegisterBlock(offset: 0x0) func f() {}
       """,
       expandedSource: """
         struct S {}
@@ -45,8 +45,8 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_binding_onlyVar() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) inout a: Int
-      @RegisterBank(offset: 0x0) let b: Int
+      @RegisterBlock(offset: 0x0) inout a: Int
+      @RegisterBlock(offset: 0x0) let b: Int
       """,
       expandedSource: """
         inout a: Int
@@ -56,7 +56,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 1,
-          column: 28,
+          column: 29,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "inout ",
           fixIts: [
@@ -65,7 +65,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 2,
-          column: 28,
+          column: 29,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "let ",
           fixIts: [
@@ -85,8 +85,8 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
       """
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a, b: Int
-      @RegisterBank(offset: 0x0) var c: Int, d: Int
+      @RegisterBlock(offset: 0x0) var a, b: Int
+      @RegisterBlock(offset: 0x0) var c: Int, d: Int
       """,
       expandedSource: """
         var a, b: Int
@@ -103,7 +103,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingIdentifier_noImplicit() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var _: Int
+      @RegisterBlock(offset: 0x0) var _: Int
       """,
       expandedSource: """
         var _: Int
@@ -112,7 +112,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
-          column: 32,
+          column: 33,
           highlight: "_")
       ],
       macros: Self.macros,
@@ -122,7 +122,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingIdentifier_noTuple() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var (a, b): Int
+      @RegisterBlock(offset: 0x0) var (a, b): Int
       """,
       expandedSource: """
         var (a, b): Int
@@ -131,7 +131,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
-          column: 32,
+          column: 33,
           highlight: "(a, b)")
       ],
       macros: Self.macros,
@@ -141,7 +141,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noOmitted() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var v
+      @RegisterBlock(offset: 0x0) var v
       """,
       expandedSource: """
         var v
@@ -150,7 +150,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
-          column: 32,
+          column: 33,
           highlight: "v",
           fixIts: [
             .init(message: "Insert explicit type annotation")
@@ -163,7 +163,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noImplicit() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var v: _
+      @RegisterBlock(offset: 0x0) var v: _
       """,
       expandedSource: """
         var v: _
@@ -172,7 +172,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
-          column: 35,
+          column: 36,
           highlight: "_",
           fixIts: [
             .init(message: "Insert explicit type annotation")
@@ -186,7 +186,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noOptional() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Int?
+      @RegisterBlock(offset: 0x0) var a: Int?
       """,
       expandedSource: """
         var a: Int?
@@ -195,7 +195,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
-          column: 35,
+          column: 36,
           highlight: "Int?")
       ],
       macros: Self.macros,
@@ -205,7 +205,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noArray() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: [Int]
+      @RegisterBlock(offset: 0x0) var a: [Int]
       """,
       expandedSource: """
         var a: [Int]
@@ -214,7 +214,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
-          column: 35,
+          column: 36,
           highlight: "[Int]")
       ],
       macros: Self.macros,
@@ -224,7 +224,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_noTuple() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: (Int, Int)
+      @RegisterBlock(offset: 0x0) var a: (Int, Int)
       """,
       expandedSource: """
         var a: (Int, Int)
@@ -233,7 +233,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
-          column: 35,
+          column: 36,
           highlight: "(Int, Int)")
       ],
       macros: Self.macros,
@@ -243,7 +243,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_genericOK() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Reg<T>
+      @RegisterBlock(offset: 0x0) var a: Reg<T>
       """,
       expandedSource: """
         var a: Reg<T> {
@@ -263,7 +263,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingType_nestedOK() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Swift.Int
+      @RegisterBlock(offset: 0x0) var a: Swift.Int
       """,
       expandedSource: """
         var a: Swift.Int {
@@ -283,7 +283,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
   func test_bindingAccessor_omitted() {
     assertMacroExpansion(
       """
-      @RegisterBank(offset: 0x0) var a: Int {}
+      @RegisterBlock(offset: 0x0) var a: Int {}
       """,
       expandedSource: """
         var a: Int {}
@@ -292,7 +292,7 @@ final class RegisterBankOffsetMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.expectedStoredProperty().message,
           line: 1,
-          column: 39,
+          column: 40,
           highlight: "{}",
           fixIts: [
             .init(message: "Remove accessor block")

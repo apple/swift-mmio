@@ -9,18 +9,18 @@
 //
 //===----------------------------------------------------------------------===//
 
-// RegisterBank macros
+// RegisterBlock macros
 @attached(member, names: named(unsafeAddress), named(init), named(interposer))
-public macro RegisterBank() =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBankMacro")
+public macro RegisterBlock() =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
 
 @attached(accessor)
-public macro RegisterBank(offset: Int) =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBankScalarMemberMacro")
+public macro RegisterBlock(offset: Int) =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBlockScalarMemberMacro")
 
 @attached(accessor)
-public macro RegisterBank(offset: Int, stride: Int, count: Int) =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBankArrayMemberMacro")
+public macro RegisterBlock(offset: Int, stride: Int, count: Int) =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBlockArrayMemberMacro")
 
 // Register macros
 @attached(member, names: arbitrary)

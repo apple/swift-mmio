@@ -17,15 +17,15 @@ import XCTest
 
 @testable import MMIOMacros
 
-final class RegisterBankAndOffsetMacroTests: XCTestCase {
+final class RegisterBlockAndOffsetMacroTests: XCTestCase {
   static let scalarMacros: [String: Macro.Type] = [
-    "RegisterBankType": RegisterBankMacro.self,
-    "RegisterBank": RegisterBankScalarMemberMacro.self,
+    "RegisterBlockType": RegisterBlockMacro.self,
+    "RegisterBlock": RegisterBlockScalarMemberMacro.self,
   ]
 
   static let arrayMacros: [String: Macro.Type] = [
-    "RegisterBankType": RegisterBankMacro.self,
-    "RegisterBank": RegisterBankArrayMemberMacro.self,
+    "RegisterBlockType": RegisterBlockMacro.self,
+    "RegisterBlock": RegisterBlockArrayMemberMacro.self,
   ]
 
   static let indentationWidth = Trivia.spaces(2)
@@ -33,11 +33,11 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
   func test_expansion_scalarMembers() {
     assertMacroExpansion(
       """
-      @RegisterBankType
+      @RegisterBlockType
       struct I2C {
-        @RegisterBank(offset: 0x0)
+        @RegisterBlock(offset: 0x0)
         var control: Control
-        @RegisterBank(offset: 0x8)
+        @RegisterBlock(offset: 0x8)
         var dr: Register<DR>
       }
       """,
@@ -89,11 +89,11 @@ final class RegisterBankAndOffsetMacroTests: XCTestCase {
   func test_expansion_arrayMembers() {
     assertMacroExpansion(
       """
-      @RegisterBankType
+      @RegisterBlockType
       struct I2C {
-        @RegisterBank(offset: 0x000, stride: 0x10, count: 0x08)
+        @RegisterBlock(offset: 0x000, stride: 0x10, count: 0x08)
         var control: Control
-        @RegisterBank(offset: 0x100, stride: 0x10, count: 0x10)
+        @RegisterBlock(offset: 0x100, stride: 0x10, count: 0x10)
         var dr: Register<DR>
       }
       """,
