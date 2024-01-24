@@ -48,25 +48,29 @@ struct R64 {
 let r64 = Register<R64>(unsafeAddress: 0x1000)
 
 public func main8() {
+  // CHECK-LABEL: void @"$s4main5main8yyF"()
   r8.modify { $0.raw.lo = 0b11 }
-  // CHECK: %[[#REG:]] = load volatile i8
+  // CHECK: %0 = load volatile i8
   // CHECK: call void @llvm.trap()
 }
 
 public func main16() {
+  // CHECK-LABEL: void @"$s4main6main16yyF"()
   r16.modify { $0.raw.lo = 0b11 }
-  // CHECK: %[[#REG:]] = load volatile i16
+  // CHECK: %0 = load volatile i16
   // CHECK: call void @llvm.trap()
 }
 
 public func main32() {
+  // CHECK-LABEL: void @"$s4main6main32yyF"()
   r32.modify { $0.raw.lo = 0b11 }
-  // CHECK: %[[#REG:]] = load volatile i32
+  // CHECK: %0 = load volatile i32
   // CHECK: call void @llvm.trap()
 }
 
 public func main64() {
+  // CHECK-LABEL: void @"$s4main6main64yyF"()
   r64.modify { $0.raw.lo = 0b11 }
-  // CHECK: %[[#REG:]] = load volatile i64
+  // CHECK: %0 = load volatile i64
   // CHECK: call void @llvm.trap()
 }

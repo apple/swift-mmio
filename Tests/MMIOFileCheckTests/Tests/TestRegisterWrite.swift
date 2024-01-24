@@ -48,6 +48,7 @@ struct R64 {
 let r64 = Register<R64>(unsafeAddress: 0x1000)
 
 public func main8() {
+  // CHECK-LABEL: void @"$s4main5main8yyF"()
   r8.write(unsafeBitCast(0 as UInt8, to: R8.Write.self))
   // CHECK: store volatile i8 0
   r8.write { $0.raw.hi = 1 }
@@ -55,6 +56,7 @@ public func main8() {
 }
 
 public func main16() {
+  // CHECK-LABEL: void @"$s4main6main16yyF"()
   r16.write(unsafeBitCast(1 as UInt16, to: R16.Write.self))
   // CHECK: store volatile i16 1
   r16.write { $0.raw.hi = 1 }
@@ -62,6 +64,7 @@ public func main16() {
 }
 
 public func main32() {
+  // CHECK-LABEL: void @"$s4main6main32yyF"()
   r32.write(unsafeBitCast(2 as UInt32, to: R32.Write.self))
   // CHECK: store volatile i32 2
   r32.write { $0.raw.hi = 1 }
@@ -69,6 +72,7 @@ public func main32() {
 }
 
 public func main64() {
+  // CHECK-LABEL: void @"$s4main6main64yyF"()
   r64.write(unsafeBitCast(3 as UInt64, to: R64.Write.self))
   // CHECK: store volatile i64 3
   r64.write { $0.raw.hi = 1 }
