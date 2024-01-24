@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import XCTest
@@ -123,3 +124,4 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertNoParse(expression: "1", as: BitFieldTypeProjection.self)
   }
 }
+#endif

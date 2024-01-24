@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
@@ -569,3 +570,4 @@ final class ParsableMacroTests: XCTestCase {
     XCTAssertEqual("\(F.attributeWithPlaceholders)", "@F(foo: <#Int#>)")
   }
 }
+#endif

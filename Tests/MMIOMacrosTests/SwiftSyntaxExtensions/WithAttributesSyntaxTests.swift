@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
@@ -118,3 +119,4 @@ final class WithAttributesSyntaxTests: XCTestCase {
     }
   }
 }
+#endif

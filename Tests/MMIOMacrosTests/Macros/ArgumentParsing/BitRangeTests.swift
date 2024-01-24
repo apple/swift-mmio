@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import XCTest
@@ -127,3 +128,4 @@ final class BitRangeTests: XCTestCase {
     }
   }
 }
+#endif
