@@ -26,6 +26,7 @@ struct BitFieldMacroTests {
 
     @Argument(label: "bits")
     var bitRanges: [BitRange]
+    var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
     @Argument(label: "as")
     var projectedType: BitFieldTypeProjection?

@@ -89,12 +89,14 @@ extension RegisterMacro: MMIOMemberMacro {
 
       bitFields.append(
         BitFieldDescription(
+          attribute: value.attribute,
           accessLevel: accessLevel,
           bitWidth: bitWidth,
           type: macroType,
           fieldName: fieldName,
           fieldType: fieldType,
           bitRanges: macro.bitRanges,
+          bitRangeExpressions: macro.bitRangeExpressions,
           projectedType: macro.projectedType?.expression))
     }
     guard !error else { return [] }
@@ -106,7 +108,7 @@ extension RegisterMacro: MMIOMemberMacro {
       bitFields: bitFields,
       isSymmetric: isSymmetric)
 
-    try register.validate()
+    register.validate(in: context)
     return register.declarations()
   }
 }

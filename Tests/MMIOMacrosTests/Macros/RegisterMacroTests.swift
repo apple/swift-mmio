@@ -1042,5 +1042,195 @@ struct RegisterMacroTests {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+
+  func test_bitRangeWithBoundsOutOfValidRegisterRange_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @Reserved(bits: 3..<10)
+        var v: V
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v: V {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V: ContiguousBitField {
+            typealias Storage = UInt8
+            static let bitRange = 3 ..< 8
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v: UInt8 {
+              @inlinable @inline(__always) get {
+                V.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.bitFieldOutOfBounds(
+            attribute: "@Reserved(bits: 3..<10)",
+            pluralize: false).message,
+          line: 3,
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message: "bit range '3..<10' extends outside register bit range '0..<8'",
+              line: 3,
+              column: 19),
+          ]),
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_bitFieldWithOverlappingBitRanges_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 64)
+      struct S {
+        @Reserved(bits: 0..<24, 8..<32, 16..<48, 36..<44)
+        var field: Field
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var field: Field {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum Field: DiscontiguousBitField {
+            typealias Storage = UInt64
+            static let bitRanges = [0 ..< 24, 8 ..< 32, 16 ..< 48, 36 ..< 44]
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt64
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var field: UInt64 {
+              @inlinable @inline(__always) get {
+                Field.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Field.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt64
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.bitFieldOverlappingBitRanges(
+            attribute: "@Reserved(bits: 0..<24, 8..<32, 16..<48, 36..<44)")
+            .message,
+          line: 3,
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message: "bit range '0..<24' overlaps bit ranges '8..<32' and '16..<48' over subrange '8..<24'",
+              line: 3,
+              column: 19),
+            .init(
+              message: "bit range '8..<32' overlaps bit ranges '0..<24' and '16..<48'",
+              line: 3,
+              column: 27),
+            .init(
+              message: "bit range '16..<48' overlaps bit ranges '0..<24', '8..<32', and '36..<44' over subranges '16..<32' and '36..<44'",
+              line: 3,
+              column: 35),
+            .init(
+              message: "bit range '36..<44' overlaps bit range '16..<48'",
+              line: 3,
+              column: 44),
+          ]
+        ),
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
+
 #endif

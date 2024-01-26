@@ -25,22 +25,69 @@ struct BitRange {
 }
 
 extension BitRange {
-  /// Returns the lower bound as if this bit-range were a `ClosedRange<Int>`.
-  var canonicalizedLowerBound: Int {
-    guard let lowerBound = self.lowerBound else { return .min }
+  /// Returns the lower bound as if the bound were inclusive.
+  var inclusiveLowerBound: Int? {
+    guard let lowerBound = self.lowerBound else { return nil }
     return lowerBound.inclusive ? lowerBound.value : lowerBound.value + 1
   }
 
-  /// Returns the upper bound as if this bit-range were a `ClosedRange<Int>`
-  /// if present.
-  var canonicalizedUpperBound: Int {
-    guard let upperBound = self.upperBound else { return .max }
+  /// Returns the lower bound as if this bit-range were a `ClosedRange<Int>`.
+  var canonicalizedLowerBound: Int {
+    self.inclusiveLowerBound ?? .min
+  }
+
+  /// Returns the upper bound as if the bound were inclusive.
+  var inclusiveUpperBound: Int? {
+    guard let upperBound = self.upperBound else { return nil }
     return upperBound.inclusive ? upperBound.value : upperBound.value - 1
+  }
+
+  /// Returns the upper bound as if this bit-range were a `ClosedRange<Int>`.
+  var canonicalizedUpperBound: Int {
+    self.inclusiveUpperBound ?? .max
   }
 
   /// Returns the `ClosedRange<Int>` represented by this bit-range.
   var canonicalizedClosedRange: ClosedRange<Int> {
     self.canonicalizedLowerBound...self.canonicalizedUpperBound
+  }
+}
+
+extension BitRange {
+  func rangeOverlapping(_ other: Self) -> Range<Int>? {
+    let (lhs, rhs) = self <= other ? (self, other) : (other, self)
+
+    let lhsLowerBound = lhs.canonicalizedLowerBound
+    let lhsUpperBound = lhs.canonicalizedUpperBound
+    let rhsLowerBound = rhs.canonicalizedLowerBound
+    let rhsUpperBound = rhs.canonicalizedUpperBound
+
+    //      lower   lower           upper   upper
+    //      ╎       ╎               ╎       ╎
+    // lhs: •───────────────────────◦       ╎
+    // rhs: ╎       •───────────────────────◦
+    guard rhsLowerBound <= lhsUpperBound else {
+      return nil
+    }
+
+    let lowerBound = max(lhsLowerBound, rhsLowerBound)
+    var upperBound = min(lhsUpperBound, rhsUpperBound)
+    if upperBound < .max {
+      upperBound += 1
+    }
+    return lowerBound..<upperBound
+  }
+}
+
+extension BitRange: Comparable {
+  static func < (lhs: BitRange, rhs: BitRange) -> Bool {
+    guard lhs.canonicalizedLowerBound == rhs.canonicalizedLowerBound else {
+      return lhs.canonicalizedLowerBound < rhs.canonicalizedLowerBound
+    }
+    guard lhs.canonicalizedUpperBound == rhs.canonicalizedUpperBound else {
+      return lhs.canonicalizedUpperBound < rhs.canonicalizedUpperBound
+    }
+    return false
   }
 }
 
