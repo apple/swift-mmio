@@ -25,7 +25,7 @@ where Macro: ParsableMacro, Context: MacroExpansionContext {
     at node: some SyntaxProtocol,
     message: ErrorDiagnostic<Macro>,
     highlights: [Syntax]? = nil,
-    notes: [Note] = [],
+    notes: Note...,
     fixIts: FixIt...
   ) -> ExpansionError {
     self.context.diagnose(
@@ -43,7 +43,7 @@ where Macro: ParsableMacro, Context: MacroExpansionContext {
     at node: some SyntaxProtocol,
     message: ErrorDiagnostic<Macro>,
     highlights: [Syntax]? = nil,
-    notes: [Note] = [],
+    notes: [Note],
     fixIts: [FixIt]
   ) -> ExpansionError {
     self.context.diagnose(

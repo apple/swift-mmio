@@ -48,6 +48,7 @@ extension WithAttributesSyntax {
       throw context.error(
         at: self,
         message: .expectedMemberAnnotatedWithMacro(macros),
+        notes: [],
         fixIts: macros.map { .insertMacro(node: self, $0) })
     case 1:
       return matches[0]

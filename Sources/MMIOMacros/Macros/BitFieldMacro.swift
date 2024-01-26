@@ -21,6 +21,7 @@ protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
   static var isSymmetric: Bool { get }
 
   var bitRanges: [BitRange] { get }
+  var bitRangeExpressions: [ExprSyntax] { get }
   var projectedType: BitFieldTypeProjection? { get }
 }
 
@@ -69,6 +70,7 @@ public struct ReservedMacro: BitFieldMacro {
 
   @Argument(label: "bits")
   var bitRanges: [BitRange]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   var projectedType: BitFieldTypeProjection?
 
@@ -95,6 +97,7 @@ public struct ReadWriteMacro: BitFieldMacro {
 
   @Argument(label: "bits")
   var bitRanges: [BitRange]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?
@@ -124,6 +127,7 @@ public struct ReadOnlyMacro: BitFieldMacro {
 
   @Argument(label: "bits")
   var bitRanges: [BitRange]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?
@@ -153,6 +157,7 @@ public struct WriteOnlyMacro: BitFieldMacro {
 
   @Argument(label: "bits")
   var bitRanges: [BitRange]
+  var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
   @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?

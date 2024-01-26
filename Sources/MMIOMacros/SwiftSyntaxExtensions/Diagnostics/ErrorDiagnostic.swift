@@ -37,3 +37,22 @@ extension ErrorDiagnostic {
     .init("'\(Macro.signature)' internal error. \(Self.internalErrorSuffix)")
   }
 }
+
+//// FIXME: remove this after upgrading to swift-syntax 5.10
+///// The message of a note that is specified by a string literal
+/////
+///// This type allows macro authors to quickly generate note messages based on
+///// a string. For any non-trivial note messages, it is encouraged to define a
+///// custom type that conforms to `NoteMessage`.
+//struct MacroExpansionNoteMessage: NoteMessage {
+//  var message: String
+//
+//  var fixItID: SwiftDiagnostics.MessageID { self.noteID }
+//  var noteID: SwiftDiagnostics.MessageID {
+//    .init(domain: "SwiftSyntaxMacros", id: "\(Self.self)")
+//  }
+//
+//  init(_ message: String) {
+//    self.message = message
+//  }
+//}
