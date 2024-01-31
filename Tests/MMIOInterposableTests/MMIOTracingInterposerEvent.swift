@@ -27,7 +27,7 @@ extension MMIOTracingInterposerEvent {
     Self(
       load: true,
       address: address,
-      size: MemoryLayout<Value>.size,
+      size: MemoryLayout<Value>.size * 8,
       value: UInt64(value))
   }
 
@@ -38,7 +38,7 @@ extension MMIOTracingInterposerEvent {
     Self(
       load: false,
       address: address,
-      size: MemoryLayout<Value>.size,
+      size: MemoryLayout<Value>.size * 8,
       value: UInt64(value))
   }
 }
@@ -49,9 +49,9 @@ extension MMIOTracingInterposerEvent: CustomStringConvertible {
   var description: String {
     switch self.load {
     case true:
-      "m[\(hex: self.address)] -> \(hex: self.value, bytes: self.size)"
+      "m[\(hex: self.address)] -> \(hex: self.value, bits: self.size)"
     case false:
-      "m[\(hex: self.address)] <- \(hex: self.value, bytes: self.size)"
+      "m[\(hex: self.address)] <- \(hex: self.value, bits: self.size)"
     }
   }
 }

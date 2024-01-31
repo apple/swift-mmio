@@ -1,4 +1,8 @@
 version: 1
 builder:
   configs:
-    - documentation_targets: [MMIO, SVD, SVD2Swift]
+    - documentation_targets:
+      - MMIO
+      - SVD
+      - SVD2LLDB
+      - SVD2Swift

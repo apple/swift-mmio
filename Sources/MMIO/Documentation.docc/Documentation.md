@@ -29,7 +29,6 @@ let control = Control(unsafeAddress: 0x1000)
 control.cr1.modify { $0.en = true }
 ```
 
-
 ## Using MMIO in your project
 
 `MMIO` supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:

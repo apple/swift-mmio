@@ -31,12 +31,19 @@ public struct SVDRegisterProperties {
 }
 
 extension SVDRegisterProperties {
-  public func merged(_ other: SVDRegisterProperties) -> SVDRegisterProperties {
+  public static let none = SVDRegisterProperties(
+    size: nil,
+    access: nil,
+    protection: nil,
+    resetValue: nil,
+    resetMask: nil)
+
+  public func merging(_ other: Self) -> Self {
     SVDRegisterProperties(
-      size: size ?? other.size,
-      access: access ?? other.access,
-      protection: protection ?? other.protection,
-      resetValue: resetValue ?? other.resetValue,
-      resetMask: resetMask ?? other.resetMask)
+      size: self.size ?? other.size,
+      access: self.access ?? other.access,
+      protection: self.protection ?? other.protection,
+      resetValue: self.resetValue ?? other.resetValue,
+      resetMask: self.resetMask ?? other.resetMask)
   }
 }

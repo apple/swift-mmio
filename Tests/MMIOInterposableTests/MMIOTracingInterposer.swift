@@ -41,12 +41,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
       value |= Value(byte)
     }
 
-    self.trace.append(
-      .init(
-        load: true,
-        address: address,
-        size: size,
-        value: UInt64(value)))
+    self.trace.append(.load(of: value, from: address))
 
     return value
   }
@@ -66,12 +61,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
       storedValue >>= 8
     }
 
-    self.trace.append(
-      .init(
-        load: false,
-        address: address,
-        size: size,
-        value: UInt64(value)))
+    self.trace.append(.store(of: value, to: address))
   }
 }
 
