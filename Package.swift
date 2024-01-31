@@ -7,7 +7,7 @@ import PackageDescription
 var package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS(.v10_15),
+    .macOS(.v14),
     .iOS(.v13),
     .tvOS(.v13),
     .watchOS(.v6),
@@ -128,7 +128,55 @@ var package = Package(
       ]),
   ])
 
-// Replace this with a native SPM feature flag if/when supported.
+
+// Replace these with a native SPM feature flags if/when supported.
+let svd2lldb = "FEATURE_SVD2LLDB"
+if featureIsEnabled(named: svd2lldb, override: true) {
+  let frameworks = """
+    /Library/Developer/Toolchains/\
+    swift-DEVELOPMENT-SNAPSHOT-2024-01-08-a.xctoolchain\
+    /System/Library/PrivateFrameworks
+    """
+
+
+  package.targets.append(
+    .target(
+      name: "CLLDB",
+      cSettings: [
+        .unsafeFlags([
+          "-I\(frameworks)/LLDB.framework/Headers",
+          "-I\(frameworks)/LLDB.framework",
+          "-F\(frameworks)",
+        ])
+      ]))
+
+  package.targets.append(
+    .target(
+      name: "SVD2LLDB",
+      dependencies: ["CLLDB", "SVD"],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+        .unsafeFlags([
+          "-I\(frameworks)/LLDB.framework/Headers",
+          "-I\(frameworks)/LLDB.framework",
+          "-F\(frameworks)",
+          "-framework", "LLDB",
+        ])
+      ],
+      linkerSettings: [
+        .unsafeFlags(["-F\(frameworks)"]),
+        .linkedFramework("LLDB")
+      ]
+    ))
+
+
+  package.products.append(
+    .library(
+      name: "SVD2LLDB",
+      type: .dynamic,
+      targets: ["SVD2LLDB"]))
+}
+
 let interposable = "FEATURE_INTERPOSABLE"
 if featureIsEnabled(named: interposable, override: nil) {
   package.products = package.products.filter { $0.name.hasPrefix("MMIO") }
@@ -149,6 +197,7 @@ if featureIsEnabled(named: interposable, override: nil) {
   }
 }
 
+// Package API Extensions
 func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
   let key = "SWIFT_MMIO_\(featureName)"
   let environment = ProcessInfo.processInfo.environment[key] != nil
