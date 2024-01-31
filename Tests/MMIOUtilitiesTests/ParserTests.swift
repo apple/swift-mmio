@@ -134,4 +134,9 @@ final class ParserTests: XCTestCase {
     XCTAssertNoParse(Parser.swiftInteger(Int.self), " 0")
     XCTAssertNoParse(Parser.swiftInteger(Int.self), " 0x0")
   }
+
+  func test_swiftIntegerParsing_boundaryConditions() {
+    XCTAssertParse(Parser.swiftInteger(UInt8.self), "0xff", 0xff)
+    XCTAssertNoParse(Parser.swiftInteger(UInt8.self), "0x100")
+  }
 }

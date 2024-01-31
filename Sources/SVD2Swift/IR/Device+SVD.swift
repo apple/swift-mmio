@@ -81,7 +81,7 @@ extension Peripheral {
     }
 
     let registerProperties = svdPeripheral.registerProperties
-      .merged(defaultProperties)
+      .merging(defaultProperties)
 
     self.name = svdPeripheral.name
       .replacingOccurrences(of: "%s", with: "")
@@ -126,7 +126,7 @@ extension Register {
     defaultProperties: SVDRegisterProperties
   ) throws {
     let registerProperties = svdRegister.registerProperties
-      .merged(defaultProperties)
+      .merging(defaultProperties)
 
     self.name = svdRegister.name
       .replacingOccurrences(of: "%s", with: "")

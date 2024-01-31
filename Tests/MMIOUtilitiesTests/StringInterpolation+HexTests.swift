@@ -12,7 +12,7 @@
 import MMIOUtilities
 import XCTest
 
-final class StringInterpolationTests: XCTestCase {
+final class StringInterpolationHexTests: XCTestCase {
   func test_appendInterpolation_hexNibble() {
     XCTAssertEqual("\(hexNibble: 0x0)", "0")
     XCTAssertEqual("\(hexNibble: 0x1)", "1")
@@ -82,53 +82,62 @@ final class StringInterpolationTests: XCTestCase {
     XCTAssertEqual("\(hex: UInt64.max)", "0xffff_ffff_ffff_ffff")
   }
 
-  func test_appendInterpolation_hex_bytes() {
+  func test_appendInterpolation_hex_bits() {
+    XCTAssertEqual("\(hex: Int8(-1), bits: 1)", "0x1")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 2)", "0x3")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 3)", "0x7")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 4)", "0xf")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 5)", "0x1f")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 6)", "0x3f")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 7)", "0x7f")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 8)", "0xff")
+
     // Int8
-    XCTAssertEqual("\(hex: Int8.min, bytes: 1)", "0x80")
-    XCTAssertEqual("\(hex: Int8(-1), bytes: 1)", "0xff")
-    XCTAssertEqual("\(hex: Int8(0), bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int8(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: Int8.max, bytes: 1)", "0x7f")
+    XCTAssertEqual("\(hex: Int8.min, bits: 8)", "0x80")
+    XCTAssertEqual("\(hex: Int8(-1), bits: 8)", "0xff")
+    XCTAssertEqual("\(hex: Int8(0), bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int8(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: Int8.max, bits: 8)", "0x7f")
 
     // Int16
-    XCTAssertEqual("\(hex: Int16.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int16(-1), bytes: 1)", "0xff")
-    XCTAssertEqual("\(hex: Int16(0), bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int16(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: Int16.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: Int16.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int16(-1), bits: 8)", "0xff")
+    XCTAssertEqual("\(hex: Int16(0), bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int16(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: Int16.max, bits: 8)", "0xff")
 
     // Int32
-    XCTAssertEqual("\(hex: Int32.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int32(-1), bytes: 1)", "0xff")
-    XCTAssertEqual("\(hex: Int32(0), bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int32(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: Int32.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: Int32.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int32(-1), bits: 8)", "0xff")
+    XCTAssertEqual("\(hex: Int32(0), bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int32(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: Int32.max, bits: 8)", "0xff")
 
     // Int64
-    XCTAssertEqual("\(hex: Int64.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int64(-1), bytes: 1)", "0xff")
-    XCTAssertEqual("\(hex: Int64(0), bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: Int64(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: Int64.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: Int64.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int64(-1), bits: 8)", "0xff")
+    XCTAssertEqual("\(hex: Int64(0), bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: Int64(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: Int64.max, bits: 8)", "0xff")
 
     // UInt8
-    XCTAssertEqual("\(hex: UInt8.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: UInt8(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: UInt8.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: UInt8.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: UInt8(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: UInt8.max, bits: 8)", "0xff")
 
     // UInt16
-    XCTAssertEqual("\(hex: UInt16.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: UInt16(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: UInt16.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: UInt16.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: UInt16(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: UInt16.max, bits: 8)", "0xff")
 
     // UInt32
-    XCTAssertEqual("\(hex: UInt32.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: UInt32(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: UInt32.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: UInt32.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: UInt32(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: UInt32.max, bits: 8)", "0xff")
 
     // UInt64
-    XCTAssertEqual("\(hex: UInt64.min, bytes: 1)", "0x00")
-    XCTAssertEqual("\(hex: UInt64(1), bytes: 1)", "0x01")
-    XCTAssertEqual("\(hex: UInt64.max, bytes: 1)", "0xff")
+    XCTAssertEqual("\(hex: UInt64.min, bits: 8)", "0x00")
+    XCTAssertEqual("\(hex: UInt64(1), bits: 8)", "0x01")
+    XCTAssertEqual("\(hex: UInt64.max, bits: 8)", "0xff")
   }
 }

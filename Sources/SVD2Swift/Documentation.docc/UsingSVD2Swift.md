@@ -10,7 +10,7 @@ The `svd2swift` command line tool allows you to transform an SVD file into a Swi
 
 ### Build svd2swift
 
-Before using `svd2swift` you must first build it. This can be done in two simple steps:
+Before using `svd2swift` you must first build it. This can be done in a couple simple steps:
 
 > Important: This document refers to `svd2swift` in lowercase, however the product in SwiftPM is capitalized due to a build system quirk. This will be resolved in the future.
 

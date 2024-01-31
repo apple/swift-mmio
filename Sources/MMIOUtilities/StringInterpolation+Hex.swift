@@ -10,46 +10,72 @@
 //===----------------------------------------------------------------------===//
 
 extension String.StringInterpolation {
-  public mutating func appendInterpolation(hexNibble value: UInt8) {
+  public mutating func appendInterpolation(
+    hexNibble value: some FixedWidthInteger
+  ) {
     let ascii: UInt8
     switch value {
     case 0..<10:
-      ascii = UInt8(ascii: "0") + value
+      ascii = UInt8(ascii: "0") + UInt8(value)
     case 10..<16:
-      ascii = UInt8(ascii: "a") + (value - 10)
+      ascii = UInt8(ascii: "a") + UInt8(value - 10)
     default:
-      preconditionFailure("Invalid hexNibble \(value)")
+      preconditionFailure("Invalid hexadecimal digit \(value)")
     }
     let character = Character(UnicodeScalar(ascii))
     self.appendInterpolation(character)
   }
 
-  public mutating func appendInterpolation<Value>(
-    hex value: Value,
-    bytes size: Int? = nil
-  ) where Value: FixedWidthInteger {
-    let valueSize = MemoryLayout<Value>.size
-    precondition((size ?? 0) <= valueSize)
-    let size = size ?? valueSize
-    let sizeIsEven = size.isMultiple(of: 2)
+  public mutating func appendInterpolation<Integer>(
+    hex value: Integer
+  ) where Integer: FixedWidthInteger {
+    self._appendInterpolation(hex: value, bits: nil)
+  }
 
-    // Big endian so we can iterate from high to low byte
-    var value = value.bigEndian
+  public mutating func appendInterpolation<Integer>(
+    hex value: Integer,
+    bits requestedBitWidth: some FixedWidthInteger
+  ) where Integer: FixedWidthInteger {
+    self._appendInterpolation(hex: value, bits: Int(requestedBitWidth))
+  }
 
-    let droppedBytes = valueSize - size
-    value >>= 8 * droppedBytes
+  mutating func _appendInterpolation<Integer>(
+    hex value: Integer,
+    bits requestedBitWidth: Int?
+  ) where Integer: FixedWidthInteger {
+    let typeBitWidth = MemoryLayout<Integer>.size * 8
+    if let requestedBitWidth = requestedBitWidth {
+      precondition(requestedBitWidth > 0)
+      precondition(requestedBitWidth <= typeBitWidth)
+    }
+    // Round bitWidth up to the next multiple of 4 (nibble bit width) because we
+    // can only print the value as hex nibbles.
+    let nibbleBitWidth = 4
+    let segmentWidth = 4
+    let bitWidth = requestedBitWidth ?? typeBitWidth
+    let roundedBitWidth = bitWidth.roundUp(toMultipleOf: nibbleBitWidth)
+    let digits = roundedBitWidth / nibbleBitWidth
+    let digitsBeforeSeparator = digits % segmentWidth
+
+    // Left shift by dropped bits and right shift by the padding bits.
+    let droppedBitWidth = typeBitWidth - bitWidth
+    let paddingBitWidth = roundedBitWidth - bitWidth
+    precondition(
+      MemoryLayout<Integer>.size == MemoryLayout<Integer.Magnitude>.size)
+    var value = Integer.Magnitude(truncatingIfNeeded: value)
+    value <<= droppedBitWidth
+    value >>= paddingBitWidth
+    let nibbleMask = Integer.Magnitude(0b1111)
 
     self.appendLiteral("0x")
-    for offset in 0..<size {
-      if offset != 0, offset.isMultiple(of: 2) == sizeIsEven {
+    for digit in 0..<digits {
+      if digit != 0, (digit - digitsBeforeSeparator) % segmentWidth == 0 {
         self.appendLiteral("_")
       }
-      let byte = UInt8(truncatingIfNeeded: value)
-      let highNibble = byte >> 4
-      let lowNibble = byte & 0xf
-      self.appendInterpolation(hexNibble: highNibble)
-      self.appendInterpolation(hexNibble: lowNibble)
-      value >>= 8
+
+      let nibble = (value >> (typeBitWidth - nibbleBitWidth)) & nibbleMask
+      self.appendInterpolation(hexNibble: nibble)
+      value <<= nibbleBitWidth
     }
   }
 }

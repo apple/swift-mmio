@@ -239,7 +239,7 @@ extension String.StringInterpolation {
     }
   }
 
-  mutating func appendInterpolation(hex value: some BinaryInteger) {
+  mutating func appendInterpolation(hex value: some FixedWidthInteger) {
     self.appendLiteral("0x")
     self.appendLiteral(String(value, radix: 16))
   }
