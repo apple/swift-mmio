@@ -164,13 +164,14 @@ struct MMIOFileCheckTestCase {
           -o \(testOutputFileURL.path) \
           -O \
           -I \(paths.buildOutputsURL.path) \
+          -I \(paths.buildOutputsURL.path)/Modules \
           -I \(mmioVolatileDirectoryURL.path) \
           -load-plugin-executable \
             \(paths.buildOutputsURL.path)/MMIOMacros#MMIOMacros \
           -parse-as-library
         """)
 
-      if paths.hasLLVMFileCheck && false {
+      if paths.hasLLVMFileCheck {
         _ = try sh(
           """
           FileCheck \
