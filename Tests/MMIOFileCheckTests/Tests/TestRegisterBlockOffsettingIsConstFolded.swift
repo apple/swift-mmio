@@ -11,23 +11,23 @@
 
 import MMIO
 
-@RegisterBank
+@RegisterBlock
 struct A {
-  @RegisterBank(offset: 0x100)
+  @RegisterBlock(offset: 0x100)
   var b: B
-  @RegisterBank(offset: 0x800)
+  @RegisterBlock(offset: 0x800)
   var c: C
 }
 
-@RegisterBank
+@RegisterBlock
 struct B {
-  @RegisterBank(offset: 0x300)
+  @RegisterBlock(offset: 0x300)
   var r: Register<R>
 }
 
-@RegisterBank
+@RegisterBlock
 struct C {
-  @RegisterBank(offset: 0x400)
+  @RegisterBlock(offset: 0x400)
   var r: Register<R>
 }
 

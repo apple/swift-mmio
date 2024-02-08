@@ -17,20 +17,20 @@ import XCTest
 
 @testable import MMIOMacros
 
-final class RegisterBankMacroTests: XCTestCase {
-  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBankMacro>
+final class RegisterBlockMacroTests: XCTestCase {
+  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBlockMacro>
 
   static let macros: [String: Macro.Type] = [
-    "RegisterBank": RegisterBankMacro.self
+    "RegisterBlock": RegisterBlockMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
 
   func test_decl_onlyStruct() {
     assertMacroExpansion(
       """
-      @RegisterBank actor A {}
-      @RegisterBank class C {}
-      @RegisterBank enum E {}
+      @RegisterBlock actor A {}
+      @RegisterBlock class C {}
+      @RegisterBlock enum E {}
       """,
       expandedSource: """
         actor A {}
@@ -41,19 +41,19 @@ final class RegisterBankMacroTests: XCTestCase {
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 1,
-          column: 15,
+          column: 16,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 2,
-          column: 15,
+          column: 16,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "class "),
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 3,
-          column: 15,
+          column: 16,
           // FIXME: https://github.com/apple/swift-syntax/pull/2213
           highlight: "enum "),
       ],
@@ -64,7 +64,7 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_decl_onlyStruct_broken() {
     assertMacroExpansion(
       """
-      @RegisterBank var v: Int
+      @RegisterBlock var v: Int
       """,
       expandedSource: """
         var v: Int
@@ -78,7 +78,7 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
-      @RegisterBank
+      @RegisterBlock
       struct S {
         var v1: Int
         @OtherAttribute var v2: Int
@@ -95,33 +95,33 @@ final class RegisterBankMacroTests: XCTestCase {
       diagnostics: [
         .init(
           message:
-            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBankMemberMacros).message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBlockMemberMacros).message,
           line: 3,
           column: 3,
           highlight: "var v1: Int",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
+            .init(message: "Insert '@RegisterBlock(offset:)' macro"),
+            .init(message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
-            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBankMemberMacros).message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBlockMemberMacros).message,
           line: 4,
           column: 3,
           highlight: "@OtherAttribute var v2: Int",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
+            .init(message: "Insert '@RegisterBlock(offset:)' macro"),
+            .init(message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
-            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBankMemberMacros).message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBlockMemberMacros).message,
           line: 5,
           column: 3,
           highlight: "var v3: Int { willSet {} }",
           fixIts: [
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
+            .init(message: "Insert '@RegisterBlock(offset:)' macro"),
+            .init(message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
           ]),
       ],
       macros: Self.macros,
@@ -131,7 +131,7 @@ final class RegisterBankMacroTests: XCTestCase {
   func test_members_nonStoredVarDeclsAreOk() {
     assertMacroExpansion(
       """
-      @RegisterBank
+      @RegisterBlock
       struct S {
         func f() {}
         class C {}

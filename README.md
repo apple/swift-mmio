@@ -7,11 +7,11 @@
 Swift MMIO makes it easy to define registers directly in Swift source code and manipulate them in a safe and ergonomic manner.
 
 ```swift
-@RegisterBank
+@RegisterBlock
 struct Control {
-  @RegisterBank(offset: 0x0)
+  @RegisterBlock(offset: 0x0)
   var cr1: Register<CR1>
-  @RegisterBank(offset: 0x4)
+  @RegisterBlock(offset: 0x4)
   var cr2: Register<CR2>
 }
 

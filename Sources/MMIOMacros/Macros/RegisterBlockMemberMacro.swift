@@ -15,9 +15,9 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-protocol RegisterBankMemberMacro: ParsableMacro {}
+protocol RegisterBlockMemberMacro: ParsableMacro {}
 
-extension RegisterBankMemberMacro {
+extension RegisterBlockMemberMacro {
   func expansion(
     of node: AttributeSyntax,
     offset: ExprSyntax,
@@ -71,20 +71,20 @@ extension RegisterBankMemberMacro {
   }
 }
 
-let registerBankMemberMacros: [any RegisterBankMemberMacro.Type] = [
-  RegisterBankScalarMemberMacro.self,
-  RegisterBankArrayMemberMacro.self,
+let registerBlockMemberMacros: [any RegisterBlockMemberMacro.Type] = [
+  RegisterBlockScalarMemberMacro.self,
+  RegisterBlockArrayMemberMacro.self,
 ]
 
-public struct RegisterBankScalarMemberMacro {
+public struct RegisterBlockScalarMemberMacro {
   @Argument(label: "offset")
   var offset: Int
 }
 
-extension RegisterBankScalarMemberMacro: Sendable {}
+extension RegisterBlockScalarMemberMacro: Sendable {}
 
-extension RegisterBankScalarMemberMacro: ParsableMacro {
-  static let baseName = "RegisterBank"
+extension RegisterBlockScalarMemberMacro: ParsableMacro {
+  static let baseName = "RegisterBlock"
 
   mutating func update(
     label: String,
@@ -100,7 +100,7 @@ extension RegisterBankScalarMemberMacro: ParsableMacro {
   }
 }
 
-extension RegisterBankScalarMemberMacro: MMIOAccessorMacro {
+extension RegisterBlockScalarMemberMacro: MMIOAccessorMacro {
   static var accessorMacroSuppressParsingDiagnostics: Bool { false }
 
   func expansion(
@@ -117,9 +117,9 @@ extension RegisterBankScalarMemberMacro: MMIOAccessorMacro {
   }
 }
 
-extension RegisterBankScalarMemberMacro: RegisterBankMemberMacro {}
+extension RegisterBlockScalarMemberMacro: RegisterBlockMemberMacro {}
 
-public struct RegisterBankArrayMemberMacro {
+public struct RegisterBlockArrayMemberMacro {
   @Argument(label: "offset")
   var offset: Int
   @Argument(label: "stride")
@@ -128,10 +128,10 @@ public struct RegisterBankArrayMemberMacro {
   var count: Int
 }
 
-extension RegisterBankArrayMemberMacro: Sendable {}
+extension RegisterBlockArrayMemberMacro: Sendable {}
 
-extension RegisterBankArrayMemberMacro: ParsableMacro {
-  static let baseName = "RegisterBank"
+extension RegisterBlockArrayMemberMacro: ParsableMacro {
+  static let baseName = "RegisterBlock"
 
   mutating func update(
     label: String,
@@ -151,7 +151,7 @@ extension RegisterBankArrayMemberMacro: ParsableMacro {
   }
 }
 
-extension RegisterBankArrayMemberMacro: MMIOAccessorMacro {
+extension RegisterBlockArrayMemberMacro: MMIOAccessorMacro {
   static var accessorMacroSuppressParsingDiagnostics: Bool { false }
 
   func expansion(
@@ -168,4 +168,4 @@ extension RegisterBankArrayMemberMacro: MMIOAccessorMacro {
   }
 }
 
-extension RegisterBankArrayMemberMacro: RegisterBankMemberMacro {}
+extension RegisterBlockArrayMemberMacro: RegisterBlockMemberMacro {}

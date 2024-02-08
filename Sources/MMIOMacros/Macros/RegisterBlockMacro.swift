@@ -15,11 +15,11 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
-public struct RegisterBankMacro {}
+public struct RegisterBlockMacro {}
 
-extension RegisterBankMacro: Sendable {}
+extension RegisterBlockMacro: Sendable {}
 
-extension RegisterBankMacro: ParsableMacro {
+extension RegisterBlockMacro: ParsableMacro {
   mutating func update(
     label: String,
     from expression: ExprSyntax,
@@ -29,7 +29,7 @@ extension RegisterBankMacro: ParsableMacro {
   }
 }
 
-extension RegisterBankMacro: MMIOMemberMacro {
+extension RegisterBlockMacro: MMIOMemberMacro {
   static var memberMacroSuppressParsingDiagnostics: Bool = false
 
   func expansion(
@@ -56,10 +56,10 @@ extension RegisterBankMacro: MMIOMemberMacro {
       }
 
       // Each variable declaration must be annotated with the
-      // RegisterBankOffsetMacro. Further syntactic checking will be performed
+      // RegisterBlockOffsetMacro. Further syntactic checking will be performed
       // by that macro.
       do {
-        try variableDecl.requireMacro(registerBankMemberMacros, context)
+        try variableDecl.requireMacro(registerBlockMemberMacros, context)
       } catch _ {
         error = true
       }
