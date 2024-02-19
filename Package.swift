@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS(.v10_15),
+    .macOS(.v14),
     .iOS(.v13),
     .tvOS(.v13),
     .watchOS(.v6),
@@ -19,7 +19,7 @@ let package = Package(
 
     // SVD
     .library(name: "SVD", targets: ["SVD"]),
-    .library(name: "SVD2LLDB", type: .dynamic, targets: ["SVD2LLDB"]),
+//    .library(name: "SVD2LLDB", type: .dynamic, targets: ["SVD2LLDB"]),
     .executable(
       // FIXME: rdar://112530586
       // XPM skips build plugin if product and target names are not identical.
@@ -40,7 +40,10 @@ let package = Package(
     // MMIO
     .target(
       name: "MMIO",
-      dependencies: ["MMIOMacros", "MMIOVolatile"]),
+      dependencies: ["MMIOMacros", "MMIOVolatile"],
+      swiftSettings: [
+        .enableExperimentalFeature("Embedded"),
+      ]),
     .testTarget(
       name: "MMIOTests",
       dependencies: ["MMIO", "MMIOUtilities"]),
