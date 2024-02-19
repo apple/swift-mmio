@@ -61,18 +61,18 @@ where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
   where Storage: FixedWidthInteger & UnsignedInteger {
     // Ensure the storage type can fully represent all the bits of `Self`.
     let storageBitWidth = MemoryLayout<Storage>.size * 8
-    #if $Embedded
+    #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
     precondition(
       storageBitWidth >= Self.bitWidth,
-      """
-      Storage type '\(Self.self)' of bit width '\(storageBitWidth)' cannot \
-      represent value '\(self)' of bit width '\(Self.bitWidth)'
-      """)
+      "Value cannot be formed from storage type")
     #else
     precondition(
       storageBitWidth >= Self.bitWidth,
-      "Storage type cannot represent value")
+      """
+      Value type '\(Self.self)' of bit width '\(storageBitWidth)' cannot be \
+      formed from storage '\(storage)' of bit width '\(Self.bitWidth)'
+      """)
     #endif
 
     // Convert the storage integer type to the raw value type of `Self`. If the
@@ -84,15 +84,15 @@ where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
     // Attempt to form a valid value of `Self` from the `rawValue`.
     guard let value = Self(rawValue: rawValue) else {
       // Trap if the `rawValue` is not a valid value of `Self`.
-      #if $Embedded
+      #if hasFeature(Embedded)
       // FIXME: Embedded doesn't have static interpolated strings yet
+      preconditionFailure("Illegal value does not correspond to any raw value")
+      #else
       preconditionFailure(
         """
         Illegal value '\(storage)' does not correspond to any raw value of \
         '\(Self.self)'
         """)
-      #else
-      preconditionFailure("Illegal value does not correspond to any raw value")
       #endif
     }
     self = value
@@ -103,18 +103,18 @@ where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
   where Storage: FixedWidthInteger & UnsignedInteger {
     // Ensure the storage type can fully represent all the bits of `Self`.
     let storageBitWidth = MemoryLayout<Storage>.size * 8
-    #if $Embedded
+    #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
+    precondition(
+      storageBitWidth >= Self.bitWidth,
+      "Storage type cannot represent value")
+    #else
     precondition(
       storageBitWidth >= Self.bitWidth,
       """
       Storage type '\(Self.self)' of bit width '\(storageBitWidth)' cannot \
       represent value '\(self)' of bit width '\(Self.bitWidth)'
       """)
-    #else
-    precondition(
-      storageBitWidth >= Self.bitWidth,
-      "Storage type cannot represent value")
     #endif
     return Storage(rawValue)
   }
@@ -127,7 +127,7 @@ public func preconditionMatchingBitWidth(
   file: StaticString = #file,
   line: UInt = #line
 ) {
-  #if $Embedded
+  #if hasFeature(Embedded)
   // FIXME: Embedded doesn't have static interpolated strings yet
   precondition(
     fieldType.bitWidth == projectedType.bitWidth,
