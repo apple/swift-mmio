@@ -18,11 +18,11 @@ import XCTest
 import System
 
 extension FormatStyle where Self == Duration.UnitsFormatStyle {
-    static var elapsedSeconds: Self {
-        .units(
-            width: .narrow,
-            fractionalPart: .init(lengthLimits: 0...2))
-    }
+  static var elapsedSeconds: Self {
+    .units(
+      width: .narrow,
+      fractionalPart: .init(lengthLimits: 0...2))
+  }
 }
 
 final class SVDTests: XCTestCase {

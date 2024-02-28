@@ -17,6 +17,6 @@ final class SVD2SwiftTests: XCTestCase {
   }
 
   func test() {
-    XCTAssertEqual(Banana.timer1.cr.unsafeAddress, 0x40010100)
+    XCTAssertEqual(Banana.timer1.cr.unsafeAddress, 0x4001_0100)
   }
 }
