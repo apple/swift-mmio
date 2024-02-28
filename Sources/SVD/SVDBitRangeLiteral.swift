@@ -9,8 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
+
+#if canImport(FoundationXML)
+import FoundationXML
+#else
+import Foundation
+#endif
 
 /// A string in the format: "[<msb>:<lsb>]"
 public struct SVDBitRangeLiteral {

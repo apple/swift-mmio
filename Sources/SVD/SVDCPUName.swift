@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 public enum SVDCPUName {
   /// Arm Cortex-M0

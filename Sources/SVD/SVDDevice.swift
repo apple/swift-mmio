@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 @XMLElement
 public struct SVDDevice {

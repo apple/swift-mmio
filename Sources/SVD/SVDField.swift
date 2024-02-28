@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 /// A bit-field has a name that is unique within the register.
 ///

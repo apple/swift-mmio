@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 /// Set the configuration for the Secure Attribution Unit (SAU) when they are
 /// preconfigured by HW or Firmware.

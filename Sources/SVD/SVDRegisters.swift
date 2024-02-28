@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 /// All registers of a peripheral are enclosed between the `<registers>` opening
 /// and closing tags. Clusters define a set of registers. You can either use the

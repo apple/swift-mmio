@@ -12,6 +12,7 @@
 import XCTest
 
 final class SVD2SwiftTests: XCTestCase {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   func _do_not_run() {
     Banana.timer1.cr.modify { _, _ in }
   }

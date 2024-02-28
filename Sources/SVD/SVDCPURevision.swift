@@ -9,8 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
+
+#if canImport(FoundationXML)
+import FoundationXML
+#else
+import Foundation
+#endif
 
 /// The version format is rNpM (N,M = [0 - 99]).
 public struct SVDCPURevision {

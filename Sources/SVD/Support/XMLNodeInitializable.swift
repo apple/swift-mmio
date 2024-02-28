@@ -9,8 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
+
+#if canImport(FoundationXML)
+import FoundationXML
+#else
+import Foundation
+#endif
 
 protocol XMLNodeInitializable {
   init(_ node: XMLNode) throws

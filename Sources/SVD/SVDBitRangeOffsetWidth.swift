@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 /// Specifies the bit position of a field within a register by specifying the
 /// least significant bit position and the bitWidth of the field.

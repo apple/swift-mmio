@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 /// Define the regions of the Secure Attribution Unit (SAU). The protection
 /// level is inherited from the attribute `<protectionWhenDisabled>` of the

@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationXML)
+import FoundationXML
+#else
 import Foundation
+#endif
 
 /// Specify an address range uniquely mapped to this peripheral. A peripheral
 /// must have at least one address block. If a peripheral is derived form
