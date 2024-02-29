@@ -12,9 +12,11 @@ services:
 
   soundness:
     image: swift-mmio:22.04-5.10
+    command: /bin/bash -xcl "swift -version && uname -a"
 
   test:
     image: swift-mmio:22.04-5.10
+    command: /bin/bash -xcl "make test CONFIGURATION=release SKIP_LINT=1"
 
   shell:
     image: swift-mmio:22.04-5.10
