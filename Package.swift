@@ -22,7 +22,7 @@ var package = Package(
     .executable(
       // FIXME: rdar://112530586
       // XPM skips build plugin if product and target names are not identical.
-      // Rename this target to "SVD2Swift" when Xcode bug is resolved.
+      // Rename this product to "svd2swift" when Xcode bug is resolved.
       name: "SVD2Swift",
       targets: ["SVD2Swift"]),
     .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
