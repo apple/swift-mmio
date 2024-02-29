@@ -2,6 +2,8 @@
 
 Definitions for models defined by CMSIS SVD.
 
+This library is intended to aid development of Swift tooling around SVD files. 
+
 ## Type Mapping
 
 | Swift Type                      | XML Schema Type            |
