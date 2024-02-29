@@ -119,15 +119,16 @@ class MMIOFileCheckTestCaseSetup {
 
     print("Determining Swift Version...")
     let versionString = try sh(
-        """
-        swift --version
-        """)
+      """
+      swift --version
+      """)
 
     let regex = #/Apple Swift version (\d+)/#
     let swift6Plus =
       if let match = versionString.firstMatch(of: regex),
-         let majorVersion = Int(match.output.1),
-         majorVersion > 5 {
+        let majorVersion = Int(match.output.1),
+        majorVersion > 5
+      {
         true
       } else {
         false
