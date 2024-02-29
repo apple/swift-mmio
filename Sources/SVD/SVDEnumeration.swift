@@ -9,10 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+
 #if canImport(FoundationXML)
 import FoundationXML
-#else
-import Foundation
 #endif
 
 /// The concept of enumerated values creates a map between unsigned integers and

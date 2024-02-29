@@ -9,10 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+
 #if canImport(FoundationXML)
 import FoundationXML
-#else
-import Foundation
 #endif
 
 /// All peripherals of a device are enclosed within the tag `<peripherals>`.

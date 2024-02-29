@@ -9,10 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+
 #if canImport(FoundationXML)
 import FoundationXML
-#else
-import Foundation
 #endif
 
 /// A peripheral can have multiple interrupts. This entry allows the debugger to

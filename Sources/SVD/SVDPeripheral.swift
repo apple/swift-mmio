@@ -9,10 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+
 #if canImport(FoundationXML)
 import FoundationXML
-#else
-import Foundation
 #endif
 
 /// - Each peripheral describes all registers belonging to that peripheral.

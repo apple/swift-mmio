@@ -9,10 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+
 #if canImport(FoundationXML)
 import FoundationXML
-#else
-import Foundation
 #endif
 
 /// All registers of a peripheral are enclosed between the `<registers>` opening

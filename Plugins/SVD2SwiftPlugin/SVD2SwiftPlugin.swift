@@ -28,7 +28,7 @@ struct SVD2SwiftPlugin: BuildToolPlugin {
     let inputFiles = [executable, svdFile, pluginConfigFile]
 
     // Load the list of peripherals to generate from the config file.
-    let pluginConfigURL = URL(filePath: pluginConfigFile.string)
+    let pluginConfigURL = URL(fileURLWithPath: pluginConfigFile.string)
     let pluginConfigData = try Data(contentsOf: pluginConfigURL)
     let pluginConfig = try JSONDecoder()
       .decode(SVD2SwiftPluginConfiguration.self, from: pluginConfigData)

@@ -128,6 +128,7 @@ var package = Package(
 // Replace this with a native SPM feature flag if/when supported.
 let interposable = "FEATURE_INTERPOSABLE"
 if featureIsEnabled(named: interposable, override: nil) {
+  package.products = package.products.filter { $0.name.hasPrefix("MMIO") }
   let allowedTargets = Set([
     "MMIO", "MMIOVolatile", "MMIOMacros", "MMIOUtilities",
     "MMIOInterposableTests",
