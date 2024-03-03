@@ -139,7 +139,7 @@ class MMIOFileCheckTestCaseSetup {
       fileURLWithPath: try sh(
         """
         swift build \
-          \(swift6Plus ? "--ignore-lock true" : "") \
+          \(swift6Plus ? "--ignore-lock" : "") \
           --configuration release \
           --package-path \(self.packageDirectoryURL.path) \
           --show-bin-path
@@ -149,7 +149,7 @@ class MMIOFileCheckTestCaseSetup {
     _ = try sh(
       """
       swift build \
-        \(swift6Plus ? "--ignore-lock true" : "") \
+        \(swift6Plus ? "--ignore-lock" : "") \
         --configuration release \
         --package-path \(self.packageDirectoryURL.path)
       """)
