@@ -117,11 +117,29 @@ class MMIOFileCheckTestCaseSetup {
       print("Using Simple FileCheck")
     }
 
+    print("Determining Swift Version...")
+    let versionString = try sh(
+      """
+      swift --version
+      """)
+
+    let regex = #/Apple Swift version (\d+)/#
+    let swift6Plus =
+      if let match = versionString.firstMatch(of: regex),
+        let majorVersion = Int(match.output.1),
+        majorVersion > 5
+      {
+        true
+      } else {
+        false
+      }
+
     print("Determining Dependency Paths...")
     let buildOutputsURL = URL(
       fileURLWithPath: try sh(
         """
         swift build \
+          \(swift6Plus ? "--ignore-lock" : "") \
           --configuration release \
           --package-path \(self.packageDirectoryURL.path) \
           --show-bin-path
@@ -131,6 +149,7 @@ class MMIOFileCheckTestCaseSetup {
     _ = try sh(
       """
       swift build \
+        \(swift6Plus ? "--ignore-lock" : "") \
         --configuration release \
         --package-path \(self.packageDirectoryURL.path)
       """)
@@ -168,7 +187,8 @@ struct MMIOFileCheckTestCase {
           -I \(mmioVolatileDirectoryURL.path) \
           -load-plugin-executable \
             \(paths.buildOutputsURL.path)/MMIOMacros#MMIOMacros \
-          -parse-as-library
+          -parse-as-library \
+          -diagnostic-style llvm
         """)
 
       if paths.hasLLVMFileCheck {
