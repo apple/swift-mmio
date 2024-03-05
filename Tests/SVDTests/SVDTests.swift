@@ -72,6 +72,10 @@ final class SVDTests: XCTestCase {
 
   @available(macOS 12.0, *)
   func test_decode() async throws {
+    if ProcessInfo.processInfo.environment["CI"] != nil {
+      throw XCTSkip("Skipping SVDTests in CI: download times out on macOS.")
+    }
+
     try await validateTestData(downloadingIfNeeded: true)
 
     let svdURLs = FileManager.default.files(
