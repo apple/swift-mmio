@@ -169,7 +169,7 @@ extension Field {
       self.msb = value.msb
     case .offsetWidth(let value):
       self.lsb = value.bitOffset
-      self.msb = value.bitOffset + (value.bitWidth ?? 1)
+      self.msb = value.bitOffset + (value.bitWidth ?? 1) - 1
     case .literal(let value):
       self.lsb = value.bitRange.lsb
       self.msb = value.bitRange.msb

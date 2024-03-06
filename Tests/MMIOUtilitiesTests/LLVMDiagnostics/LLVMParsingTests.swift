@@ -13,7 +13,7 @@ import MMIOUtilities
 import XCTest
 
 final class LLVMParsingTests: XCTestCase {
-  func testParseErrorOutput() {
+  func test_parse_errorOutput() {
     let error = """
       /tests/TestModifyBitSetCoalesced.swift:56:17: error: CHECK-NEXT: expected string not found in input
       // CHECK-NEXT: %[[#REG+1]] = or i18 %[[#REG]], -127
