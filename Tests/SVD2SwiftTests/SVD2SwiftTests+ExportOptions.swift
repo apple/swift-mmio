@@ -16,7 +16,7 @@
 extension SVD2SwiftTests {
   // This device has ~minimal content used only to validate output options.
   // Other tests should create their own device for targeted test cases.
-  static let testOutputOptionsDevice = SVDDevice(
+  private static let testOutputOptionsDevice = SVDDevice(
     name: "ExampleDevice",
     description: "An example device",
     addressUnitBits: 8,
