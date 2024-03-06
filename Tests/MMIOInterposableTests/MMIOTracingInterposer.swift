@@ -106,76 +106,8 @@ func XCTAssertMMIOInterposerTrace(
   let expectedTrace = trace
   guard actualTrace != expectedTrace else { return }
 
-  let failureMessage = formatTraceDiff(
-    expectedTrace: expectedTrace,
-    actualTrace: actualTrace)
-
-  XCTFail(failureMessage, file: file, line: line)
-}
-
-func formatTraceDiff(
-  expectedTrace: [MMIOTracingInterposerEvent],
-  actualTrace: [MMIOTracingInterposerEvent],
-  simple: Bool = false
-) -> String {
-  assert(expectedTrace != actualTrace)
-
-  let failureMessage: String
-
-  // Use `CollectionDifference` on supported platforms to get `diff`-like
-  // line-based output. On older platforms, fall back to simple string
-  // comparison.
-  if !simple, #available(macOS 10.15, *) {
-    let difference = actualTrace.difference(from: expectedTrace)
-
-    var result = ""
-
-    var insertions = [Int: MMIOTracingInterposerEvent]()
-    var removals = [Int: MMIOTracingInterposerEvent]()
-
-    for change in difference {
-      switch change {
-      case .insert(let offset, let element, _):
-        insertions[offset] = element
-      case .remove(let offset, let element, _):
-        removals[offset] = element
-      }
-    }
-
-    var expectedLine = 0
-    var actualLine = 0
-
-    while expectedLine < expectedTrace.count || actualLine < actualTrace.count {
-      if let removal = removals[expectedLine] {
-        result += "-\(removal)\n"
-        expectedLine += 1
-      } else if let insertion = insertions[actualLine] {
-        result += "+\(insertion)\n"
-        actualLine += 1
-      } else {
-        result += " \(expectedTrace[expectedLine])\n"
-        expectedLine += 1
-        actualLine += 1
-      }
-    }
-
-    result.removeLast()
-    failureMessage = """
-      Actual trace (+) differed from expected trace (-):
-      \(result)
-      """
-  } else {
-    // Fall back to simple message on platforms that don't support
-    // CollectionDifference.
-    failureMessage = """
-      Actual trace differed from expected trace:
-      Actual:
-      \(actualTrace.map(\.description).joined(separator: "\n"))
-
-      Expected:
-      \(expectedTrace.map(\.description).joined(separator: "\n"))
-      """
-  }
-
-  return failureMessage
+  XCTFail(
+    diff(expected: expectedTrace, actual: actualTrace, noun: "trace"),
+    file: file,
+    line: line)
 }

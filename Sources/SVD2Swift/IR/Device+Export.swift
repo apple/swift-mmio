@@ -15,7 +15,16 @@ let fileHeader = """
   import MMIO\n\n
   """
 
-struct ExportContext {
+struct ExportOptions {
+  var indentation: Indentation
+  var accessLevel: AccessLevel?
+  var selectedPeripherals: [String]
+  var namespaceUnderDevice: Bool
+  var instanceMemberPeripherals: Bool
+  var overrideDeviceName: String?
+}
+
+private struct ExportContext {
   var outputWriter: OutputWriter
   var accessLevel: AccessLevel?
   var selectedPeripherals: [String]
@@ -25,7 +34,22 @@ struct ExportContext {
 }
 
 extension Device {
-  func export(context: inout ExportContext) throws {
+  func export(
+    with options: ExportOptions,
+    to output: inout Output
+  ) throws {
+    var context = ExportContext(
+      outputWriter: .init(output: output, indentation: options.indentation),
+      accessLevel: options.accessLevel,
+      selectedPeripherals: options.selectedPeripherals,
+      namespaceUnderDevice: options.namespaceUnderDevice,
+      instanceMemberPeripherals: options.instanceMemberPeripherals,
+      overrideDeviceName: options.overrideDeviceName)
+    defer { output = context.outputWriter.output }
+    try self.export(into: &context)
+  }
+
+  fileprivate func export(into context: inout ExportContext) throws {
     var outputPeripherals = [Peripheral]()
     if context.selectedPeripherals.isEmpty {
       outputPeripherals = self.peripherals
@@ -81,7 +105,7 @@ extension Device {
 }
 
 extension Peripheral {
-  func exportAccessor(context: inout ExportContext) {
+  fileprivate func exportAccessor(context: inout ExportContext) {
     let accessorModifier =
       if context.instanceMemberPeripherals {
         ""
@@ -108,7 +132,7 @@ extension Peripheral {
     }
   }
 
-  func exportType(context: inout ExportContext, deviceName: String) {
+  fileprivate func exportType(context: inout ExportContext, deviceName: String) {
     if context.namespaceUnderDevice {
       context.outputWriter.append("extension \(context.overrideDeviceName ?? self.name) {\n")
       context.outputWriter.indent()
@@ -171,7 +195,7 @@ extension Peripheral {
 }
 
 extension Register {
-  func exportAccessor(context: inout ExportContext) {
+  fileprivate func exportAccessor(context: inout ExportContext) {
     if let vector = self.vector {
       context.outputWriter.append(
         """
@@ -191,7 +215,7 @@ extension Register {
     }
   }
 
-  func exportType(context: inout ExportContext) {
+  fileprivate func exportType(context: inout ExportContext) {
     context.outputWriter.append(
       """
       \(comment: self.description)
@@ -212,7 +236,7 @@ extension Register {
 }
 
 extension Field {
-  func exportAccessor(context: inout ExportContext) {
+  fileprivate func exportAccessor(context: inout ExportContext) {
     let macro =
       switch access {
       case .readOnly: "ReadOnly"

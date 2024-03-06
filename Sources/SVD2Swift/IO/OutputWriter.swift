@@ -30,6 +30,7 @@ extension Indentation {
 enum Output {
   case standardOutput
   case directory(String)
+  case inMemory([String: String])
 }
 
 struct OutputWriter {
@@ -91,6 +92,9 @@ struct OutputWriter {
       try self.fileContent
         .data(using: .utf8)?
         .write(to: outputFileURL)
+    case .inMemory(var dictionary):
+      dictionary[path] = fileContent
+      self.output = .inMemory(dictionary)
     }
     self.fileContent = ""
   }
