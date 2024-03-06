@@ -134,7 +134,7 @@ extension Peripheral {
 
   fileprivate func exportType(context: inout ExportContext, deviceName: String) {
     if context.namespaceUnderDevice {
-      context.outputWriter.append("extension \(context.overrideDeviceName ?? self.name) {\n")
+      context.outputWriter.append("extension \(deviceName) {\n")
       context.outputWriter.indent()
     }
 
