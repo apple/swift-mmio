@@ -133,6 +133,14 @@ struct SVD2Swift: ParsableCommand {
         a Swift package plugin.
         """)
     }
+
+    if !self.namespaceUnderDevice, self.instanceMemberPeripherals {
+      throw ValidationError(
+        """
+        Unexpected argument, '--instance-member-peripherals' can only be \
+        specified when using '--namespace-under-device'.
+        """)
+    }
   }
 
   func run() throws {
