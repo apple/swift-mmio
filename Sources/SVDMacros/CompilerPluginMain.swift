@@ -9,14 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import SwiftCompilerPlugin
+import SwiftSyntaxMacros
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+@main
+struct CompilerPluginMain: CompilerPlugin {
+  let providingMacros: [Macro.Type] = [
+    XMLAttributeMacro.self,
+    XMLElementMacro.self,
+    XMLInlineElementMacro.self,
+  ]
 }

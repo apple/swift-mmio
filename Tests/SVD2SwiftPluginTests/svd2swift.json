@@ -1,0 +1,10 @@
+{
+  "peripherals": [
+    "TIMER0",
+    "TIMER1",
+  ],
+  "indentation-width": 2,
+  "namespace-under-device": true,
+  "instance-member-peripherals": false,
+  "device-name": "Banana"
+}

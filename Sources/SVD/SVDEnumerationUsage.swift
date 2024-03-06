@@ -9,14 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
-
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+/// Specifies what access types an enumeratedValues set is associated with.
+public enum SVDEnumerationUsage: String {
+  case read
+  case write
+  case readWrite = "read-write"
 }
+
+extension SVDEnumerationUsage: XMLNodeInitializable {}

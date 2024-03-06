@@ -9,14 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+@attached(peer)
+macro XMLAttribute() =
+  #externalMacro(module: "SVDMacros", type: "XMLAttributeMacro")
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
-}
+@attached(extension, names: named(init(_:)), conformances: XMLElementInitializable)
+macro XMLElement() =
+  #externalMacro(module: "SVDMacros", type: "XMLElementMacro")
+
+@attached(peer)
+macro XMLInlineElement() =
+  #externalMacro(module: "SVDMacros", type: "XMLInlineElementMacro")

@@ -9,14 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import XCTest
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
+final class SVD2SwiftTests: XCTestCase {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  func _do_not_run() {
+    Banana.timer1.cr.modify { _, _ in }
+  }
+
+  func test() {
+    XCTAssertEqual(Banana.timer1.cr.unsafeAddress, 0x4001_0100)
   }
 }

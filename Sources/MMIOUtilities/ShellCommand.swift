@@ -24,18 +24,18 @@ extension Data {
   }
 }
 
-struct ShellCommandError: Swift.Error {
-  var command: String
-  var exitCode: Int32
-  var outputData: Data
-  var errorData: Data
+public struct ShellCommandError: Swift.Error {
+  public var command: String
+  public var exitCode: Int32
+  public var outputData: Data
+  public var errorData: Data
 
-  var output: String { self.outputData.asUTF8String() }
-  var error: String { self.errorData.asUTF8String() }
+  public var output: String { self.outputData.asUTF8String() }
+  public var error: String { self.errorData.asUTF8String() }
 }
 
 extension ShellCommandError: CustomStringConvertible {
-  var description: String {
+  public var description: String {
     var description =
       "Command '\(self.command)' exited with code '\(self.exitCode)'"
     let error = self.error
@@ -47,10 +47,10 @@ extension ShellCommandError: CustomStringConvertible {
 }
 
 extension ShellCommandError: LocalizedError {
-  var errorDescription: String? { self.description }
+  public var errorDescription: String? { self.description }
 }
 
-func sh(
+public func sh(
   _ command: String,
   at path: String? = nil
 ) throws -> String {
@@ -81,6 +81,8 @@ func sh(
   }
 
   // Launch the process and wait for it to complete.
+  print(command)
+  fflush(stdout)
   try? process.run()
   process.waitUntilExit()
 

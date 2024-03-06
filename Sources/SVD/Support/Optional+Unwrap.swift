@@ -9,14 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
-
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
+extension Optional {
+  func unwrap(or error: Error) throws -> Wrapped {
+    guard let self = self else { throw error }
+    return self
   }
 }

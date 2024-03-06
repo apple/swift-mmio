@@ -9,14 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import ArgumentParser
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+enum AccessLevel: String {
+  case `internal`
+  case `public`
 }
+
+extension AccessLevel: ExpressibleByArgument {}
+
+extension AccessLevel: Decodable {}

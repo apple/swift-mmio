@@ -9,14 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
-import SwiftSyntax
+import Foundation
 
-extension IntegerLiteralExprSyntax {
-  var value: Int? {
-    var literal = self.literal.text[...]
-    let value = Parser.swiftInteger(Int.self).run(&literal)
-    guard literal.isEmpty else { return nil }
-    return value
-  }
+#if canImport(FoundationXML)
+import FoundationXML
+#endif
+
+/// Grouping element to define bit-field properties of a register.
+@XMLElement
+public struct SVDFields {
+  /// Define the bit-field properties of a register.
+  public var field: [SVDField]
 }
