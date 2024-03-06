@@ -74,7 +74,7 @@ public struct SVDDevice {
   /// and reset value. These default values are inherited to all fields
   /// contained in this device.
   @XMLInlineElement
-  public var registerProperties: SVDRegisterProperties
+  public var registerProperties: SVDRegisterProperties = .init()
   /// Group to define peripherals.
   public var peripherals: SVDPeripherals
   // Unsupported:
@@ -92,33 +92,10 @@ extension SVDDevice {
 
   public init(svdData: Data) throws {
     let document = try XMLDocument(data: svdData)
-    guard let root = document.rootElement() else {
-      fatalError()
-      //      throw ParsingFailure.invalidSpecification("device")
-    }
+    let root =
+      try document
+      .rootElement()
+      .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
     try self.init(root)
   }
 }
-
-//
-//extension DecodingError.Context {
-//  var path: String {
-//    var path = "<root>"
-//    // FIXME: bug in XMLDecoder reports int components twice
-//    var skip = false
-//    for component in self.codingPath {
-//      guard !skip else {
-//        skip = false
-//        continue
-//      }
-//      if let index = component.intValue {
-//        path.append("[\(index)]")
-//        skip = true
-//      } else {
-//        let key = component.stringValue
-//        path.append(".\(key)")
-//      }
-//    }
-//    return path
-//  }
-//}

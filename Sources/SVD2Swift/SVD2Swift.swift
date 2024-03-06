@@ -108,20 +108,20 @@ struct SVD2Swift: ParsableCommand {
     return InputReader(input: input)
   }
 
-  func outputWriter() -> OutputWriter {
-    let output =
-      if self.outputDirectory == "-" {
-        Output.standardOutput
-      } else {
-        Output.directory(self.outputDirectory)
-      }
-    let indentation =
-      if self.indentUsingTabs {
-        Indentation.tab
-      } else {
-        Indentation.space(self.indentationWidth)
-      }
-    return OutputWriter(output: output, indentation: indentation)
+  func output() -> Output {
+    if self.outputDirectory == "-" {
+      Output.standardOutput
+    } else {
+      Output.directory(self.outputDirectory)
+    }
+  }
+
+  func indentation() -> Indentation {
+    if self.indentUsingTabs {
+      Indentation.tab
+    } else {
+      Indentation.space(self.indentationWidth)
+    }
   }
 
   func validate() throws {
@@ -148,16 +148,17 @@ struct SVD2Swift: ParsableCommand {
     // Sanitize the IR device.
     device.sanitize()
 
-    // Create an export context.
-    var context = ExportContext(
-      outputWriter: self.outputWriter(),
+    // Create export options and an output destination.
+    let options = ExportOptions(
+      indentation: self.indentation(),
       accessLevel: self.accessLevel,
       selectedPeripherals: self.selectedPeripherals,
       namespaceUnderDevice: self.namespaceUnderDevice,
       instanceMemberPeripherals: self.instanceMemberPeripherals,
       overrideDeviceName: self.overrideDeviceName)
+    var output = self.output()
 
     // Export the swift interface into the output directory.
-    try device.export(context: &context)
+    try device.export(with: options, to: &output)
   }
 }

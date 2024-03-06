@@ -23,7 +23,7 @@ struct InputReader {
     switch self.input {
     case .standardInput:
       guard #available(macOS 10.15.4, *) else {
-        // This can raise an ObjC exception which is not handable in Swift. If
+        // This can raise an ObjC exception which is not handleable in Swift. If
         // users see this occur then replace this code with a different cross
         // platform API, e.g. open(2) and read(2) on POSIX compatible platforms.
         return FileHandle.standardInput.readDataToEndOfFile()

@@ -94,6 +94,9 @@ var package = Package(
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         "SVD",
       ]),
+    .testTarget(
+      name: "SVD2SwiftTests",
+      dependencies: ["SVD", "SVD2Swift"]),
 
     .plugin(
       name: "SVD2SwiftPlugin",

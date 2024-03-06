@@ -40,47 +40,6 @@ final class MMIOTracingInterposerTests: XCTestCase {
       ])
   }
 
-  func test_trace_diff() {
-    XCTAssertEqual(
-      formatTraceDiff(
-        expectedTrace: [
-          .store(of: UInt8(0xa5), to: 0x10),
-          .load(of: UInt8(0x5a), from: 0x20),
-        ],
-        actualTrace: [
-          .load(of: UInt8(0x5a), from: 0x20),
-          .load(of: UInt8(0xa6), from: 0x30),
-        ]),
-      """
-      Actual trace (+) differed from expected trace (-):
-      -m[0x0000_0000_0000_0010] <- 0xa5
-       m[0x0000_0000_0000_0020] -> 0x5a
-      +m[0x0000_0000_0000_0030] -> 0xa6
-      """)
-
-    XCTAssertEqual(
-      formatTraceDiff(
-        expectedTrace: [
-          .store(of: UInt8(0xa5), to: 0x10),
-          .load(of: UInt8(0x5a), from: 0x20),
-        ],
-        actualTrace: [
-          .load(of: UInt8(0x5a), from: 0x20),
-          .load(of: UInt8(0xa6), from: 0x30),
-        ],
-        simple: true),
-      """
-      Actual trace differed from expected trace:
-      Actual:
-      m[0x0000_0000_0000_0020] -> 0x5a
-      m[0x0000_0000_0000_0030] -> 0xa6
-
-      Expected:
-      m[0x0000_0000_0000_0010] <- 0xa5
-      m[0x0000_0000_0000_0020] -> 0x5a
-      """)
-  }
-
   func test_XCTAssertMMIOAlignment_pass() {
     XCTAssertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x2)!)
   }

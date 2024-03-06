@@ -31,7 +31,7 @@ public struct SVDPeripheral {
   /// consecutive array elements and a comma separated list of strings used to
   /// identify each element in the array.
   @XMLInlineElement
-  public var dimensionElement: SVDDimensionElement
+  public var dimensionElement: SVDDimensionElement = .init()
   /// The string identifies the peripheral. Peripheral names are required to
   /// be unique for a device. The name needs to be an ANSI C identifier to
   /// generate the header file. You can use the placeholder [%s] to create
@@ -86,7 +86,7 @@ public struct SVDPeripheral {
   /// and reset value. These default values are inherited to all fields
   /// contained in this peripheral.
   @XMLInlineElement
-  public var registerProperties: SVDRegisterProperties
+  public var registerProperties: SVDRegisterProperties = .init()
   /// Specify an address range uniquely mapped to this peripheral.
   /// A peripheral must have at least one address block, but can allocate
   /// multiple distinct address ranges. If a peripheral is derived from
