@@ -92,7 +92,8 @@ extension SVDDevice {
 
   public init(svdData: Data) throws {
     let document = try XMLDocument(data: svdData)
-    let root = try document
+    let root =
+      try document
       .rootElement()
       .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
     try self.init(root)

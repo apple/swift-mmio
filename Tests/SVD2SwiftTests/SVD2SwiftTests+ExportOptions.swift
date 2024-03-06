@@ -12,6 +12,7 @@
 @testable import SVD
 @testable import SVD2Swift
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension SVD2SwiftTests {
   // This device has ~minimal content used only to validate output options.
   // Other tests should create their own device for targeted test cases.
@@ -37,10 +38,10 @@ extension SVD2SwiftTests {
                 fields: .init(field: [
                   .init(
                     name: "ExampleField",
-                    bitRange: .lsbMsb(.init(lsb: 4, msb: 10))),
-                ])),
-            ])),
-        ]))
+                    bitRange: .lsbMsb(.init(lsb: 4, msb: 10)))
+                ]))
+            ]))
+      ]))
 
   func test_outputOptions_default() throws {
     XCTAssertSVD2SwiftOutput(

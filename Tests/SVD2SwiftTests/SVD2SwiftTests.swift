@@ -15,6 +15,7 @@ import XCTest
 @testable import SVD
 @testable import SVD2Swift
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertSVD2SwiftOutput(
   svdDevice: SVDDevice,
   options: ExportOptions,
