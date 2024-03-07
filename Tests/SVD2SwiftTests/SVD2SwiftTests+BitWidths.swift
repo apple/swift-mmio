@@ -71,7 +71,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 

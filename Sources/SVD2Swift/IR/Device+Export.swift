@@ -107,10 +107,10 @@ extension Device {
 extension Peripheral {
   fileprivate func exportAccessor(context: inout ExportContext) {
     let accessorModifier =
-      if context.instanceMemberPeripherals {
-        ""
-      } else {
+      if context.namespaceUnderDevice && !context.instanceMemberPeripherals {
         "static "
+      } else {
+        ""
       }
     if let vector = self.vector {
       for index in 0..<vector.count {
