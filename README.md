@@ -30,16 +30,16 @@ control.cr1.modify { $0.en = true }
 Swift MMIO supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:
 
 ```swift
-.package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.1"),
+.package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
 ```
 
-> **Important:** This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.1")` as the requirement.:
+> **Important:** This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.2")` as the requirement.:
 >
 > ```swift
-> .package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.1")),
+> .package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
 > ```
 
-Second, add the `MMIO` library to your targets' dependencies:
+Second, add the `MMIO` library to your target's dependencies:
 
 ```swift
 .target(

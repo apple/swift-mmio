@@ -1,60 +1,59 @@
 # ``SVD``
 
-Definitions for models defined by CMSIS SVD.
+A library for working with CMSIS SVD files.
 
-This library is intended to aid development of Swift tooling around SVD files. 
+## Overview
 
-## Type Mapping
+[CMSIS](https://www.arm.com/technologies/cmsis) (Common Microcontroller Software Interface Standard) [SVD](https://arm-software.github.io/CMSIS_5/SVD/html/index.html) (System View Description) is a standardized XML file format used to describe the hardware characteristics of a microcontroller or processor. The format provides essential information about the interrupts, memory-mapped registers, and other hardware components of a device.
 
-| Swift Type                      | XML Schema Type            |
-| ------------------------------- | -------------------------- |
-| ``SVDAccess``                   | `accessType`               | 
-| ``SVDAddressBlock``             | `addressBlockType`         |
-| ``SVDBitRangeLiteral``          | `bitRangeType`             |
-| ``SVDBitRangeLsbMsb``           | `bitRangeLsbMsbStyle`      |
-| ``SVDBitRangeOffsetWidth``      | `bitRangeOffsetWidthStyle` |
-| ``SVDCluster``                  | `clusterType`              |
-| ``SVDCPU``                      | `cpuType`                  |
-| ``SVDCPUEndianness``            | `endianType`               |
-| ``SVDCPUName``                  | `cpuNameType`              |
-| ``SVDCPURevision``              | `revisionType`             |
-| ``SVDDataType``                 | `dataTypeType`             |
-| ``SVDDevice``                   | `device`                   |
-| ``Swift.String``                | `dimableIdentifierType`    |
-| ``SVDDimensionArrayIndex``      | `dimArrayIndexType`        |
-| ``SVDDimensionElement``         | `dimElementGroup`          |
-| ``Swift.String``                | `dimIndexType`             |
-| ``SVDEnumeration``              | `enumerationType`          |
-| ``SVDEnumerationCase``          | `enumeratedValueType`      |
-| ``SVDEnumerationUsage``         | `enumUsageType`            |
-| ``SVDField``                    | `fieldType`                |
-| ``SVDFields``                   | `fieldsType`               |
-| ``Swift.String``                | `identifierType`           |
-| ``SVDInterrupt``                | `interruptType`            |
-| ``SVDModifiedWriteValues``      | `modifiedWriteValuesType`  |
-| ``SVDPeripheral``               | `peripheralType`           |
-| ``SVDPeripherals``              | `peripherals`              |
-| ``SVDProtection``               | `protectionStringType`     |
-| ``SVDReadAction``               | `readActionType`           |
-| ``SVDRegister``                 | `registerType`             |
-| ``SVDRegisterProperties``       | `registerPropertiesGroup`  |
-| ``SVDRegisters``                | `registersType`            |
-| ``SVDSAUAccess``                | `sauAccessType`            |
-| ``SVDSAURegion``                | `region`                   |
-| ``SVDSAURegions``               | `sauRegionsConfig`         |
-| ``Swift.UInt64``                | `scaledNonNegativeInteger` |
-| ``Swift.String``                | `stringType`               |
-| ``SVDWriteConstraint``          | `writeConstraintType`      |
-| ``Swift.Bool``                  | `xs:boolean`               |
-| ``Swift.String``                | `xs:decimal`               |
-| ``Swift.UInt64``                | `xs:integer`               |
-| ``Swift.String``                | `xs:Name`                  |
-| ``Swift.String``                | `xs:string`                |
-| TODO                            | `enumeratedValueDataType`  |
+`SVD` makes it easy to parse and operate on CMSIS SVD files in Swift and is tested to work against a corpus of nearly 2000 files. 
 
+This library is intended to enable development of _tooling_ surrounding SVD files and not intended to be directly used by firmware.
 
-## Topics
+## Tools built with SVD
 
-### <!--@START_MENU_TOKEN@-->Group<!--@END_MENU_TOKEN@-->
+- `svd2swift`: Generate swift-mmio register interfaces from SVD files.
+- `SVD2SwiftPlugin`: A SwiftPM build plugin for running `svd2swift` at build time.
 
-- <!--@START_MENU_TOKEN@-->``Symbol``<!--@END_MENU_TOKEN@-->
+## Using SVD in your project
+
+`SVD` supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:
+
+```swift
+.package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
+```
+
+> **Important:** This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.2")` as the requirement.:
+>
+> ```swift
+> .package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
+> ```
+
+Second, add the `SVD` library to your target's dependencies:
+
+```swift
+.executableTarget(
+  name: "MySVDTool",
+  dependencies: [
+    .product(name: "SVD", package: "swift-mmio")
+  ]),
+```
+
+Finally, `import SVD` in your Swift source code.
+
+```swift
+import SVD
+
+// Load a file from a url.
+let svdData = try Data(contentsOf: ...)
+
+// Decode raw data into SVD types.
+let svdDevice = try SVDDevice(svdData: svdData)
+
+// Print the device's name
+print(svdDevice.name)
+```
+
+## Contributions
+
+Contributions and feedback are welcome! Please refer to the [Contribution Guidelines](https://github.com/apple/swift-mmio#contributing-to-swift-mmio) for more information.
