@@ -268,7 +268,7 @@ extension SVD2SwiftTests {
 
         import MMIO
 
-        extension ExamplePeripheral {
+        extension ExampleDevice {
           /// An example peripheral
           @RegisterBlock
           struct ExamplePeripheral {
@@ -369,7 +369,7 @@ extension SVD2SwiftTests {
 
         import MMIO
 
-        extension ExamplePeripheral {
+        extension ExampleDevice {
           /// An example peripheral
           @RegisterBlock
           struct ExamplePeripheral {
