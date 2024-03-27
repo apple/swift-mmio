@@ -16,6 +16,8 @@ enum AccessLevel: String {
   case `public`
 }
 
-extension AccessLevel: ExpressibleByArgument {}
+extension AccessLevel: CaseIterable {}
 
 extension AccessLevel: Decodable {}
+
+extension AccessLevel: ExpressibleByArgument {}

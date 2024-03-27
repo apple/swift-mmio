@@ -6,7 +6,7 @@ A library for working with CMSIS SVD files.
 
 [CMSIS](https://www.arm.com/technologies/cmsis) (Common Microcontroller Software Interface Standard) [SVD](https://arm-software.github.io/CMSIS_5/SVD/html/index.html) (System View Description) is a standardized XML file format used to describe the hardware characteristics of a microcontroller or processor. The format provides essential information about the interrupts, memory-mapped registers, and other hardware components of a device.
 
-`SVD` makes it easy to parse and operate on CMSIS SVD files in Swift and is tested to work against a corpus of nearly 2000 files. 
+`SVD` makes it easy to parse and operate on SVD files in Swift and is tested to work against a corpus of nearly 2000 files. 
 
 This library is intended to enable development of _tooling_ surrounding SVD files and not intended to be directly used by firmware.
 
@@ -23,11 +23,7 @@ This library is intended to enable development of _tooling_ surrounding SVD file
 .package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
 ```
 
-> **Important:** This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.2")` as the requirement.:
->
-> ```swift
-> .package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
-> ```
+> Important: See [source stability](https://github.com/apple/swift-mmio#source-stability) for details on major version "0".
 
 Second, add the `SVD` library to your target's dependencies:
 
