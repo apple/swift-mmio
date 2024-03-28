@@ -128,16 +128,14 @@ var package = Package(
       ]),
   ])
 
-
 // Replace these with a native SPM feature flags if/when supported.
 let svd2lldb = "FEATURE_SVD2LLDB"
 if featureIsEnabled(named: svd2lldb, override: true) {
   let frameworks = """
-    /Library/Developer/Toolchains/\
-    swift-DEVELOPMENT-SNAPSHOT-2024-01-08-a.xctoolchain\
+    /Library/Developer/Toolchains\
+    /swift-DEVELOPMENT-SNAPSHOT-2024-03-13-a.xctoolchain\
     /System/Library/PrivateFrameworks
     """
-
 
   package.targets.append(
     .target(
@@ -161,14 +159,13 @@ if featureIsEnabled(named: svd2lldb, override: true) {
           "-I\(frameworks)/LLDB.framework",
           "-F\(frameworks)",
           "-framework", "LLDB",
-        ])
+        ]),
       ],
       linkerSettings: [
         .unsafeFlags(["-F\(frameworks)"]),
-        .linkedFramework("LLDB")
+        .linkedFramework("LLDB"),
       ]
     ))
-
 
   package.products.append(
     .library(

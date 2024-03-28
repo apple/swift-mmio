@@ -9,13 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import CLLDB
-
-extension lldb.SBCommandReturnObject {
-  mutating func Print(_ output: String) {
-    var output = output
-    output.withUTF8 { buffer in
-      self.PutCString(buffer.baseAddress, Int32(buffer.count))
-    }
+extension StringProtocol {
+  func matches(_ other: some StringProtocol) -> Bool {
+    self.localizedCaseInsensitiveCompare(other) == .orderedSame
   }
 }

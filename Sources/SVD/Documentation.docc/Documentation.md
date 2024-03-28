@@ -14,6 +14,7 @@ This library is intended to enable development of _tooling_ surrounding SVD file
 
 - `svd2swift`: Generate swift-mmio register interfaces from SVD files.
 - `SVD2SwiftPlugin`: A SwiftPM build plugin for running `svd2swift` at build time.
+- `SVD2LLDB`: An lldb plugin for interacting with registers in a debug session using semantic names.
 
 ## Using SVD in your project
 
