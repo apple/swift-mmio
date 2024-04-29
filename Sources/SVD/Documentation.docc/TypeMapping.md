@@ -20,6 +20,7 @@
 | ``Swift.String``                | `dimIndexType`             |
 | ``SVDEnumeration``              | `enumerationType`          |
 | ``SVDEnumerationCase``          | `enumeratedValueType`      |
+| ``SVDEnumerationCaseDataValue`` | `enumeratedValueDataType`  |
 | ``SVDEnumerationUsage``         | `enumUsageType`            |
 | ``SVDField``                    | `fieldType`                |
 | ``SVDFields``                   | `fieldsType`               |
@@ -44,4 +45,3 @@
 | ``Swift.UInt64``                | `xs:integer`               |
 | ``Swift.String``                | `xs:Name`                  |
 | ``Swift.String``                | `xs:string`                |
-| TODO                            | `enumeratedValueDataType`  |

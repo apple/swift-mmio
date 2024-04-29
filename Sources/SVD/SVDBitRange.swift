@@ -15,11 +15,6 @@ import Foundation
 import FoundationXML
 #endif
 
-@XMLElement
-public struct SVDBitRangeLiteralContainer {
-  public var bitRange: SVDBitRangeLiteral
-}
-
 public enum SVDBitRange {
   case lsbMsb(SVDBitRangeLsbMsb)
   case offsetWidth(SVDBitRangeOffsetWidth)

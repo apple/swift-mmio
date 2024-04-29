@@ -9,10 +9,121 @@
 //
 //===----------------------------------------------------------------------===//
 
+enum IntegerLiteralBase {
+  case binary
+  case octal
+  case decimal
+  case hexadecimal
+
+  func value<Output>() -> Output
+  where Output: FixedWidthInteger {
+    switch self {
+    case .binary: 2
+    case .octal: 8
+    case .decimal: 10
+    case .hexadecimal: 16
+    }
+  }
+}
+
+extension FixedWidthInteger {
+  mutating func incrementalParseAppend(
+    digit: Self,
+    base: IntegerLiteralBase
+  ) -> Bool {
+    let multiply = self.multipliedReportingOverflow(by: base.value())
+    guard !multiply.overflow else { return false }
+    let add = multiply.partialValue.addingReportingOverflow(digit)
+    guard !add.overflow else { return false }
+    self = add.partialValue
+    return true
+  }
+}
+
+extension Parser where Input == Substring, Output: FixedWidthInteger {
+  static func digit(
+    _: Output.Type = Output.self,
+    base: IntegerLiteralBase
+  ) -> Self {
+    switch base {
+    case .binary: Self.binaryDigit()
+    case .octal: Self.octalDigit()
+    case .decimal: Self.decimalDigit()
+    case .hexadecimal: Self.hexadecimalDigit()
+    }
+  }
+
+  static func binaryDigit(_: Output.Type = Output.self) -> Self {
+    Self { input in
+      guard let ascii = input.first?.asciiValue else { return nil }
+      switch ascii {
+      case UInt8(ascii: "0"), UInt8(ascii: "1"):
+        _ = input.removeFirst()
+        return Output(ascii - UInt8(ascii: "0"))
+      default:
+        return nil
+      }
+    }
+  }
+
+  static func octalDigit(_: Output.Type = Output.self) -> Self {
+    Self { input in
+      guard let ascii = input.first?.asciiValue else { return nil }
+      switch ascii {
+      case UInt8(ascii: "0")..<UInt8(ascii: "8"):
+        _ = input.removeFirst()
+        return Output(ascii - UInt8(ascii: "0"))
+      default:
+        return nil
+      }
+    }
+  }
+
+  static func decimalDigit(_: Output.Type = Output.self) -> Self {
+    Self { input in
+      guard let ascii = input.first?.asciiValue else { return nil }
+      switch ascii {
+      case UInt8(ascii: "0")...UInt8(ascii: "9"):
+        _ = input.removeFirst()
+        return Output(ascii - UInt8(ascii: "0"))
+      default:
+        return nil
+      }
+    }
+  }
+
+  static func hexadecimalDigit(_: Output.Type = Output.self) -> Self {
+    Self { input in
+      guard let ascii = input.first?.asciiValue else { return nil }
+      switch ascii {
+      case UInt8(ascii: "0")...UInt8(ascii: "9"):
+        _ = input.removeFirst()
+        return Output(ascii - UInt8(ascii: "0"))
+      case UInt8(ascii: "a")...UInt8(ascii: "f"):
+        _ = input.removeFirst()
+        return Output(ascii - UInt8(ascii: "a") + 10)
+      case UInt8(ascii: "A")...UInt8(ascii: "F"):
+        _ = input.removeFirst()
+        return Output(ascii - UInt8(ascii: "A") + 10)
+      default:
+        return nil
+      }
+    }
+  }
+}
+
 enum SwiftIntegerPrefix: String, CaseIterable {
   case binary = "0b"
   case octal = "0o"
   case hexadecimal = "0x"
+
+  var base: IntegerLiteralBase {
+    switch self {
+    case .binary: .binary
+    case .octal: .octal
+    case .hexadecimal: .hexadecimal
+    }
+  }
 }
 
 extension Parser where Input == Substring, Output: FixedWidthInteger {
@@ -32,25 +143,17 @@ extension Parser where Input == Substring, Output: FixedWidthInteger {
         break
       }
 
-      let prefix = Parser<Input, SwiftIntegerPrefix>.cases().run(&input)
+      let base =
+        Parser<Input, SwiftIntegerPrefix>.cases().run(&input)?.base
+        ?? .decimal
 
       var value = Output(0)
       var digitsConsumed = false
       loop: while !input.isEmpty {
-        switch prefix {
-        case .binary:
-          guard let digit = Parser.binaryDigit().run(&input) else { break loop }
-          value = value * 2 + digit
-        case .octal:
-          guard let digit = Parser.octalDigit().run(&input) else { break loop }
-          value = value * 8 + digit
-        case nil:
-          guard let digit = Parser.decimalDigit().run(&input) else { break loop }
-          value = value * 10 + digit
-        case .hexadecimal:
-          guard let digit = Parser.hexadecimalDigit().run(&input) else { break loop }
-          value = value * 16 + digit
-        }
+        guard
+          let digit = Parser.digit(base: base).run(&input),
+          value.incrementalParseAppend(digit: digit, base: base)
+        else { break loop }
         digitsConsumed = true
         while input.first?.asciiValue == UInt8(ascii: "_") {
           _ = input.removeFirst()
@@ -71,6 +174,13 @@ enum ScaledNonNegativeIntegerPrefix: String, CaseIterable {
   case binary = "#"
   case hexadecimal = "0x"
   case hexadecimal2 = "0X"
+
+  var base: IntegerLiteralBase {
+    switch self {
+    case .binary: .binary
+    case .hexadecimal, .hexadecimal2: .hexadecimal
+    }
+  }
 }
 
 extension Parser where Input == Substring, Output: FixedWidthInteger {
@@ -82,23 +192,17 @@ extension Parser where Input == Substring, Output: FixedWidthInteger {
         input.removeFirst()
       }
 
-      let prefix = Parser<Input, ScaledNonNegativeIntegerPrefix>
-        .cases().run(&input)
+      let base =
+        Parser<Input, ScaledNonNegativeIntegerPrefix>
+        .cases().run(&input)?.base ?? .decimal
 
       var value = Output(0)
       var digitsConsumed = false
       loop: while !input.isEmpty {
-        switch prefix {
-        case .binary:
-          guard let digit = Parser.binaryDigit().run(&input) else { break loop }
-          value = value * 2 + digit
-        case nil:
-          guard let digit = Parser.decimalDigit().run(&input) else { break loop }
-          value = value * 10 + digit
-        case .hexadecimal, .hexadecimal2:
-          guard let digit = Parser.hexadecimalDigit().run(&input) else { break loop }
-          value = value * 16 + digit
-        }
+        guard
+          let digit = Parser.digit(base: base).run(&input),
+          value.incrementalParseAppend(digit: digit, base: base)
+        else { break loop }
         digitsConsumed = true
       }
 
@@ -133,62 +237,83 @@ extension Parser where Input == Substring, Output: FixedWidthInteger {
   }
 }
 
-extension Parser where Input == Substring, Output: FixedWidthInteger {
-  public static func binaryDigit(_: Output.Type = Output.self) -> Self {
-    Self { input in
+enum EnumeratedValueDataTypePrefix: String, CaseIterable {
+  case binary = "#"
+  case binary2 = "0b"
+  case hexadecimal = "0x"
+  case hexadecimal2 = "0X"
+
+  var base: IntegerLiteralBase {
+    switch self {
+    case .binary, .binary2: .binary
+    case .hexadecimal, .hexadecimal2: .hexadecimal
+    }
+  }
+}
+
+extension Parser where Input == Substring {
+  static func binaryOrAnyDigit<Integer>(
+    _: Integer.Type = Integer.self
+  ) -> Parser<Input, (Integer, Integer)> where Integer: FixedWidthInteger {
+    Parser<Input, (Integer, Integer)> { input in
       guard let ascii = input.first?.asciiValue else { return nil }
       switch ascii {
       case UInt8(ascii: "0"), UInt8(ascii: "1"):
         _ = input.removeFirst()
-        return Output(ascii - UInt8(ascii: "0"))
+        return (Integer(ascii - UInt8(ascii: "0")), 1)
+      case UInt8(ascii: "x"), UInt8(ascii: "X"):
+        _ = input.removeFirst()
+        return (0, 0)
       default:
         return nil
       }
     }
   }
 
-  public static func octalDigit(_: Output.Type = Output.self) -> Self {
-    Self { input in
-      guard let ascii = input.first?.asciiValue else { return nil }
-      switch ascii {
-      case UInt8(ascii: "0")..<UInt8(ascii: "8"):
-        _ = input.removeFirst()
-        return Output(ascii - UInt8(ascii: "0"))
-      default:
-        return nil
-      }
-    }
-  }
+  public static func enumeratedValueDataType<Integer>(
+    _: Integer.Type = Integer.self
+  ) -> Parser<Input, (Integer, Integer)> where Integer: FixedWidthInteger {
+    Parser<Input, (Integer, Integer)> { input in
+      let original = input
 
-  public static func decimalDigit(_: Output.Type = Output.self) -> Self {
-    Self { input in
-      guard let ascii = input.first?.asciiValue else { return nil }
-      switch ascii {
-      case UInt8(ascii: "0")...UInt8(ascii: "9"):
-        _ = input.removeFirst()
-        return Output(ascii - UInt8(ascii: "0"))
-      default:
-        return nil
+      if input.first?.asciiValue == UInt8(ascii: "+") {
+        input.removeFirst()
       }
-    }
-  }
 
-  public static func hexadecimalDigit(_: Output.Type = Output.self) -> Self {
-    Self { input in
-      guard let ascii = input.first?.asciiValue else { return nil }
-      switch ascii {
-      case UInt8(ascii: "0")...UInt8(ascii: "9"):
-        _ = input.removeFirst()
-        return Output(ascii - UInt8(ascii: "0"))
-      case UInt8(ascii: "a")...UInt8(ascii: "f"):
-        _ = input.removeFirst()
-        return Output(ascii - UInt8(ascii: "a") + 10)
-      case UInt8(ascii: "A")...UInt8(ascii: "F"):
-        _ = input.removeFirst()
-        return Output(ascii - UInt8(ascii: "A") + 10)
-      default:
+      let base =
+        Parser<Input, EnumeratedValueDataTypePrefix>
+        .cases().run(&input)?.base ?? .decimal
+
+      var value = Integer(0)
+      var mask = Integer(0)
+      var digitsConsumed = false
+      loop: while !input.isEmpty {
+        switch base {
+        case .binary:
+          guard
+            let digit = Parser.binaryOrAnyDigit(Integer.self).run(&input),
+            value.incrementalParseAppend(digit: digit.0, base: .binary),
+            mask.incrementalParseAppend(digit: digit.1, base: .binary)
+          else { break loop }
+        default:
+          guard
+            let digit = Parser<Input, Integer>.digit(base: base).run(&input),
+            value.incrementalParseAppend(digit: digit, base: base)
+          else { break loop }
+        }
+        digitsConsumed = true
+      }
+
+      if base != .binary {
+        mask = Integer(0) &- 1
+      }
+
+      guard digitsConsumed else {
+        input = original
         return nil
       }
+
+      return (value, mask)
     }
   }
 }

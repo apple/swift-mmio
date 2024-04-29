@@ -16,6 +16,11 @@ import MMIOUtilities
 import FoundationXML
 #endif
 
+@XMLElement
+public struct SVDBitRangeLiteralContainer {
+  public var bitRange: SVDBitRangeLiteral
+}
+
 /// A string in the format: "[<msb>:<lsb>]"
 public struct SVDBitRangeLiteral {
   public var lsb: UInt64

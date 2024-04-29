@@ -15,15 +15,19 @@ import Foundation
 import FoundationXML
 #endif
 
-/// An enumeratedValue defines a map between an unsigned integer and a string.
-@XMLElement
-public struct SVDEnumerationCase {
-  /// String describing the semantics of the value. Can be displayed instead
-  /// of the value.
-  public var name: String?
-  /// Extended string describing the value.
-  public var description: String?
-  /// The value of the case or the default value for undeclared cases.
-  @XMLInlineElement
-  public var data: SVDEnumerationCaseData
+public enum SVDEnumerationCaseData {
+  case value(SVDEnumerationCaseDataValue)
+  case isDefault(SVDEnumerationCaseDataDefault)
+}
+
+extension SVDEnumerationCaseData: XMLElementInitializable {
+  init(_ element: XMLElement) throws {
+    if let value = try? SVDEnumerationCaseDataValue(element) {
+      self = .value(value)
+    } else if let value = try? SVDEnumerationCaseDataDefault(element) {
+      self = .isDefault(value)
+    } else {
+      throw Errors.unknownElement(element)
+    }
+  }
 }
