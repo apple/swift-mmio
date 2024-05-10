@@ -2,9 +2,11 @@
 
 **Swift MMIO** is an open source package for defining and operating on memory mapped IO directly in Swift. 
 
-## Sample Usage
+## Overview
 
 Swift MMIO makes it easy to define registers directly in Swift source code and manipulate them in a safe and ergonomic manner.
+
+## Example Usage
 
 ```swift
 @RegisterBlock
@@ -33,12 +35,6 @@ Swift MMIO supports use with the Swift Package Manager. First, add the Swift MMI
 .package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
 ```
 
-> **Important:** This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.2")` as the requirement.:
->
-> ```swift
-> .package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
-> ```
-
 Second, add the `MMIO` library to your target's dependencies:
 
 ```swift
@@ -50,6 +46,14 @@ Second, add the `MMIO` library to your target's dependencies:
 ```
 
 Finally, `import MMIO` in your Swift source code.
+
+### Source Stability 
+
+This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.2")` as the requirement:
+
+```swift
+.package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
+```
 
 ## Documentation
 
