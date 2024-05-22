@@ -38,15 +38,26 @@ var package = Package(
       name: "MMIO",
       dependencies: ["MMIOMacros", "MMIOVolatile"]),
     .testTarget(
+      name: "MMIOTests",
+      dependencies: ["MMIO", "MMIOUtilities"]),
+
+    // FIXME: feature flag
+    // Ideally this would be represented as MMIO + Feature: Interposable
+    // MMIOInterposable would have a dependency on MMIO with this feature
+    // enabled.
+    .target(
+      name: "MMIOInterposable",
+      dependencies: ["MMIOMacros", "MMIOVolatile"],
+      swiftSettings: [.define("FEATURE_INTERPOSABLE")]),
+    .testTarget(
+      name: "MMIOInterposableTests",
+      dependencies: ["MMIOInterposable", "MMIOUtilities"],
+      swiftSettings: [.define("FEATURE_INTERPOSABLE")]),
+
+    .testTarget(
       name: "MMIOFileCheckTests",
       dependencies: ["MMIOUtilities"],
       exclude: ["Tests"]),
-    .testTarget(
-      name: "MMIOInterposableTests",
-      dependencies: ["MMIO", "MMIOUtilities"]),
-    .testTarget(
-      name: "MMIOTests",
-      dependencies: ["MMIO", "MMIOUtilities"]),
 
     .macro(
       name: "MMIOMacros",
@@ -127,27 +138,6 @@ var package = Package(
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
   ])
-
-// Replace this with a native SPM feature flag if/when supported.
-let interposable = "FEATURE_INTERPOSABLE"
-if featureIsEnabled(named: interposable, override: nil) {
-  package.products = package.products.filter { $0.name.hasPrefix("MMIO") }
-  let allowedTargets = Set([
-    "MMIO", "MMIOVolatile", "MMIOMacros", "MMIOUtilities",
-    "MMIOInterposableTests",
-  ])
-  package.targets = package.targets.filter {
-    allowedTargets.contains($0.name)
-  }
-  for target in package.targets where target.type != .system {
-    target.swiftDefine(interposable)
-  }
-} else {
-  let disallowedTargets = Set(["MMIOInterposableTests"])
-  package.targets = package.targets.filter {
-    !disallowedTargets.contains($0.name)
-  }
-}
 
 func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
   let key = "SWIFT_MMIO_\(featureName)"

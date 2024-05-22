@@ -49,10 +49,6 @@ test: build
 		--configuration $(CONFIGURATION) \
 		--parallel \
 		--explicit-target-dependency-import-check error
-	@SWIFT_MMIO_FEATURE_INTERPOSABLE=1 swift test \
-		--configuration $(CONFIGURATION) \
-		--parallel \
-		--explicit-target-dependency-import-check error
 
 clean:
 	@echo "cleaning..."
