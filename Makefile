@@ -41,8 +41,7 @@ build: lint
 	@echo "building..."
 	@swift build \
 		--configuration $(CONFIGURATION) \
-		--explicit-target-dependency-import-check error \
-		--build-tests
+		--explicit-target-dependency-import-check error
 
 test: build
 	@echo "testing..."
