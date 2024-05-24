@@ -9,8 +9,6 @@
 #ifndef LLDB_API_SBCOMMANDINTERPRETER_H
 #define LLDB_API_SBCOMMANDINTERPRETER_H
 
-#include <memory>
-
 #include "SBDebugger.h"
 #include "SBCommandReturnObject.h"
 

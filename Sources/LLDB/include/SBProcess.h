@@ -9,7 +9,6 @@
 #ifndef LLDB_API_SBPROCESS_H
 #define LLDB_API_SBPROCESS_H
 
-#include <cstdio>
 #include "lldb-types.h"
 
 namespace lldb {
