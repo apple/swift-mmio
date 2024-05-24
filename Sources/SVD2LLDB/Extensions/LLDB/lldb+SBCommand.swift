@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import CLLDB
+import LLDB
 
 extension Array where Element == String {
   init(_ arguments: lldb.SBCommandRawArguments?) {

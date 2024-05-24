@@ -130,7 +130,8 @@ var package = Package(
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
-  ]
+  ],
+  cxxLanguageStandard: .cxx11
 )
 
 // Replace these with a native SPM feature flags if/when supported.
@@ -154,31 +155,55 @@ if featureIsEnabled(named: interposable, override: nil) {
   }
 }
 
-let svd2lldb = "FEATURE_SVD2LLDB"
-if featureIsEnabled(named: svd2lldb, override: nil) {
-  package.targets += [
-    .target(name: "CLLDB"),
-    .target(
-      name: "SVD2LLDB",
-      dependencies: [
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        "CLLDB",
-        "SVD",
-      ],
-      swiftSettings: [.interoperabilityMode(.Cxx)],
-      linkerSettings: [.linkedFramework("LLDB")]),
-    .testTarget(
-      name: "SVD2LLDBTests",
-      dependencies: ["SVD2LLDB"],
-      swiftSettings: [.interoperabilityMode(.Cxx)]),
-  ]
+let externalSymbols = [
+  "__ZN4lldb10SBDebugger17GetSelectedTargetEv",
+  "__ZN4lldb10SBDebugger21GetCommandInterpreterEv",
+  "__ZN4lldb10SBDebuggerC1ERKS0_",
+  "__ZN4lldb10SBDebuggerD1Ev",
+  "__ZN4lldb20SBCommandInterpreter19AddMultiwordCommandEPKcS2_",
+  "__ZN4lldb20SBCommandInterpreterD1Ev",
+  "__ZN4lldb21SBCommandReturnObject10PutCStringEPKci",
+  "__ZN4lldb21SBCommandReturnObject13AppendWarningEPKc",
+  "__ZN4lldb21SBCommandReturnObject8SetErrorEPKc",
+  "__ZN4lldb21SBCommandReturnObjectC1ERKS0_",
+  "__ZN4lldb21SBCommandReturnObjectD1Ev",
+  "__ZN4lldb7SBError8SetErrorEjNS_9ErrorTypeE",
+  "__ZN4lldb7SBErrorC1ERKS0_",
+  "__ZN4lldb7SBErrorC1Ev",
+  "__ZN4lldb7SBErrorD1Ev",
+  "__ZN4lldb8SBTarget10GetProcessEv",
+  "__ZN4lldb8SBTargetD1Ev",
+  "__ZN4lldb9SBCommand10AddCommandEPKcPNS_24SBCommandPluginInterfaceES2_S2_S2_",
+  "__ZN4lldb9SBProcess10ReadMemoryEyPvmRNS_7SBErrorE",
+  "__ZN4lldb9SBProcess11WriteMemoryEyPKvmRNS_7SBErrorE",
+  "__ZN4lldb9SBProcessD1Ev",
+  "__ZNK4lldb7SBError10GetCStringEv",
+  "__ZNK4lldb7SBError7IsValidEv",
+].flatMap { ["-Xlinker", "-U", "-Xlinker", $0] }
 
-  package.products.append(
-    .library(
-      name: "SVD2LLDB",
-      type: .dynamic,
-      targets: ["SVD2LLDB"]))
-}
+package.targets += [
+  .target(name: "LLDB"),
+  .target(
+    name: "SVD2LLDB",
+    dependencies: [
+      .product(name: "ArgumentParser", package: "swift-argument-parser"),
+      "LLDB",
+      "SVD",
+    ],
+    swiftSettings: [.interoperabilityMode(.Cxx)],
+    linkerSettings: [.unsafeFlags(externalSymbols)]),
+  .testTarget(
+    name: "SVD2LLDBTests",
+    dependencies: ["SVD2LLDB"],
+    swiftSettings: [.interoperabilityMode(.Cxx)],
+    linkerSettings: [.unsafeFlags([ ])]),
+]
+
+package.products.append(
+  .library(
+    name: "SVD2LLDB",
+    type: .dynamic,
+    targets: ["SVD2LLDB"]))
 
 // Package API Extensions
 func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {

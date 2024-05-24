@@ -40,7 +40,7 @@ For example, the Swift.org toolchains for macOS include LLDB.framework with head
   >
   > ```c
   > /path/to/swift-mmio/Sources/CLLDB/include/CLLDB.h:13:10:
-  > #include <LLDB/LLDB.h>
+  > #include "LLDB.h"
   >          ╰─ error: 'LLDB/LLDB.h' file not found
   > ```
 

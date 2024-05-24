@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import CLLDB
+import LLDB
 
 extension lldb.SBError: CustomStringConvertible {
   @_documentation(visibility: internal)
