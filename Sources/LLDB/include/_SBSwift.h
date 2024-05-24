@@ -10,7 +10,8 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include "LLDB.h"
+
+#include "SBCommandInterpreter.h"
 
 namespace lldb {
   typedef char* _Nullable * _Nullable SBCommandRawArguments;

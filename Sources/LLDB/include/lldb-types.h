@@ -10,7 +10,6 @@
 #define LLDB_LLDB_TYPES_H
 
 #include "lldb-enumerations.h"
-#include "lldb-forward.h"
 
 #include <cstdint>
 

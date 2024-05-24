@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------*- h -*-===//
+//===------------------------------------------------------------*- cpp -*-===//
 //
 // This source file is part of the Swift MMIO open source project
 //
@@ -9,5 +9,5 @@
 //
 //===----------------------------------------------------------------------===//
 
-// This file is intentionally left empty to Swift Package Manager considers it
+// This file is intentionally left empty so Swift Package Manager considers it
 // to be a C++ target.

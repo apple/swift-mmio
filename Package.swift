@@ -155,31 +155,15 @@ if featureIsEnabled(named: interposable, override: nil) {
   }
 }
 
-let externalSymbols = [
-  "__ZN4lldb10SBDebugger17GetSelectedTargetEv",
-  "__ZN4lldb10SBDebugger21GetCommandInterpreterEv",
-  "__ZN4lldb10SBDebuggerC1ERKS0_",
-  "__ZN4lldb10SBDebuggerD1Ev",
-  "__ZN4lldb20SBCommandInterpreter19AddMultiwordCommandEPKcS2_",
-  "__ZN4lldb20SBCommandInterpreterD1Ev",
-  "__ZN4lldb21SBCommandReturnObject10PutCStringEPKci",
-  "__ZN4lldb21SBCommandReturnObject13AppendWarningEPKc",
-  "__ZN4lldb21SBCommandReturnObject8SetErrorEPKc",
-  "__ZN4lldb21SBCommandReturnObjectC1ERKS0_",
-  "__ZN4lldb21SBCommandReturnObjectD1Ev",
-  "__ZN4lldb7SBError8SetErrorEjNS_9ErrorTypeE",
-  "__ZN4lldb7SBErrorC1ERKS0_",
-  "__ZN4lldb7SBErrorC1Ev",
-  "__ZN4lldb7SBErrorD1Ev",
-  "__ZN4lldb8SBTarget10GetProcessEv",
-  "__ZN4lldb8SBTargetD1Ev",
-  "__ZN4lldb9SBCommand10AddCommandEPKcPNS_24SBCommandPluginInterfaceES2_S2_S2_",
-  "__ZN4lldb9SBProcess10ReadMemoryEyPvmRNS_7SBErrorE",
-  "__ZN4lldb9SBProcess11WriteMemoryEyPKvmRNS_7SBErrorE",
-  "__ZN4lldb9SBProcessD1Ev",
-  "__ZNK4lldb7SBError10GetCStringEv",
-  "__ZNK4lldb7SBError7IsValidEv",
-].flatMap { ["-Xlinker", "-U", "-Xlinker", $0] }
+let symbolsURL = URL(fileURLWithPath: #file)
+  .deletingLastPathComponent()
+  .appendingPathComponent("Sources")
+  .appendingPathComponent("LLDB")
+  .appendingPathComponent("Symbols.txt")
+let symbols = try String(contentsOf: symbolsURL)
+  .split(separator: "\n")
+  .filter { !$0.hasPrefix("#") }
+let linkerFlags = symbols.flatMap { ["-Xlinker", "-U", "-Xlinker", String($0)] }
 
 package.targets += [
   .target(name: "LLDB"),
@@ -191,12 +175,11 @@ package.targets += [
       "SVD",
     ],
     swiftSettings: [.interoperabilityMode(.Cxx)],
-    linkerSettings: [.unsafeFlags(externalSymbols)]),
+    linkerSettings: [.unsafeFlags(linkerFlags)]),
   .testTarget(
     name: "SVD2LLDBTests",
     dependencies: ["SVD2LLDB"],
-    swiftSettings: [.interoperabilityMode(.Cxx)],
-    linkerSettings: [.unsafeFlags([ ])]),
+    swiftSettings: [.interoperabilityMode(.Cxx)]),
 ]
 
 package.products.append(
