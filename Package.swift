@@ -131,8 +131,7 @@ var package = Package(
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
   ],
-  cxxLanguageStandard: .cxx11
-)
+  cxxLanguageStandard: .cxx11)
 
 // Replace these with a native SPM feature flags if/when supported.
 let interposable = "FEATURE_INTERPOSABLE"
@@ -161,10 +160,10 @@ if featureIsEnabled(named: svd2lldb, override: nil) {
     .deletingLastPathComponent()
     .appendingPathComponent("Sources")
     .appendingPathComponent("LLDB")
-    .appendingPathComponent("Symbols.txt")
+    .appendingPathComponent("LLDB.cpp")
   let linkerFlags = try String(contentsOf: symbolsURL)
     .split(separator: "\n")
-    .filter { !$0.hasPrefix("#") }
+    .filter { $0.hasPrefix("__") }
     .flatMap { ["-Xlinker", "-U", "-Xlinker", String($0)] }
 
   package.targets += [

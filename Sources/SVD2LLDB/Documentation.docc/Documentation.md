@@ -39,7 +39,6 @@ Contributions and feedback are welcome! Please refer to the [Contribution Guidel
 
 ### Getting Started
 
-- <doc:BuildingSVD2LLDB>
 - <doc:UsingSVD2LLDB>
 
 ### Commands
