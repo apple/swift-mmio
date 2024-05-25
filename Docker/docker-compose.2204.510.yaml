@@ -6,9 +6,9 @@ services:
     image: swift-mmio:22.04-5.10
     build:
       args:
-        namespace: "swiftlang/swift"
+        namespace: "swift"
         ubuntu_version: "jammy"
-        swift_version: "nightly-5.10"
+        swift_version: "5.10"
 
   soundness:
     image: swift-mmio:22.04-5.10
