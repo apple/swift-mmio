@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIO
+import MMIOInterposable
 import MMIOUtilities
 
 struct MMIOTracingInterposerEvent {

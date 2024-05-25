@@ -11,7 +11,7 @@
 
 import XCTest
 
-@testable import MMIO
+@testable import MMIOInterposable
 
 final class MMIOInterposableTests: XCTestCase {
   @RegisterBlock
