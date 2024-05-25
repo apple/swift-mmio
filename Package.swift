@@ -155,7 +155,7 @@ if featureIsEnabled(named: interposable, override: nil) {
 }
 
 let svd2lldb = "FEATURE_SVD2LLDB"
-if featureIsEnabled(named: svd2lldb, override: nil) {
+if featureIsEnabled(named: svd2lldb, override: Context.environment["SPI_GENERATE_DOCS"] == "1") {
   let symbolsURL = URL(fileURLWithPath: #file)
     .deletingLastPathComponent()
     .appendingPathComponent("Sources")
