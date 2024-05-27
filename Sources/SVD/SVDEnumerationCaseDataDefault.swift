@@ -17,5 +17,5 @@ import FoundationXML
 
 @XMLElement
 public struct SVDEnumerationCaseDataDefault {
-  var isDefault: Bool
+  public var isDefault: Bool
 }

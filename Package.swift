@@ -1,10 +1,9 @@
 // swift-tools-version: 5.9
 
 import CompilerPluginSupport
-import Foundation
 import PackageDescription
 
-var package = Package(
+let package = Package(
   name: "swift-mmio",
   platforms: [
     .macOS(.v10_15),
@@ -19,6 +18,8 @@ var package = Package(
     .library(name: "MMIO", targets: ["MMIO"]),
 
     // SVD
+    .library(name: "SVD", targets: ["SVD"]),
+    .library(name: "SVD2LLDB", type: .dynamic, targets: ["SVD2LLDB"]),
     .executable(
       // FIXME: rdar://112530586
       // XPM skips build plugin if product and target names are not identical.
@@ -26,12 +27,11 @@ var package = Package(
       name: "SVD2Swift",
       targets: ["SVD2Swift"]),
     .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
-    .library(name: "SVD", targets: ["SVD"]),
   ],
   dependencies: [
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
-      from: "1.3.0"),
+      from: "1.4.0"),
     .package(
       url: "https://github.com/apple/swift-syntax.git",
       from: "509.0.2"),
@@ -103,6 +103,20 @@ var package = Package(
       name: "SVDTests",
       dependencies: ["MMIOUtilities", "SVD"]),
 
+    .target(name: "CLLDB"),
+    .target(
+      name: "SVD2LLDB",
+      dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        "CLLDB",
+        "SVD",
+      ],
+      swiftSettings: [.interoperabilityMode(.Cxx)]),
+    .testTarget(
+      name: "SVD2LLDBTests",
+      dependencies: ["SVD2LLDB"],
+      swiftSettings: [.interoperabilityMode(.Cxx)]),
+
     .executableTarget(
       name: "SVD2Swift",
       dependencies: [
@@ -141,7 +155,8 @@ var package = Package(
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
-  ])
+  ],
+  cxxLanguageStandard: .cxx11)
 
 #if compiler(>=6.0)
 #warning("Skipping SVD2SwiftTests, see apple/swift-package-manager#7596.")
@@ -150,9 +165,23 @@ package.targets = package.targets.filter { $0.name != "SVD2SwiftTests" }
 package.targets = package.targets.filter { $0.name != "SVD2SwiftPluginTests" }
 #endif
 
+#if compiler(<6.0) && os(Linux)
+#warning("Skipping SVD2LLDBTests, see apple/swift-package-manager#6990")
+// Note: Additional needed bug fixes were only merged to SwiftPM 6.0.
+package.targets = package.targets.filter { $0.name != "SVD2LLDBTests" }
+#endif
+
+let svd2lldb = "FEATURE_SVD2LLDB"
+if featureIsEnabled(named: svd2lldb, override: nil) {
+  let target = package.targets.first { $0.name == "SVD2LLDB" }
+  guard let target = target else { fatalError("Manifest inconsistency") }
+  target.linkerSettings = [.linkedFramework("LLDB")]
+}
+
+// Package API Extensions
 func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
   let key = "SWIFT_MMIO_\(featureName)"
-  let environment = ProcessInfo.processInfo.environment[key] != nil
+  let environment = Context.environment[key] != nil
   return override ?? environment
 }
 

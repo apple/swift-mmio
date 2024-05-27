@@ -150,10 +150,18 @@ extension Parser where Input == Substring, Output: FixedWidthInteger {
       var value = Output(0)
       var digitsConsumed = false
       loop: while !input.isEmpty {
-        guard
-          let digit = Parser.digit(base: base).run(&input),
-          value.incrementalParseAppend(digit: digit, base: base)
+        // Attempt to parse a digit.
+        guard let digit = Parser.digit(base: base).run(&input)
         else { break loop }
+
+        // Add the digit to the parsed value.
+        guard value.incrementalParseAppend(digit: digit, base: base)
+        else {
+          // Exit early on overflow.
+          input = original
+          return nil
+        }
+
         digitsConsumed = true
         while input.first?.asciiValue == UInt8(ascii: "_") {
           _ = input.removeFirst()
@@ -184,7 +192,9 @@ enum ScaledNonNegativeIntegerPrefix: String, CaseIterable {
 }
 
 extension Parser where Input == Substring, Output: FixedWidthInteger {
-  public static func scaledNonNegativeInteger(_: Output.Type = Output.self) -> Self {
+  public static func scaledNonNegativeInteger(
+    _: Output.Type = Output.self
+  ) -> Self {
     Self { input in
       let original = input
 
@@ -199,10 +209,17 @@ extension Parser where Input == Substring, Output: FixedWidthInteger {
       var value = Output(0)
       var digitsConsumed = false
       loop: while !input.isEmpty {
-        guard
-          let digit = Parser.digit(base: base).run(&input),
-          value.incrementalParseAppend(digit: digit, base: base)
+        // Attempt to parse a digit.
+        guard let digit = Parser.digit(base: base).run(&input)
         else { break loop }
+
+        // Add the digit to the parsed value.
+        guard value.incrementalParseAppend(digit: digit, base: base)
+        else {
+          // Exit early on overflow.
+          input = original
+          return nil
+        }
         digitsConsumed = true
       }
 
@@ -285,27 +302,38 @@ extension Parser where Input == Substring {
         .cases().run(&input)?.base ?? .decimal
 
       var value = Integer(0)
-      var mask = Integer(0)
+      var mask = Integer(0) &- 1
       var digitsConsumed = false
       loop: while !input.isEmpty {
         switch base {
         case .binary:
-          guard
-            let digit = Parser.binaryOrAnyDigit(Integer.self).run(&input),
-            value.incrementalParseAppend(digit: digit.0, base: .binary),
-            mask.incrementalParseAppend(digit: digit.1, base: .binary)
+          // Attempt to parse a digit.
+          guard let digit = Parser.binaryOrAnyDigit(Integer.self).run(&input)
           else { break loop }
+
+          // Add the digit to the parsed value.
+          guard value.incrementalParseAppend(digit: digit.0, base: base)
+          else {
+            // Exit early on overflow.
+            input = original
+            return nil
+          }
+
+          mask = mask << 1 | digit.1
         default:
-          guard
-            let digit = Parser<Input, Integer>.digit(base: base).run(&input),
-            value.incrementalParseAppend(digit: digit, base: base)
+          // Attempt to parse a digit.
+          guard let digit = Parser<Input, Integer>.digit(base: base).run(&input)
           else { break loop }
+
+          // Add the digit to the parsed value.
+          guard value.incrementalParseAppend(digit: digit, base: base)
+          else {
+            // Exit early on overflow.
+            input = original
+            return nil
+          }
         }
         digitsConsumed = true
-      }
-
-      if base != .binary {
-        mask = Integer(0) &- 1
       }
 
       guard digitsConsumed else {

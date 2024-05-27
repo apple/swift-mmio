@@ -18,7 +18,7 @@ import FoundationXML
 
 @XMLElement
 public struct SVDEnumerationCaseDataValue {
-  var value: SVDEnumeratedValueDataType
+  public var value: SVDEnumeratedValueDataType
 }
 
 extension SVDEnumerationCaseDataValue {
@@ -27,8 +27,8 @@ extension SVDEnumerationCaseDataValue {
 
 /// literal format: [+]?(((0x|0X)[0-9a-fA-F]+)|([0-9]+)|((#|0b)[01xX]+))
 public struct SVDEnumeratedValueDataType {
-  var value: UInt64
-  var mask: UInt64
+  public var value: UInt64
+  public var mask: UInt64
 }
 
 extension SVDEnumeratedValueDataType: XMLNodeInitializable {

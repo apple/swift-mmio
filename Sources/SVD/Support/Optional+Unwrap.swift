@@ -9,8 +9,18 @@
 //
 //===----------------------------------------------------------------------===//
 
+struct OptionalUnwrappingError {}
+
+extension OptionalUnwrappingError: CustomStringConvertible {
+  var description: String {
+    "Unexpectedly found nil while unwrapping an Optional value"
+  }
+}
+
+extension OptionalUnwrappingError: Error {}
+
 extension Optional {
-  func unwrap(or error: Error) throws -> Wrapped {
+  func unwrap(or error: Error = OptionalUnwrappingError()) throws -> Wrapped {
     guard let self = self else { throw error }
     return self
   }

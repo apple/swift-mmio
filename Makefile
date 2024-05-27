@@ -11,7 +11,7 @@
 
 CONFIGURATION = debug
 SWIFT_FORMAT_CONFIGURATION := SupportingFiles/Tools/swift-format/.swift-format
-SKIP_LINT=
+SKIP_LINT =
 
 .PHONY: all lint format build test clean
 all: test
