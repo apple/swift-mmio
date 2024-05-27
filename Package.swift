@@ -29,8 +29,12 @@ var package = Package(
     .library(name: "SVD", targets: ["SVD"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
-    .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.2"),
+    .package(
+      url: "https://github.com/apple/swift-argument-parser.git",
+      from: "1.3.0"),
+    .package(
+      url: "https://github.com/apple/swift-syntax.git",
+      from: "509.0.2"),
   ],
   targets: [
     // MMIO
@@ -138,6 +142,13 @@ var package = Package(
         .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
       ]),
   ])
+
+#if compiler(>=6.0)
+#warning("Skipping SVD2SwiftTests, see apple/swift-package-manager#7596.")
+package.targets = package.targets.filter { $0.name != "SVD2SwiftTests" }
+#warning("Skipping SVD2SwiftPluginTests, see apple/swift-package-manager#7597.")
+package.targets = package.targets.filter { $0.name != "SVD2SwiftPluginTests" }
+#endif
 
 func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
   let key = "SWIFT_MMIO_\(featureName)"
