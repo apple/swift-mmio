@@ -3,7 +3,7 @@
 import CompilerPluginSupport
 import PackageDescription
 
-var package = Package(
+let package = Package(
   name: "swift-mmio",
   platforms: [
     .macOS(.v10_15),
@@ -31,11 +31,7 @@ var package = Package(
   dependencies: [
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
-<<<<<<< HEAD
-      from: "1.3.0"),
-=======
       from: "1.4.0"),
->>>>>>> 20173e4 (Add SVD2LLDB LLDB plugin)
     .package(
       url: "https://github.com/apple/swift-syntax.git",
       from: "509.0.2"),
@@ -167,6 +163,12 @@ var package = Package(
 package.targets = package.targets.filter { $0.name != "SVD2SwiftTests" }
 #warning("Skipping SVD2SwiftPluginTests, see apple/swift-package-manager#7597.")
 package.targets = package.targets.filter { $0.name != "SVD2SwiftPluginTests" }
+#endif
+
+#if compiler(<6.0) && os(Linux)
+#warning("Skipping SVD2LLDBTests, see apple/swift-package-manager#6990")
+// Note: Additional needed bug fixes were only merged to SwiftPM 6.0.
+package.targets = package.targets.filter { $0.name != "SVD2LLDBTests" }
 #endif
 
 let svd2lldb = "FEATURE_SVD2LLDB"
