@@ -35,7 +35,7 @@ Second, add the `MMIO` library to your target's dependencies and the `SVD2SwiftP
 
 Next, `SVD2SwiftPlugin` requires two accompanying files in order to generate code.
 
-The first is an SVD file, see <doc:Documentation#Find-your-device's-SVD-file> for suggestions on how to locate the SVD file for your device. The second is an "svd2swift.json" configuration file. `SVD2SwiftPlugin` uses to this file to determine what content to generate and allows you to customize the generated code. 
+The first is an SVD file, see <doc:SVD2Swift#Find-your-device's-SVD-file> for suggestions on how to locate the SVD file for your device. The second is an "svd2swift.json" configuration file. `SVD2SwiftPlugin` uses to this file to determine what content to generate and allows you to customize the generated code. 
 
 Both files should be placed in your target's "Sources" directory. For example, using the "Application" target from above and a hypothetical "device.svd" file, the file structure should look like:
 
