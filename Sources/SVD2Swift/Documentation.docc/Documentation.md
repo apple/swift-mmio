@@ -1,8 +1,4 @@
-# SVD2Swift
-
-@Metadata {
-   @TechnologyRoot
-}
+# ``SVD2Swift``
 
 Generate Swift register interfaces from SVD files. 
 

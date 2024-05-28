@@ -42,7 +42,7 @@ cp $(swift build -c release --show-bin-path)/SVD2Swift ~/bin
 
 ### Use the tool
 
-Before using `svd2swift`, you need an SVD file, see <doc:Documentation#Find-your-device's-SVD-file> for suggestions on how to locate the SVD file for your device. 
+Before using `svd2swift`, you need an SVD file, see <doc:SVD2Swift#Find-your-device's-SVD-file> for suggestions on how to locate the SVD file for your device. 
 
 With `svd2swift` now built you can use it to generate a register interface for your device. For example, using a hypothetical "device.svd" file, the simplest usage of `svd2swift` is:
 
