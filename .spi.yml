@@ -5,4 +5,7 @@ builder:
       - MMIO
       - SVD
       - SVD2LLDB
+    - documentation_targets:
       - SVD2Swift
+      custom_documentation_parameters:
+      - "--minimum-access-level public"
