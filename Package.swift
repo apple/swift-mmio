@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS(.v10_15),
+    .macOS(.v14),
     .iOS(.v13),
     .tvOS(.v13),
     .watchOS(.v6),
@@ -139,6 +139,10 @@ let package = Package(
       // Remove this exclude list when Swift Package Manager bug is resolved.
       exclude: ["ARM_Sample.svd", "svd2swift.json"],
       plugins: ["SVD2SwiftPlugin"]),
+
+    .executableTarget(
+      name: "SVDExplorer",
+      dependencies: ["SVD"]),
 
     .macro(
       name: "SVDMacros",
