@@ -9,10 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SVD
-
 extension SVDBitRange {
-  var range: Range<UInt64> {
+  package var range: Range<UInt64> {
     switch self {
     case .lsbMsb(let range):
       range.lsb..<range.msb + 1

@@ -32,8 +32,12 @@ struct LoadCommand: SVD2LLDBCommand {
     let url = URL(fileURLWithPath: self.path)
     // Load input file from disk.
     let data = try Data(contentsOf: url)
-    // Decode raw data into SVD types and save into plugin memory.
-    context.device = try SVDDevice(svdData: data)
+    // Decode raw data into SVD types.
+    var device = try SVDDevice(data: data)
+    // Inflate the decoded device.
+    try device.inflate()
+    // Save the device into plugin memory
+    context.device = device
     // Report success to the user.
     result.output("Loaded SVD file: “\(url.lastPathComponent)”.")
     // Return success.

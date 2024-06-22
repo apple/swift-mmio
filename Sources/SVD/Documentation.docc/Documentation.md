@@ -42,13 +42,13 @@ Finally, `import SVD` in your Swift source code.
 import SVD
 
 // Load a file from a url.
-let svdData = try Data(contentsOf: ...)
+let data = try Data(contentsOf: ...)
 
 // Decode raw data into SVD types.
-let svdDevice = try SVDDevice(svdData: svdData)
+let device = try SVDDevice(data: data)
 
 // Print the device's name
-print(svdDevice.name)
+print(device.name)
 ```
 
 ## Contributions

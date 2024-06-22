@@ -84,18 +84,3 @@ public struct SVDDevice {
   // /// the silicon vendor to specify a schema for this section.
   // var vendorExtensions: [AnyHashable: Any]
 }
-
-extension SVDDevice {
-  struct SVDDecodingError: Error, CustomStringConvertible {
-    var description: String
-  }
-
-  public init(svdData: Data) throws {
-    let document = try XMLDocument(data: svdData)
-    let root =
-      try document
-      .rootElement()
-      .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
-    try self.init(root)
-  }
-}

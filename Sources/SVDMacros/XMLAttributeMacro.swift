@@ -12,7 +12,7 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-enum XMLInlineElementMacro: PeerMacro {
+enum XMLAttributeMacro: PeerMacro {
   static func expansion(
     of node: AttributeSyntax,
     providingPeersOf declaration: some DeclSyntaxProtocol,

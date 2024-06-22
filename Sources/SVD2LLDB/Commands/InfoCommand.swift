@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+import MMIOUtilities
 import SVD
 
 struct InfoCommand: SVD2LLDBCommand {
