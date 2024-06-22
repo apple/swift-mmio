@@ -158,13 +158,6 @@ let package = Package(
   ],
   cxxLanguageStandard: .cxx11)
 
-#if compiler(>=6.0)
-#warning("Skipping SVD2SwiftTests, see apple/swift-package-manager#7596.")
-package.targets = package.targets.filter { $0.name != "SVD2SwiftTests" }
-#warning("Skipping SVD2SwiftPluginTests, see apple/swift-package-manager#7597.")
-package.targets = package.targets.filter { $0.name != "SVD2SwiftPluginTests" }
-#endif
-
 #if compiler(<6.0) && os(Linux)
 #warning("Skipping SVD2LLDBTests, see apple/swift-package-manager#6990")
 // Note: Additional needed bug fixes were only merged to SwiftPM 6.0.
