@@ -33,7 +33,7 @@ let package = Package(
       url: "https://github.com/apple/swift-argument-parser.git",
       from: "1.4.0"),
     .package(
-      url: "https://github.com/apple/swift-syntax.git",
+      url: "https://github.com/swiftlang/swift-syntax.git",
       from: "509.0.2"),
   ],
   targets: [
@@ -134,7 +134,7 @@ let package = Package(
     .testTarget(
       name: "SVD2SwiftPluginTests",
       dependencies: ["MMIO"],
-      // FIXME: rdar://113256834,apple/swift-package-manager#6935
+      // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
       // SPM 5.9 produces warnings for plugin input files.
       // Remove this exclude list when Swift Package Manager bug is resolved.
       exclude: ["ARM_Sample.svd", "svd2swift.json"],

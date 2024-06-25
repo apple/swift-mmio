@@ -37,7 +37,7 @@ extension RegisterBlockMacro: MMIOMemberMacro {
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    // FIXME: https://github.com/apple/swift-syntax/pull/2366
+    // FIXME: https://github.com/swiftlang/swift-syntax/pull/2366
     // swift-format-ignore: NeverForceUnwrap
     let declaration = declaration as! DeclSyntaxProtocol
     // Can only applied to structs.

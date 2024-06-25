@@ -65,7 +65,7 @@ final class BitFieldMacroTests: XCTestCase {
         func f() {}
         """,
       diagnostics: [
-        // FIXME: https://github.com/apple/swift-syntax/issues/2207
+        // FIXME: https://github.com/swiftlang/swift-syntax/issues/2207
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -86,7 +86,7 @@ final class BitFieldMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 1,
           column: 20,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "inout ",
           fixIts: [
             .init(message: "Replace 'inout' with 'var'")
@@ -95,7 +95,7 @@ final class BitFieldMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 2,
           column: 20,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "let ",
           fixIts: [
             .init(message: "Replace 'let' with 'var'")
