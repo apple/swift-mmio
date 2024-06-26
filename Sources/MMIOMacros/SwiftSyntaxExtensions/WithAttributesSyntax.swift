@@ -95,7 +95,7 @@ extension FixIt {
   static func insertMacro(
     node: some WithAttributesSyntax, _ macro: any (ParsableMacro.Type)
   ) -> FixIt {
-    // FIXME: https://github.com/apple/swift-syntax/issues/2205
+    // FIXME: https://github.com/swiftlang/swift-syntax/issues/2205
     var newNode = node
     newNode.attributes.append(macro.attributeWithPlaceholders)
     return .replace(

@@ -9,13 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-// FIXME: rdar://113256834,apple/swift-package-manager#6935
+// FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
 // Remove import
 import Foundation
 import PackagePlugin
 
 extension SourceModuleTarget {
-  // FIXME: rdar://113256834,apple/swift-package-manager#6935
+  // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
   // Return `File` and not `Path`
   func sourceFile(kind: FileKind) throws -> Path {
     let files = self
@@ -31,11 +31,11 @@ extension SourceModuleTarget {
 
     switch files.count {
     case 0:
-      // FIXME: rdar://113256834,apple/swift-package-manager#6935
+      // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
       // throw SVD2SwiftPluginError.missingFile(self, kind)
       return try _sourceFile(kind: kind)
     case 1:
-      // FIXME: rdar://113256834,apple/swift-package-manager#6935
+      // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
       // return files[0]
       return files[0].path
     default:
@@ -43,7 +43,7 @@ extension SourceModuleTarget {
     }
   }
 
-  // FIXME: rdar://113256834,apple/swift-package-manager#6935
+  // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
   // Remove this function
   private func _sourceFile(kind: FileKind) throws -> Path {
     let targetDirectoryURL = URL(fileURLWithPath: self.directory.string)

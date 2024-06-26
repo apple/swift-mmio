@@ -42,19 +42,19 @@ final class RegisterBlockMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 1,
           column: 16,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "actor "),
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 2,
           column: 16,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "class "),
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 3,
           column: 16,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "enum "),
       ],
       macros: Self.macros,
@@ -70,7 +70,7 @@ final class RegisterBlockMacroTests: XCTestCase {
         var v: Int
         """,
       diagnostics: [
-        // FIXME: https://github.com/apple/swift-syntax/issues/2206
+        // FIXME: https://github.com/swiftlang/swift-syntax/issues/2206
       ],
       macros: Self.macros)
   }

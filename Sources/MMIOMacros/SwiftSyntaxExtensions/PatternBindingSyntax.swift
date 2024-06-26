@@ -92,7 +92,7 @@ extension ErrorDiagnostic {
 
 extension FixIt {
   static func insertBindingType(node: PatternBindingSyntax) -> FixIt {
-    // FIXME: https://github.com/apple/swift-syntax/issues/2205
+    // FIXME: https://github.com/swiftlang/swift-syntax/issues/2205
     .replace(
       message: MacroExpansionFixItMessage(
         "Insert explicit type annotation"),

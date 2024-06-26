@@ -119,7 +119,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "@A ")
       ],
       macros: ["A": A.self])
@@ -136,7 +136,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "@A() ")
       ],
       macros: ["A": A.self])
@@ -395,7 +395,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "@A ")
       ],
       macros: ["A": A.self])
@@ -413,7 +413,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/apple/swift-syntax/pull/2213
+          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
           highlight: "@A() ")
       ],
       macros: ["A": A.self])
