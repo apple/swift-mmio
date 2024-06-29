@@ -21,7 +21,9 @@ extension SVD2SwiftTests {
     description: "An example device",
     addressUnitBits: 8,
     width: 32,
-    registerProperties: .init(),
+    registerProperties: .init(
+      size: 32,
+      access: .readWrite),
     peripherals: .init(
       peripheral: [
         .init(
@@ -79,7 +81,7 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
@@ -127,7 +129,7 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral {
         \t/// An example register
-        \t@Register(bitWidth: 0)
+        \t@Register(bitWidth: 32)
         \tstruct ExampleRegister {
         \t\t/// ExampleField
         \t\t@ReadWrite(bits: 4..<11)
@@ -175,7 +177,7 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           public struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
@@ -227,7 +229,7 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
@@ -280,7 +282,7 @@ extension SVD2SwiftTests {
 
         extension ExampleDevice.ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
@@ -328,7 +330,7 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
@@ -381,7 +383,7 @@ extension SVD2SwiftTests {
 
         extension ExampleDevice.ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
@@ -434,7 +436,7 @@ extension SVD2SwiftTests {
 
         extension CustomDevice.ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// ExampleField
             @ReadWrite(bits: 4..<11)
