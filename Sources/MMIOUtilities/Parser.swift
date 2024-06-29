@@ -16,10 +16,10 @@
 // by Brandon Williams and Stephen Celis which served as a great basis to
 // understand performant and ergonomic parsing.
 
-public struct Parser<Input, Output> {
-  public let run: (inout Input) -> Output?
+public struct Parser<Input, Output>: Sendable {
+  public let run: @Sendable (inout Input) -> Output?
 
-  public init(run: @escaping (inout Input) -> Output?) {
+  public init(run: @escaping @Sendable (inout Input) -> Output?) {
     self.run = run
   }
 }
@@ -49,6 +49,7 @@ where
   Input: Collection,
   Input.SubSequence == Input,
   Input.Element: Equatable,
+  Input.SubSequence: Sendable,
   Output == Void
 {
   public static func dropPrefix(_ prefix: Input.SubSequence) -> Self {
@@ -65,6 +66,7 @@ where
   Input: Collection,
   Input.SubSequence == Input,
   Input.Element: Equatable,
+  Input.Element: Sendable,
   Output == Input
 {
   public static func prefix(upTo element: Input.Element) -> Self {
@@ -94,7 +96,7 @@ public func zip<Input, A, B>(
 }
 
 extension Parser {
-  public func map<T>(_ f: @escaping (Output) -> T) -> Parser<Input, T> {
+  public func map<T>(_ f: @escaping @Sendable (Output) -> T) -> Parser<Input, T> {
     .init { input in self.run(&input).map(f) }
   }
 }

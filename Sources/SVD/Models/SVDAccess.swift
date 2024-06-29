@@ -33,6 +33,8 @@ public enum SVDAccess {
   case readWriteOnce
 }
 
+extension SVDAccess: Sendable {}
+
 extension SVDAccess: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
@@ -48,7 +50,7 @@ extension SVDAccess: XMLNodeInitializable {
     case "write": self = .writeOnly
     // FIXME: nrf9160
     case "read-writeonce": self = .readWriteOnce
-    default: throw Errors.unknownValue(stringValue)
+    default: throw XMLError.unknownValue(stringValue)
     }
   }
 }

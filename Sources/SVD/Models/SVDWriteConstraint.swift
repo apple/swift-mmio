@@ -50,7 +50,7 @@ extension SVDWriteConstraint: XMLElementInitializable {
     } else if let value = try? element.decode(SVDWriteConstraintRange.self, fromChild: "range") {
       self = .range(value)
     } else {
-      throw Errors.unknownElement(element)
+      throw XMLError.unknownElement(element)
     }
   }
 }

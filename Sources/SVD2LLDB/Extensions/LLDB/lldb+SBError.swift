@@ -23,3 +23,5 @@ extension lldb.SBError: CustomStringConvertible {
 }
 
 extension lldb.SBError: Error {}
+
+extension lldb.SBError: @unchecked Sendable {}

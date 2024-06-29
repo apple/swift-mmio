@@ -81,8 +81,6 @@ public struct RegisterBlockScalarMemberMacro {
   var offset: Int
 }
 
-extension RegisterBlockScalarMemberMacro: Sendable {}
-
 extension RegisterBlockScalarMemberMacro: ParsableMacro {
   static let baseName = "RegisterBlock"
 
@@ -127,8 +125,6 @@ public struct RegisterBlockArrayMemberMacro {
   @Argument(label: "count")
   var count: Int
 }
-
-extension RegisterBlockArrayMemberMacro: Sendable {}
 
 extension RegisterBlockArrayMemberMacro: ParsableMacro {
   static let baseName = "RegisterBlock"

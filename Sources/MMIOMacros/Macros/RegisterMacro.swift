@@ -20,8 +20,6 @@ public struct RegisterMacro {
   var bitWidth: BitWidth
 }
 
-extension RegisterMacro: Sendable {}
-
 extension RegisterMacro: ParsableMacro {
   mutating func update(
     label: String,

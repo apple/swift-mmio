@@ -30,20 +30,4 @@ public struct SVDRegisterProperties {
   public var resetMask: UInt64?
 }
 
-extension SVDRegisterProperties {
-  public static let none = SVDRegisterProperties(
-    size: nil,
-    access: nil,
-    protection: nil,
-    resetValue: nil,
-    resetMask: nil)
-
-  public func merging(_ other: Self) -> Self {
-    SVDRegisterProperties(
-      size: self.size ?? other.size,
-      access: self.access ?? other.access,
-      protection: self.protection ?? other.protection,
-      resetValue: self.resetValue ?? other.resetValue,
-      resetMask: self.resetMask ?? other.resetMask)
-  }
-}
+extension SVDRegisterProperties: Sendable {}

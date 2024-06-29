@@ -24,3 +24,5 @@ public enum SVDProtection: String {
 }
 
 extension SVDProtection: XMLNodeInitializable {}
+
+extension SVDProtection: Sendable {}

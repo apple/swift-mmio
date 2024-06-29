@@ -16,12 +16,6 @@ import MMIOUtilities
 import FoundationXML
 #endif
 
-enum Errors: Error, @unchecked Sendable {
-  case missingValue(name: String)
-  case unknownValue(String)
-  case unknownElement(XMLElement)
-}
-
 // XMLElement.child(element) -> T
 extension XMLElement {
   func decode<T>(
@@ -30,7 +24,7 @@ extension XMLElement {
   ) throws -> T where T: XMLElementInitializable {
     try self
       .decode(T?.self, fromChild: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(
@@ -49,7 +43,7 @@ extension XMLElement {
   ) throws -> [T] where T: XMLElementInitializable {
     try self
       .decode([T]?.self, fromChild: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(
@@ -72,7 +66,7 @@ extension XMLElement {
   ) throws -> T where T: XMLNodeInitializable {
     try self
       .decode(T?.self, fromChild: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(
@@ -94,7 +88,7 @@ extension XMLElement {
   ) throws -> T where T: XMLNodeInitializable {
     try self
       .decode(T?.self, fromAttribute: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(

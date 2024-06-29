@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+// Silence warnings about `Target` not being Sendable.
+@preconcurrency
 import PackagePlugin
 
 enum SVD2SwiftPluginError: Error {

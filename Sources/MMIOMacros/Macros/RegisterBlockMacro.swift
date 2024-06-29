@@ -17,8 +17,6 @@ import SwiftSyntaxMacros
 
 public struct RegisterBlockMacro {}
 
-extension RegisterBlockMacro: Sendable {}
-
 extension RegisterBlockMacro: ParsableMacro {
   mutating func update(
     label: String,
@@ -30,7 +28,7 @@ extension RegisterBlockMacro: ParsableMacro {
 }
 
 extension RegisterBlockMacro: MMIOMemberMacro {
-  static var memberMacroSuppressParsingDiagnostics: Bool = false
+  static let memberMacroSuppressParsingDiagnostics: Bool = false
 
   func expansion(
     of node: AttributeSyntax,

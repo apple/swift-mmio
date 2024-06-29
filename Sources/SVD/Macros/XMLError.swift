@@ -15,19 +15,10 @@ import Foundation
 import FoundationXML
 #endif
 
-public enum SVDEnumerationCaseData {
-  case value(SVDEnumerationCaseDataValue)
-  case isDefault(SVDEnumerationCaseDataDefault)
+enum XMLError: Error {
+  case missingValue(name: String)
+  case unknownValue(String)
+  case unknownElement(XMLElement)
 }
 
-extension SVDEnumerationCaseData: XMLElementInitializable {
-  init(_ element: XMLElement) throws {
-    if let value = try? SVDEnumerationCaseDataValue(element) {
-      self = .value(value)
-    } else if let value = try? SVDEnumerationCaseDataDefault(element) {
-      self = .isDefault(value)
-    } else {
-      throw XMLError.unknownElement(element)
-    }
-  }
-}
+extension XMLError: @unchecked Sendable {}
