@@ -10,7 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 extension MutableCollection {
-  #if swift(>=6)
   /// Iterate through a collection mutating each element.
   ///
   /// This is a workaround for Swift not having first class support for:
@@ -29,23 +28,4 @@ extension MutableCollection {
       self.formIndex(after: &currentIndex)
     }
   }
-  #else
-  /// Iterate through a collection mutating each element.
-  ///
-  /// This is a workaround for Swift not having first class support for:
-  /// ```swift
-  /// for mutating element in collection
-  /// ```
-  ///
-  /// - Parameter body: Mutating operation to perform on each element.
-  public mutating func mutatingForEach(
-    body: (inout Self.Element) throws -> Void
-  ) rethrows {
-    var currentIndex = self.startIndex
-    while currentIndex != self.endIndex {
-      try body(&self[currentIndex])
-      self.formIndex(after: &currentIndex)
-    }
-  }
-  #endif
 }
