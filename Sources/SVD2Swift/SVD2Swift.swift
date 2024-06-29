@@ -145,16 +145,13 @@ struct SVD2Swift: ParsableCommand {
 
   func run() throws {
     // Load input file from disk.
-    let svdData = try self.inputReader().read()
+    let data = try self.inputReader().read()
 
     // Decode raw data into SVD types.
-    let svdDevice = try SVDDevice(svdData: svdData)
+    var device = try SVDDevice(data: data)
 
-    // Convert decoded data into an IR for exporting.
-    var device = try Device(svdDevice: svdDevice)
-
-    // Sanitize the IR device.
-    device.sanitize()
+    // Inflate the decoded device.
+    try device.inflate()
 
     // Create export options and an output destination.
     let options = ExportOptions(

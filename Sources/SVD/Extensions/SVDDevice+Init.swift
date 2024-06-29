@@ -9,19 +9,23 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct OptionalUnwrappingError {}
+import Foundation
 
-extension OptionalUnwrappingError: CustomStringConvertible {
-  var description: String {
-    "Unexpectedly found nil while unwrapping an Optional value"
-  }
+#if canImport(FoundationXML)
+import FoundationXML
+#endif
+
+struct SVDDecodingError: Error, CustomStringConvertible {
+  var description: String
 }
 
-extension OptionalUnwrappingError: Error {}
-
-extension Optional {
-  func unwrap(or error: Error = OptionalUnwrappingError()) throws -> Wrapped {
-    guard let self = self else { throw error }
-    return self
+extension SVDDevice {
+  public init(data: Data) throws {
+    let document = try XMLDocument(data: data)
+    let root =
+      try document
+      .rootElement()
+      .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
+    try self.init(root)
   }
 }

@@ -19,7 +19,9 @@ extension SVD2SwiftTests {
     description: "An example device",
     addressUnitBits: 8,
     width: 32,
-    registerProperties: .init(),
+    registerProperties: .init(
+      size: 32,
+      access: .readWrite),
     peripherals: .init(
       peripheral: [
         .init(
@@ -90,7 +92,7 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral {
           /// An example register
-          @Register(bitWidth: 0)
+          @Register(bitWidth: 32)
           struct ExampleRegister {
             /// A
             @ReadWrite(bits: 2..<7)

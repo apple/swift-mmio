@@ -25,7 +25,8 @@ func XCTAssertSVD2SwiftOutput(
 ) {
   var output = Output.inMemory([:])
   do {
-    let device = try Device(svdDevice: svdDevice)
+    var device = svdDevice
+    try device.inflate()
     try device.export(with: options, to: &output)
   } catch {
     XCTFail(

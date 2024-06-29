@@ -69,6 +69,7 @@ final class SVDTests: XCTestCase {
     89de5cf7f999c33d818d6ea2933c16f1678c98655ca7830d53e0c76a1861ba32
     """
   let testDataSVDFilesCount = 1880
+  let testDataPassingSVDFilesCount = 1878
 
   @available(macOS 12.0, *)
   func test_decode() async throws {
@@ -94,26 +95,51 @@ final class SVDTests: XCTestCase {
         taskLimit: 8,
         priority: .high,
         operation: Self.parseSVD)
-      XCTAssertEqual(parsedSVDs, svdURLs.count, "Failed to parse all svd files")
+      XCTAssertEqual(
+        parsedSVDs,
+        self.testDataPassingSVDFilesCount,
+        "Failed to parse expected svd files")
     }
     print("Tests completed in \(time.formatted(.elapsedSeconds)).")
   }
 
+  static let knownInvalidSVDs: Set<String> = [
+    // Invalid derived-from relationships
+    "Renesas/R7FA4M1AB.svd",
+    "Renesas/R7FA4W1AD.svd",
+  ]
+
   @Sendable
   static func parseSVD(url: URL) -> Int {
-    print("Running:", url.lastPathComponent)
+    let group = url.deletingLastPathComponent().lastPathComponent
+    let chip = url.lastPathComponent
+    let svd = "\(group)/\(chip)"
+
+    print("Testing \(svd)...")
     let data: Data
     do {
       data = try Data(contentsOf: url)
     } catch {
-      XCTFail("Failed to load contents of svd at '\(url.path)': \(error)")
+      XCTFail("Failed to load contents of svd '\(svd)': \(error)")
+      return 0
+    }
+
+    var device: SVDDevice
+    do {
+      device = try SVDDevice(data: data)
+    } catch {
+      XCTFail("Failed to parse svd '\(svd)': \(error)")
       return 0
     }
 
     do {
-      _ = try SVDDevice(svdData: data)
+      try device.inflate()
     } catch {
-      XCTFail("Failed to parse svd at '\(url.path)': \(error)")
+      if Self.knownInvalidSVDs.contains(svd) {
+        print("Failed to inflate known invalid svd '\(svd)': \(error)")
+      } else {
+        XCTFail("Failed to inflate svd '\(svd)': \(error)")
+      }
       return 0
     }
 
