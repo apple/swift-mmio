@@ -38,7 +38,6 @@ extension MutableCollection {
   /// ```
   ///
   /// - Parameter body: Mutating operation to perform on each element.
-  /// - Throws: Re-throws errors thrown by `body`.
   public mutating func mutatingForEach(
     body: (inout Self.Element) throws -> Void
   ) rethrows {
