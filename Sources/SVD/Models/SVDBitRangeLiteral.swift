@@ -21,6 +21,8 @@ public struct SVDBitRangeLiteralContainer {
   public var bitRange: SVDBitRangeLiteral
 }
 
+extension SVDBitRangeLiteralContainer: Sendable {}
+
 /// A string in the format: "[<msb>:<lsb>]"
 public struct SVDBitRangeLiteral {
   public var lsb: UInt64
@@ -50,5 +52,7 @@ extension SVDBitRangeLiteral: LosslessStringConvertible {
     self.msb = msb
   }
 }
+
+extension SVDBitRangeLiteral: Sendable {}
 
 extension SVDBitRangeLiteral: XMLNodeInitializable {}

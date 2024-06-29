@@ -29,3 +29,5 @@ public struct SVDSAURegions {
   /// Group to configure SAU regions.
   public var region: [SVDSAURegion]
 }
+
+extension SVDSAURegions: Sendable {}

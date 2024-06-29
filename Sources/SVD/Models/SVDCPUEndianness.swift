@@ -23,4 +23,6 @@ public enum SVDCPUEndianness: String {
   case other
 }
 
+extension SVDCPUEndianness: Sendable {}
+
 extension SVDCPUEndianness: XMLNodeInitializable {}

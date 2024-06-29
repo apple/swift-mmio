@@ -20,11 +20,15 @@ public struct SVDWriteConstraintWriteAsRead {
   var writeAsRead: Bool
 }
 
+extension SVDWriteConstraintWriteAsRead: Sendable {}
+
 @XMLElement
 public struct SVDWriteConstraintRange {
   public var minimum: UInt64
   public var maximum: UInt64
 }
+
+extension SVDWriteConstraintRange: Sendable {}
 
 /// Define constraints for writing values to a field.
 ///
@@ -40,6 +44,8 @@ public enum SVDWriteConstraint {
   /// - maximum: Specify the largest number to be written to the field.
   case range(SVDWriteConstraintRange)
 }
+
+extension SVDWriteConstraint: Sendable {}
 
 extension SVDWriteConstraint: XMLElementInitializable {
   init(_ element: XMLElement) throws {

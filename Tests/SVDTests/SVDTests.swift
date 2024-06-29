@@ -322,7 +322,7 @@ extension Sequence where Element: Sendable {
     taskLimit: Int,
     priority: TaskPriority? = nil,
     operation: @Sendable @escaping (Element) async -> PartialResult
-  ) async -> Result {
+  ) async -> Result where PartialResult: Sendable {
     await withTaskGroup(
       of: PartialResult.self,
       returning: Result.self

@@ -21,3 +21,5 @@ public struct SVDFields {
   /// Define the bit-field properties of a register.
   public var field: [SVDField]
 }
+
+extension SVDFields: Sendable {}

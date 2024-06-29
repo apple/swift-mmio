@@ -31,3 +31,5 @@ public struct SVDDimensionElement {
   /// Grouping element to create enumerations in the header file.
   public var dimArrayIndex: SVDDimensionArrayIndex?
 }
+
+extension SVDDimensionElement: Sendable {}

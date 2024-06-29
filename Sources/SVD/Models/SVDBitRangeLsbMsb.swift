@@ -22,3 +22,5 @@ public struct SVDBitRangeLsbMsb {
   public var lsb: UInt64
   public var msb: UInt64
 }
+
+extension SVDBitRangeLsbMsb: Sendable {}

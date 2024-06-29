@@ -21,6 +21,8 @@ public enum SVDBitRange {
   case literal(SVDBitRangeLiteralContainer)
 }
 
+extension SVDBitRange: Sendable {}
+
 extension SVDBitRange: XMLElementInitializable {
   init(_ element: XMLElement) throws {
     if let value = try? SVDBitRangeLsbMsb(element) {

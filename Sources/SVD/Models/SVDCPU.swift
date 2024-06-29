@@ -82,3 +82,5 @@ public struct SVDCPU {
   /// the settings are described here.
   public var sauRegionsConfig: SVDSAURegions?
 }
+
+extension SVDCPU: Sendable {}

@@ -23,4 +23,6 @@ public enum SVDReadAction: String {
   case modifyExternal
 }
 
+extension SVDReadAction: Sendable {}
+
 extension SVDReadAction: XMLNodeInitializable {}

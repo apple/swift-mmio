@@ -75,3 +75,5 @@ public struct SVDCluster {
   /// Define the sequence of registers.
   public var register: [SVDRegister]?
 }
+
+extension SVDCluster: Sendable {}

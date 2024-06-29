@@ -30,3 +30,5 @@ public struct SVDDimensionArrayIndex {
   /// Specify the values contained in the enumeration.
   public var enumeratedValue: [SVDEnumerationCase]
 }
+
+extension SVDDimensionArrayIndex: Sendable {}

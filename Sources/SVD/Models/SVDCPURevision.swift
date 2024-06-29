@@ -75,4 +75,6 @@ extension SVDCPURevision: LosslessStringConvertible {
   }
 }
 
+extension SVDCPURevision: Sendable {}
+
 extension SVDCPURevision: XMLNodeInitializable {}

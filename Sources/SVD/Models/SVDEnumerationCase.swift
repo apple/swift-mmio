@@ -27,3 +27,5 @@ public struct SVDEnumerationCase {
   @XMLInlineElement
   public var data: SVDEnumerationCaseData
 }
+
+extension SVDEnumerationCase: Sendable {}

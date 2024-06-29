@@ -98,3 +98,5 @@ public struct SVDPeripheral {
   /// Group to enclose register definitions.
   public var registers: SVDRegisters?
 }
+
+extension SVDPeripheral: Sendable {}

@@ -97,3 +97,5 @@ public struct SVDRegister {
   /// structures in the header file.
   public var fields: SVDFields?
 }
+
+extension SVDRegister: Sendable {}

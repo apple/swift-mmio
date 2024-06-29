@@ -37,4 +37,6 @@ public enum SVDModifiedWriteValues: String {
   case modify
 }
 
+extension SVDModifiedWriteValues: Sendable {}
+
 extension SVDModifiedWriteValues: XMLNodeInitializable {}

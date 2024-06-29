@@ -44,4 +44,6 @@ public enum SVDDataType: String {
   case int64Pointer = "int64_t *"
 }
 
+extension SVDDataType: Sendable {}
+
 extension SVDDataType: XMLNodeInitializable {}

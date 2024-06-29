@@ -47,9 +47,11 @@ public class Mutex<T>: @unchecked Sendable {
   ///   calling thread has acquired the lock.
   ///
   /// - Returns: The return value, if any, of the `body` closure parameter.
-  public func withLock<U>(_ body: (inout T) -> U) -> U {
+  public func withLock<U, E>(
+    _ body: (inout T) throws(E) -> U
+  ) throws(E) -> U where E: Error {
     self.lock.lock()
     defer { self.lock.unlock() }
-    return body(&self.value)
+    return try body(&self.value)
   }
 }

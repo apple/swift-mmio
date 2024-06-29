@@ -16,4 +16,6 @@ public enum SVDEnumerationUsage: String {
   case readWrite = "read-write"
 }
 
+extension SVDEnumerationUsage: Sendable {}
+
 extension SVDEnumerationUsage: XMLNodeInitializable {}

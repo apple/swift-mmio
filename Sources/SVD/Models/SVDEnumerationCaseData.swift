@@ -20,6 +20,8 @@ public enum SVDEnumerationCaseData {
   case isDefault(SVDEnumerationCaseDataDefault)
 }
 
+extension SVDEnumerationCaseData: Sendable {}
+
 extension SVDEnumerationCaseData: XMLElementInitializable {
   init(_ element: XMLElement) throws {
     if let value = try? SVDEnumerationCaseDataValue(element) {

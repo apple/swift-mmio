@@ -26,3 +26,5 @@ public struct SVDRegisters {
   /// Define the sequence of registers.
   public var register: [SVDRegister]
 }
+
+extension SVDRegisters: Sendable {}

@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if canImport(MMIOMacros)
-import SwiftSyntax
+@preconcurrency import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest

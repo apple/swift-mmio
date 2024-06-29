@@ -71,3 +71,5 @@ public struct SVDField {
   /// Next lower level of description.
   public var enumeratedValues: SVDEnumeration?
 }
+
+extension SVDField: Sendable {}

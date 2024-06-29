@@ -16,4 +16,6 @@ public enum SVDSAUAccess: String {
   case nonSecure = "n"
 }
 
+extension SVDSAUAccess: Sendable {}
+
 extension SVDSAUAccess: XMLNodeInitializable {}

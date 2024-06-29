@@ -22,3 +22,5 @@ public struct SVDBitRangeOffsetWidth {
   public var bitOffset: UInt64
   public var bitWidth: UInt64?
 }
+
+extension SVDBitRangeOffsetWidth: Sendable {}

@@ -66,6 +66,8 @@ public enum SVDCPUName {
   case other(String)
 }
 
+extension SVDCPUName: Sendable {}
+
 extension SVDCPUName: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)

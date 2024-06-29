@@ -21,3 +21,5 @@ public struct SVDPeripherals {
   /// Define the sequence of peripherals.
   public var peripheral: [SVDPeripheral]
 }
+
+extension SVDPeripherals: Sendable {}

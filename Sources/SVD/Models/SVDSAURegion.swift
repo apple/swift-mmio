@@ -34,3 +34,5 @@ public struct SVDSAURegion {
   /// Value to define the access type of a region.
   public var access: SVDSAUAccess
 }
+
+extension SVDSAURegion: Sendable {}
