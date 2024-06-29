@@ -27,3 +27,5 @@ extension SVDEnumerationCaseDataDefault: Encodable {}
 extension SVDEnumerationCaseDataDefault: Equatable {}
 
 extension SVDEnumerationCaseDataDefault: Hashable {}
+
+extension SVDEnumerationCaseDataDefault: Sendable {}

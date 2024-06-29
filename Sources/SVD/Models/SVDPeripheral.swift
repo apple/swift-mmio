@@ -106,3 +106,5 @@ extension SVDPeripheral: Encodable {}
 extension SVDPeripheral: Equatable {}
 
 extension SVDPeripheral: Hashable {}
+
+extension SVDPeripheral: Sendable {}

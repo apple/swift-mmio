@@ -79,3 +79,5 @@ extension SVDField: Encodable {}
 extension SVDField: Equatable {}
 
 extension SVDField: Hashable {}
+
+extension SVDField: Sendable {}

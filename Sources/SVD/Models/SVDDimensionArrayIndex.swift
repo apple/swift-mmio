@@ -38,3 +38,5 @@ extension SVDDimensionArrayIndex: Encodable {}
 extension SVDDimensionArrayIndex: Equatable {}
 
 extension SVDDimensionArrayIndex: Hashable {}
+
+extension SVDDimensionArrayIndex: Sendable {}

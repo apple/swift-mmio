@@ -34,3 +34,5 @@ extension SVDRegisters: Encodable {}
 extension SVDRegisters: Equatable {}
 
 extension SVDRegisters: Hashable {}
+
+extension SVDRegisters: Sendable {}

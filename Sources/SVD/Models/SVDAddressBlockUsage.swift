@@ -29,6 +29,8 @@ extension SVDAddressBlockUsage: Equatable {}
 
 extension SVDAddressBlockUsage: Hashable {}
 
+extension SVDAddressBlockUsage: Sendable {}
+
 extension SVDAddressBlockUsage: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)

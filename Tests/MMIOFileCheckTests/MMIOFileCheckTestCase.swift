@@ -85,29 +85,12 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
       print("Using Simple FileCheck")
     }
 
-    print("Determining Swift Version...")
-    let versionString = try sh(
-      """
-      swift --version
-      """)
-
-    let regex = #/Apple Swift version (\d+)/#
-    let swift6Plus =
-      if let match = versionString.firstMatch(of: regex),
-        let majorVersion = Int(match.output.1),
-        majorVersion > 5
-      {
-        true
-      } else {
-        false
-      }
-
     print("Determining Dependency Paths...")
     let buildOutputsURL = URL(
       fileURLWithPath: try sh(
         """
         swift build \
-          \(swift6Plus ? "--ignore-lock" : "") \
+          --ignore-lock \
           --configuration release \
           --package-path \(packageDirectoryURL.path) \
           --show-bin-path
@@ -117,7 +100,7 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
     _ = try sh(
       """
       swift build \
-        \(swift6Plus ? "--ignore-lock" : "") \
+        --ignore-lock \
         --configuration release \
         --package-path \(packageDirectoryURL.path)
       """)

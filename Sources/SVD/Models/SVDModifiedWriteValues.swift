@@ -45,4 +45,6 @@ extension SVDModifiedWriteValues: Equatable {}
 
 extension SVDModifiedWriteValues: Hashable {}
 
+extension SVDModifiedWriteValues: Sendable {}
+
 extension SVDModifiedWriteValues: XMLNodeInitializable {}

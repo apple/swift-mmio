@@ -34,3 +34,5 @@ extension SVDInterrupt: Encodable {}
 extension SVDInterrupt: Equatable {}
 
 extension SVDInterrupt: Hashable {}
+
+extension SVDInterrupt: Sendable {}

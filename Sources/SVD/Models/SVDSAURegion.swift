@@ -42,3 +42,5 @@ extension SVDSAURegion: Encodable {}
 extension SVDSAURegion: Equatable {}
 
 extension SVDSAURegion: Hashable {}
+
+extension SVDSAURegion: Sendable {}

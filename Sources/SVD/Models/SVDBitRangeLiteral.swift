@@ -55,4 +55,6 @@ extension SVDBitRangeLiteral: LosslessStringConvertible {
   }
 }
 
+extension SVDBitRangeLiteral: Sendable {}
+
 extension SVDBitRangeLiteral: XMLNodeInitializable {}

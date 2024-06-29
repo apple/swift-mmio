@@ -27,3 +27,5 @@ extension SVDWriteConstraintWriteAsRead: Encodable {}
 extension SVDWriteConstraintWriteAsRead: Equatable {}
 
 extension SVDWriteConstraintWriteAsRead: Hashable {}
+
+extension SVDWriteConstraintWriteAsRead: Sendable {}

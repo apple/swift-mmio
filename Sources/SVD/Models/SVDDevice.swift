@@ -92,3 +92,5 @@ extension SVDDevice: Encodable {}
 extension SVDDevice: Equatable {}
 
 extension SVDDevice: Hashable {}
+
+extension SVDDevice: Sendable {}

@@ -40,7 +40,6 @@ extension OptionalUnwrappingError: CustomStringConvertible {
 extension OptionalUnwrappingError: Error {}
 
 extension Optional {
-  #if swift(>=6)
   /// Unwraps an Optional value, throwing an error if the value is nil.
   ///
   /// - Parameters:
@@ -69,24 +68,4 @@ extension Optional {
     guard let self = self else { throw error }
     return self
   }
-  #else
-  /// Unwraps an Optional value, throwing an error if the value is nil.
-  ///
-  /// - Parameters:
-  ///   - error: A custom error to throw if the value is nil.
-  ///   - file: The file in which the unwrapping occurs.
-  ///   - line: The line number at which the unwrapping occurs.
-  /// - Throws: An error if value is nil.
-  /// - Returns: The unwrapped value.
-  public func unwrap(
-    or error: (any Error)? = nil,
-    file: StaticString = #file,
-    line: UInt = #line
-  ) throws -> Wrapped {
-    guard let self = self else {
-      throw error ?? OptionalUnwrappingError(file: file, line: line)
-    }
-    return self
-  }
-  #endif
 }

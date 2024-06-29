@@ -38,6 +38,8 @@ extension SVDWriteConstraint: Equatable {}
 
 extension SVDWriteConstraint: Hashable {}
 
+extension SVDWriteConstraint: Sendable {}
+
 extension SVDWriteConstraint: XMLElementInitializable {
   init(_ element: XMLElement) throws {
     if let value = try? element.decode(SVDWriteConstraintWriteAsRead.self, fromChild: "writeAsRead") {
@@ -47,7 +49,7 @@ extension SVDWriteConstraint: XMLElementInitializable {
     } else if let value = try? element.decode(SVDWriteConstraintRange.self, fromChild: "range") {
       self = .range(value)
     } else {
-      throw Errors.unknownElement(element)
+      throw XMLError.unknownElement(element)
     }
   }
 }

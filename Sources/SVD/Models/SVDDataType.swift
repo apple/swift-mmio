@@ -52,4 +52,6 @@ extension SVDDataType: Equatable {}
 
 extension SVDDataType: Hashable {}
 
+extension SVDDataType: Sendable {}
+
 extension SVDDataType: XMLNodeInitializable {}

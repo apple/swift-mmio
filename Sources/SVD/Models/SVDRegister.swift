@@ -105,3 +105,5 @@ extension SVDRegister: Encodable {}
 extension SVDRegister: Equatable {}
 
 extension SVDRegister: Hashable {}
+
+extension SVDRegister: Sendable {}

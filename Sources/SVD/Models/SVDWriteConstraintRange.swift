@@ -28,3 +28,5 @@ extension SVDWriteConstraintRange: Encodable {}
 extension SVDWriteConstraintRange: Equatable {}
 
 extension SVDWriteConstraintRange: Hashable {}
+
+extension SVDWriteConstraintRange: Sendable {}

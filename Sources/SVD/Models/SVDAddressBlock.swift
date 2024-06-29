@@ -40,3 +40,5 @@ extension SVDAddressBlock: Encodable {}
 extension SVDAddressBlock: Equatable {}
 
 extension SVDAddressBlock: Hashable {}
+
+extension SVDAddressBlock: Sendable {}

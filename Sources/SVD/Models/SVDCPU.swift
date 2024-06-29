@@ -90,3 +90,5 @@ extension SVDCPU: Encodable {}
 extension SVDCPU: Equatable {}
 
 extension SVDCPU: Hashable {}
+
+extension SVDCPU: Sendable {}

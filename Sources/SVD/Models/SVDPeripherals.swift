@@ -29,3 +29,5 @@ extension SVDPeripherals: Encodable {}
 extension SVDPeripherals: Equatable {}
 
 extension SVDPeripherals: Hashable {}
+
+extension SVDPeripherals: Sendable {}

@@ -30,3 +30,5 @@ extension SVDBitRangeOffsetWidth: Encodable {}
 extension SVDBitRangeOffsetWidth: Equatable {}
 
 extension SVDBitRangeOffsetWidth: Hashable {}
+
+extension SVDBitRangeOffsetWidth: Sendable {}
