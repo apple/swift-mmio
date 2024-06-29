@@ -134,10 +134,6 @@ let package = Package(
     .testTarget(
       name: "SVD2SwiftPluginTests",
       dependencies: ["MMIO"],
-      // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
-      // SPM 5.9 produces warnings for plugin input files.
-      // Remove this exclude list when Swift Package Manager bug is resolved.
-      exclude: ["ARM_Sample.svd", "svd2swift.json"],
       plugins: ["SVD2SwiftPlugin"]),
 
     .macro(

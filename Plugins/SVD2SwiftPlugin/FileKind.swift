@@ -16,10 +16,8 @@ struct FileKind {
 
     var description: String {
       switch self {
-      case .fileExtension(let fileExtension):
-        fileExtension
-      case .fileName(let fileName):
-        fileName
+      case .fileExtension(let fileExtension): fileExtension
+      case .fileName(let fileName): fileName
       }
     }
   }
