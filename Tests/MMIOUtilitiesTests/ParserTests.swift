@@ -17,7 +17,7 @@ func XCTAssertParse<Output>(
   _ parser: Parser<Substring, Output>,
   _ input: String,
   _ expected: Output,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) where Output: Equatable {
   var input = input[...]
@@ -50,7 +50,7 @@ func XCTAssertParse<Output>(
 func XCTAssertNoParse<Output>(
   _ parser: Parser<Substring, Output>,
   _ input: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) where Output: Equatable {
   var input = input[...]

@@ -85,7 +85,7 @@ extension SVD2LLDBTestResult: SVD2LLDBResult {
 func XCTAssertSVD2LLDBResult(
   result: SVD2LLDBTestResult,
   output: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   // Exit early if the actual output matches the expected output.

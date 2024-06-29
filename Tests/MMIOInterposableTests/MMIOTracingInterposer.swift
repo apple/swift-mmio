@@ -68,7 +68,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertMMIOAlignment<Value>(
   pointer: UnsafePointer<Value>,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) where Value: FixedWidthInteger & UnsignedInteger {
   let address = UInt(bitPattern: pointer)
@@ -88,7 +88,7 @@ func XCTAssertMMIOAlignment<Value>(
 func XCTAssertMMIOInterposerTrace(
   interposer: MMIOTracingInterposer,
   trace: [MMIOTracingInterposerEvent],
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   // Exit early if the actual trace matches the expected trace.
