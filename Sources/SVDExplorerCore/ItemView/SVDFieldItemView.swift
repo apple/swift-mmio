@@ -14,6 +14,7 @@ import SVD
 
 struct SVDFieldItemView: View {
   var field: SVDField
+  var range: Range<UInt64> { self.field.bitRange.range }
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -31,11 +32,11 @@ struct SVDFieldItemView: View {
         SVDHeaderTitleView(
           alignment: .trailing,
           title: "Bit Width",
-          text: "\(self.field.bitRange.bitWidth)")
+          text: "\(self.field.bitRange.range.count)")
         SVDHeaderTitleView(
           alignment: .trailing,
           title: "Bit Range",
-          text: "\(self.field.bitRange.lsb):\(self.field.bitRange.msb)")
+          text: "\(self.range.lowerBound):\(self.range.upperBound)")
       }
       if let description = self.field.description {
         SVDItemDescriptionView(title: "Description", text: description)

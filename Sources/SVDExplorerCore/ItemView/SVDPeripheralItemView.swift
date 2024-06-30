@@ -27,7 +27,7 @@ struct SVDPeripheralItemView: View {
         SVDHeaderTitleView(
           alignment: .trailing,
           title: "Base Address",
-          text: "\(hex: self.peripheral.baseAddress, bytes: 4)")
+          text: "\(hex: self.peripheral.baseAddress, bits: 32)")
       }
       if let description = self.peripheral.description {
         SVDItemDescriptionView(title: "Description", text: description)
