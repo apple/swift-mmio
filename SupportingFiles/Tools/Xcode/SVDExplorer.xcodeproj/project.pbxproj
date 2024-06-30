@@ -7,15 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		958A58CA2C311E2D001E3A9A /* SVDExplorerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 958A58C92C311E2D001E3A9A /* SVDExplorerCore */; };
+		958A58F12C312508001E3A9A /* SVDExplorerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 958A58F02C312508001E3A9A /* SVDExplorerCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		958A58EF2C3124FA001E3A9A /* swift-mmio */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "swift-mmio"; path = "../../.."; sourceTree = "<group>"; };
 		95F3A5662B58A98A00833638 /* SVDExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SVDExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		958A58EB2C31225D001E3A9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 95F3A5652B58A98A00833638 /* SVDExplorer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		958A58692C311463001E3A9A /* SVDExplorer */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SVDExplorer; sourceTree = "<group>"; };
+		958A58692C311463001E3A9A /* SVDExplorer */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (958A58EB2C31225D001E3A9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = SVDExplorer; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -23,7 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				958A58CA2C311E2D001E3A9A /* SVDExplorerCore in Frameworks */,
+				958A58F12C312508001E3A9A /* SVDExplorerCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,9 +48,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		958A58EE2C31249C001E3A9A /* Package */ = {
+			isa = PBXGroup;
+			children = (
+				958A58EF2C3124FA001E3A9A /* swift-mmio */,
+			);
+			name = Package;
+			sourceTree = "<group>";
+		};
 		95F3A55D2B58A98A00833638 = {
 			isa = PBXGroup;
 			children = (
+				958A58EE2C31249C001E3A9A /* Package */,
 				958A58692C311463001E3A9A /* SVDExplorer */,
 				95F3A5672B58A98A00833638 /* Products */,
 				95089D492B5B95DA003D844B /* Frameworks */,
@@ -74,7 +94,7 @@
 			);
 			name = SVDExplorer;
 			packageProductDependencies = (
-				958A58C92C311E2D001E3A9A /* SVDExplorerCore */,
+				958A58F02C312508001E3A9A /* SVDExplorerCore */,
 			);
 			productName = SVDExplorer;
 			productReference = 95F3A5662B58A98A00833638 /* SVDExplorer.app */;
@@ -105,8 +125,6 @@
 			);
 			mainGroup = 95F3A55D2B58A98A00833638;
 			packageReferences = (
-				958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../.." */,
-				958A58882C311625001E3A9A /* XCLocalSwiftPackageReference "../../../../../../../Users/rauhul/Desktop/tmp" */,
 			);
 			productRefGroup = 95F3A5672B58A98A00833638 /* Products */;
 			projectDirPath = "";
@@ -352,21 +370,12 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../.." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../..;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		958A58C92C311E2D001E3A9A /* SVDExplorerCore */ = {
+		958A58F02C312508001E3A9A /* SVDExplorerCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../.." */;
 			productName = SVDExplorerCore;
 		};
 /* End XCSwiftPackageProductDependency section */
-
 	};
 	rootObject = 95F3A55E2B58A98A00833638 /* Project object */;
 }

@@ -19,7 +19,6 @@ let package = Package(
 
     // SVD
     .library(name: "SVD", targets: ["SVD"]),
-    .library(name: "SVDExplorerCore", targets: ["SVDExplorerCore"]),
     .library(name: "SVD2LLDB", type: .dynamic, targets: ["SVD2LLDB"]),
     .executable(
       // FIXME: rdar://112530586
@@ -28,6 +27,7 @@ let package = Package(
       name: "SVD2Swift",
       targets: ["SVD2Swift"]),
     .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
+    .library(name: "SVDExplorerCore", targets: ["SVDExplorerCore"]),
   ],
   dependencies: [
     .package(
@@ -143,7 +143,7 @@ let package = Package(
 
     .target(
       name: "SVDExplorerCore",
-      dependencies: ["SVD"]),
+      dependencies: ["MMIOUtilities", "SVD"]),
 
     .macro(
       name: "SVDMacros",
