@@ -9,22 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftUI
-import SVD
+import SVDExplorerCore
 
 @main
-struct SVDExplorerApp: App {
-  var body: some Scene {
-    DocumentGroup(newDocument: SVDDocument()) { file in
-      SVDDocumentView(document: file.document)
-    }
-  }
-
-  init() {
-    DispatchQueue.main.async {
-      NSApp.setActivationPolicy(.regular)
-      NSApp.activate(ignoringOtherApps: true)
-      NSApp.windows.first?.makeKeyAndOrderFront(nil)
-    }
-  }
-}
+extension SVDExplorerApp { }
