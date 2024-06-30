@@ -35,7 +35,8 @@ struct SVDDocument: FileDocument {
 
   init(data: Data) throws {
     self.data = data
-    self.device = try! SVDDevice(svdData: data)
+    self.device = try SVDDevice(data: data)
+    try self.device.inflate()
     self.device.peripherals.peripheral.sort { $0.name < $1.name }
   }
 
