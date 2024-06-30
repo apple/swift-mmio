@@ -3,78 +3,27 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		95089D442B5B1C99003D844B /* SVDOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95089D432B5B1C99003D844B /* SVDOutlineView.swift */; };
-		95089D4D2B5BA1A2003D844B /* SVDItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95089D4C2B5BA1A2003D844B /* SVDItem.swift */; };
-		95089D4F2B5C52D2003D844B /* SVDBreadCrumbItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95089D4E2B5C52D2003D844B /* SVDBreadCrumbItemView.swift */; };
-		95089D512B5C56C6003D844B /* SVDBreadCrumbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95089D502B5C56C6003D844B /* SVDBreadCrumbView.swift */; };
-		95089D552B5C8748003D844B /* SVDItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95089D542B5C8748003D844B /* SVDItemView.swift */; };
-		95089D572B5C884B003D844B /* SVDDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95089D562B5C884B003D844B /* SVDDocumentView.swift */; };
-		9547BE7F2B59BAAE00D1DA51 /* ARM_Sample.svd in Resources */ = {isa = PBXBuildFile; fileRef = 9547BE7E2B59BAAE00D1DA51 /* ARM_Sample.svd */; };
-		9547BE842B59BF6700D1DA51 /* Optional+Unwrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547BE832B59BF6700D1DA51 /* Optional+Unwrap.swift */; };
-		95A7D4052B5CD65D003D77A9 /* SVDItemDescriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D4042B5CD65D003D77A9 /* SVDItemDescriptionView.swift */; };
-		95A7D4072B5CD89F003D77A9 /* SVDItemKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D4062B5CD89F003D77A9 /* SVDItemKind.swift */; };
-		95A7D4092B5CD8C7003D77A9 /* SVD+ItemLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D4082B5CD8C7003D77A9 /* SVD+ItemLookup.swift */; };
-		95A7D40B2B5CD910003D77A9 /* SVDHeaderImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D40A2B5CD910003D77A9 /* SVDHeaderImage.swift */; };
-		95A7D40E2B5CD932003D77A9 /* SVDFieldItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D40D2B5CD932003D77A9 /* SVDFieldItemView.swift */; };
-		95A7D4132B5CDBE8003D77A9 /* SVDRegisterItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D40F2B5CDBE8003D77A9 /* SVDRegisterItemView.swift */; };
-		95A7D4142B5CDBE8003D77A9 /* SVDPeripheralItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D4102B5CDBE8003D77A9 /* SVDPeripheralItemView.swift */; };
-		95A7D4152B5CDBE8003D77A9 /* SVDClusterItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D4112B5CDBE8003D77A9 /* SVDClusterItemView.swift */; };
-		95A7D4162B5CDBE8003D77A9 /* SVDDevicetemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7D4122B5CDBE8003D77A9 /* SVDDevicetemView.swift */; };
-		95B8E70B2B69C35900DE8E97 /* SVD+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B8E70A2B69C35900DE8E97 /* SVD+Extensions.swift */; };
-		95B8E70D2B69C4B200DE8E97 /* SVDKeyPathComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B8E70C2B69C4B200DE8E97 /* SVDKeyPathComponent.swift */; };
-		95B8E7122B69C93400DE8E97 /* SVDKeyPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B8E7112B69C93400DE8E97 /* SVDKeyPath.swift */; };
-		95B8E7152B69CDEB00DE8E97 /* SVDOutlineListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B8E7142B69CDEB00DE8E97 /* SVDOutlineListView.swift */; };
-		95B8E7172B69CE0300DE8E97 /* SVDOutlineItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B8E7162B69CE0300DE8E97 /* SVDOutlineItem.swift */; };
-		95F04BAA2B5F3BB300A353AF /* SVDHeaderTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F04BA92B5F3BB300A353AF /* SVDHeaderTitleView.swift */; };
-		95F04BAD2B5F424D00A353AF /* StringInterpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F04BAC2B5F424D00A353AF /* StringInterpolation.swift */; };
-		95F3A56A2B58A98A00833638 /* SVDExplorerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F3A5692B58A98A00833638 /* SVDExplorerApp.swift */; };
-		95F3A56C2B58A98A00833638 /* SVDDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F3A56B2B58A98A00833638 /* SVDDocument.swift */; };
-		95F3A5702B58A98B00833638 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95F3A56F2B58A98B00833638 /* Assets.xcassets */; };
-		95F3A5732B58A98B00833638 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95F3A5722B58A98B00833638 /* Preview Assets.xcassets */; };
+		958A58CA2C311E2D001E3A9A /* SVDExplorerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 958A58C92C311E2D001E3A9A /* SVDExplorerCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		95089D432B5B1C99003D844B /* SVDOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDOutlineView.swift; sourceTree = "<group>"; };
-		95089D4C2B5BA1A2003D844B /* SVDItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVDItem.swift; sourceTree = "<group>"; };
-		95089D4E2B5C52D2003D844B /* SVDBreadCrumbItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDBreadCrumbItemView.swift; sourceTree = "<group>"; };
-		95089D502B5C56C6003D844B /* SVDBreadCrumbView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDBreadCrumbView.swift; sourceTree = "<group>"; };
-		95089D542B5C8748003D844B /* SVDItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDItemView.swift; sourceTree = "<group>"; };
-		95089D562B5C884B003D844B /* SVDDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDDocumentView.swift; sourceTree = "<group>"; };
-		9547BE7E2B59BAAE00D1DA51 /* ARM_Sample.svd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ARM_Sample.svd; sourceTree = "<group>"; };
-		9547BE832B59BF6700D1DA51 /* Optional+Unwrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Unwrap.swift"; sourceTree = "<group>"; };
-		95A7D4042B5CD65D003D77A9 /* SVDItemDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDItemDescriptionView.swift; sourceTree = "<group>"; };
-		95A7D4062B5CD89F003D77A9 /* SVDItemKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDItemKind.swift; sourceTree = "<group>"; };
-		95A7D4082B5CD8C7003D77A9 /* SVD+ItemLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SVD+ItemLookup.swift"; sourceTree = "<group>"; };
-		95A7D40A2B5CD910003D77A9 /* SVDHeaderImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDHeaderImage.swift; sourceTree = "<group>"; };
-		95A7D40D2B5CD932003D77A9 /* SVDFieldItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDFieldItemView.swift; sourceTree = "<group>"; };
-		95A7D40F2B5CDBE8003D77A9 /* SVDRegisterItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVDRegisterItemView.swift; sourceTree = "<group>"; };
-		95A7D4102B5CDBE8003D77A9 /* SVDPeripheralItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVDPeripheralItemView.swift; sourceTree = "<group>"; };
-		95A7D4112B5CDBE8003D77A9 /* SVDClusterItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVDClusterItemView.swift; sourceTree = "<group>"; };
-		95A7D4122B5CDBE8003D77A9 /* SVDDevicetemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVDDevicetemView.swift; sourceTree = "<group>"; };
-		95B8E70A2B69C35900DE8E97 /* SVD+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SVD+Extensions.swift"; sourceTree = "<group>"; };
-		95B8E70C2B69C4B200DE8E97 /* SVDKeyPathComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDKeyPathComponent.swift; sourceTree = "<group>"; };
-		95B8E7112B69C93400DE8E97 /* SVDKeyPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDKeyPath.swift; sourceTree = "<group>"; };
-		95B8E7142B69CDEB00DE8E97 /* SVDOutlineListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDOutlineListView.swift; sourceTree = "<group>"; };
-		95B8E7162B69CE0300DE8E97 /* SVDOutlineItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDOutlineItem.swift; sourceTree = "<group>"; };
-		95F04BA92B5F3BB300A353AF /* SVDHeaderTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDHeaderTitleView.swift; sourceTree = "<group>"; };
-		95F04BAC2B5F424D00A353AF /* StringInterpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringInterpolation.swift; sourceTree = "<group>"; };
 		95F3A5662B58A98A00833638 /* SVDExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SVDExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		95F3A5692B58A98A00833638 /* SVDExplorerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDExplorerApp.swift; sourceTree = "<group>"; };
-		95F3A56B2B58A98A00833638 /* SVDDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVDDocument.swift; sourceTree = "<group>"; };
-		95F3A56F2B58A98B00833638 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		95F3A5722B58A98B00833638 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		95F3A5742B58A98B00833638 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		958A58692C311463001E3A9A /* SVDExplorer */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SVDExplorer; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		95F3A5632B58A98A00833638 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				958A58CA2C311E2D001E3A9A /* SVDExplorerCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,65 +37,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		95A7D4032B5CD64B003D77A9 /* Item */ = {
-			isa = PBXGroup;
-			children = (
-				95A7D4082B5CD8C7003D77A9 /* SVD+ItemLookup.swift */,
-				95089D4C2B5BA1A2003D844B /* SVDItem.swift */,
-				95A7D4062B5CD89F003D77A9 /* SVDItemKind.swift */,
-				95B8E7112B69C93400DE8E97 /* SVDKeyPath.swift */,
-				95B8E70C2B69C4B200DE8E97 /* SVDKeyPathComponent.swift */,
-			);
-			path = Item;
-			sourceTree = "<group>";
-		};
-		95A7D40C2B5CD924003D77A9 /* ItemView */ = {
-			isa = PBXGroup;
-			children = (
-				95F04BAB2B5F3D6600A353AF /* Components */,
-				95A7D4112B5CDBE8003D77A9 /* SVDClusterItemView.swift */,
-				95A7D4122B5CDBE8003D77A9 /* SVDDevicetemView.swift */,
-				95A7D40D2B5CD932003D77A9 /* SVDFieldItemView.swift */,
-				95089D542B5C8748003D844B /* SVDItemView.swift */,
-				95A7D4102B5CDBE8003D77A9 /* SVDPeripheralItemView.swift */,
-				95A7D40F2B5CDBE8003D77A9 /* SVDRegisterItemView.swift */,
-			);
-			path = ItemView;
-			sourceTree = "<group>";
-		};
-		95B8E70E2B69C4F600DE8E97 /* BreadCrumbView */ = {
-			isa = PBXGroup;
-			children = (
-				95089D4E2B5C52D2003D844B /* SVDBreadCrumbItemView.swift */,
-				95089D502B5C56C6003D844B /* SVDBreadCrumbView.swift */,
-			);
-			path = BreadCrumbView;
-			sourceTree = "<group>";
-		};
-		95B8E7132B69CDD900DE8E97 /* Outline */ = {
-			isa = PBXGroup;
-			children = (
-				95089D432B5B1C99003D844B /* SVDOutlineView.swift */,
-				95B8E7142B69CDEB00DE8E97 /* SVDOutlineListView.swift */,
-				95B8E7162B69CE0300DE8E97 /* SVDOutlineItem.swift */,
-			);
-			path = Outline;
-			sourceTree = "<group>";
-		};
-		95F04BAB2B5F3D6600A353AF /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				95A7D40A2B5CD910003D77A9 /* SVDHeaderImage.swift */,
-				95F04BA92B5F3BB300A353AF /* SVDHeaderTitleView.swift */,
-				95A7D4042B5CD65D003D77A9 /* SVDItemDescriptionView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
 		95F3A55D2B58A98A00833638 = {
 			isa = PBXGroup;
 			children = (
-				95F3A5682B58A98A00833638 /* SVDExplorer */,
+				958A58692C311463001E3A9A /* SVDExplorer */,
 				95F3A5672B58A98A00833638 /* Products */,
 				95089D492B5B95DA003D844B /* Frameworks */,
 			);
@@ -158,35 +52,6 @@
 				95F3A5662B58A98A00833638 /* SVDExplorer.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		95F3A5682B58A98A00833638 /* SVDExplorer */ = {
-			isa = PBXGroup;
-			children = (
-				9547BE7E2B59BAAE00D1DA51 /* ARM_Sample.svd */,
-				95F3A56F2B58A98B00833638 /* Assets.xcassets */,
-				95B8E70E2B69C4F600DE8E97 /* BreadCrumbView */,
-				95F3A5742B58A98B00833638 /* Info.plist */,
-				95A7D4032B5CD64B003D77A9 /* Item */,
-				95A7D40C2B5CD924003D77A9 /* ItemView */,
-				9547BE832B59BF6700D1DA51 /* Optional+Unwrap.swift */,
-				95F3A5712B58A98B00833638 /* Preview Content */,
-				95F04BAC2B5F424D00A353AF /* StringInterpolation.swift */,
-				95B8E70A2B69C35900DE8E97 /* SVD+Extensions.swift */,
-				95F3A56B2B58A98A00833638 /* SVDDocument.swift */,
-				95089D562B5C884B003D844B /* SVDDocumentView.swift */,
-				95F3A5692B58A98A00833638 /* SVDExplorerApp.swift */,
-				95B8E7132B69CDD900DE8E97 /* Outline */,
-			);
-			path = SVDExplorer;
-			sourceTree = "<group>";
-		};
-		95F3A5712B58A98B00833638 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				95F3A5722B58A98B00833638 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,8 +69,12 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				958A58692C311463001E3A9A /* SVDExplorer */,
+			);
 			name = SVDExplorer;
 			packageProductDependencies = (
+				958A58C92C311E2D001E3A9A /* SVDExplorerCore */,
 			);
 			productName = SVDExplorer;
 			productReference = 95F3A5662B58A98A00833638 /* SVDExplorer.app */;
@@ -236,7 +105,8 @@
 			);
 			mainGroup = 95F3A55D2B58A98A00833638;
 			packageReferences = (
-				958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../../../../../../Users/rauhul/Desktop/tmp" */,
+				958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../.." */,
+				958A58882C311625001E3A9A /* XCLocalSwiftPackageReference "../../../../../../../Users/rauhul/Desktop/tmp" */,
 			);
 			productRefGroup = 95F3A5672B58A98A00833638 /* Products */;
 			projectDirPath = "";
@@ -252,9 +122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95F3A5732B58A98B00833638 /* Preview Assets.xcassets in Resources */,
-				9547BE7F2B59BAAE00D1DA51 /* ARM_Sample.svd in Resources */,
-				95F3A5702B58A98B00833638 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,31 +132,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95089D442B5B1C99003D844B /* SVDOutlineView.swift in Sources */,
-				95B8E70D2B69C4B200DE8E97 /* SVDKeyPathComponent.swift in Sources */,
-				95A7D4132B5CDBE8003D77A9 /* SVDRegisterItemView.swift in Sources */,
-				95089D4F2B5C52D2003D844B /* SVDBreadCrumbItemView.swift in Sources */,
-				95A7D40B2B5CD910003D77A9 /* SVDHeaderImage.swift in Sources */,
-				95089D512B5C56C6003D844B /* SVDBreadCrumbView.swift in Sources */,
-				95A7D4162B5CDBE8003D77A9 /* SVDDevicetemView.swift in Sources */,
-				95F3A56A2B58A98A00833638 /* SVDExplorerApp.swift in Sources */,
-				95A7D4092B5CD8C7003D77A9 /* SVD+ItemLookup.swift in Sources */,
-				95F3A56C2B58A98A00833638 /* SVDDocument.swift in Sources */,
-				95089D4D2B5BA1A2003D844B /* SVDItem.swift in Sources */,
-				95A7D4152B5CDBE8003D77A9 /* SVDClusterItemView.swift in Sources */,
-				95F04BAA2B5F3BB300A353AF /* SVDHeaderTitleView.swift in Sources */,
-				95A7D4142B5CDBE8003D77A9 /* SVDPeripheralItemView.swift in Sources */,
-				95B8E7122B69C93400DE8E97 /* SVDKeyPath.swift in Sources */,
-				95B8E7152B69CDEB00DE8E97 /* SVDOutlineListView.swift in Sources */,
-				95089D552B5C8748003D844B /* SVDItemView.swift in Sources */,
-				95089D572B5C884B003D844B /* SVDDocumentView.swift in Sources */,
-				95A7D40E2B5CD932003D77A9 /* SVDFieldItemView.swift in Sources */,
-				95B8E7172B69CE0300DE8E97 /* SVDOutlineItem.swift in Sources */,
-				95F04BAD2B5F424D00A353AF /* StringInterpolation.swift in Sources */,
-				95B8E70B2B69C35900DE8E97 /* SVD+Extensions.swift in Sources */,
-				95A7D4052B5CD65D003D77A9 /* SVDItemDescriptionView.swift in Sources */,
-				95A7D4072B5CD89F003D77A9 /* SVDItemKind.swift in Sources */,
-				9547BE842B59BF6700D1DA51 /* Optional+Unwrap.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,7 +272,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"SVDExplorer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SVDExplorer/Info.plist;
@@ -463,7 +304,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"SVDExplorer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SVDExplorer/Info.plist;
@@ -513,11 +353,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../../../../../../Users/rauhul/Desktop/tmp" */ = {
+		958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../.." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../../../../../Users/rauhul/Desktop/tmp;
+			relativePath = ../../..;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		958A58C92C311E2D001E3A9A /* SVDExplorerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 958A58682C311315001E3A9A /* XCLocalSwiftPackageReference "../../.." */;
+			productName = SVDExplorerCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+
 	};
 	rootObject = 95F3A55E2B58A98A00833638 /* Project object */;
 }
