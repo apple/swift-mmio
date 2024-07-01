@@ -41,6 +41,18 @@ struct SVDFieldItemView: View {
       if let description = self.field.description {
         SVDItemDescriptionView(title: "Description", text: description)
       }
+      if let access = self.field.access {
+        SVDItemDescriptionView(title: "Access", text: "\(access)")
+      }
+      if let modifiedWriteValues = self.field.modifiedWriteValues {
+        SVDItemDescriptionView(title: "Modified Write Values", text: modifiedWriteValues.rawValue)
+      }
+      if let writeConstraint = self.field.writeConstraint {
+        SVDItemDescriptionView(title: "Write Constraint", text: "\(writeConstraint)")
+      }
+      if let readAction = self.field.readAction {
+        SVDItemDescriptionView(title: "Read Action", text: readAction.rawValue)
+      }
       if let enumeratedValues = self.field.enumeratedValues, let name = enumeratedValues.name {
         SVDItemDescriptionView(title: "Enumerated Values", text: name)
       }

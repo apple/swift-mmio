@@ -34,8 +34,28 @@ struct SVDRegisterItemView: View {
           text: "\(self.register.addressOffset)")
       }
 
+      // dimensionElement: SVDDimensionElement = .init()
+      // displayName: String?
+
       if let description = self.register.description {
         SVDItemDescriptionView(title: "Description", text: description)
+      }
+
+      // alternateGroup: String?
+      // alternateRegister: String?
+      // addressOffset: UInt64
+      // registerProperties: SVDRegisterProperties = .init()
+      if let dataType = self.register.dataType {
+        SVDItemDescriptionView(title: "Data Type", text: dataType.rawValue)
+      }
+      if let modifiedWriteValues = self.register.modifiedWriteValues {
+        SVDItemDescriptionView(title: "Modified Write Values", text: modifiedWriteValues.rawValue)
+      }
+      if let writeConstraint = self.register.writeConstraint {
+        SVDItemDescriptionView(title: "Write Constraint", text: "\(writeConstraint)")
+      }
+      if let readAction = self.register.readAction {
+        SVDItemDescriptionView(title: "Read Action", text: readAction.rawValue)
       }
     }
   }
