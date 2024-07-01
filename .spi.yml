@@ -6,3 +6,4 @@ builder:
       - SVD
       - SVD2LLDB
       - SVD2Swift
+      swift_version: 6.0
