@@ -21,16 +21,16 @@ struct SVDDocumentView: View {
   var body: some View {
     let _ = Self._printChanges()
     NavigationSplitView {
-      Text("Sort Order")
-        .font(.system(.headline, design: .default))
-        .foregroundColor(Color(nsColor: .secondaryLabelColor))
-      Picker("", selection: $sortOrder) {
-        Text("Address").tag(0)
-        Text("Name").tag(1)
-      }
-      .padding([.leading, .trailing])
-      .pickerStyle(.segmented)
-      Divider()
+//      Text("Sort Order")
+//        .font(.system(.headline, design: .default))
+//        .foregroundColor(Color(nsColor: .secondaryLabelColor))
+//      Picker("", selection: $sortOrder) {
+//        Text("Address").tag(0)
+//        Text("Name").tag(1)
+//      }
+//      .padding([.leading, .trailing])
+//      .pickerStyle(.segmented)
+//      Divider()
       let item = SVDOutlineItem(device: self.document.device, keyPath: .empty)
       SVDOutlineListView(root: item, selection: self.$selection)
         .frame(minWidth: 200)

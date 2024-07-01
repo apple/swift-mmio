@@ -23,6 +23,11 @@ struct SVDDocument: FileDocument {
 
   static var readableContentTypes: [UTType] { [.svd] }
 
+  init() {
+    self.data = .init()
+    self.device = .init()
+  }
+
   init(configuration: ReadConfiguration) throws {
     do {
       let data = try configuration.file.regularFileContents.unwrap()
@@ -42,14 +47,5 @@ struct SVDDocument: FileDocument {
 
   func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
     .init(regularFileWithContents: self.data)
-  }
-}
-
-extension SVDDocument {
-  init() {
-    let url = URL(filePath: "/Users/rauhul/Desktop/ARM_Sample.svd")
-//    let url = Bundle.main.url(forResource: "ARM_Sample", withExtension: "svd", subdirectory: nil)
-    let data = try! Data(contentsOf: url)
-    try! self.init(data: data)
   }
 }
