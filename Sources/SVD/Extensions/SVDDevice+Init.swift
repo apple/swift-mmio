@@ -22,4 +22,12 @@ extension SVDDevice {
       .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
     try self.init(root.wrapped)
   }
+
+  package init() {
+    self.init(
+      name: "Fake",
+      addressUnitBits: 0,
+      width: 0,
+      peripherals: .init(peripheral: []))
+  }
 }

@@ -15,6 +15,7 @@ import MMIOUtilities
 extension SVDDevice {
   package mutating func inflate() throws {
     try self.peripherals.peripheral.mutatingForEach { peripheral in
+      peripheral.registerProperties.merged(with: self.registerProperties)
       try peripheral.inflate()
     }
     try self.peripherals.peripheral.deriveElements()
@@ -24,10 +25,12 @@ extension SVDDevice {
 extension SVDPeripheral {
   mutating func inflate() throws {
     try self.registers?.cluster.mutatingForEach { cluster in
+      cluster.registerProperties.merged(with: self.registerProperties)
       try cluster.inflate()
     }
     try self.registers?.cluster.deriveElements()
     try self.registers?.register.mutatingForEach { register in
+      register.registerProperties.merged(with: self.registerProperties)
       try register.inflate()
     }
     try self.registers?.register.deriveElements()
@@ -37,10 +40,12 @@ extension SVDPeripheral {
 extension SVDCluster {
   mutating func inflate() throws {
     try self.cluster?.mutatingForEach { cluster in
+      cluster.registerProperties.merged(with: self.registerProperties)
       try cluster.inflate()
     }
     try self.cluster?.deriveElements()
     try self.register?.mutatingForEach { register in
+      register.registerProperties.merged(with: self.registerProperties)
       try register.inflate()
     }
     try self.register?.deriveElements()

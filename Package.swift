@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS(.v10_15),
+    .macOS(.v15),
     .iOS(.v13),
     .tvOS(.v13),
     .watchOS(.v6),
@@ -27,6 +27,7 @@ let package = Package(
       name: "SVD2Swift",
       targets: ["SVD2Swift"]),
     .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
+    .library(name: "SVDExplorerCore", targets: ["SVDExplorerCore"]),
   ],
   dependencies: [
     .package(
@@ -144,6 +145,10 @@ let package = Package(
       name: "SVD2SwiftPluginTests",
       dependencies: ["MMIO"],
       plugins: ["SVD2SwiftPlugin"]),
+
+    .target(
+      name: "SVDExplorerCore",
+      dependencies: ["MMIOUtilities", "SVD"]),
 
     .macro(
       name: "SVDMacros",
