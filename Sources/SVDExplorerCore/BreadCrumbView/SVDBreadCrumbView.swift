@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct SVDBreadCrumbView: View {
-  @Binding var keyPath: SVDKeyPath
+  @State var keyPath: SVDKeyPath
 
   var body: some View {
     ScrollView(.horizontal) {
@@ -30,11 +30,11 @@ struct SVDBreadCrumbView: View {
 
 #Preview {
   SVDBreadCrumbView(
-    keyPath: .constant(.init(components: [
+    keyPath: .init(components: [
       .device("Some Device"),
       .peripheral("Some Peripheral"),
       .cluster("Some Cluster"),
       .register("Some Register"),
       .field("Some Field"),
-    ])))
+    ]))
 }

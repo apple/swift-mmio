@@ -16,12 +16,12 @@ struct SVDItemDescriptionView: View {
   var text: String
 
   var body: some View {
-    VStack(alignment: .leading) {
+    HStack(alignment: .top) {
       Text(self.title)
         .font(.system(.headline, design: .default))
         .foregroundColor(Color(nsColor: .secondaryLabelColor))
+        .frame(width: 200, alignment: .trailing)
       Text(self.text)
     }
   }
 }
-

@@ -11,16 +11,19 @@
 
 import SwiftUI
 
-struct SVDOutlineItemView: View {
-  var keyPathComponent: SVDKeyPathComponent
-
+struct WelcomeRootView: View {
   var body: some View {
-    HStack(spacing: 4) {
-      Image(systemName: self.keyPathComponent.kind.imageName)
-        .renderingMode(.original)
-        .foregroundColor(self.keyPathComponent.kind.imageColor)
-      Text(self.keyPathComponent.name)
-        .font(.system(.body, design: .monospaced))
+    HStack(spacing: 0) {
+      WelcomeView()
+        .frame(width: 460)
+      WelcomeRecentFilesListView()
+        .frame(width: 280)
     }
+//    .edgesIgnoringSafeArea(.top)
+    // FIXME: implement drag and drop
   }
+}
+
+#Preview {
+  WelcomeRootView()
 }

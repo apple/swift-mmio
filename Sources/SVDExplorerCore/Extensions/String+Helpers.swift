@@ -9,18 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftUI
+import Foundation
 
-struct SVDOutlineItemView: View {
-  var keyPathComponent: SVDKeyPathComponent
-
-  var body: some View {
-    HStack(spacing: 4) {
-      Image(systemName: self.keyPathComponent.kind.imageName)
-        .renderingMode(.original)
-        .foregroundColor(self.keyPathComponent.kind.imageColor)
-      Text(self.keyPathComponent.name)
-        .font(.system(.body, design: .monospaced))
-    }
+extension String {
+  func abbreviatingWithTildeInPath() -> String {
+    (self as NSString).abbreviatingWithTildeInPath
   }
 }
+

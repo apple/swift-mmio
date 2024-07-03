@@ -18,27 +18,35 @@ struct SVDItemView: View {
 
   var body: some View {
     VStack(alignment: .leading) {
-      VStack(alignment: .leading, spacing: 0) {
-        Divider()
-        SVDBreadCrumbView(keyPath: self.$keyPath)
-          .padding(2)
-        Divider()
+//      VStack(alignment: .leading, spacing: 0) {
+//        Divider()
+//        SVDBreadCrumbView(keyPath: self.$keyPath)
+//          .padding(2)
+//        Divider()
+//      }
+      Group {
+        switch self.item {
+        case .device(let device):
+          SVDDeviceItemView(device: device)
+        case .peripheral(let peripheral):
+          SVDPeripheralItemView(peripheral: peripheral)
+        case .cluster(let cluster):
+          SVDClusterItemView(cluster: cluster)
+        case .register(let register):
+          SVDRegisterItemView(register: register)
+        case .field(let field):
+          SVDFieldItemView(field: field)
+        }
       }
-      switch self.item {
-      case .device(let device):
-        SVDDeviceItemView(device: device)
-      case .peripheral(let peripheral):
-        SVDPeripheralItemView(peripheral: peripheral)
-      case .cluster(let cluster):
-        SVDClusterItemView(cluster: cluster)
-      case .register(let register):
-        SVDRegisterItemView(register: register)
-      case .field(let field):
-        SVDFieldItemView(field: field)
-      }
+      .padding()
       Spacer()
     }.frame(minHeight: 200)
   }
 }
 
-
+//#Preview {
+//  SVDItemView(
+//    keyPath: .init,
+//    item: <#T##SVDItem#>
+//  )
+//}

@@ -14,6 +14,8 @@ import SVD
 
 struct SVDDeviceItemView: View {
   var device: SVDDevice
+  @State var showCPUDetails: Bool = false
+
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -25,17 +27,52 @@ struct SVDDeviceItemView: View {
           text: self.device.name)
       }
 
-      HStack {
-        SVDItemDescriptionView(title: "Vendor", text: self.device.vendor ?? "Unknown")
-        SVDItemDescriptionView(title: "Vendor ID", text: self.device.vendorID ?? "Unknown")
-        SVDItemDescriptionView(title: "Series", text: self.device.series ?? "Unknown")
-      }
+      VStack(alignment: .leading, spacing: 8) {
+        Text(self.device.description ?? "Unknown")
+        Divider()
+        HStack {
+          SVDItemDescriptionView(title: "Vendor", text: self.device.vendor ?? "Unknown")
+          SVDItemDescriptionView(title: "ID", text: self.device.vendorID ?? "Unknown")
+        }
+        HStack {
+          SVDItemDescriptionView(title: "Series", text: self.device.series ?? "Unknown")
+          SVDItemDescriptionView(title: "Version", text: self.device.version ?? "Unknown")
+        }
+        Divider()
+        Button("foo") {
+          withAnimation {
+            self.showCPUDetails.toggle()
+          }
+        }
+        SVDItemDescriptionView(title: "CPU", text: self.device.cpu.map { "\($0.name)" } ?? "Unknown")
+        if self.showCPUDetails, let cpu = self.device.cpu {
+          Group {
+            SVDItemDescriptionView(title: "Revision", text: "\(cpu.revision)")
+            SVDItemDescriptionView(title: "Endianness", text: "\(cpu.endian)")
+            SVDItemDescriptionView(title: "MPU Present", text: "\(cpu.mpuPresent)")
+            SVDItemDescriptionView(title: "FPU Present", text: "\(cpu.fpuPresent)")
+            SVDItemDescriptionView(title: "FPU Double Precision", text: "\(cpu.fpuDP)")
+            SVDItemDescriptionView(title: "DSP Present", text: "\(cpu.dspPresent)")
+            SVDItemDescriptionView(title: "ICache Present", text: "\(cpu.icachePresent)")
+            SVDItemDescriptionView(title: "DCache Present", text: "\(cpu.dcachePresent)")
+            SVDItemDescriptionView(title: "ITCM Present", text: "\(cpu.itcmPresent)")
+            SVDItemDescriptionView(title: "DTCM Present", text: "\(cpu.dtcmPresent)")
+            SVDItemDescriptionView(title: "VTOR Present", text: "\(cpu.vtorPresent)")
+            SVDItemDescriptionView(title: "NVIC Priority Bits", text: "\(cpu.nvicPrioBits)")
+            SVDItemDescriptionView(title: "Vendor Systick Config", text: "\(cpu.vendorSystickConfig)")
+            SVDItemDescriptionView(title: "Device Num Interrupts", text: "\(cpu.deviceNumInterrupts)")
+            SVDItemDescriptionView(title: "SAU Num Regions", text: "\(cpu.sauNumRegions)")
+            SVDItemDescriptionView(title: "SAU Regions Config", text: "\(cpu.sauRegionsConfig)")
+            Divider()
+          }
+          .transition(.opacity.animation(.default))
+        }
 
-      if let description = self.device.description {
-        SVDItemDescriptionView(title: "Description", text: description)
-      }
-      if let licenseText = self.device.licenseText {
-        SVDItemDescriptionView(title: "License", text: licenseText)
+        SVDItemDescriptionView(title: "Address Unit Bits", text: "\(self.device.addressUnitBits)")
+        SVDItemDescriptionView(title: "Width", text: "\(self.device.width)")
+        SVDItemDescriptionView(title: "Register Properties", text: "\(self.device.registerProperties)")
+        Divider()
+        SVDItemDescriptionView(title: "License Text", text: self.device.licenseText ?? "Unknown")
       }
     }
   }

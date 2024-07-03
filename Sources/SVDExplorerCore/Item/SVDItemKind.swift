@@ -22,21 +22,21 @@ enum SVDItemKind {
 extension SVDItemKind {
   var imageName: String {
     switch self {
-    case .device: "d.square.fill"
-    case .peripheral: "p.square.fill"
-    case .cluster: "c.square.fill"
-    case .register: "r.square.fill"
-    case .field: "f.square.fill"
+    case .device: "memorychip" // "d.square.fill"
+    case .peripheral: "rectangle.connected.to.line.below" // "p.square.fill"
+    case .cluster: "folder"
+    case .register: "folder.badge.gearshape"
+    case .field: "gearshape"
     }
   }
 
   var imageColor: Color {
     switch self {
-    case .device: .orange
+    case .device: .secondary
     case .peripheral: .purple
-    case .cluster: .cyan
-    case .register: .green
-    case .field: .mint
+    case .cluster: .green
+    case .register: .orange
+    case .field: .brown
     }
   }
 

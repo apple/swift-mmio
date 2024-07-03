@@ -7,9 +7,9 @@
 
 import SVD
 
-extension SVDField {
-  var accessDisplayName: String {
-    switch self.access {
+extension SVDAccess {
+  var displayName: String {
+    switch self {
     case .readOnly:
       "Read Only"
     case .writeOnly:
@@ -20,8 +20,12 @@ extension SVDField {
       "Write Once"
     case .readWriteOnce:
       "Read Write Once"
-    case nil:
-      "Unknown"
     }
+  }
+}
+
+extension SVDField {
+  var accessDisplayName: String {
+    self.access?.displayName ?? "Unknown"
   }
 }

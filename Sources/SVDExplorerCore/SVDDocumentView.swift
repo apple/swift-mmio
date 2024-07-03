@@ -38,15 +38,17 @@ struct SVDDocumentView: View {
       List {
         ForEach(Array(self.selection).sorted()) { (keyPath: SVDKeyPath) in
           if let item = try? self.document.item(at: keyPath) {
-            SVDItemView(keyPath: keyPath, item: item)
-              .listRowInsets(EdgeInsets())
-              .listRowSeparator(.hidden)
+            Section {
+              SVDItemView(keyPath: keyPath, item: item)
+            } header: {
+              SVDBreadCrumbView(keyPath: keyPath)
+            }
           } else {
-            Text("Failed to locate item: \(keyPath)")
+            EmptyView()
           }
         }
       }
-      .listStyle(.plain)
+//      .listStyle(.plain)
       .frame(minWidth: 400)
     }
     .frame(minHeight: 400)
