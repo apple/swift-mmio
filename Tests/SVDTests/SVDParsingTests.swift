@@ -25,7 +25,7 @@ extension FormatStyle where Self == Duration.UnitsFormatStyle {
   }
 }
 
-final class SVDTests: XCTestCase {
+final class SVDParsingTests: XCTestCase {
   struct TestError: Error, CustomStringConvertible {
     var description: String
   }
