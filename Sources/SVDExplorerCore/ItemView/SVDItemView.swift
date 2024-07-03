@@ -18,12 +18,6 @@ struct SVDItemView: View {
 
   var body: some View {
     VStack(alignment: .leading) {
-//      VStack(alignment: .leading, spacing: 0) {
-//        Divider()
-//        SVDBreadCrumbView(keyPath: self.$keyPath)
-//          .padding(2)
-//        Divider()
-//      }
       Group {
         switch self.item {
         case .device(let device):
@@ -40,13 +34,6 @@ struct SVDItemView: View {
       }
       .padding(8)
       Spacer()
-    }.frame(minHeight: 200)
+    }.frame(minHeight: 100)
   }
 }
-
-//#Preview {
-//  SVDItemView(
-//    keyPath: .init,
-//    item: <#T##SVDItem#>
-//  )
-//}

@@ -15,7 +15,7 @@ struct WelcomeRecentFilesListView: View {
   @State var selection: Set<URL> = []
   @State var recentFiles: [URL] = []
 
-  @Environment(\.openURL) var openURL
+  @Environment(\.openDocument) var openDocument
   @Environment(\.dismissWindow) var dismissWindow
 
   var body: some View {
@@ -23,6 +23,8 @@ struct WelcomeRecentFilesListView: View {
       WelcomeRecentFileView(file: file)
     }
     .listStyle(.sidebar)
+    .background(.ultraThinMaterial)
+
     .contextMenu(forSelectionType: URL.self) { files in
       if files.isEmpty {
         EmptyView()
@@ -32,10 +34,13 @@ struct WelcomeRecentFilesListView: View {
         }
       }
     } primaryAction: { files in
-      for file in files {
-        openURL(file)
+      Task { @MainActor in
+        for file in files {
+          // FIXME: Emit alert if open fails
+          try? await self.openDocument(at: file)
+        }
+        self.dismissWindow()
       }
-      self.dismissWindow()
     }
     .onAppear {
       self.recentFiles = NSDocumentController.shared.recentDocumentURLs

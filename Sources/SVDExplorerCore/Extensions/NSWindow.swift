@@ -9,23 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftUI
-import SVD
+import AppKit
 
-struct SVDClusterItemView: View {
-  var cluster: SVDCluster
-
-  var body: some View {
-    VStack(alignment: .leading) {
-      HStack {
-        SVDHeaderImage(kind: .cluster)
-        SVDHeaderTitleView(
-          alignment: .leading,
-          title: SVDItemKind.cluster.displayName,
-          text: self.cluster.name)
-      }
-      Text(self.cluster.description.svdNormalizedText)
-      Divider()
-    }
+extension NSWindow {
+  func removeTrafficLights() {
+    self.standardWindowButton(.closeButton)?.isHidden = true
+    self.standardWindowButton(.miniaturizeButton)?.isHidden = true
+    self.standardWindowButton(.zoomButton)?.isHidden = true
   }
 }

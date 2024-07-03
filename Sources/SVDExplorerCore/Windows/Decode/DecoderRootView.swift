@@ -15,10 +15,62 @@ import SwiftUI
 struct DecoderRootView: View {
   var register: SVDRegister
 
+  @State var text: String = "0"
+  @FocusState private var isFocused: Bool
+  @State private var base: Int = 0
+
   var body: some View {
-    SVDHeaderImage(kind: .register)
-      .navigationTitle("\(self.register.name) - Decoder")
-      .toolbarTitleDisplayMode(.inline)
+    VStack {
+      Text(self.text)
+        .focusable()
+        .focused($isFocused)
+        .onAppear {
+          self.isFocused = true
+        }
+        .lineLimit(1)
+        .padding()
+        .textFieldStyle(.plain)
+        .multilineTextAlignment(.trailing)
+      //        .background(.red)
+        .font(.system(size: 40, design: .monospaced))
+        .fontDesign(.monospaced)
+        .minimumScaleFactor(0.01)
+
+      Divider()
+      Spacer()
+    }
+    .onKeyPress { press in
+      text.append(contentsOf: press.characters)
+      return .handled
+    }
+
+    .navigationTitle(self.register.name)
+    .toolbarTitleDisplayMode(.inlineLarge)
+    .toolbar {
+      ToolbarItem(placement: .navigation) {
+        Image(systemName: "scope")
+          .foregroundColor(.purple)
+      }
+
+      ToolbarItem {
+        Picker("Base", selection: self.$base) {
+          Text("8").tag(0)
+          Text("10").tag(1)
+          Text("16").tag(2)
+        }
+        .pickerStyle(.segmented)
+      }
+
+      ToolbarItem(id: "clear", placement: .destructiveAction) {
+        Button {
+          print("clear pressed")
+        } label: {
+          Image(systemName: "clear")
+            .foregroundColor(.red)
+        }
+      }
+    }
+    .toolbarRole(.automatic)
   }
 }
 

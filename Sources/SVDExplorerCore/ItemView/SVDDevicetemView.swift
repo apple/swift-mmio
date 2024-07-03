@@ -28,7 +28,7 @@ struct SVDDeviceItemView: View {
           text: self.device.name)
       }
       if let description = self.device.description {
-        Text(description)
+        Text(description.svdNormalizedText)
       }
       HStack {
         Button("Show Vendor Details") { self.showVendorDetails.toggle() }
@@ -36,43 +36,55 @@ struct SVDDeviceItemView: View {
       }
       Divider()
 
-      VStack(alignment: .descriptionTitleAlignment, spacing: 8) {
-        SVDItemDescriptionView(title: "Vendor", text: self.device.vendor ?? "Unknown")
+
+
+      
+        foo("Vendor", value: self.device.vendor ?? "Unknown")
         if self.showVendorDetails {
-          SVDItemDescriptionView(title: "ID", text: self.device.vendorID ?? "Unknown")
-          SVDItemDescriptionView(title: "Series", text: self.device.series ?? "Unknown")
-          SVDItemDescriptionView(title: "Version", text: self.device.version ?? "Unknown")
+          foo("ID", value: self.device.vendorID ?? "Unknown")
+          foo("Series", value: self.device.series ?? "Unknown")
+          foo("Version", value: self.device.version ?? "Unknown")
           Divider()
         }
-        SVDItemDescriptionView(title: "CPU", text: self.device.cpu.map { "\($0.name)" } ?? "Unknown")
-        if self.showCPUDetails, let cpu = self.device.cpu {
+        foo("CPU", value: self.device.cpu.map { "\($0.name)" } ?? "Unknown")
+        if let cpu = self.device.cpu, self.showCPUDetails {
           Group {
-            SVDItemDescriptionView(title: "Revision", text: "\(cpu.revision)")
-            SVDItemDescriptionView(title: "Endianness", text: "\(cpu.endian)")
-            SVDItemDescriptionView(title: "MPU Present", text: "\(cpu.mpuPresent)")
-            SVDItemDescriptionView(title: "FPU Present", text: "\(cpu.fpuPresent)")
-            SVDItemDescriptionView(title: "FPU Double Precision", text: "\(cpu.fpuDP?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "DSP Present", text: "\(cpu.dspPresent?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "ICache Present", text: "\(cpu.icachePresent?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "DCache Present", text: "\(cpu.dcachePresent?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "ITCM Present", text: "\(cpu.itcmPresent?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "DTCM Present", text: "\(cpu.dtcmPresent?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "VTOR Present", text: "\(cpu.vtorPresent?.description ?? "Unknown")")
-            SVDItemDescriptionView(title: "NVIC Priority Bits", text: "\(cpu.nvicPrioBits)")
-            SVDItemDescriptionView(title: "Vendor System Tick Config", text: "\(cpu.vendorSystickConfig)")
-            SVDItemDescriptionView(title: "Device Interrupt Count", text: "\(cpu.deviceNumInterrupts?.description ?? "Unknown")")
-//            SVDItemDescriptionView(title: "Security Attribution Unit Num Regions", text: "\(cpu.sauNumRegions)")
-//            SVDItemDescriptionView(title: "Security Attribution Unit Regions Config", text: "\(cpu.sauRegionsConfig)")
-            Divider()
+              foo("Revision", value: "\(cpu.revision)")
+              foo("Endianness", value: "\(cpu.endian)")
+              foo("MPU Present", value: "\(cpu.mpuPresent)")
+              foo("FPU Present", value: "\(cpu.fpuPresent)")
+              foo("FPU Double Precision", value: "\(cpu.fpuDP?.description ?? "Unknown")")
+              foo("DSP Present", value: "\(cpu.dspPresent?.description ?? "Unknown")")
+              foo("ICache Present", value: "\(cpu.icachePresent?.description ?? "Unknown")")
+              foo("DCache Present", value: "\(cpu.dcachePresent?.description ?? "Unknown")")
+              foo("ITCM Present", value: "\(cpu.itcmPresent?.description ?? "Unknown")")
+              foo("DTCM Present", value: "\(cpu.dtcmPresent?.description ?? "Unknown")")
+              foo("VTOR Present", value: "\(cpu.vtorPresent?.description ?? "Unknown")")
+              foo("NVIC Priority Bits", value: "\(cpu.nvicPrioBits)")
+              foo("Vendor System Tick Config", value: "\(cpu.vendorSystickConfig)")
+              foo("Device Interrupt Count", value: "\(cpu.deviceNumInterrupts?.description ?? "Unknown")")
+              foo("Security Attribution Unit Num Regions", value: "\(cpu.sauNumRegions)")
+              foo("Security Attribution Unit Regions Config", value: "\(cpu.sauRegionsConfig)")
+              Divider()
           }
         }
-        SVDItemDescriptionView(title: "Address Unit\nBit-width", text: "\(self.device.addressUnitBits)")
-        SVDItemDescriptionView(title: "Data Bit-width", text: "\(self.device.width)")
-        SVDItemDescriptionView(title: "Register Properties", text: "\(self.device.registerProperties)")
+        foo("Address Unit Bit-width", value: "\(self.device.addressUnitBits)")
+        foo("Data Bit-width", value: "\(self.device.width)")
+        foo("Register Properties", value: "\(self.device.registerProperties)")
         Divider()
-        SVDItemDescriptionView(title: "License Text", text: self.device.licenseText?.svdNormalizedText ?? "Unknown")
+        foo("License Text", value: self.device.licenseText?.svdNormalizedText ?? "Unknown")
           .font(.system(.body).monospaced())
-      }
     }
   }
+}
+
+func foo(_ title: String, value: String) -> some View {
+  LabeledContent {
+    Text(value)
+      .foregroundColor(Color(nsColor: .textColor))
+  } label: {
+    Text(title)
+//      .font(.system(.headline, design: .default))
+      .foregroundColor(Color(nsColor: .secondaryLabelColor))
+  }.padding([.bottom], 4)
 }

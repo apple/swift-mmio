@@ -39,7 +39,7 @@ struct SVDFieldItemView: View {
           text: "\(self.range.lowerBound):\(self.range.upperBound)")
       }
       if let description = self.field.description {
-        Text(description)
+        Text(description.svdNormalizedText)
       }
       Divider()
       if let access = self.field.access {

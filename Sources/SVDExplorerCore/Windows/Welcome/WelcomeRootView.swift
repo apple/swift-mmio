@@ -19,7 +19,6 @@ struct WelcomeRootView: View {
       WelcomeRecentFilesListView()
         .frame(width: 280)
     }
-//    .edgesIgnoringSafeArea(.top)
     // FIXME: implement drag and drop
   }
 }

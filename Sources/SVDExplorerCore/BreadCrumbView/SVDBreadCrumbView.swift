@@ -34,7 +34,9 @@ struct SVDBreadCrumbView: View {
       .device("Some Device"),
       .peripheral("Some Peripheral"),
       .cluster("Some Cluster"),
+      .cluster("Some Cluster2"),
       .register("Some Register"),
       .field("Some Field"),
     ]))
+    .frame(minWidth: 200, minHeight: 80)
 }

@@ -34,7 +34,7 @@ struct SVDRegisterItemView: View {
           text: "\(self.register.addressOffset)")
       }
       if let description = self.register.description {
-        Text(description)
+        Text(description.svdNormalizedText)
       }
       Divider()
 

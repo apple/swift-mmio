@@ -20,7 +20,7 @@ struct SVDHeaderImage: View {
       .resizable()
       .aspectRatio(contentMode: .fit)
       .foregroundColor(self.kind.imageColor)
-      .frame(width: 48, height: 48)
+      .frame(width: 32, height: 32)
       .padding([.leading, .trailing], 4)
   }
 }

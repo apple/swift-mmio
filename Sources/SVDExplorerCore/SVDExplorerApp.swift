@@ -13,16 +13,25 @@ import SwiftUI
 import SVD
 
 public struct SVDExplorerApp: App {
-//  @NSApplicationDelegateAdaptor var appDelegate: SVDExplorerAppDelegate
-
   public var body: some Scene {
+    Window("Decoder", id: "decoder") {
+      DecoderRootView(register: register)
+    }
+
     Window("Welcome to SVD Explorer", id: "welcome") {
       WelcomeRootView()
+        .edgesIgnoringSafeArea(.top)
         .frame(height: 440)
-//        .toolbar(removing: .title)
-//        .toolbarBackground(.hidden, for: .windowToolbar)
+        .toolbar(removing: .title)
+        .gesture(WindowDragGesture())
+        .task {
+          // FIXME: Remove Traffic lights
+          // there has to be a better way
+          NSApp.windows
+            .first { $0.identifier?.rawValue == "welcome" }?
+            .removeTrafficLights()
+        }
     }
-    .windowToolbarStyle(.unified)
     .windowStyle(.hiddenTitleBar)
     .windowResizability(.contentSize)
 
@@ -44,8 +53,3 @@ public struct SVDExplorerApp: App {
   public init() {}
 }
 
-//final class SVDExplorerAppDelegate: NSObject, NSApplicationDelegate {
-//  func applicationDidFinishLaunching(_ notification: Notification) {
-//    print(NSDocumentController.shared.recentDocumentURLs)
-//  }
-//}

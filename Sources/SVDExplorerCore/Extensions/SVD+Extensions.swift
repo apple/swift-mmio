@@ -9,23 +9,27 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftUI
 import SVD
 
-struct SVDClusterItemView: View {
-  var cluster: SVDCluster
-
-  var body: some View {
-    VStack(alignment: .leading) {
-      HStack {
-        SVDHeaderImage(kind: .cluster)
-        SVDHeaderTitleView(
-          alignment: .leading,
-          title: SVDItemKind.cluster.displayName,
-          text: self.cluster.name)
-      }
-      Text(self.cluster.description.svdNormalizedText)
-      Divider()
+extension SVDAccess {
+  var displayName: String {
+    switch self {
+    case .readOnly:
+      "Read Only"
+    case .writeOnly:
+      "Write Only"
+    case .readWrite:
+      "Read Write"
+    case .writeOnce:
+      "Write Once"
+    case .readWriteOnce:
+      "Read Write Once"
     }
+  }
+}
+
+extension SVDField {
+  var accessDisplayName: String {
+    self.access?.displayName ?? "Unknown"
   }
 }

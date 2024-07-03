@@ -12,6 +12,8 @@
 import SwiftUI
 
 struct SVDExplorerAboutView: View {
+  static let licenseURL = URL(string: "https://swift.org/LICENSE.txt")!
+
   @Environment(\.openURL) var openURL
 
   var body: some View {
@@ -44,7 +46,7 @@ struct SVDExplorerAboutView: View {
         HStack {
           Spacer()
           Button("License") {
-            self.openURL(URL(string: "https://swift.org/LICENSE.txt")!)
+            self.openURL(Self.licenseURL)
           }
           .buttonStyle(.borderedProminent)
         }
