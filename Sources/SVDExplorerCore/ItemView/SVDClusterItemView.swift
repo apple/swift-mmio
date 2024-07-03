@@ -24,6 +24,8 @@ struct SVDClusterItemView: View {
           title: SVDItemKind.cluster.displayName,
           text: self.cluster.name)
       }
+      Text(self.cluster.description)
+      Divider()
     }
   }
 }

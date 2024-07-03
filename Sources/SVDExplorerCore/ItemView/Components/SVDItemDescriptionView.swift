@@ -20,8 +20,20 @@ struct SVDItemDescriptionView: View {
       Text(self.title)
         .font(.system(.headline, design: .default))
         .foregroundColor(Color(nsColor: .secondaryLabelColor))
-        .frame(width: 200, alignment: .trailing)
+        .frame(alignment: .trailing)
+        .alignmentGuide(.descriptionTitleAlignment) { $0[.trailing] }
       Text(self.text)
     }
   }
+}
+
+#Preview {
+  SVDItemDescriptionView(title: "Hello", text: "World")
+}
+
+extension HorizontalAlignment {
+  private enum DescriptionTitleAlignment: AlignmentID {
+    static func defaultValue(in d: ViewDimensions) -> CGFloat { d[.leading] }
+  }
+  static let descriptionTitleAlignment = HorizontalAlignment(DescriptionTitleAlignment.self)
 }

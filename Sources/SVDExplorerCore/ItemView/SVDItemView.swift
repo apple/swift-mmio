@@ -38,7 +38,7 @@ struct SVDItemView: View {
           SVDFieldItemView(field: field)
         }
       }
-      .padding()
+      .padding(8)
       Spacer()
     }.frame(minHeight: 200)
   }

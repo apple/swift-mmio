@@ -24,3 +24,11 @@ struct SVDHeaderImage: View {
       .padding([.leading, .trailing], 4)
   }
 }
+
+#Preview {
+  SVDHeaderImage(kind: .device)
+  SVDHeaderImage(kind: .peripheral)
+  SVDHeaderImage(kind: .cluster)
+  SVDHeaderImage(kind: .register)
+  SVDHeaderImage(kind: .field)
+}

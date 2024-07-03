@@ -30,8 +30,9 @@ struct SVDPeripheralItemView: View {
           text: "\(hex: self.peripheral.baseAddress, bits: 32)")
       }
       if let description = self.peripheral.description {
-        SVDItemDescriptionView(title: "Description", text: description)
+        Text(description)
       }
+      Divider()
     }
   }
 }

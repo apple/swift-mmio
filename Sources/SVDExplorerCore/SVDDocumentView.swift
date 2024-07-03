@@ -14,9 +14,16 @@ import SwiftUI
 
 struct SVDDocumentView: View {
   var document: SVDDocument
-  @State private var sortOrder = 0
+  @State var sortOrder = 0
 
-  @State var selection: Set<SVDKeyPath> = []
+  @State var selection: Set<SVDKeyPath>
+
+  init(document: SVDDocument) {
+    self.document = document
+    self.selection =  [
+      .init(components: [.init(kind: .device, name: document.device.name)])
+    ]
+  }
 
   var body: some View {
     let _ = Self._printChanges()
@@ -48,7 +55,7 @@ struct SVDDocumentView: View {
           }
         }
       }
-//      .listStyle(.plain)
+      .listStyle(.plain)
       .frame(minWidth: 400)
     }
     .frame(minHeight: 400)

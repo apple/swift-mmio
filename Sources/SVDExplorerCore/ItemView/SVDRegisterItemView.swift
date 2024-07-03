@@ -33,13 +33,15 @@ struct SVDRegisterItemView: View {
           title: "Address Offset",
           text: "\(self.register.addressOffset)")
       }
+      if let description = self.register.description {
+        Text(description)
+      }
+      Divider()
+
 
       // dimensionElement: SVDDimensionElement = .init()
       // displayName: String?
 
-      if let description = self.register.description {
-        SVDItemDescriptionView(title: "Description", text: description)
-      }
 
       // alternateGroup: String?
       // alternateRegister: String?

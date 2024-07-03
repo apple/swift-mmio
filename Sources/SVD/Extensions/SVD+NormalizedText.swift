@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 extension String {
-  var svdNormalizedText: String {
+  package var svdNormalizedText: String {
     var result = ""
     var currentSelfIndex = self.startIndex
 
@@ -29,11 +29,11 @@ extension String {
 
       switch character {
       case " ":
-        if result.last != " " && result.last != "\n" {
+        if result.last != "\n", result.last != nil, result.last != " " {
           result.append(character)
         }
       case "\n":
-        if result.last != "\n" {
+        if result.last != "\n", result.last != nil {
           if result.last == " " {
             result.removeLast()
           }

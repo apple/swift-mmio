@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct SVDHeaderTitleView: View {
-  var alignment: HorizontalAlignment = .center
+  var alignment: HorizontalAlignment
   var title: String
   var text: String
 
@@ -25,4 +25,12 @@ struct SVDHeaderTitleView: View {
         .font(.system(.title2, design: .monospaced))
     }
   }
+}
+
+#Preview {
+  SVDHeaderTitleView(
+    alignment: .leading,
+    title: "Some Title",
+    text: "Some Text")
+    .frame(width: 100, height: 40)
 }
