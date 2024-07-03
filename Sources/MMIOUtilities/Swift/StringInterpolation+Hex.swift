@@ -27,20 +27,26 @@ extension String.StringInterpolation {
   }
 
   public mutating func appendInterpolation<Integer>(
-    hex value: Integer
+    hex value: Integer,
+    prefix: Bool = true
   ) where Integer: FixedWidthInteger {
-    self._appendInterpolation(hex: value, bits: nil)
+    self._appendInterpolation(hex: value, prefix: prefix, bits: nil)
   }
 
   public mutating func appendInterpolation<Integer>(
     hex value: Integer,
+    prefix: Bool = true,
     bits requestedBitWidth: some FixedWidthInteger
   ) where Integer: FixedWidthInteger {
-    self._appendInterpolation(hex: value, bits: Int(requestedBitWidth))
+    self._appendInterpolation(
+      hex: value,
+      prefix: prefix,
+      bits: Int(requestedBitWidth))
   }
 
   mutating func _appendInterpolation<Integer>(
     hex value: Integer,
+    prefix: Bool,
     bits requestedBitWidth: Int?
   ) where Integer: FixedWidthInteger {
     let typeBitWidth = MemoryLayout<Integer>.size * 8
@@ -67,7 +73,9 @@ extension String.StringInterpolation {
     value >>= paddingBitWidth
     let nibbleMask = Integer.Magnitude(0b1111)
 
-    self.appendLiteral("0x")
+    if prefix {
+      self.appendLiteral("0x")
+    }
     for digit in 0..<digits {
       if digit != 0, (digit - digitsBeforeSeparator) % segmentWidth == 0 {
         self.appendLiteral("_")

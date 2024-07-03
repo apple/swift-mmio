@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 // FIXME: Support path based derivedFrom
-// CMSIS-SVD 1.3.9: /device/pripherals/peripheral/registers/.../cluster element
+// CMSIS-SVD 1.3.9: /device/peripherals/peripheral/registers/.../cluster element
 // Specify the cluster name from which to inherit data. Elements specified
 // subsequently override inherited values.
 //
