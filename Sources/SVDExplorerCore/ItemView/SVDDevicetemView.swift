@@ -30,16 +30,24 @@ struct SVDDeviceItemView: View {
       if let description = self.device.description {
         Text(description.svdNormalizedText)
       }
-      HStack {
-        Button("Show Vendor Details") { self.showVendorDetails.toggle() }
-        Button("Show CPU Details") { self.showCPUDetails.toggle() }
-      }
       Divider()
 
+      Grid {
+        GridRow {
+          Toggle(isOn: self.$showVendorDetails) {
+            Image(systemName: self.showVendorDetails ? "chevron.down" : "chevron.forward")
+          }
+          .toggleStyle(.button)
+          .buttonStyle(.plain)
+          Text("Vendor")
+            .foregroundColor(Color(nsColor: .secondaryLabelColor))
+            .gridColumnAlignment(.trailing)
+          Text(self.device.vendor ?? "Unknown")
+            .foregroundColor(Color(nsColor: .textColor))
+            .gridColumnAlignment(.leading)
+        }
 
 
-      
-        foo("Vendor", value: self.device.vendor ?? "Unknown")
         if self.showVendorDetails {
           foo("ID", value: self.device.vendorID ?? "Unknown")
           foo("Series", value: self.device.series ?? "Unknown")
@@ -74,17 +82,28 @@ struct SVDDeviceItemView: View {
         Divider()
         foo("License Text", value: self.device.licenseText?.svdNormalizedText ?? "Unknown")
           .font(.system(.body).monospaced())
+      }
+
+
     }
   }
 }
 
 func foo(_ title: String, value: String) -> some View {
-  LabeledContent {
+  GridRow {
+    Image(systemName: "chevron.down")
+      .toggleStyle(.button)
+      .buttonStyle(.plain)
+      .opacity(0)
+    Text(title)
+      .foregroundColor(Color(nsColor: .secondaryLabelColor))
+      .gridColumnAlignment(.trailing)
     Text(value)
       .foregroundColor(Color(nsColor: .textColor))
-  } label: {
-    Text(title)
-//      .font(.system(.headline, design: .default))
-      .foregroundColor(Color(nsColor: .secondaryLabelColor))
-  }.padding([.bottom], 4)
+      .gridColumnAlignment(.leading)
+  }
+}
+
+struct MyGridRow {
+
 }

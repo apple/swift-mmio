@@ -22,9 +22,10 @@ struct WelcomeRecentFilesListView: View {
     List(self.recentFiles, id: \.self, selection: self.$selection) { file in
       WelcomeRecentFileView(file: file)
     }
+    .scrollContentBackground(.hidden)
     .listStyle(.sidebar)
-    .background(.ultraThinMaterial)
-
+//    .background(listBackgroundColor)
+    .background(.thinMaterial)
     .contextMenu(forSelectionType: URL.self) { files in
       if files.isEmpty {
         EmptyView()
@@ -34,6 +35,7 @@ struct WelcomeRecentFilesListView: View {
         }
       }
     } primaryAction: { files in
+      // FIXME: this is broken and crashes
       Task { @MainActor in
         for file in files {
           // FIXME: Emit alert if open fails

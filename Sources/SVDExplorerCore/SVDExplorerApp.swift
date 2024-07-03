@@ -24,6 +24,7 @@ public struct SVDExplorerApp: App {
         .frame(height: 440)
         .toolbar(removing: .title)
         .gesture(WindowDragGesture())
+        .containerBackground(.clear, for: .window)
         .task {
           // FIXME: Remove Traffic lights
           // there has to be a better way
