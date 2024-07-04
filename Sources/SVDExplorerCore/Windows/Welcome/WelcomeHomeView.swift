@@ -11,7 +11,6 @@
 
 import SwiftUI
 import AppKit
-import Foundation
 
 struct WelcomeView: View {
   var body: some View {

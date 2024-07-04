@@ -33,77 +33,39 @@ struct SVDDeviceItemView: View {
       Divider()
 
       Grid {
-        GridRow {
-          Toggle(isOn: self.$showVendorDetails) {
-            Image(systemName: self.showVendorDetails ? "chevron.down" : "chevron.forward")
-          }
-          .toggleStyle(.button)
-          .buttonStyle(.plain)
-          Text("Vendor")
-            .foregroundColor(Color(nsColor: .secondaryLabelColor))
-            .gridColumnAlignment(.trailing)
-          Text(self.device.vendor ?? "Unknown")
-            .foregroundColor(Color(nsColor: .textColor))
-            .gridColumnAlignment(.leading)
-        }
-
-
+        SVDItemExpandableGridRow(isOn: self.$showVendorDetails, title: "Vendor", description: self.device.vendor ?? "Unknown")
         if self.showVendorDetails {
-          foo("ID", value: self.device.vendorID ?? "Unknown")
-          foo("Series", value: self.device.series ?? "Unknown")
-          foo("Version", value: self.device.version ?? "Unknown")
-          Divider()
+          SVDItemGridRow(title: "ID", description: self.device.vendorID ?? "Unknown")
+          SVDItemGridRow(title: "Series", description: self.device.series ?? "Unknown")
+          SVDItemGridRow(title: "Version", description: self.device.version ?? "Unknown")
+          Divider().gridCellUnsizedAxes(.horizontal)
         }
-        foo("CPU", value: self.device.cpu.map { "\($0.name)" } ?? "Unknown")
+        SVDItemExpandableGridRow(isOn: self.$showCPUDetails, title: "CPU", description: self.device.cpu.map { "\($0.name)" } ?? "Unknown")
         if let cpu = self.device.cpu, self.showCPUDetails {
-          Group {
-              foo("Revision", value: "\(cpu.revision)")
-              foo("Endianness", value: "\(cpu.endian)")
-              foo("MPU Present", value: "\(cpu.mpuPresent)")
-              foo("FPU Present", value: "\(cpu.fpuPresent)")
-              foo("FPU Double Precision", value: "\(cpu.fpuDP?.description ?? "Unknown")")
-              foo("DSP Present", value: "\(cpu.dspPresent?.description ?? "Unknown")")
-              foo("ICache Present", value: "\(cpu.icachePresent?.description ?? "Unknown")")
-              foo("DCache Present", value: "\(cpu.dcachePresent?.description ?? "Unknown")")
-              foo("ITCM Present", value: "\(cpu.itcmPresent?.description ?? "Unknown")")
-              foo("DTCM Present", value: "\(cpu.dtcmPresent?.description ?? "Unknown")")
-              foo("VTOR Present", value: "\(cpu.vtorPresent?.description ?? "Unknown")")
-              foo("NVIC Priority Bits", value: "\(cpu.nvicPrioBits)")
-              foo("Vendor System Tick Config", value: "\(cpu.vendorSystickConfig)")
-              foo("Device Interrupt Count", value: "\(cpu.deviceNumInterrupts?.description ?? "Unknown")")
-              foo("Security Attribution Unit Num Regions", value: "\(cpu.sauNumRegions)")
-              foo("Security Attribution Unit Regions Config", value: "\(cpu.sauRegionsConfig)")
-              Divider()
-          }
+          SVDItemGridRow(title: "Revision", description: "\(cpu.revision)")
+          SVDItemGridRow(title: "Endianness", description: "\(cpu.endian)")
+          SVDItemGridRow(title: "MPU Present", description: "\(cpu.mpuPresent)")
+          SVDItemGridRow(title: "FPU Present", description: "\(cpu.fpuPresent)")
+          SVDItemGridRow(title: "FPU Double Precision", description: "\(cpu.fpuDP?.description ?? "Unknown")")
+          SVDItemGridRow(title: "DSP Present", description: "\(cpu.dspPresent?.description ?? "Unknown")")
+          SVDItemGridRow(title: "ICache Present", description: "\(cpu.icachePresent?.description ?? "Unknown")")
+          SVDItemGridRow(title: "DCache Present", description: "\(cpu.dcachePresent?.description ?? "Unknown")")
+          SVDItemGridRow(title: "ITCM Present", description: "\(cpu.itcmPresent?.description ?? "Unknown")")
+          SVDItemGridRow(title: "DTCM Present", description: "\(cpu.dtcmPresent?.description ?? "Unknown")")
+          SVDItemGridRow(title: "VTOR Present", description: "\(cpu.vtorPresent?.description ?? "Unknown")")
+          SVDItemGridRow(title: "NVIC Priority Bits", description: "\(cpu.nvicPrioBits)")
+          SVDItemGridRow(title: "Vendor System Tick Config", description: "\(cpu.vendorSystickConfig)")
+          SVDItemGridRow(title: "Device Interrupt Count", description: "\(cpu.deviceNumInterrupts?.description ?? "Unknown")")
+          SVDItemGridRow(title: "Security Attribution Unit\nNum Regions", description: "\(cpu.sauNumRegions)")
+          SVDItemGridRow(title: "Security Attribution Unit\nRegions Config", description: "\(cpu.sauRegionsConfig)")
+          Divider().gridCellUnsizedAxes(.horizontal)
         }
-        foo("Address Unit Bit-width", value: "\(self.device.addressUnitBits)")
-        foo("Data Bit-width", value: "\(self.device.width)")
-        foo("Register Properties", value: "\(self.device.registerProperties)")
-        Divider()
-        foo("License Text", value: self.device.licenseText?.svdNormalizedText ?? "Unknown")
-          .font(.system(.body).monospaced())
+        SVDItemGridRow(title: "Address Unit Bit-width", description: "\(self.device.addressUnitBits)")
+        SVDItemGridRow(title: "Data Bit-width", description: "\(self.device.width)")
+        SVDItemGridRow(title: "Register Properties", description: "\(self.device.registerProperties)")
+        Divider().gridCellUnsizedAxes(.horizontal)
+        SVDItemGridRow(title: "License Text", description: self.device.licenseText?.svdNormalizedText ?? "Unknown")
       }
-
-
     }
   }
-}
-
-func foo(_ title: String, value: String) -> some View {
-  GridRow {
-    Image(systemName: "chevron.down")
-      .toggleStyle(.button)
-      .buttonStyle(.plain)
-      .opacity(0)
-    Text(title)
-      .foregroundColor(Color(nsColor: .secondaryLabelColor))
-      .gridColumnAlignment(.trailing)
-    Text(value)
-      .foregroundColor(Color(nsColor: .textColor))
-      .gridColumnAlignment(.leading)
-  }
-}
-
-struct MyGridRow {
-
 }
