@@ -16,7 +16,12 @@ public struct SVDExplorerApp: App {
   public var body: some Scene {
     Window("Decoder", id: "decoder") {
       DecoderRootView(register: register)
+//        .edgesIgnoringSafeArea(.top)
+        .containerBackground(.thickMaterial, for: .window)
+        .preferredColorScheme(.dark)
     }
+    .windowStyle(.hiddenTitleBar)
+
 
     Window("Welcome to SVD Explorer", id: "welcome") {
       WelcomeRootView()
@@ -24,7 +29,7 @@ public struct SVDExplorerApp: App {
         .frame(height: 440)
         .toolbar(removing: .title)
         .gesture(WindowDragGesture())
-        .containerBackground(.clear, for: .window)
+        .containerBackground(.thinMaterial, for: .window)
         .task {
           // FIXME: Remove Traffic lights
           // there has to be a better way

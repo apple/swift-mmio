@@ -24,8 +24,6 @@ struct WelcomeRecentFilesListView: View {
     }
     .scrollContentBackground(.hidden)
     .listStyle(.sidebar)
-//    .background(listBackgroundColor)
-    .background(.thinMaterial)
     .contextMenu(forSelectionType: URL.self) { files in
       if files.isEmpty {
         EmptyView()

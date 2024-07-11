@@ -67,7 +67,7 @@ extension String.StringInterpolation {
     value >>= paddingBitWidth
     let nibbleMask = Integer.Magnitude(0b1111)
 
-    self.appendLiteral("0x")
+//    self.appendLiteral("0x")
     for digit in 0..<digits {
       if digit != 0, (digit - digitsBeforeSeparator) % segmentWidth == 0 {
         self.appendLiteral("_")

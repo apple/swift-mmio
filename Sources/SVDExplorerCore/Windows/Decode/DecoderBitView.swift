@@ -1,13 +1,17 @@
+//===----------------------------------------------------------*- swift -*-===//
 //
-//  BitEditor.swift
+// This source file is part of the Swift MMIO open source project
 //
+// Copyright (c) 2024 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
 //
-//  Created by Rauhul Varma on 7/7/24.
+// See https://swift.org/LICENSE.txt for license information
 //
+//===----------------------------------------------------------------------===//
 
 import SwiftUI
 
-struct BitEditor: View {
+struct DecoderBitView: View {
   @Binding var value: UInt64
   var bitWidth: Int
   var bitRows: Int
@@ -20,63 +24,21 @@ struct BitEditor: View {
     self.bitRows = rows.quotient + rows.remainder.signum()
   }
 
-  @State private var baseSelection = 16
-  var base = [8, 10, 16]
 
   @State var showBinary = true
   @State var showFields = true
 
   var body: some View {
-    VStack {
-      Text("\(hex: self.value, bits: self.bitWidth) \(self.baseSelection)")
-        .font(.system(size: 24, design: .monospaced))
-      Divider()
-      HStack {
-        Toggle(isOn: self.$showBinary) {
-          Text("Show Binary")
+    Grid(alignment: .leading, verticalSpacing: 0) {
+      ForEach(0..<self.bitRows, id: \.self) { row in
+        let row = self.bitRows - row - 1
+        GridRow {
+          Text("").foregroundStyle(.clear)
         }
-        .toggleStyle(.button)
-        .buttonStyle(.borderless)
-
-        Spacer()
-
-        Toggle(isOn: self.$showFields) {
-          Text("Show Fields")
-        }
-        .toggleStyle(.button)
-        .buttonStyle(.borderless)
-
-        Spacer()
-
-        Picker("base", selection: self.$baseSelection) {
-          ForEach(self.base, id: \.self) {
-            Text("\($0)")
-          }
-        }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-        .fixedSize()
+        self.bitGroup32(lsb: row * 32)
+        self.labelRow(lsb: row * 32)
       }
-
-      Divider()
-
-      Grid(alignment: .leading, verticalSpacing: 0) {
-        ForEach(0..<self.bitRows, id: \.self) { row in
-          let row = self.bitRows - row - 1
-          GridRow {
-            Text("").foregroundStyle(.clear)
-            //            .padding(.leading, padding)
-          }
-          self.bitGroup32(lsb: row * 32)
-          self.labelRow(lsb: row * 32)
-
-        }
-        // Forces grid to fill space
-        // GridRow { Color.clear.gridCellColumns(8) }
-      }
-      Divider()
-
-    }.padding()
+    }
   }
 
   @ViewBuilder
@@ -181,19 +143,5 @@ struct BitButtonStyle: ButtonStyle {
 #Preview {
   @Previewable @State var value: UInt64 = 0
   @Previewable @State var bitWidth: Int = 37
-  BitEditor(value: $value, bitWidth: bitWidth)
-}
-
-extension FixedWidthInteger {
-  @inlinable @inline(__always)
-  subscript(bit bit: Int) -> Bool {
-    @inlinable @inline(__always) get {
-      (self >> bit) & 0b1 != 0
-    }
-
-    @inlinable @inline(__always) set {
-      self &= ~(0b1 << bit)
-      self |= ((newValue ? 1 : 0) & 0b1) << bit
-    }
-  }
+  DecoderBitView(value: $value, bitWidth: bitWidth)
 }
