@@ -1,112 +1,199 @@
 //
 //  BitEditor.swift
-//  
+//
 //
 //  Created by Rauhul Varma on 7/7/24.
 //
 
 import SwiftUI
 
-let bitwiseEditorButtonFont: Font = Font.system(size: 12)
-let bitwiseEditorLabelFont: Font = Font.system(size: 10)
-
-
 struct BitEditor: View {
-  var bits: [Bool] = [true, true, true]
+  @Binding var value: UInt64
+  var bitWidth: Int
+  var bitRows: Int
+
+  init(value: Binding<UInt64>, bitWidth: Int) {
+    self._value = value
+    precondition(bitWidth >= 0 && bitWidth <= 64)
+    self.bitWidth = bitWidth
+    let rows = bitWidth.quotientAndRemainder(dividingBy: 32)
+    self.bitRows = rows.quotient + rows.remainder.signum()
+  }
+
+  @State private var baseSelection = 16
+  var base = [8, 10, 16]
+
+  @State var showBinary = true
+  @State var showFields = true
 
   var body: some View {
-    Grid(alignment: .leading, verticalSpacing: 0) {
-//      let bits = appViewModel.inputExpression.bits
+    VStack {
+      Text("\(hex: self.value, bits: self.bitWidth) \(self.baseSelection)")
+        .font(.system(size: 24, design: .monospaced))
+      Divider()
+      HStack {
+        Toggle(isOn: self.$showBinary) {
+          Text("Show Binary")
+        }
+        .toggleStyle(.button)
+        .buttonStyle(.borderless)
 
-      GridRow {
-        ForEach(0 ..< 8, id: \.self) { column in
-          HStack(spacing: 0) {
-            ForEach((0 + (column * 4)) ..< (4 + (column * 4)), id: \.self) { index in
-              bitwiseEditorButton(bits, at: index)
-            }
-            if column != 7 {
-              Spacer()
-            }
+        Spacer()
+
+        Toggle(isOn: self.$showFields) {
+          Text("Show Fields")
+        }
+        .toggleStyle(.button)
+        .buttonStyle(.borderless)
+
+        Spacer()
+
+        Picker("base", selection: self.$baseSelection) {
+          ForEach(self.base, id: \.self) {
+            Text("\($0)")
           }
         }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .fixedSize()
       }
-      .font(bitwiseEditorButtonFont)
 
-      GridRow {
-        Text(verbatim: "63")
-          .padding(.leading, bitwiseEditorLabelTextPadding)
-          .gridCellColumns(4)
-        Text(verbatim: "47")
-          .gridCellColumns(3)
-        Text(verbatim: "32")
-          .padding(.trailing, bitwiseEditorLabelTextPadding)
-          .gridColumnAlignment(.trailing)
-      }
-      .font(bitwiseEditorLabelFont)
+      Divider()
 
-      GridRow {
-        ForEach(8 ..< 16, id: \.self) { column in
-          HStack(spacing: 0) {
-            ForEach((0 + (column * 4)) ..< (4 + (column * 4)), id: \.self) { index in
-              bitwiseEditorButton(bits, at: index)
-            }
+      Grid(alignment: .leading, verticalSpacing: 0) {
+        ForEach(0..<self.bitRows, id: \.self) { row in
+          let row = self.bitRows - row - 1
+          GridRow {
+            Text("").foregroundStyle(.clear)
+            //            .padding(.leading, padding)
           }
-        }
-      }
-      .padding(.top, editorVerticalPadding)
-      .font(bitwiseEditorButtonFont)
+          self.bitGroup32(lsb: row * 32)
+          self.labelRow(lsb: row * 32)
 
-      GridRow {
-        Text(verbatim: "31")
-          .padding(.leading, bitwiseEditorLabelTextPadding)
-          .gridCellColumns(4)
-        Text(verbatim: "15")
-          .gridCellColumns(3)
-        Text(verbatim: "0")
-          .padding(.trailing, bitwiseEditorLabelTextPadding)
+        }
+        // Forces grid to fill space
+        // GridRow { Color.clear.gridCellColumns(8) }
       }
-      .font(bitwiseEditorLabelFont)
-    }
-    .padding(.bottom)
+      Divider()
+
+    }.padding()
   }
 
   @ViewBuilder
-  func bitwiseEditorButton(_ bits: [Bool], at index: Int) -> some View {
-    let value = true // bits[index]
-    let bitLabel = value ? "1" : "0"
-
-    Button {
-//      var newBits = appViewModel.inputExpression.bits
-//      newBits[index] = !newBits[index]
-//      appViewModel.inputExpression.bits = newBits
-    } label: {
-      Text(verbatim: value ? "1" : "0")
-//        .foregroundStyle(.secondary)
+  func labelRow(lsb: Int) -> some View {
+    let padding: CGFloat = 1
+    let middleLsb = lsb + 15
+    let middleMsb = lsb + 16
+    let msb = lsb + 31
+    let upperBitGroup16Active = middleMsb >= self.bitWidth
+    let lowerBitGroup16Active = lsb >= self.bitWidth
+    GridRow {
+      Text("\(msb)")
+        .padding(.leading, padding)
+        .foregroundStyle(upperBitGroup16Active ? .tertiary : .primary)
+      self.emptyCell()
+      self.emptyCell()
+      Text("\(middleMsb)")
+        .padding(.trailing, padding)
+        .foregroundStyle(upperBitGroup16Active ? .tertiary : .primary)
+        .gridColumnAlignment(.trailing)
+      Text("\(middleLsb)")
+        .padding(.leading, padding)
+        .foregroundStyle(lowerBitGroup16Active ? .tertiary : .primary)
+      self.emptyCell()
+      self.emptyCell()
+      Text("\(lsb)")
+        .padding(.trailing, padding)
+        .foregroundStyle(lowerBitGroup16Active ? .tertiary : .primary)
+        .gridColumnAlignment(.trailing)
     }
-    .buttonStyle(BitwiseButtonStyle())
-    // (1|0) zero-based index
-    .accessibilityLabel(Text(bitLabel))
-    .help(Text(bitLabel))
-    .accessibilityValue("\(value ? "1" : "0")")
+    .font(.system(size: 10))
   }
 
+  @ViewBuilder
+  func bitGroup32(lsb: Int) -> some View {
+    GridRow {
+      ForEach(0 ..< 2, id: \.self) { index in
+        let index = 2 - index - 1
+        self.bitGroup16(lsb: lsb + (index * 16))
+      }
+    }
+  }
+
+  @ViewBuilder
+  func bitGroup16(lsb: Int) -> some View {
+    ForEach(0 ..< 4, id: \.self) { index in
+      let index = 4 - index - 1
+      self.bitGroup4(lsb: lsb + (index * 4), last: index == 0)
+    }
+  }
+
+  @ViewBuilder
+  func bitGroup4(lsb: Int, last: Bool) -> some View {
+    HStack(spacing: 0) {
+      ForEach(0 ..< 4, id: \.self) { index in
+        let index = 4 - index - 1
+        self.bit(lsb: lsb + index)
+      }
+      if !last {
+        self.emptyCell()
+      }
+    }
+  }
+
+  @ViewBuilder
+  func bit(lsb: Int) -> some View {
+    let value = self.value[bit: lsb]
+    let bitLabel = value ? "1" : "0"
+    let disabled = lsb >= self.bitWidth
+    Button {
+      self.value[bit: lsb].toggle()
+    } label: {
+      Text(verbatim: bitLabel)
+    }
+    .disabled(disabled)
+    .buttonStyle(BitButtonStyle())
+  }
+
+  @ViewBuilder
+  func emptyCell() -> some View {
+    Spacer().gridCellUnsizedAxes([.vertical, .horizontal])
+  }
 }
 
-let bitwiseEditorLabelTextPadding: CGFloat = 1
-let bitwiseEditorButtonWidth: CGFloat = 9
-let bitwiseEditorHorizontalSpacing: CGFloat = 12
-let editorVerticalPadding: CGFloat = 5.0
+struct BitButtonStyle: ButtonStyle {
+  static let buttonWidth: CGFloat = 9
+  static let font: Font = .system(size: 12)
 
-struct BitwiseButtonStyle: ButtonStyle {
-  func makeBody(configuration: Self.Configuration) -> some View {
-    ZStack {
-      configuration.label
-    }
-    .frame(width: bitwiseEditorButtonWidth)
-    .contentShape(Rectangle())
+  @Environment(\.isEnabled)
+  var isEnabled: Bool
+
+  func makeBody(configuration: Configuration) -> some View {
+    configuration
+      .label
+      .font(Self.font)
+      .foregroundStyle(self.isEnabled ? .secondary : .tertiary)
+      .frame(width: Self.buttonWidth)
+      .contentShape(Rectangle())
   }
 }
 
 #Preview {
-  BitEditor()
+  @Previewable @State var value: UInt64 = 0
+  @Previewable @State var bitWidth: Int = 37
+  BitEditor(value: $value, bitWidth: bitWidth)
+}
+
+extension FixedWidthInteger {
+  @inlinable @inline(__always)
+  subscript(bit bit: Int) -> Bool {
+    @inlinable @inline(__always) get {
+      (self >> bit) & 0b1 != 0
+    }
+
+    @inlinable @inline(__always) set {
+      self &= ~(0b1 << bit)
+      self |= ((newValue ? 1 : 0) & 0b1) << bit
+    }
+  }
 }
