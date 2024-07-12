@@ -18,9 +18,9 @@ public struct SVDExplorerApp: App {
       DecoderRootView(register: register)
 //        .edgesIgnoringSafeArea(.top)
         .containerBackground(.thickMaterial, for: .window)
-        .preferredColorScheme(.dark)
+//        .preferredColorScheme(.dark)
     }
-    .windowStyle(.hiddenTitleBar)
+//    .windowStyle(.hiddenTitleBar)
 
 
     Window("Welcome to SVD Explorer", id: "welcome") {

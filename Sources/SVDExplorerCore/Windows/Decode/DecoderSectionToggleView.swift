@@ -18,7 +18,7 @@ struct DecoderSectionToggleView: View {
   var body: some View {
     Toggle(isOn: self.$isOpen.animation()) {
       HStack(spacing: 4) {
-        Text(self.title.uppercased())
+        Text(self.title)
         Image(systemName: self.isOpen ? "chevron.down" : "chevron.forward")
         Spacer()
       }

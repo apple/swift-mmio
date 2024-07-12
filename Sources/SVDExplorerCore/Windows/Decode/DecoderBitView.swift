@@ -24,10 +24,6 @@ struct DecoderBitView: View {
     self.bitRows = rows.quotient + rows.remainder.signum()
   }
 
-
-  @State var showBinary = true
-  @State var showFields = true
-
   var body: some View {
     Grid(alignment: .leading, verticalSpacing: 0) {
       ForEach(0..<self.bitRows, id: \.self) { row in
@@ -142,6 +138,6 @@ struct BitButtonStyle: ButtonStyle {
 
 #Preview {
   @Previewable @State var value: UInt64 = 0
-  @Previewable @State var bitWidth: Int = 37
+  var bitWidth = 37
   DecoderBitView(value: $value, bitWidth: bitWidth)
 }

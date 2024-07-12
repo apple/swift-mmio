@@ -14,30 +14,23 @@ import SwiftUI
 struct DecoderControlBarView: View {
   @Binding var showBinary: Bool
   @Binding var showFields: Bool
-  @Binding var baseSelection: DecoderBase
+  @Binding var base: DecoderBase
 
   var body: some View {
     HStack {
-//      Toggle(isOn: self.$showBinary.animation()) {
-//        Text(self.showBinary ? "Hide Binary" : "Show Binary")
-//      }
-//      .toggleStyle(.button)
-//      .buttonStyle(.plain)
-//
-//      Spacer()
-//
-//      Toggle(isOn: self.$showFields.animation()) {
-//        Text(self.showFields ? "Hide Fields" : "Show Fields")
-//      }
-//      .toggleStyle(.button)
-//      .buttonStyle(.plain)
-//
       Spacer()
 
       Button {
-        
+
       } label: {
-        Image(systemName: "xmark")
+        Text("0s")
+          .foregroundColor(.primary)
+      }
+
+      Button {
+
+      } label: {
+        Text("1s")
           .foregroundColor(.primary)
       }
 
@@ -49,7 +42,7 @@ struct DecoderControlBarView: View {
       }
 
 
-      Picker("base", selection: self.$baseSelection) {
+      Picker("base", selection: self.$base) {
         ForEach(DecoderBase.allCases, id: \.self) {
           Text($0.displayText)
         }
@@ -64,10 +57,10 @@ struct DecoderControlBarView: View {
 #Preview {
   @Previewable @State var showBinary = true
   @Previewable @State var showFields = true
-  @Previewable @State var baseSelection: DecoderBase = .hexadecimal
+  @Previewable @State var base: DecoderBase = .hexadecimal
   DecoderControlBarView(
     showBinary: $showBinary,
     showFields: $showFields,
-    baseSelection: $baseSelection)
+    base: $base)
   .containerBackground(.thickMaterial, for: .window)
 }

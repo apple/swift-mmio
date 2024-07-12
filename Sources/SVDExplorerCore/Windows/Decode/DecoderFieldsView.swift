@@ -14,6 +14,8 @@ import SVD
 
 struct DecoderFieldsView: View {
   @Binding var value: UInt64
+  @Binding var base: DecoderBase
+
   var register: SVDRegister
 
   var body: some View {
@@ -29,7 +31,10 @@ struct DecoderFieldsView: View {
       .fontWeight(.bold)
 
       ForEach(self.register.fields?.field ?? []) { field in
-        DecoderFieldView(value: self.$value, field: field)
+        DecoderFieldView(
+          value: self.$value,
+          base: self.$base,
+          field: field)
       }
     }
   }
@@ -37,5 +42,7 @@ struct DecoderFieldsView: View {
 
 #Preview {
   @Previewable @State var value: UInt64 = 0
-  DecoderFieldsView(value: $value, register: register)
+  @Previewable @State var base: DecoderBase = .octal
+
+  DecoderFieldsView(value: $value, base: $base, register: register)
 }

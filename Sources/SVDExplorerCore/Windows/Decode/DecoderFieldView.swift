@@ -14,6 +14,8 @@ import SVD
 
 struct DecoderFieldView: View {
   @Binding var value: UInt64
+  @Binding var base: DecoderBase
+
   var field: SVDField
   var bitRange: Range<UInt64> { self.field.bitRange.range }
   var _bitRange: Range<Int> { Int(self.bitRange.lowerBound)..<Int(self.bitRange.upperBound) }
@@ -23,21 +25,11 @@ struct DecoderFieldView: View {
       Text("\(self.field.name)")
         .gridColumnAlignment(.leading)
       Spacer()
-      HStack(alignment: .lastTextBaseline, spacing: 0) {
-        Text("\(String(self.value[bits: self._bitRange], radix: 16))")
-          .font(.system(size: 12, design: .monospaced))
-        Text("16")
-          .font(.system(size: 10, design: .monospaced))
-          .foregroundStyle(.secondary)
-      }.padding(2)
-      .gridColumnAlignment(.trailing)
-        .background {
-          RoundedRectangle(cornerRadius: 4, style: .continuous)
-            .fill(Color.red.opacity(0.2))
-            .stroke(Color.red.opacity(0.3), lineWidth: 1)
-        }
-
-
+      DecoderDigitInputView(
+        value: self.$value,
+        base: self.$base,
+        bitRange: self._bitRange)
+        .gridColumnAlignment(.trailing)
       Text("[\(self.bitRange.lowerBound):\(self.bitRange.upperBound)]")
         .gridColumnAlignment(.leading)
     }
@@ -46,10 +38,12 @@ struct DecoderFieldView: View {
 
 #Preview {
   @Previewable @State var value: UInt64 = 0xffffffff
+  @Previewable @State var base: DecoderBase = .octal
+
   Grid {
-    DecoderFieldView(value: $value, field: fields[0])
-    DecoderFieldView(value: $value, field: fields[1])
-    DecoderFieldView(value: $value, field: fields[2])
+    DecoderFieldView(value: $value, base: $base, field: fields[0])
+    DecoderFieldView(value: $value, base: $base, field: fields[1])
+    DecoderFieldView(value: $value, base: $base, field: fields[2])
   }
 }
 
