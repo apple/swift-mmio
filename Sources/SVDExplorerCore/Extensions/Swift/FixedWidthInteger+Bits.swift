@@ -22,6 +22,7 @@ extension FixedWidthInteger {
     }
   }
 
+  /// Note this variant of subscript bits allows for silent truncation
   @inlinable @inline(__always)
   subscript(bits bitRange: Range<Int>) -> Self {
     @inlinable @inline(__always) get {
@@ -34,7 +35,6 @@ extension FixedWidthInteger {
       let bitWidth = bitRange.upperBound - bitRange.lowerBound
       let bitMask: Self = 1 << bitWidth &- 1
       self &= ~(bitMask << bitRange.lowerBound)
-      precondition((newValue & (~bitMask)) == 0)
       self |= (newValue & bitMask) << bitRange.lowerBound
     }
   }

@@ -17,11 +17,21 @@ struct DecoderSectionToggleView: View {
 
   var body: some View {
     Toggle(isOn: self.$isOpen.animation()) {
-      HStack(spacing: 4) {
+      HStack(spacing: 2) {
+        Image(systemName: "chevron.down")
+          .rotationEffect(Angle(degrees: self.isOpen ? 0 : -90))
         Text(self.title)
-        Image(systemName: self.isOpen ? "chevron.down" : "chevron.forward")
-        Spacer()
       }
+      .padding(2)
+      .padding(.trailing, 2)
+      .background {
+        DecoderPillBackgroundView(
+          radius: 4,
+          fill: .secondary.opacity(0.2),
+          stroke: .secondary.opacity(0.3))
+      }
+      .contentShape(Rectangle())
+      Spacer()
     }
     .font(.caption2)
     .foregroundStyle(.secondary)

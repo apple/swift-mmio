@@ -12,10 +12,10 @@
 import SwiftUI
 
 struct SVDBreadCrumbItemView: View {
-  @State var isHovered: Bool = false
-
   var keyPathComponent: SVDKeyPathComponent
   var isLast: Bool
+
+  @State var hovered: Bool = false
 
   var body: some View {
     HStack(spacing: 4) {
@@ -24,7 +24,7 @@ struct SVDBreadCrumbItemView: View {
         .foregroundColor(self.keyPathComponent.kind.imageColor)
       Text(self.keyPathComponent.name)
         .font(.system(.callout, design: .monospaced))
-      if self.isHovered {
+      if self.hovered {
         Image(systemName: "chevron.up.chevron.down")
           .frame(width: 8)
           .imageScale(.small)
@@ -35,9 +35,9 @@ struct SVDBreadCrumbItemView: View {
     }
     .padding(4)
     .background(
-      self.isHovered ? Color(nsColor: .tertiarySystemFill) : Color.clear,
+      self.hovered ? .tertiary : Color.clear,
       in: RoundedRectangle(cornerRadius: 4, style: .continuous))
-    .onHover { self.isHovered = $0 }
+    .hovered(self.$hovered)
   }
 }
 

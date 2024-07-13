@@ -28,7 +28,8 @@ struct DecoderFieldView: View {
       DecoderDigitInputView(
         value: self.$value,
         base: self.$base,
-        bitRange: self._bitRange)
+        bitRange: self._bitRange,
+        variant: .field)
         .gridColumnAlignment(.trailing)
       Text("[\(self.bitRange.lowerBound):\(self.bitRange.upperBound)]")
         .gridColumnAlignment(.leading)

@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-enum IntegerLiteralBase {
+public enum IntegerLiteralBase {
   case binary
   case octal
   case decimal
@@ -41,7 +41,7 @@ extension FixedWidthInteger {
 }
 
 extension Parser where Input == Substring, Output: FixedWidthInteger {
-  static func digit(
+  public static func digit(
     _: Output.Type = Output.self,
     base: IntegerLiteralBase
   ) -> Self {
