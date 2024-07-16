@@ -15,6 +15,11 @@ struct DecoderSectionToggleView: View {
   @Binding var isOpen: Bool
   var title: String
 
+  @State var hovered = false
+  var displayState: DisplayState {
+    self.hovered ? .hovered : .default
+  }
+
   var body: some View {
     Toggle(isOn: self.$isOpen.animation()) {
       HStack(spacing: 2) {
@@ -26,11 +31,11 @@ struct DecoderSectionToggleView: View {
       .padding(.trailing, 2)
       .background {
         DecoderPillBackgroundView(
-          radius: 4,
-          fill: .secondary.opacity(0.2),
-          stroke: .secondary.opacity(0.3))
+          cornerRadius: 4,
+          displayState: self.displayState)
       }
       .contentShape(Rectangle())
+      .hovered(self.$hovered)
       Spacer()
     }
     .font(.caption2)

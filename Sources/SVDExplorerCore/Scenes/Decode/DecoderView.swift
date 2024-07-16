@@ -12,7 +12,7 @@
 import SVD
 import SwiftUI
 
-struct DecoderRootView: View {
+struct DecoderView: View {
   var register: SVDRegister
   var bitWidth = 64
 
@@ -38,7 +38,6 @@ struct DecoderRootView: View {
         bitRange: 0..<self.bitWidth,
         variant: .primary)
         .padding(.top, 60)
-
 
       Divider()
 
@@ -82,5 +81,5 @@ struct DecoderRootView: View {
 }
 
 #Preview {
-  DecoderRootView(register: register)
+  DecoderView(register: register)
 }

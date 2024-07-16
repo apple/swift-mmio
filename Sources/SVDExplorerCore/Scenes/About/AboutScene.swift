@@ -10,16 +10,17 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
-import SVD
 
-public struct SVDExplorerApp: App {
-  public var body: some Scene {
-    DecoderScene()
-    WelcomeScene()
-    SVDDocumentScene()
-    AboutScene()
+struct AboutScene: Scene {
+  var body: some Scene {
+    Window("About SVD Explorer", id: "about") {
+      AboutView()
+        .toolbar(removing: .title)
+        .toolbarBackground(.hidden, for: .windowToolbar)
+        .containerBackground(.thickMaterial, for: .window)
+        .windowMinimizeBehavior(.disabled)
+    }
+    .windowResizability(.contentSize)
+    .restorationBehavior(.disabled)
   }
-
-  public init() {}
 }
-

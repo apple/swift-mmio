@@ -11,7 +11,7 @@
 
 import SwiftUI
 
-struct SVDExplorerAboutView: View {
+struct AboutView: View {
   static let licenseURL = URL(string: "https://swift.org/LICENSE.txt")!
 
   @Environment(\.openURL) var openURL

@@ -19,7 +19,7 @@ struct DecoderDigitInputView: View {
   @FocusState var focused: Bool
   @State var hovered: Bool = false
 
-  var state: DisplayState {
+  var displayState: DisplayState {
     if self.focused { .focused }
     else if self.hovered { .hovered }
     else { .default }
@@ -46,9 +46,8 @@ struct DecoderDigitInputView: View {
     .padding(self.variant.padding)
     .background {
       DecoderPillBackgroundView(
-        radius: self.variant.cornerRadius,
-        fill: self.state.fill,
-        stroke: self.state.stroke)
+        cornerRadius: self.variant.cornerRadius,
+        displayState: self.displayState)
     }
     .focusable()
     .focused($focused)
@@ -93,35 +92,36 @@ extension DecoderDigitInputView {
       }
     }
   }
+}
 
-  enum DisplayState {
-    case `default`
-    case focused
-    case hovered
-    case unknown
-    case invalid
+enum DisplayState {
+  case `default`
+  case focused
+  case hovered
+  case unknown
+  case invalid
 
-    var fill: Color {
-      switch self {
-      case .default: .secondary.opacity(0.2)
-      case .focused: .blue.opacity(0.2)
-      case .hovered: .secondary.opacity(0.3)
-      case .unknown: .yellow.opacity(0.2)
-      case .invalid: .red.opacity(0.2)
-      }
+  var fill: Color {
+    switch self {
+    case .default: .secondary.opacity(0.2)
+    case .focused: .blue.opacity(0.3)
+    case .hovered: .primary.opacity(0.2)
+    case .unknown: .yellow.opacity(0.2)
+    case .invalid: .red.opacity(0.2)
     }
+  }
 
-    var stroke: Color {
-      switch self {
-      case .default: .secondary.opacity(0.3)
-      case .focused: .blue.opacity(0.3)
-      case .hovered: .secondary.opacity(0.4)
-      case .unknown: .yellow.opacity(0.3)
-      case .invalid: .red.opacity(0.3)
-      }
+  var stroke: Color {
+    switch self {
+    case .default: .secondary.opacity(0.3)
+    case .focused: .blue.opacity(0.4)
+    case .hovered: .primary.opacity(0.3)
+    case .unknown: .yellow.opacity(0.3)
+    case .invalid: .red.opacity(0.3)
     }
   }
 }
+
 
 #Preview {
   @Previewable @State var value: UInt64 = 0

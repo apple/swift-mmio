@@ -13,25 +13,21 @@ import SwiftUI
 
 struct WelcomeCloseButtonView: View {
   static let defaultColor = Color(.secondaryLabelColor)
-  static let hoveringColor = Color(.tertiaryLabelColor)
+  static let hoveredColor = Color(.tertiaryLabelColor)
 
   @Environment(\.dismissWindow) var dismissWindow
-  @State var isHovering: Bool = false
+  @State var hovered: Bool = false
 
   var body: some View {
     Button {
       self.dismissWindow()
     } label: {
       Image(systemName: "xmark.circle.fill")
-        .foregroundColor(self.isHovering ? Self.defaultColor : Self.hoveringColor)
+        .foregroundColor(self.hovered ? Self.defaultColor : Self.hoveredColor)
     }
     .buttonStyle(.plain)
     .accessibilityLabel(Text("Close"))
-    .onHover { hover in
-      withAnimation(.default) {
-        self.isHovering = hover
-      }
-    }
+    .hovered(self.$hovered.animation())
     .padding(10)
     .transition(.opacity.animation(.easeInOut(duration: 0.25)))
   }

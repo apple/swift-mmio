@@ -12,16 +12,27 @@
 import SwiftUI
 import MMIOUtilities
 
+extension KeyEquivalent {
+  // Workaround: rdar://114253438 (Delete key is received as 0x7F and not 0x08)
+  static var _delete: Self { "\u{007F}" }
+}
+
 extension FixedWidthInteger {
   mutating func update(
     bits: Range<Int>,
     with keyPress: KeyPress,
     base: DecoderBase
   ) -> KeyPress.Result {
-    print("KeyPress: \(keyPress)")
+    print(keyPress)
 
     let radix = Self(base.radix)
     switch keyPress.key {
+    case .upArrow:
+      self[bits: bits] += 1
+      return .handled
+    case .downArrow:
+      self[bits: bits] &-= 1
+      return .handled
     case .leftArrow:
       let bit: Self = keyPress.modifiers.contains(.option) ? 0b1 : 0b0
       let original = self[bits: bits]
@@ -32,26 +43,26 @@ extension FixedWidthInteger {
       let original = self[bits: bits]
       self[bits: bits] = (original >> 1) | (bit << (bits.count - 1))
       return .handled
-    case .delete, .deleteForward:
+    case .delete, .deleteForward, ._delete:
       self[bits: bits] /= radix
       return .handled
-    case .clear:
+    case .clear, 
+      "k" where keyPress.modifiers.contains(.command):
       self[bits: bits] = 0
       return .handled
-//  case .escape:
-//    default focus?
-//  case .`return`:
-//    next focus?
+    case .escape:
+      print("TODO: handle escape")
+      // default focus?
+      return .ignored
+    case .`return`:
+      print("TODO: handle return")
+      // next focus?
+      return .ignored
     default:
       break
     }
 
     guard keyPress.characters.count == 1 else { return .ignored }
-    if keyPress.characters == "\u{7f}" {
-      self[bits: bits] /= radix
-      return .handled
-    }
-
     let parserBase: IntegerLiteralBase = switch base {
     case .octal: .octal
     case .decimal: .decimal
@@ -63,9 +74,15 @@ extension FixedWidthInteger {
     guard let value = parser.run(&string), string.isEmpty else {
       return .ignored
     }
-    let original = self[bits: bits]
-    self[bits: bits] = original.multipliedReportingOverflow(by: radix)
+    let old = self[bits: bits]
+    let new = old.multipliedReportingOverflow(by: radix)
       .partialValue &+ value
+    self[bits: bits] = new
+    print("""
+      - old: 0x\(String(old, radix: 16))
+      - new: 0x\(String(new, radix: 16))
+      - saved: 0x\(String(self[bits: bits], radix: 16))
+      """)
     return .handled
   }
 }

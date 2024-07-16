@@ -11,7 +11,6 @@
 
 import SwiftUI
 
-
 struct SVDDocumentView: View {
   var document: SVDDocument
   @State var sortOrder = 0

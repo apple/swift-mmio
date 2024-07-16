@@ -15,15 +15,15 @@ import SVD
 struct DecoderFieldsView: View {
   @Binding var value: UInt64
   @Binding var base: DecoderBase
-
   var register: SVDRegister
 
   var body: some View {
     Grid(verticalSpacing: 4) {
       GridRow {
         Text("Name")
-        Spacer()
-        Text("Bit Pattern")
+        Text("MSB")
+        Text("LSB")
+        Text("Binary")
         Text("Value")
       }
       .font(.subheadline)

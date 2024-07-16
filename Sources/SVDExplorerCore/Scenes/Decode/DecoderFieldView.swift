@@ -15,23 +15,47 @@ import SVD
 struct DecoderFieldView: View {
   @Binding var value: UInt64
   @Binding var base: DecoderBase
-
   var field: SVDField
-  var bitRange: Range<UInt64> { self.field.bitRange.range }
-  var _bitRange: Range<Int> { Int(self.bitRange.lowerBound)..<Int(self.bitRange.upperBound) }
+
+  var bitRange: Range<Int>
+  var lsb: Int
+  var msb: Int
+
+  init(
+    value: Binding<UInt64>,
+    base: Binding<DecoderBase>,
+    field: SVDField
+  ) {
+    self._value = value
+    self._base = base
+    self.field = field
+
+    let bitRange = field.bitRange.range
+    self.bitRange = Int(bitRange.lowerBound)..<Int(bitRange.upperBound)
+    self.lsb = self.bitRange.lowerBound
+    self.msb = self.bitRange.upperBound - 1
+  }
 
   var body: some View {
-    GridRow {
+    GridRow(alignment: .firstTextBaseline) {
       Text("\(self.field.name)")
+        .font(.system(size: 12, design: .monospaced))
         .gridColumnAlignment(.leading)
-      Spacer()
+      Text("\(self.msb)")
+        .font(.system(size: 12, design: .monospaced))
+        .gridColumnAlignment(.trailing)
+      Text("\(self.lsb)")
+        .font(.system(size: 12, design: .monospaced))
+        .gridColumnAlignment(.trailing)
       DecoderDigitInputView(
         value: self.$value,
         base: self.$base,
-        bitRange: self._bitRange,
+        bitRange: self.bitRange,
         variant: .field)
         .gridColumnAlignment(.trailing)
-      Text("[\(self.bitRange.lowerBound):\(self.bitRange.upperBound)]")
+      DecoderEnumerationInputView(
+        value: self.$value,
+        field: self.field)
         .gridColumnAlignment(.leading)
     }
   }
