@@ -59,8 +59,6 @@ struct DecoderEnumerationInputView: View {
         break
       }
     }
-
-
   }
 
   var body: some View {
