@@ -64,7 +64,6 @@ struct DecoderView: View {
         Divider()
       }
 
-
       DecoderSectionToggleView(
         isOpen: self.$showSwift,
         title: "Swift")

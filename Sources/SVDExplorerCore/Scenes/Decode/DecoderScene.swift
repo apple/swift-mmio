@@ -15,10 +15,9 @@ struct DecoderScene: Scene {
   var body: some Scene {
     Window("Decoder", id: "decoder") {
       DecoderView(register: register)
-//        .edgesIgnoringSafeArea(.top)
+        .edgesIgnoringSafeArea(.top)
         .containerBackground(.thickMaterial, for: .window)
-//        .preferredColorScheme(.dark)
     }
-//    .windowStyle(.hiddenTitleBar)
+    .windowStyle(.hiddenTitleBar)
   }
 }

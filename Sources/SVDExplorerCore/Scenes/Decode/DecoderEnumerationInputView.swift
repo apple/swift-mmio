@@ -40,6 +40,7 @@ struct DecoderEnumerationInputView: View {
     self._value = value
     self.field = field
 
+
     let bitRange = field.bitRange.range
     self.bitRange = Int(bitRange.lowerBound)..<Int(bitRange.upperBound)
     self.enumeratedValues = field.enumeratedValues?.enumeratedValue ?? []
@@ -58,45 +59,44 @@ struct DecoderEnumerationInputView: View {
         break
       }
     }
+
+
   }
 
   var body: some View {
-    Picker("ff", selection: .constant("1")) {
-      Text("1").tag("1")
-    }
-    Menu {
-      ForEach(self.names, id: \.self) { name in
-        Button {
-          let bitPattern = self.nameToBitPattern[name] ?? 0
-          self.value[bits: self.bitRange] = bitPattern
-
-        } label: {
-          let value = self.value[bits: self.bitRange]
-          let current = self.bitPatternToName[value] ?? "Unknown"
-
-//          Image(systemName: "checkmark")
-//            .opacity(current == name ? 1 : 0)
-//            .font(.system(size: 8, weight: .bold))
-          Text(current == name ? "􀆅 \(name)" : "   \(name)")
-            .font(.system(size: 12, design: .monospaced))
-        }
-      }
-    } label: {
+    let selection = Binding<String> {
       let value = self.value[bits: self.bitRange]
       let name = self.bitPatternToName[value] ?? "Unknown"
-      Text(name)
-        .font(.system(size: 12, design: .monospaced))
-        .focused(self.$focused)
-
+      return name
+    } set: { newValue in
+      let bitPattern = self.nameToBitPattern[newValue] ?? 0
+      self.value[bits: self.bitRange] = bitPattern
     }
-    .menuStyle(.borderlessButton)
+
+    Picker("Value", selection: selection) {
+      ForEach(self.names, id: \.self) { name in
+        Text(name)
+          .font(.system(size: 12, design: .monospaced))
+          .tag(name)
+      }
+    } currentValueLabel: {
+      Text(selection.wrappedValue)
+        .font(.system(size: 12, design: .monospaced))
+    }
+    .labelsHidden()
+    .pickerStyle(.menu)
+    .buttonStyle(.borderless)
     .padding(4)
-    .hovered(self.$hovered)
     .background {
       DecoderPillBackgroundView(
         cornerRadius: 4,
         displayState: self.displayState)
     }
+    .hovered(self.$hovered)
+    .focusable()
+    .focusEffectDisabled()
+    .focused(self.$focused)
+    Spacer()
   }
 }
 
