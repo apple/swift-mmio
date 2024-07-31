@@ -187,6 +187,7 @@ where Self: RawRepresentable, RawValue: FixedWidthInteger {
   }
 }
 
+@_documentation(visibility: internal)
 @inlinable @inline(__always)
 public func preconditionMatchingBitWidth(
   _ fieldType: (some BitField).Type,
