@@ -2,6 +2,55 @@
 
 An introduction to MMIO and register programming
 
+
+<!--
+
+When to use this
+
+-->
+
+
+<!--
+
+#1  Understanding Register Programming
+
+MMIO is different than regular memory
+
+you're used to stable values, no sideffects ...
+
+
+Present as table main memory vs MMIO
+side effects, rmw, etc...
+
+
+-->
+
+<!--
+
+bit widths matching the hardware
+
+-->
+
+
+<!--
+
+struct register {
+  uint8_t somefield: 2
+  uint8_t somefield: 2
+  uint8_t somefield: 2
+}
+
+if (*register.somefield) {
+
+
+
+need to pay attention to the other fields in the register
+
+modifying the whole value in the context of sideeffects
+
+-->
+
+
 ## What is Memory-Mapped I/O?
 
 Memory-Mapped Input/Output (MMIO) is a method that enables communication between a microcontroller's processor (CPU) and peripheral devices (peripherals). It involves mapping the device registers directly into the system's memory address space, allowing the CPU to interact with hardware devices using standard memory load and store instructions.
