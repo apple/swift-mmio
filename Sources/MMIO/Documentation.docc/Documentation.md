@@ -54,3 +54,42 @@ Finally, `import MMIO` in your Swift source code.
 ## Contributions
 
 Contributions and feedback are welcome! Please refer to the [Contribution Guidelines](https://github.com/apple/swift-mmio#contributing-to-swift-mmio) for more information.
+
+## Topics
+
+- <doc:Background>
+
+### Work with Registers
+
+- <doc:DefiningARegister>
+- ``Register(bitWidth:)``
+
+- ``Register``
+- ``RegisterArray``
+
+- ``RegisterValue``
+- ``RegisterValueRaw``
+- ``RegisterValueRead``
+- ``RegisterValueWrite``
+
+### Dig into Register Fields
+
+- ``BitField``
+- ``BitFieldProjectable``
+- ``ContiguousBitField``
+- ``DiscontiguousBitField``
+
+- ``ReadOnly(bits:as:)-9s5n0``
+- ``ReadOnly(bits:as:)-7irrc``
+- ``ReadWrite(bits:as:)-4b13v``
+- ``ReadWrite(bits:as:)-32awj``
+- ``Reserved(bits:)-3tczk``
+- ``Reserved(bits:)-4l000``
+- ``WriteOnly(bits:as:)-7jipz``
+- ``WriteOnly(bits:as:)-17gco``
+
+### Understand Register Blocks
+
+- ``RegisterBlock()``
+- ``RegisterBlock(offset:)``
+- ``RegisterBlock(offset:stride:count:)``
