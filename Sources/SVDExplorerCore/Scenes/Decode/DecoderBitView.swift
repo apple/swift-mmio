@@ -12,6 +12,8 @@
 import SwiftUI
 
 struct DecoderBitView: View {
+  @State private var selectedRange: [(Int, Int)] = [(1, 1), (2, 4), (18, 18), (23, 29), (59, 60), (62, 63)]
+
   @Binding var value: UInt64
   var bitWidth: Int
   var bitRows: Int
@@ -35,7 +37,45 @@ struct DecoderBitView: View {
         self.labelRow(lsb: row * 32)
       }
     }
+    .backgroundPreferenceValue(DecoderBitViewFramePreferenceKey.self) { preferences in
+        GeometryReader { geometry in
+          ForEach(0..<self.selectedRange.count, id: \.self) { index in
+            let (lsb, msb) = self.selectedRange[index]
+            let row = lsb.quotientAndRemainder(dividingBy: 32).quotient * 32
+            let startAnchor = preferences[.bit(msb)]
+            let endAnchor = preferences[.bit(lsb)]
+            let rowAnchor = preferences[.labelRow(row)]
+
+            if let startAnchor, let endAnchor, let rowAnchor {
+              let startFrame = geometry[startAnchor]
+              let endFrame = geometry[endAnchor]
+
+              let minX = startFrame.minX
+              let maxX = endFrame.maxX
+
+              let minY = min(endFrame.minY, startFrame.minY)
+              let maxY = geometry[rowAnchor].maxY
+
+              let width = maxX - minX
+              let height = maxY - minY
+
+              let x = minX + (width / 2)
+              let y = minY + (height / 2)
+
+              DecoderBitUnderlayView(
+                lsb: lsb,
+                msb: msb,
+                displayState: self.hovered ? .hovered : .focused)
+                .frame(width: width, height: height)
+                .position(x: x, y: y)
+            }
+          }
+        }
+    }
+    .hovered(self.$hovered)
   }
+
+  @State var hovered: Bool = false
 
   @ViewBuilder
   func labelRow(lsb: Int) -> some View {
@@ -48,23 +88,27 @@ struct DecoderBitView: View {
     GridRow {
       Text("\(msb)")
         .padding(.leading, padding)
-        .foregroundStyle(upperBitGroup16Active ? .tertiary : .primary)
+        .foregroundStyle(upperBitGroup16Active ? .tertiary : .secondary)
       self.emptyCell()
       self.emptyCell()
       Text("\(middleMsb)")
         .padding(.trailing, padding)
-        .foregroundStyle(upperBitGroup16Active ? .tertiary : .primary)
+        .foregroundStyle(upperBitGroup16Active ? .tertiary : .secondary)
         .gridColumnAlignment(.trailing)
       Text("\(middleLsb)")
         .padding(.leading, padding)
-        .foregroundStyle(lowerBitGroup16Active ? .tertiary : .primary)
+        .foregroundStyle(lowerBitGroup16Active ? .tertiary : .secondary)
       self.emptyCell()
       self.emptyCell()
       Text("\(lsb)")
         .padding(.trailing, padding)
-        .foregroundStyle(lowerBitGroup16Active ? .tertiary : .primary)
+        .foregroundStyle(lowerBitGroup16Active ? .tertiary : .secondary)
         .gridColumnAlignment(.trailing)
+        .anchorPreference(
+            key: DecoderBitViewFramePreferenceKey.self,
+            value: .bounds) { [.labelRow(lsb): $0] }
     }
+    .hidden(!self.selectedRange.isEmpty)
     .font(.system(size: 10))
   }
 
@@ -110,13 +154,20 @@ struct DecoderBitView: View {
       Text(verbatim: bitLabel)
     }
     .disabled(disabled)
-    .buttonStyle(BitButtonStyle())
+    .buttonStyle(.bit)
+    .anchorPreference(
+      key: DecoderBitViewFramePreferenceKey.self,
+      value: .bounds) { [.bit(lsb): $0] }
   }
 
   @ViewBuilder
   func emptyCell() -> some View {
     Spacer().gridCellUnsizedAxes([.vertical, .horizontal])
   }
+}
+
+extension ButtonStyle where Self == BitButtonStyle {
+  static var bit: BitButtonStyle { .init() }
 }
 
 struct BitButtonStyle: ButtonStyle {
@@ -130,9 +181,24 @@ struct BitButtonStyle: ButtonStyle {
     configuration
       .label
       .font(Self.font)
-      .foregroundStyle(self.isEnabled ? .secondary : .tertiary)
+      .foregroundStyle(self.isEnabled ? .primary : .tertiary)
       .frame(width: Self.buttonWidth)
       .contentShape(Rectangle())
+  }
+}
+
+
+struct DecoderBitViewFramePreferenceKey: PreferenceKey {
+  enum Key: Hashable {
+    case bit(Int)
+    case labelRow(Int)
+  }
+  typealias Value = [Key: Anchor<CGRect>]
+
+  static var defaultValue: Value = [:]
+
+  static func reduce(value : inout Value, nextValue: () -> Value) {
+    value.merge(nextValue(), uniquingKeysWith: { $1 })
   }
 }
 
@@ -141,3 +207,4 @@ struct BitButtonStyle: ButtonStyle {
   var bitWidth = 37
   DecoderBitView(value: $value, bitWidth: bitWidth)
 }
+

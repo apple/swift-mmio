@@ -122,6 +122,13 @@ enum DisplayState {
   }
 }
 
+extension DisplayState: CaseIterable { }
+
+extension DisplayState: Hashable { }
+
+extension DisplayState: Identifiable {
+  var id: Self { self }
+}
 
 #Preview {
   @Previewable @State var value: UInt64 = 0

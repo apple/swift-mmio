@@ -28,7 +28,7 @@ extension FixedWidthInteger {
     let radix = Self(base.radix)
     switch keyPress.key {
     case .upArrow:
-      self[bits: bits] += 1
+      self[bits: bits] &+= 1
       return .handled
     case .downArrow:
       self[bits: bits] &-= 1

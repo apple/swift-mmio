@@ -26,9 +26,10 @@ struct DecoderView: View {
     VStack(alignment: .trailing) {
 
       DecoderControlBarView(
-        showBinary: self.$showBinary,
-        showFields: self.$showFields,
-        base: self.$base)
+        value: self.$value,
+        base: self.$base,
+        bitWidth: self.bitWidth,
+        resetValue: 0x123)
 
       Divider()
 

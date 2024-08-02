@@ -12,35 +12,35 @@
 import SwiftUI
 
 struct DecoderControlBarView: View {
-  @Binding var showBinary: Bool
-  @Binding var showFields: Bool
+  @Binding var value: UInt64
   @Binding var base: DecoderBase
+  var bitWidth: Int
+  var resetValue: UInt64
 
   var body: some View {
     HStack {
       Spacer()
 
       Button {
-
+        self.value = 0
       } label: {
         Text("0s")
           .foregroundColor(.primary)
       }
 
       Button {
-
+        self.value = .max >> (UInt64.bitWidth - self.bitWidth)
       } label: {
         Text("1s")
           .foregroundColor(.primary)
       }
 
       Button {
-
+        self.value = self.resetValue
       } label: {
         Image(systemName: "arrow.clockwise")
           .foregroundColor(.primary)
       }
-
 
       Picker("base", selection: self.$base) {
         ForEach(DecoderBase.allCases, id: \.self) {
@@ -55,12 +55,15 @@ struct DecoderControlBarView: View {
 }
 
 #Preview {
-  @Previewable @State var showBinary = true
-  @Previewable @State var showFields = true
+  @Previewable @State var value: UInt64 = 0
   @Previewable @State var base: DecoderBase = .hexadecimal
+  var bitWidth: Int
+  var resetValue: UInt64
+
   DecoderControlBarView(
-    showBinary: $showBinary,
-    showFields: $showFields,
-    base: $base)
+    value: $value,
+    base: $base,
+    bitWidth: 64,
+    resetValue: 0xffff_ffff)
   .containerBackground(.thickMaterial, for: .window)
 }
