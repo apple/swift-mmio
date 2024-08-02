@@ -10,15 +10,21 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
+import SVD
 
 struct DecoderBitView: View {
-  @State private var selectedRange: [(Int, Int)] = [(1, 1), (2, 4), (18, 18), (23, 29), (59, 60), (62, 63)]
+  @State var fields: [Range<UInt64>] = []
 
   @Binding var value: UInt64
   var bitWidth: Int
   var bitRows: Int
 
-  init(value: Binding<UInt64>, bitWidth: Int) {
+  init(
+    value: Binding<UInt64>,
+    register: SVDRegister,
+    bitWidth: Int
+  ) {
+    self.fields = (register.fields?.field ?? []).map(\.bitRange.range)
     self._value = value
     precondition(bitWidth >= 0 && bitWidth <= 64)
     self.bitWidth = bitWidth
@@ -39,12 +45,14 @@ struct DecoderBitView: View {
     }
     .backgroundPreferenceValue(DecoderBitViewFramePreferenceKey.self) { preferences in
         GeometryReader { geometry in
-          ForEach(0..<self.selectedRange.count, id: \.self) { index in
-            let (lsb, msb) = self.selectedRange[index]
+          ForEach(0..<self.fields.count, id: \.self) { index in
+            let field = self.fields[index]
+            let lsb = Int(field.lowerBound)
+            let msb = Int(field.upperBound) - 1
             let row = lsb.quotientAndRemainder(dividingBy: 32).quotient * 32
             let startAnchor = preferences[.bit(msb)]
             let endAnchor = preferences[.bit(lsb)]
-            let rowAnchor = preferences[.labelRow(row)]
+            let rowAnchor = preferences[.labelRow(Int(row))]
 
             if let startAnchor, let endAnchor, let rowAnchor {
               let startFrame = geometry[startAnchor]
@@ -108,7 +116,7 @@ struct DecoderBitView: View {
             key: DecoderBitViewFramePreferenceKey.self,
             value: .bounds) { [.labelRow(lsb): $0] }
     }
-    .hidden(!self.selectedRange.isEmpty)
+    .hidden(!self.fields.isEmpty)
     .font(.system(size: 10))
   }
 
@@ -205,6 +213,6 @@ struct DecoderBitViewFramePreferenceKey: PreferenceKey {
 #Preview {
   @Previewable @State var value: UInt64 = 0
   var bitWidth = 37
-  DecoderBitView(value: $value, bitWidth: bitWidth)
+  DecoderBitView(value: $value, register: register, bitWidth: bitWidth)
 }
 

@@ -77,9 +77,9 @@ struct DecoderEnumerationInputView: View {
           .font(.system(size: 12, design: .monospaced))
           .tag(name)
       }
-//    } currentValueLabel: {
-//      Text(selection.wrappedValue)
-//        .font(.system(size: 12, design: .monospaced))
+    } currentValueLabel: {
+      Text(selection.wrappedValue)
+        .font(.system(size: 12, design: .monospaced))
     }
     .labelsHidden()
     .pickerStyle(.menu)

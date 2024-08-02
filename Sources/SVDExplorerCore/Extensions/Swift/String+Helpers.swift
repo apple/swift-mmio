@@ -16,4 +16,3 @@ extension String {
     (self as NSString).abbreviatingWithTildeInPath
   }
 }
-

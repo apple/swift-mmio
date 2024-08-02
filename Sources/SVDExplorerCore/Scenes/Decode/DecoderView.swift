@@ -49,6 +49,7 @@ struct DecoderView: View {
       if self.showBinary {
         DecoderBitView(
           value: self.$value,
+          register: self.register,
           bitWidth: self.bitWidth)
         Divider()
       }
