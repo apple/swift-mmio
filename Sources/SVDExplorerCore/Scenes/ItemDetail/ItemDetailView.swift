@@ -12,14 +12,10 @@
 import SwiftUI
 import SVD
 
-public struct SVDExplorerApp: App {
-  public var body: some Scene {
-    WelcomeScene()
-    SVDDocumentScene()
-    DecoderScene()
-//    ItemDetailScene()
-    AboutScene()
-  }
+struct ItemDetailView: View {
+  var item: SVDItem
 
-  public init() {}
+  var body: some View {
+    SVDItemView(keyPath: .init(components: []), item: item)
+  }
 }

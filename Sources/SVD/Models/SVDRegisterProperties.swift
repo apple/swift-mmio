@@ -28,15 +28,32 @@ public struct SVDRegisterProperties {
   public var resetValue: UInt64?
   /// Identifies which register bits have a defined reset value.
   public var resetMask: UInt64?
+
+  public init(
+    size: UInt64?,
+    access: SVDAccess?,
+    protection: SVDProtection?,
+    resetValue: UInt64?,
+    resetMask: UInt64?
+  ) {
+    self.size = size
+    self.access = access
+    self.protection = protection
+    self.resetValue = resetValue
+    self.resetMask = resetMask
+  }
 }
 
 extension SVDRegisterProperties {
-  public static let none = SVDRegisterProperties(
-    size: nil,
-    access: nil,
-    protection: nil,
-    resetValue: nil,
-    resetMask: nil)
+  public static let none = SVDRegisterProperties()
+
+  public init() {
+    self.size = nil
+    self.access = nil
+    self.protection = nil
+    self.resetValue = nil
+    self.resetMask = nil
+  }
 
   public func merging(_ other: Self) -> Self {
     SVDRegisterProperties(
@@ -47,3 +64,11 @@ extension SVDRegisterProperties {
       resetMask: self.resetMask ?? other.resetMask)
   }
 }
+
+extension SVDRegisterProperties: Decodable { }
+
+extension SVDRegisterProperties: Encodable { }
+
+extension SVDRegisterProperties: Equatable { }
+
+extension SVDRegisterProperties: Hashable { }

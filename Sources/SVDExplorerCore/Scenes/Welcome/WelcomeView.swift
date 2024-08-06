@@ -10,16 +10,19 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
-import SVD
 
-public struct SVDExplorerApp: App {
-  public var body: some Scene {
-    WelcomeScene()
-    SVDDocumentScene()
-    DecoderScene()
-//    ItemDetailScene()
-    AboutScene()
+struct WelcomeView: View {
+  var body: some View {
+    HStack(spacing: 0) {
+      WelcomeHomeView()
+        .frame(width: 460)
+      WelcomeRecentFilesListView()
+        .frame(width: 280)
+    }
+    // FIXME: implement drag and drop
   }
+}
 
-  public init() {}
+#Preview {
+  WelcomeView()
 }

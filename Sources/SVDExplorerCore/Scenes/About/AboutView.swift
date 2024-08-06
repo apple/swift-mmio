@@ -18,7 +18,7 @@ struct AboutView: View {
 
   var body: some View {
     HStack(spacing: 20) {
-      Image(nsImage: NSApp.applicationIconImage)
+      Image.applicationIcon
         .resizable()
         .frame(width: 128, height: 128)
         .padding([.top, .leading, .bottom], 40)
@@ -55,4 +55,8 @@ struct AboutView: View {
     }
     .fixedSize()
   }
+}
+
+#Preview {
+  AboutView()
 }

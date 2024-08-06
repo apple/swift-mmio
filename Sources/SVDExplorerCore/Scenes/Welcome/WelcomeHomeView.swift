@@ -12,13 +12,13 @@
 import SwiftUI
 import AppKit
 
-struct WelcomeView: View {
+struct WelcomeHomeView: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack {
         Spacer()
         
-        Image(nsImage: NSApp.applicationIconImage)
+        Image.applicationIcon
           .resizable()
           .frame(width: 128, height: 128)
         

@@ -13,11 +13,19 @@ import SwiftUI
 
 struct DecoderScene: Scene {
   var body: some Scene {
-    Window("Decoder", id: "decoder") {
-      DecoderView(register: register)
-        .edgesIgnoringSafeArea(.top)
-        .containerBackground(.thickMaterial, for: .window)
+    WindowGroup("Decoder", id: "decoder", for: DecoderViewModel.self) {
+      if let model = $0.wrappedValue {
+        DecoderView(model: model)
+          .edgesIgnoringSafeArea(.top)
+          .containerBackground(.thickMaterial, for: .window)
+      } else {
+        BegoneView()
+      }
     }
     .windowStyle(.hiddenTitleBar)
+    // FIXME: this seems like a hack
+    .defaultSize(width: 10, height: 10)
+    // FIXME: this doesn't work
+    .windowIdealSize(.fitToContent)
   }
 }

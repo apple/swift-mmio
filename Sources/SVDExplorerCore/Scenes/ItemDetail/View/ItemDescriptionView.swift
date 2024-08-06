@@ -10,16 +10,16 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
-import SVD
 
-public struct SVDExplorerApp: App {
-  public var body: some Scene {
-    WelcomeScene()
-    SVDDocumentScene()
-    DecoderScene()
-//    ItemDetailScene()
-    AboutScene()
+struct ItemDescriptionView: View {
+  var description: String?
+
+  var body: some View {
+    if let description = self.description {
+      Text("Description")
+        .foregroundStyle(.secondary)
+      Text(description.svdNormalizedText)
+      Divider()
+    }
   }
-
-  public init() {}
 }

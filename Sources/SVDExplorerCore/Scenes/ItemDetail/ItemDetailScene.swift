@@ -10,11 +10,28 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
+import SVD
 
-struct WelcomeScene: Scene {
+
+struct ItemDetailSceneData {
+  var keyPath: SVDKeyPath
+  var register: SVDRegister
+}
+
+//extension ItemDetailSceneData: Decodable { }
+//
+//extension ItemDetailSceneData: Encodable { }
+//
+//extension ItemDetailSceneData: Equatable { }
+//
+//extension ItemDetailSceneData: Hashable { }
+
+struct ItemDetailScene: Scene {
+  var item: SVDItem
+
   var body: some Scene {
-    Window("Welcome to SVD Explorer", id: "welcome") {
-      WelcomeView()
+    WindowGroup("Item Details", id: "item-detail", for: Int.self) { data in
+      ItemDetailView(item: item)
         .edgesIgnoringSafeArea(.top)
         .frame(height: 440)
         .toolbar(removing: .title)
