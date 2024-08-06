@@ -20,6 +20,7 @@ struct DecoderView: View {
   @State var showFields = true
   @State var showSwift = true
   @State var base: DecoderBase = .hexadecimal
+  @FocusState var focused: Int?
 
   var body: some View {
     VStack(alignment: .trailing) {
@@ -36,6 +37,7 @@ struct DecoderView: View {
         base: self.$base,
         bitRange: self.model.bitRange,
         variant: .primary)
+        .focused(self.$focused, equals: nil)
         .padding(.top, 60)
 
       Divider()
@@ -48,8 +50,8 @@ struct DecoderView: View {
         DecoderBitView(
           value: self.$value,
           model: self.model)
-        Divider()
       }
+      Divider()
 
       DecoderSectionToggleView(
         isOpen: self.$showFields,
@@ -60,8 +62,8 @@ struct DecoderView: View {
           value: self.$value,
           base: self.$base,
           model: self.model)
-        Divider()
       }
+      Divider()
 
       DecoderSectionToggleView(
         isOpen: self.$showSwift,

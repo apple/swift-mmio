@@ -14,7 +14,6 @@ import SwiftUI
 struct SVDDocumentView: View {
   var document: SVDDocument
   @State var sortOrder = 0
-
   @State var selection: Set<SVDKeyPath>
 
   init(document: SVDDocument) {
@@ -25,7 +24,6 @@ struct SVDDocumentView: View {
   }
 
   var body: some View {
-    let _ = Self._printChanges()
     NavigationSplitView {
 //      Text("Sort Order")
 //        .font(.system(.headline, design: .default))

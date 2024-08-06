@@ -25,7 +25,7 @@ extension ItemCPUPropertiesViewModel {
   var nameDisplayText: String {
     switch self.name {
     case .armCortexM0: "ARM Cortex M0"
-    case .armCortexM0p: "ARM Cortex M0p"
+    case .armCortexM0p: "ARM Cortex M0P"
     case .armCortexM1: "ARM Cortex M1"
     case .armCortexM3: "ARM Cortex M3"
     case .armCortexM4: "ARM Cortex M4"
