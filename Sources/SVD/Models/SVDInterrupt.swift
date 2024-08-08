@@ -26,3 +26,11 @@ public struct SVDInterrupt {
   /// Represents the enumeration index value associated to the interrupt.
   public var value: UInt64
 }
+
+extension SVDInterrupt: Decodable {}
+
+extension SVDInterrupt: Encodable {}
+
+extension SVDInterrupt: Equatable {}
+
+extension SVDInterrupt: Hashable {}

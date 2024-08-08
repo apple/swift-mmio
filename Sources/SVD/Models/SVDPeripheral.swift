@@ -98,3 +98,11 @@ public struct SVDPeripheral {
   /// Group to enclose register definitions.
   public var registers: SVDRegisters?
 }
+
+extension SVDPeripheral: Decodable {}
+
+extension SVDPeripheral: Encodable {}
+
+extension SVDPeripheral: Equatable {}
+
+extension SVDPeripheral: Hashable {}

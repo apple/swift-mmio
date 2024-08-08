@@ -22,3 +22,11 @@ public struct SVDBitRangeOffsetWidth {
   public var bitOffset: UInt64
   public var bitWidth: UInt64?
 }
+
+extension SVDBitRangeOffsetWidth: Decodable {}
+
+extension SVDBitRangeOffsetWidth: Encodable {}
+
+extension SVDBitRangeOffsetWidth: Equatable {}
+
+extension SVDBitRangeOffsetWidth: Hashable {}

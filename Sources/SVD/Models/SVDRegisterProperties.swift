@@ -31,13 +31,6 @@ public struct SVDRegisterProperties {
 }
 
 extension SVDRegisterProperties {
-  public static let none = SVDRegisterProperties(
-    size: nil,
-    access: nil,
-    protection: nil,
-    resetValue: nil,
-    resetMask: nil)
-
   public func merging(_ other: Self) -> Self {
     SVDRegisterProperties(
       size: self.size ?? other.size,
@@ -47,3 +40,11 @@ extension SVDRegisterProperties {
       resetMask: self.resetMask ?? other.resetMask)
   }
 }
+
+extension SVDRegisterProperties: Decodable {}
+
+extension SVDRegisterProperties: Encodable {}
+
+extension SVDRegisterProperties: Equatable {}
+
+extension SVDRegisterProperties: Hashable {}
