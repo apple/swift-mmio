@@ -14,11 +14,7 @@ import SwiftUI
 struct DecoderSectionToggleView: View {
   @Binding var isOpen: Bool
   var title: String
-
   @State var hovered = false
-  var displayState: DisplayState {
-    self.hovered ? .hovered : .default
-  }
 
   var body: some View {
     Toggle(isOn: self.$isOpen.animation()) {
@@ -32,7 +28,10 @@ struct DecoderSectionToggleView: View {
       .background {
         DecoderPillBackgroundView(
           cornerRadius: 4,
-          displayState: self.displayState)
+          displayState: .init(
+            focus: false,
+            hover: self.hovered,
+            invalid: false))
       }
       .contentShape(Rectangle())
       .hovered(self.$hovered)

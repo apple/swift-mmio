@@ -11,12 +11,7 @@
 
 import SwiftUI
 
-extension View {
-  func hovered(_ binding: Binding<Bool>) -> some View {
-    self.onHover { binding.wrappedValue = $0 }
-  }
-
-  func hovered<Value>(_ binding: Binding<Value?>, equals value: Value) -> some View {
-    self.onHover { binding.wrappedValue = $0 ? value : nil }
-  }
+extension KeyEquivalent {
+  // Workaround: rdar://114253438 (Delete key is received as 0x7F and not 0x08)
+  static var _delete: Self { "\u{007F}" }
 }

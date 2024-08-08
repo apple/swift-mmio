@@ -13,7 +13,7 @@ import SwiftUI
 
 struct DecoderControlBarView: View {
   @Binding var value: UInt64
-  @Binding var base: DecoderBase
+  @Binding var base: DecoderDigitInputBase
   var model: DecoderViewModel
 
   var body: some View {
@@ -42,7 +42,7 @@ struct DecoderControlBarView: View {
       }
 
       Picker("base", selection: self.$base) {
-        ForEach(DecoderBase.allCases, id: \.self) {
+        ForEach(DecoderDigitInputBase.allCases, id: \.self) {
           Text($0.displayText)
         }
       }
@@ -55,13 +55,11 @@ struct DecoderControlBarView: View {
 
 #Preview {
   @Previewable @State var value: UInt64 = 0
-  @Previewable @State var base: DecoderBase = .hexadecimal
-  var bitWidth: Int
-  var resetValue: UInt64
+  @Previewable @State var base: DecoderDigitInputBase = .hexadecimal
 
   DecoderControlBarView(
     value: $value,
     base: $base,
     model: previewModel)
-  .containerBackground(.thickMaterial, for: .window)
+    .containerBackground(.thickMaterial, for: .window)
 }

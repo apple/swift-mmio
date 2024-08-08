@@ -12,6 +12,7 @@
 import SVD
 
 struct DecoderFieldViewModel {
+  var id: Int
   var name: String
   var bitRange: Range<Int>
   var leastSignificantBit: Int
@@ -23,7 +24,8 @@ struct DecoderFieldViewModel {
 }
 
 extension DecoderFieldViewModel {
-  init(field: SVDField) {
+  init(id: Int, field: SVDField) {
+    self.id = id
     self.name = field.name
 
     let bitRange = field.bitRange.range
@@ -58,6 +60,4 @@ extension DecoderFieldViewModel: Equatable { }
 
 extension DecoderFieldViewModel: Hashable { }
 
-extension DecoderFieldViewModel: Identifiable {
-  var id: String { self.name }
-}
+extension DecoderFieldViewModel: Identifiable { }

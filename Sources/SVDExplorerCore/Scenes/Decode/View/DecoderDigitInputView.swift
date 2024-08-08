@@ -12,25 +12,17 @@
 import SwiftUI
 
 struct DecoderDigitInputView: View {
-  @Binding var value: UInt64
-  @Binding var base: DecoderBase
-  var bitRange: Range<Int>
+  @Binding var base: DecoderDigitInputBase
+  var model: DecoderFieldViewModel
+  var dynamicModel: DecoderFieldDynamicViewModelBinding
   var variant: Variant
-  @FocusState var focused: Bool
-  @State var hovered: Bool = false
-
-  var displayState: DisplayState {
-    if self.focused { .focused }
-    else if self.hovered { .hovered }
-    else { .default }
-  }
 
   var body: some View {
     HStack(alignment: .lastTextBaseline, spacing: 0) {
       if self.variant == .primary {
         Spacer()
       }
-      Text("\(String(self.value[bits: self.bitRange], radix: self.base.radix))")
+      Text("\(String(self.dynamicModel.value[bits: self.model.bitRange], radix: self.base.radix))")
         .font(self.variant.valueFont)
         .multilineTextAlignment(.trailing)
         .lineLimit(1)
@@ -47,14 +39,17 @@ struct DecoderDigitInputView: View {
     .background {
       DecoderPillBackgroundView(
         cornerRadius: self.variant.cornerRadius,
-        displayState: self.displayState)
+        displayState: self.dynamicModel.displayState(model: self.model))
     }
     .focusable()
-    .focused($focused)
+    .focused(self.dynamicModel.$focus, equals: self.model.id)
     .focusEffectDisabled()
-    .hovered($hovered)
+    .hovered(self.dynamicModel.$hover, equals: self.model.id)
     .onKeyPress {
-      self.value.update(bits: self.bitRange, with: $0, base: self.base)
+      self.dynamicModel.updateValue(
+        bits: self.model.bitRange,
+        with: $0,
+        base: self.base)
     }
   }
 }
@@ -94,57 +89,28 @@ extension DecoderDigitInputView {
   }
 }
 
-enum DisplayState {
-  case `default`
-  case focused
-  case hovered
-  case unknown
-  case invalid
-
-  var fill: Color {
-    switch self {
-    case .default: .secondary.opacity(0.2)
-    case .focused: .blue.opacity(0.3)
-    case .hovered: .primary.opacity(0.2)
-    case .unknown: .yellow.opacity(0.2)
-    case .invalid: .red.opacity(0.2)
-    }
-  }
-
-  var stroke: Color {
-    switch self {
-    case .default: .secondary.opacity(0.3)
-    case .focused: .blue.opacity(0.4)
-    case .hovered: .primary.opacity(0.3)
-    case .unknown: .yellow.opacity(0.3)
-    case .invalid: .red.opacity(0.3)
-    }
-  }
-}
-
-extension DisplayState: CaseIterable { }
-
-extension DisplayState: Hashable { }
-
-extension DisplayState: Identifiable {
-  var id: Self { self }
-}
-
 #Preview {
-  @Previewable @State var value: UInt64 = 0
-  @Previewable @State var base: DecoderBase = .octal
+  @Previewable @State var base: DecoderDigitInputBase = .octal
+  @Previewable var dynamicModel = DecoderFieldDynamicViewModel()
+
+  DecoderFieldDynamicViewModelDebugView(
+    dynamicModel: dynamicModel.binding)
 
   DecoderDigitInputView(
-    value: $value,
     base: $base,
-    bitRange: 0..<32,
+    model: previewModel.fields[0],
+    dynamicModel: dynamicModel.binding,
     variant: .primary)
-    .frame(width: 200, height: 100)
 
   DecoderDigitInputView(
-    value: $value,
     base: $base,
-    bitRange: 3..<12,
+    model: previewModel.fields[1],
+    dynamicModel: dynamicModel.binding,
     variant: .field)
-    .frame(width: 200, height: 100)
+
+  DecoderDigitInputView(
+    base: $base,
+    model: previewModel.fields[2],
+    dynamicModel: dynamicModel.binding,
+    variant: .field)
 }

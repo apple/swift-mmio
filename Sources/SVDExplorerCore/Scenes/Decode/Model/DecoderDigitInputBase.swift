@@ -9,13 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-enum DecoderBase: CaseIterable {
+enum DecoderDigitInputBase: CaseIterable {
   case octal
   case decimal
   case hexadecimal
 }
 
-extension DecoderBase {
+extension DecoderDigitInputBase {
   var displayText: String {
     switch self {
     case .octal: "8"

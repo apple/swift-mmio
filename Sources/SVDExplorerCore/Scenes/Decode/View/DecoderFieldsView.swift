@@ -13,9 +13,9 @@ import SwiftUI
 import SVD
 
 struct DecoderFieldsView: View {
-  @Binding var value: UInt64
-  @Binding var base: DecoderBase
+  @Binding var base: DecoderDigitInputBase
   var model: DecoderViewModel
+  var dynamicModel: DecoderFieldDynamicViewModelBinding
 
   var body: some View {
     Grid(verticalSpacing: 4) {
@@ -32,17 +32,23 @@ struct DecoderFieldsView: View {
 
       ForEach(self.model.fields) { field in
         DecoderFieldView(
-          value: self.$value,
           base: self.$base,
-          model: field)
+          model: field,
+          dynamicModel: self.dynamicModel)
       }
     }
   }
 }
 
 #Preview {
-  @Previewable @State var value: UInt64 = 0
-  @Previewable @State var base: DecoderBase = .octal
+  @Previewable @State var base: DecoderDigitInputBase = .octal
+  @Previewable var dynamicModel = DecoderFieldDynamicViewModel()
 
-  DecoderFieldsView(value: $value, base: $base, model: previewModel)
+  DecoderFieldDynamicViewModelDebugView(
+    dynamicModel: dynamicModel.binding)
+  
+  DecoderFieldsView(
+    base: $base,
+    model: previewModel,
+    dynamicModel: dynamicModel.binding)
 }

@@ -12,36 +12,25 @@
 import SwiftUI
 
 struct DecoderEnumerationInputView: View {
-  @Binding var value: UInt64
   var model: DecoderFieldViewModel
-
-  @FocusState var focused: Bool
-  @State var hovered: Bool = false
-  var displayState: DisplayState {
-    let value = self.value[bits: self.model.bitRange]
-    let invalid = self.model.caseBitPatternToName[value] == nil
-    return if self.focused { .focused }
-    else if invalid { .invalid }
-    else if self.hovered { .hovered }
-    else { .default }
-  }
+  var dynamicModel: DecoderFieldDynamicViewModelBinding
 
   init(
-    value: Binding<UInt64>,
-    model: DecoderFieldViewModel
+    model: DecoderFieldViewModel,
+    dynamicModel: DecoderFieldDynamicViewModelBinding
   ) {
-    self._value = value
     self.model = model
+    self.dynamicModel = dynamicModel
   }
 
   var body: some View {
     let selection = Binding<String> {
-      let value = self.value[bits: self.model.bitRange]
+      let value = self.dynamicModel.value[bits: self.model.bitRange]
       let name = self.model.caseBitPatternToName[value] ?? "Unknown"
       return name
     } set: { newValue in
       let bitPattern = self.model.caseNameToBitPattern[newValue] ?? 0
-      self.value[bits: self.model.bitRange] = bitPattern
+      self.dynamicModel.value[bits: self.model.bitRange] = bitPattern
     }
 
     Picker("Value", selection: selection) {
@@ -61,20 +50,22 @@ struct DecoderEnumerationInputView: View {
     .background {
       DecoderPillBackgroundView(
         cornerRadius: 4,
-        displayState: self.displayState)
+        displayState: self.dynamicModel.displayState(model: self.model))
     }
-    .hovered(self.$hovered)
-    .focusable()
-    .focusEffectDisabled()
-    .focused(self.$focused)
+    .hovered(self.dynamicModel.$hover, equals: self.model.id)
     Spacer()
   }
 }
 
 #Preview {
-  @Previewable @State var value: UInt64 = 0xffffffff
+  @Previewable var dynamicModel = DecoderFieldDynamicViewModel()
+  let binding = dynamicModel.binding
+
+  DecoderFieldDynamicViewModelDebugView(
+    dynamicModel: binding)
+
   DecoderEnumerationInputView(
-    value: $value,
-    model: previewModel.fields[1])
+    model: previewModel.fields[1],
+    dynamicModel: binding)
     .frame(width: 200, height: 200)
 }

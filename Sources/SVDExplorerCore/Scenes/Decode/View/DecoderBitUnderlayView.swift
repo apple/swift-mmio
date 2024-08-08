@@ -12,9 +12,11 @@
 import SwiftUI
 
 struct DecoderBitUnderlayView: View {
-  var lsb: Int
-  var msb: Int
-  var displayState: DisplayState
+  var model: DecoderFieldViewModel
+  var dynamicModel: DecoderFieldDynamicViewModelBinding
+  var displayState: DecoderFieldDisplayState {
+    self.dynamicModel.displayState(model: self.model)
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -22,15 +24,15 @@ struct DecoderBitUnderlayView: View {
       // FIXME: This sucks
       ViewThatFits {
         HStack(alignment: .bottom, spacing: 0) {
-          Text("\(self.msb)")
+          Text("\(self.model.mostSignificantBit)")
             .padding(.leading, 1)
           Spacer(minLength: 4)
-          Text("\(self.lsb)")
+          Text("\(self.model.leastSignificantBit)")
             .padding(.trailing, 1)
         }
 
         HStack {
-          Text("\(self.msb)")
+          Text("\(self.model.mostSignificantBit)")
             .padding(.leading, 1)
           Spacer(minLength: 0)
         }
@@ -45,29 +47,21 @@ struct DecoderBitUnderlayView: View {
     .background {
       DecoderPillBackgroundView(
         cornerRadius: 4,
-        displayState: self.displayState)
+        displayState: self.dynamicModel.displayState(model: self.model))
     }
+    .hovered(self.dynamicModel.$hover, equals: self.model.id)
+    .onTapGesture { self.dynamicModel.focus = self.model.id }
   }
 }
 
 #Preview {
-  @Previewable @State var lsb: Int = 500
-  @Previewable @State var msb: Int = 999
-  @Previewable @State var displayState: DisplayState = .default
+  @Previewable var dynamicModel = DecoderFieldDynamicViewModel()
 
-  HStack {
-    Stepper("LSB", value: $lsb, in: 0...1000)
-    Stepper("MSB", value: $msb, in: 0...1000)
-    Picker("Display State", selection: $displayState) {
-      ForEach(DisplayState.allCases) {
-        Text("\($0)")
-      }
-    }
-  }
+  DecoderFieldDynamicViewModelDebugView(
+    dynamicModel: dynamicModel.binding)
 
   DecoderBitUnderlayView(
-    lsb: lsb,
-    msb: msb,
-    displayState: displayState)
+    model: previewModel.fields[0],
+    dynamicModel: dynamicModel.binding)
     .padding(100)
 }

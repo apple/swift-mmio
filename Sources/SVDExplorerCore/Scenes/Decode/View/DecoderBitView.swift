@@ -13,37 +13,23 @@ import SwiftUI
 import SVD
 
 struct DecoderBitView: View {
-  @State var fields: [Range<Int>] = []
-
-  @Binding var value: UInt64
   var model: DecoderViewModel
-
-  init(
-    value: Binding<UInt64>,
-    model: DecoderViewModel
-  ) {
-    self.fields = model.fields.map(\.bitRange)
-    self._value = value
-    self.model = model
-  }
+  var dynamicModel: DecoderFieldDynamicViewModelBinding
 
   var body: some View {
     Grid(alignment: .leading, verticalSpacing: 0) {
       ForEach(0..<self.model.bitRows, id: \.self) { row in
         let row = self.model.bitRows - row - 1
-        GridRow {
-          Text("").foregroundStyle(.clear)
-        }
         self.bitGroup32(lsb: row * 32)
         self.labelRow(lsb: row * 32)
       }
     }
     .backgroundPreferenceValue(DecoderBitViewFramePreferenceKey.self) { preferences in
         GeometryReader { geometry in
-          ForEach(0..<self.fields.count, id: \.self) { index in
-            let field = self.fields[index]
-            let lsb = field.lowerBound
-            let msb = field.upperBound - 1
+          // FIXME: this doesn't handle fields spanning multiple rows
+          ForEach(self.model.fields) { field in
+            let lsb = field.leastSignificantBit
+            let msb = field.mostSignificantBit
             let row = lsb.quotientAndRemainder(dividingBy: 32).quotient * 32
             let startAnchor = preferences[.bit(msb)]
             let endAnchor = preferences[.bit(lsb)]
@@ -66,9 +52,8 @@ struct DecoderBitView: View {
               let y = minY + (height / 2)
 
               DecoderBitUnderlayView(
-                lsb: lsb,
-                msb: msb,
-                displayState: self.hovered ? .hovered : .focused)
+                model: field,
+                dynamicModel: self.dynamicModel)
                 .frame(width: width, height: height)
                 .position(x: x, y: y)
             }
@@ -111,8 +96,7 @@ struct DecoderBitView: View {
             key: DecoderBitViewFramePreferenceKey.self,
             value: .bounds) { [.labelRow(lsb): $0] }
     }
-    .hidden(!self.fields.isEmpty)
-    .font(.system(size: 10))
+    .font(.system(size: 8))
   }
 
   @ViewBuilder
@@ -148,11 +132,11 @@ struct DecoderBitView: View {
 
   @ViewBuilder
   func bit(lsb: Int) -> some View {
-    let value = self.value[bit: lsb]
+    let value = self.dynamicModel.value[bit: lsb]
     let bitLabel = value ? "1" : "0"
     let disabled = lsb >= self.model.bitWidth
     Button {
-      self.value[bit: lsb].toggle()
+      self.dynamicModel.value[bit: lsb].toggle()
     } label: {
       Text(verbatim: bitLabel)
     }
@@ -206,7 +190,12 @@ struct DecoderBitViewFramePreferenceKey: PreferenceKey {
 }
 
 #Preview {
-  @Previewable @State var value: UInt64 = 0
-  DecoderBitView(value: $value, model: previewModel)
+  @Previewable @State var base: DecoderDigitInputBase = .octal
+  @Previewable var dynamicModel = DecoderFieldDynamicViewModel()
+
+  DecoderFieldDynamicViewModelDebugView(
+    dynamicModel: dynamicModel.binding)
+
+  DecoderBitView(model: previewModel, dynamicModel: dynamicModel.binding)
 }
 

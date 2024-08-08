@@ -13,19 +13,9 @@ import SwiftUI
 import SVD
 
 struct DecoderFieldView: View {
-  @Binding var value: UInt64
-  @Binding var base: DecoderBase
+  @Binding var base: DecoderDigitInputBase
   var model: DecoderFieldViewModel
-
-  init(
-    value: Binding<UInt64>,
-    base: Binding<DecoderBase>,
-    model: DecoderFieldViewModel
-  ) {
-    self._value = value
-    self._base = base
-    self.model = model
-  }
+  var dynamicModel: DecoderFieldDynamicViewModelBinding
 
   var body: some View {
     GridRow(alignment: .firstTextBaseline) {
@@ -39,26 +29,38 @@ struct DecoderFieldView: View {
         .font(.system(size: 12, design: .monospaced))
         .gridColumnAlignment(.trailing)
       DecoderDigitInputView(
-        value: self.$value,
         base: self.$base,
-        bitRange: self.model.bitRange,
+        model: self.model,
+        dynamicModel: self.dynamicModel,
         variant: .field)
         .gridColumnAlignment(.trailing)
       DecoderEnumerationInputView(
-        value: self.$value,
-        model: self.model)
+        model: self.model,
+        dynamicModel: self.dynamicModel)
         .gridColumnAlignment(.leading)
     }
   }
 }
 
 #Preview {
-  @Previewable @State var value: UInt64 = 0xffffffff
-  @Previewable @State var base: DecoderBase = .octal
+  @Previewable @State var base: DecoderDigitInputBase = .octal
+  @Previewable var dynamicModel = DecoderFieldDynamicViewModel()
+
+  DecoderFieldDynamicViewModelDebugView(
+    dynamicModel: dynamicModel.binding)
 
   Grid {
-    DecoderFieldView(value: $value, base: $base, model: previewModel.fields[0])
-    DecoderFieldView(value: $value, base: $base, model: previewModel.fields[1])
-    DecoderFieldView(value: $value, base: $base, model: previewModel.fields[2])
+    DecoderFieldView(
+      base: $base,
+      model: previewModel.fields[0],
+      dynamicModel: dynamicModel.binding)
+    DecoderFieldView(
+      base: $base,
+      model: previewModel.fields[1],
+      dynamicModel: dynamicModel.binding)
+    DecoderFieldView(
+      base: $base,
+      model: previewModel.fields[2],
+      dynamicModel: dynamicModel.binding)
   }
 }

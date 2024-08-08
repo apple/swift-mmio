@@ -11,11 +11,44 @@
 
 import SwiftUI
 
+//func DecoderPillBackgroundView(
+//  cornerRadius: CGFloat,
+//  displayState: DecoderFieldDisplayState
+//) -> some View {
+//  RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+//    .fill(displayState.fill)
+//    .stroke(displayState.stroke, lineWidth: 2)
+//}
+
 func DecoderPillBackgroundView(
   cornerRadius: CGFloat,
-  displayState: DisplayState
+  displayState: DecoderFieldDisplayState
 ) -> some View {
-  RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-    .fill(displayState.fill)
-    .stroke(displayState.stroke, lineWidth: 1)
+  DecoderPillBackgroundView2(cornerRadius: cornerRadius, displayState: displayState)
+}
+
+struct DecoderPillBackgroundView2: View {
+  var cornerRadius: CGFloat
+  var displayState: DecoderFieldDisplayState
+
+  var body: some View {
+    RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
+      .fill(self.displayState.fill)
+      .strokeBorder(self.displayState.strokeBorder, lineWidth: 1)
+      .foregroundStyle(self.displayState.foregroundStyle)
+  }
+}
+
+#Preview {
+  @Previewable @State var focus: Bool = false
+  @Previewable @State var hover: Bool = false
+  @Previewable @State var invalid: Bool = false
+  
+  Toggle("focus", isOn: $focus)
+  Toggle("hover", isOn: $hover)
+  Toggle("invalid", isOn: $invalid)
+
+  DecoderPillBackgroundView2(
+    cornerRadius: 40,
+    displayState: .init(focus: focus, hover: hover, invalid: invalid))
 }

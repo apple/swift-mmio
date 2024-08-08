@@ -14,13 +14,19 @@ import SwiftUI
 
 struct DecoderView: View {
   var model: DecoderViewModel
+//  var dynamicModel = DecoderFieldDynamicViewModel()
+  var dynamicModelBinding: DecoderFieldDynamicViewModelBinding {
+    .init(value: self.$value, hover: self.$hover, focus: self.$focus)
+  }
 
   @State var value: UInt64 = 0
+  @State var hover: Int?
+  @FocusState var focus: Int?
+
   @State var showBinary = true
   @State var showFields = true
   @State var showSwift = true
-  @State var base: DecoderBase = .hexadecimal
-  @FocusState var focused: Int?
+  @State var base: DecoderDigitInputBase = .hexadecimal
 
   var body: some View {
     VStack(alignment: .trailing) {
@@ -33,12 +39,19 @@ struct DecoderView: View {
       Divider()
 
       DecoderDigitInputView(
-        value: self.$value,
         base: self.$base,
-        bitRange: self.model.bitRange,
+        model: DecoderFieldViewModel(
+          id: -1,
+          name: "None",
+          bitRange: self.model.bitRange,
+          leastSignificantBit: self.model.bitRange.lowerBound,
+          mostSignificantBit: self.model.bitRange.upperBound - 1,
+          caseNames: [],
+          caseBitPatternToName: [:],
+          caseNameToBitPattern: [:]),
+        dynamicModel: self.dynamicModelBinding,
         variant: .primary)
-        .focused(self.$focused, equals: nil)
-        .padding(.top, 60)
+//        .padding(.top, 60)
 
       Divider()
 
@@ -48,8 +61,8 @@ struct DecoderView: View {
 
       if self.showBinary {
         DecoderBitView(
-          value: self.$value,
-          model: self.model)
+          model: self.model,
+          dynamicModel:  self.dynamicModelBinding)
       }
       Divider()
 
@@ -57,11 +70,12 @@ struct DecoderView: View {
         isOpen: self.$showFields,
         title: "Fields")
 
+
       if self.showFields {
         DecoderFieldsView(
-          value: self.$value,
           base: self.$base,
-          model: self.model)
+          model: self.model,
+          dynamicModel: self.dynamicModelBinding)
       }
       Divider()
 

@@ -29,8 +29,11 @@ extension DecoderViewModel {
     self.bitRows = rows.quotient + rows.remainder.signum()
     self.resetValue = register.registerProperties.resetValue ?? 0
     self.fields = (register.fields?.field ?? [])
-      .map(DecoderFieldViewModel.init)
+      .map { DecoderFieldViewModel(id: 0, field: $0) }
       .sorted { $0.mostSignificantBit > $1.mostSignificantBit }
+    for index in self.fields.indices {
+      self.fields[index].id = index
+    }
   }
 }
 
