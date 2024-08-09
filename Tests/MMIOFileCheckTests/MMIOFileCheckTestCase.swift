@@ -9,18 +9,17 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(macOS)
 // FIXME: switch over to swift-testing
 // XCTest is really painful for dynamic test lists
 
 import Dispatch
 import Foundation
-import XCTest
 import MMIOUtilities
+import XCTest
 
 final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
   func test() throws {
-    let selfFileURL = URL(fileURLWithPath: #file)
+    let selfFileURL = URL(fileURLWithPath: #filePath)
     let selfDirectoryURL =
       selfFileURL
       .deletingLastPathComponent()
@@ -41,7 +40,7 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
     // Run test setup step.
     print("Running Test Setup...")
     let start = DispatchTime.now()
-    let (hasLLVMFileCheck, buildOutputsURL) = try Self.prerun(
+    let (hasLLVMFileCheck, toolchainID, buildOutputsURL) = try Self.prerun(
       packageDirectoryURL: packageDirectoryURL)
     let end = DispatchTime.now()
 
@@ -55,6 +54,7 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
       let diagnostics = Self.run(
         testFileURL: testFileURL,
         hasLLVMFileCheck: hasLLVMFileCheck,
+        toolchainID: toolchainID,
         packageDirectoryURL: packageDirectoryURL,
         buildOutputsURL: buildOutputsURL)
       for diagnostic in diagnostics {
@@ -67,13 +67,66 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
 
   static func prerun(
     packageDirectoryURL: URL
-  ) throws -> (Bool, URL) {
+  ) throws -> (Bool, String, URL) {
+    let environment = ProcessInfo.processInfo.environment
+
+    let ci: Bool
+    if environment["CI"] != nil {
+      print("Running in CI...")
+      ci = true
+    } else {
+      ci = false
+    }
+
+    print("Determining Swift Toolchain...")
+    let toolchainID: String
+
+    if let toolchain = environment["TOOLCHAINS"] {
+      print("TOOLCHAINS set.")
+      toolchainID = toolchain
+    } else if ci {
+      print("Running in CI. Leaving TOOLCHAINS empty.")
+      toolchainID = ""
+    } else {
+      print("TOOLCHAINS not set.")
+      #if os(macOS)
+      print("Searching for swift-latest toolchain")
+      toolchainID = try sh(
+        """
+        plutil \
+          -extract CFBundleIdentifier raw \
+          -o - \
+          /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+        """)
+      #else
+      toolchainID = ""
+      #endif
+    }
+    print("Using TOOLCHAINS=\(toolchainID)")
+
+    print("Determining Swift Compiler Version...")
+    let versionString = try sh("TOOLCHAINS=\(toolchainID) swift --version")
+    let regex = #/Swift version (\d+)/#
+    let swift6Plus =
+      if let match = versionString.firstMatch(of: regex),
+        let majorVersion = Int(match.output.1),
+        majorVersion > 5
+      {
+        true
+      } else {
+        false
+      }
+    print("Using Swift Compiler Version \(swift6Plus ? 6 : 5)")
+
+    if !swift6Plus {
+      throw XCTSkip("Unsupported on Swift < 6")
+    }
+
     let hasLLVMFileCheck: Bool
     do {
       print("Locating FileCheck...")
       _ = try sh("which FileCheck")
-      hasLLVMFileCheck =
-        ProcessInfo().environment["SWIFT_MMIO_USE_SIMPLE_FILECHECK"] == nil
+      hasLLVMFileCheck = environment["SWIFT_MMIO_USE_SIMPLE_FILECHECK"] == nil
     } catch {
       print("Failed to locate FileCheck...")
       hasLLVMFileCheck = false
@@ -89,28 +142,34 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
     let buildOutputsURL = URL(
       fileURLWithPath: try sh(
         """
-        swift build \
+        TOOLCHAINS=\(toolchainID) swift build \
           --ignore-lock \
           --configuration release \
           --package-path \(packageDirectoryURL.path) \
           --show-bin-path
         """))
 
-    print("Building MMIO...")
-    _ = try sh(
-      """
-      swift build \
-        --ignore-lock \
-        --configuration release \
-        --package-path \(packageDirectoryURL.path)
-      """)
+    if ci {
+      print("Skipping building MMIO...")
+    } else {
+      print("Building MMIO...")
+      _ = try sh(
+        """
+        TOOLCHAINS=\(toolchainID) swift build \
+          --ignore-lock \
+          --configuration release \
+          --package-path \(packageDirectoryURL.path) \
+          --verbose
+        """, collectStandardOutput: false)
+    }
 
-    return (hasLLVMFileCheck, buildOutputsURL)
+    return (hasLLVMFileCheck, toolchainID, buildOutputsURL)
   }
 
   static func run(
     testFileURL: URL,
     hasLLVMFileCheck: Bool,
+    toolchainID: String,
     packageDirectoryURL: URL,
     buildOutputsURL: URL
   ) -> [LLVMDiagnostic] {
@@ -128,15 +187,14 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
 
       _ = try sh(
         """
-        swiftc \
+        TOOLCHAINS=\(toolchainID) swiftc \
           -emit-ir \(testFileURL.path) \
           -o \(testOutputFileURL.path) \
           -O -wmo \
-          -I \(buildOutputsURL.path) \
           -I \(buildOutputsURL.path)/Modules \
           -I \(mmioVolatileDirectoryURL.path) \
           -load-plugin-executable \
-            \(buildOutputsURL.path)/MMIOMacros#MMIOMacros \
+            \(buildOutputsURL.path)/MMIOMacros-tool#MMIOMacros \
           -parse-as-library \
           -diagnostic-style llvm
         """)
@@ -213,5 +271,3 @@ extension FileManager {
       .sorted { $0.path < $1.path }
   }
 }
-
-#endif

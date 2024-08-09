@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(macOS)
 import Dispatch
 import Foundation
 
@@ -52,30 +51,35 @@ extension ShellCommandError: LocalizedError {
 
 public func sh(
   _ command: String,
-  at path: String? = nil
+  collectStandardOutput: Bool = true,
+  collectStandardError: Bool = true
 ) throws -> String {
   let process = Process()
   process.executableURL = URL(fileURLWithPath: "/bin/sh")
-  process.arguments = ["-ic", "export PATH=$PATH:~/bin; \(command)"]
+  process.arguments = ["-c", "export PATH=$PATH:~/bin; \(command)"]
 
   // drain standard output and error into in-memory data.
   let drainQueue = DispatchQueue(label: "sh-drain-queue")
 
   let outputData = Mutex(Data())
   let outputPipe = Pipe()
-  process.standardOutput = outputPipe
-  outputPipe.fileHandleForReading.readabilityHandler = { handler in
-    drainQueue.async {
-      outputData.withLock { $0.append(handler.availableData) }
+  if collectStandardOutput {
+    process.standardOutput = outputPipe
+    outputPipe.fileHandleForReading.readabilityHandler = { handler in
+      drainQueue.async {
+        outputData.withLock { $0.append(handler.availableData) }
+      }
     }
   }
 
   let errorData = Mutex(Data())
   let errorPipe = Pipe()
-  process.standardError = errorPipe
-  errorPipe.fileHandleForReading.readabilityHandler = { handler in
-    drainQueue.async {
-      errorData.withLock { $0.append(handler.availableData) }
+  if collectStandardError {
+    process.standardError = errorPipe
+    errorPipe.fileHandleForReading.readabilityHandler = { handler in
+      drainQueue.async {
+        errorData.withLock { $0.append(handler.availableData) }
+      }
     }
   }
 
@@ -101,4 +105,3 @@ public func sh(
 
   return outputData.withLock { $0 }.asUTF8String()
 }
-#endif
