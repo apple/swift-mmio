@@ -75,3 +75,11 @@ public struct SVDCluster {
   /// Define the sequence of registers.
   public var register: [SVDRegister]?
 }
+
+extension SVDCluster: Decodable {}
+
+extension SVDCluster: Encodable {}
+
+extension SVDCluster: Equatable {}
+
+extension SVDCluster: Hashable {}

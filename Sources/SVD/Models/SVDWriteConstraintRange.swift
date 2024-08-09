@@ -16,14 +16,15 @@ import FoundationXML
 #endif
 
 @XMLElement
-public struct SVDEnumerationCaseDataDefault {
-  public var isDefault: Bool
+public struct SVDWriteConstraintRange {
+  public var minimum: UInt64
+  public var maximum: UInt64
 }
 
-extension SVDEnumerationCaseDataDefault: Decodable {}
+extension SVDWriteConstraintRange: Decodable {}
 
-extension SVDEnumerationCaseDataDefault: Encodable {}
+extension SVDWriteConstraintRange: Encodable {}
 
-extension SVDEnumerationCaseDataDefault: Equatable {}
+extension SVDWriteConstraintRange: Equatable {}
 
-extension SVDEnumerationCaseDataDefault: Hashable {}
+extension SVDWriteConstraintRange: Hashable {}

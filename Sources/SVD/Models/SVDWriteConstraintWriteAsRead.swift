@@ -16,14 +16,14 @@ import FoundationXML
 #endif
 
 @XMLElement
-public struct SVDEnumerationCaseDataDefault {
-  public var isDefault: Bool
+public struct SVDWriteConstraintWriteAsRead {
+  public var writeAsRead: Bool
 }
 
-extension SVDEnumerationCaseDataDefault: Decodable {}
+extension SVDWriteConstraintWriteAsRead: Decodable {}
 
-extension SVDEnumerationCaseDataDefault: Encodable {}
+extension SVDWriteConstraintWriteAsRead: Encodable {}
 
-extension SVDEnumerationCaseDataDefault: Equatable {}
+extension SVDWriteConstraintWriteAsRead: Equatable {}
 
-extension SVDEnumerationCaseDataDefault: Hashable {}
+extension SVDWriteConstraintWriteAsRead: Hashable {}

@@ -16,11 +16,6 @@ import MMIOUtilities
 import FoundationXML
 #endif
 
-@XMLElement
-public struct SVDBitRangeLiteralContainer {
-  public var bitRange: SVDBitRangeLiteral
-}
-
 /// A string in the format: "[<msb>:<lsb>]"
 public struct SVDBitRangeLiteral {
   public var lsb: UInt64
@@ -30,6 +25,15 @@ public struct SVDBitRangeLiteral {
 extension SVDBitRangeLiteral: CustomStringConvertible {
   public var description: String { "[\(self.msb):\(self.lsb)]" }
 }
+
+// FIXME: encode/decode as single value
+extension SVDBitRangeLiteral: Decodable {}
+
+extension SVDBitRangeLiteral: Encodable {}
+
+extension SVDBitRangeLiteral: Equatable {}
+
+extension SVDBitRangeLiteral: Hashable {}
 
 extension SVDBitRangeLiteral: LosslessStringConvertible {
   public init?(_ description: String) {

@@ -15,17 +15,6 @@ import Foundation
 import FoundationXML
 #endif
 
-@XMLElement
-public struct SVDWriteConstraintWriteAsRead {
-  var writeAsRead: Bool
-}
-
-@XMLElement
-public struct SVDWriteConstraintRange {
-  public var minimum: UInt64
-  public var maximum: UInt64
-}
-
 /// Define constraints for writing values to a field.
 ///
 /// You can choose between three options, which are mutually exclusive.
@@ -40,6 +29,14 @@ public enum SVDWriteConstraint {
   /// - maximum: Specify the largest number to be written to the field.
   case range(SVDWriteConstraintRange)
 }
+
+extension SVDWriteConstraint: Decodable {}
+
+extension SVDWriteConstraint: Encodable {}
+
+extension SVDWriteConstraint: Equatable {}
+
+extension SVDWriteConstraint: Hashable {}
 
 extension SVDWriteConstraint: XMLElementInitializable {
   init(_ element: XMLElement) throws {
