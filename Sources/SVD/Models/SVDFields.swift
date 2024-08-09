@@ -21,3 +21,11 @@ public struct SVDFields {
   /// Define the bit-field properties of a register.
   public var field: [SVDField]
 }
+
+extension SVDFields: Decodable {}
+
+extension SVDFields: Encodable {}
+
+extension SVDFields: Equatable {}
+
+extension SVDFields: Hashable {}

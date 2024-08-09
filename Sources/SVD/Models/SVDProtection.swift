@@ -23,4 +23,12 @@ public enum SVDProtection: String {
   case privileged = "p"
 }
 
+extension SVDProtection: Decodable {}
+
+extension SVDProtection: Encodable {}
+
+extension SVDProtection: Equatable {}
+
+extension SVDProtection: Hashable {}
+
 extension SVDProtection: XMLNodeInitializable {}

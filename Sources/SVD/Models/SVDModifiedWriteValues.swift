@@ -33,8 +33,16 @@ public enum SVDModifiedWriteValues: String {
   case clear
   /// After a write operation all bits in the field are set (set to one).
   case set
-  /// After a write operation all bit in the field may be modified (default).
+  /// After a write operation all bits in the field may be modified (default).
   case modify
 }
+
+extension SVDModifiedWriteValues: Decodable {}
+
+extension SVDModifiedWriteValues: Encodable {}
+
+extension SVDModifiedWriteValues: Equatable {}
+
+extension SVDModifiedWriteValues: Hashable {}
 
 extension SVDModifiedWriteValues: XMLNodeInitializable {}

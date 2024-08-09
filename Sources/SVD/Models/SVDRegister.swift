@@ -97,3 +97,11 @@ public struct SVDRegister {
   /// structures in the header file.
   public var fields: SVDFields?
 }
+
+extension SVDRegister: Decodable {}
+
+extension SVDRegister: Encodable {}
+
+extension SVDRegister: Equatable {}
+
+extension SVDRegister: Hashable {}

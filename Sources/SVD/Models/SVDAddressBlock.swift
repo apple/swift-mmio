@@ -32,3 +32,11 @@ public struct SVDAddressBlock {
   /// Set the protection level for an address block.
   public var protection: SVDProtection?
 }
+
+extension SVDAddressBlock: Decodable {}
+
+extension SVDAddressBlock: Encodable {}
+
+extension SVDAddressBlock: Equatable {}
+
+extension SVDAddressBlock: Hashable {}

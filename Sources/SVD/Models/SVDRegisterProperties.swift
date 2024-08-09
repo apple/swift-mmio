@@ -47,3 +47,11 @@ extension SVDRegisterProperties {
       resetMask: self.resetMask ?? other.resetMask)
   }
 }
+
+extension SVDRegisterProperties: Decodable {}
+
+extension SVDRegisterProperties: Encodable {}
+
+extension SVDRegisterProperties: Equatable {}
+
+extension SVDRegisterProperties: Hashable {}

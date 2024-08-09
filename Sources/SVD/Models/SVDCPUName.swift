@@ -66,10 +66,59 @@ public enum SVDCPUName {
   case other(String)
 }
 
-extension SVDCPUName: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
-    let stringValue = try String(node)
-    switch stringValue {
+extension SVDCPUName: CustomStringConvertible {
+  public var description: String {
+    switch self {
+    case .armCortexM0: "CM0"
+    case .armCortexM0p: "CM0+"
+    case .armCortexM1: "CM1"
+    case .armCortexM3: "CM3"
+    case .armCortexM4: "CM4"
+    case .armCortexM7: "CM7"
+    case .armCortexM23: "CM23"
+    case .armCortexM33: "CM33"
+    case .armCortexM35P: "CM35P"
+    case .armCortexM55: "CM55"
+    case .armCortexM85: "CM85"
+    case .armSecureCoreSC000: "SC000"
+    case .armSecureCoreSC300: "SC300"
+    case .armCortexA5: "CA5"
+    case .armCortexA7: "CA7"
+    case .armCortexA8: "CA8"
+    case .armCortexA9: "CA9"
+    case .armCortexA15: "CA15"
+    case .armCortexA17: "CA17"
+    case .armCortexA53: "CA53"
+    case .armCortexA57: "CA57"
+    case .armCortexA72: "CA72"
+    case .armChinaSTARMC1: "SMC1"
+    case .other(let description): description
+    }
+  }
+}
+
+extension SVDCPUName: Decodable {
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let description = try container.decode(String.self)
+    self = Self(description)
+  }
+}
+
+extension SVDCPUName: Encodable {
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(self.description)
+  }
+}
+
+extension SVDCPUName: Equatable {}
+
+extension SVDCPUName: Hashable {}
+
+extension SVDCPUName: LosslessStringConvertible {
+  public init(_ description: String) {
+    switch description {
     case "CM0": self = .armCortexM0
     case "CM0PLUS", "CM0+": self = .armCortexM0p
     case "CM1": self = .armCortexM1
@@ -93,7 +142,9 @@ extension SVDCPUName: XMLNodeInitializable {
     case "CA57": self = .armCortexA57
     case "CA72": self = .armCortexA72
     case "SMC1": self = .armChinaSTARMC1
-    default: self = .other(stringValue)
+    default: self = .other(description)
     }
   }
 }
+
+extension SVDCPUName: XMLNodeInitializable {}

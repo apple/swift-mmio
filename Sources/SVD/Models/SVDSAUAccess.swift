@@ -16,4 +16,12 @@ public enum SVDSAUAccess: String {
   case nonSecure = "n"
 }
 
+extension SVDSAUAccess: Decodable {}
+
+extension SVDSAUAccess: Encodable {}
+
+extension SVDSAUAccess: Equatable {}
+
+extension SVDSAUAccess: Hashable {}
+
 extension SVDSAUAccess: XMLNodeInitializable {}

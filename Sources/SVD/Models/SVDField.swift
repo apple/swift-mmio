@@ -71,3 +71,11 @@ public struct SVDField {
   /// Next lower level of description.
   public var enumeratedValues: SVDEnumeration?
 }
+
+extension SVDField: Decodable {}
+
+extension SVDField: Encodable {}
+
+extension SVDField: Equatable {}
+
+extension SVDField: Hashable {}

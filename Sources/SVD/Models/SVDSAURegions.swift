@@ -29,3 +29,11 @@ public struct SVDSAURegions {
   /// Group to configure SAU regions.
   public var region: [SVDSAURegion]
 }
+
+extension SVDSAURegions: Decodable {}
+
+extension SVDSAURegions: Encodable {}
+
+extension SVDSAURegions: Equatable {}
+
+extension SVDSAURegions: Hashable {}

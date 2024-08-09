@@ -33,6 +33,14 @@ public enum SVDAccess {
   case readWriteOnce
 }
 
+extension SVDAccess: Decodable {}
+
+extension SVDAccess: Encodable {}
+
+extension SVDAccess: Equatable {}
+
+extension SVDAccess: Hashable {}
+
 extension SVDAccess: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)

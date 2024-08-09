@@ -10,20 +10,21 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import MMIOUtilities
 
 #if canImport(FoundationXML)
 import FoundationXML
 #endif
 
 @XMLElement
-public struct SVDEnumerationCaseDataDefault {
-  public var isDefault: Bool
+public struct SVDBitRangeLiteralContainer {
+  public var bitRange: SVDBitRangeLiteral
 }
 
-extension SVDEnumerationCaseDataDefault: Decodable {}
+extension SVDBitRangeLiteralContainer: Decodable {}
 
-extension SVDEnumerationCaseDataDefault: Encodable {}
+extension SVDBitRangeLiteralContainer: Encodable {}
 
-extension SVDEnumerationCaseDataDefault: Equatable {}
+extension SVDBitRangeLiteralContainer: Equatable {}
 
-extension SVDEnumerationCaseDataDefault: Hashable {}
+extension SVDBitRangeLiteralContainer: Hashable {}

@@ -82,3 +82,11 @@ public struct SVDCPU {
   /// the settings are described here.
   public var sauRegionsConfig: SVDSAURegions?
 }
+
+extension SVDCPU: Decodable {}
+
+extension SVDCPU: Encodable {}
+
+extension SVDCPU: Equatable {}
+
+extension SVDCPU: Hashable {}

@@ -31,3 +31,12 @@ extension SVDEnumerationCaseData: XMLElementInitializable {
     }
   }
 }
+
+// FIXME: encoding / decoding container
+extension SVDEnumerationCaseData: Decodable {}
+
+extension SVDEnumerationCaseData: Encodable {}
+
+extension SVDEnumerationCaseData: Equatable {}
+
+extension SVDEnumerationCaseData: Hashable {}
