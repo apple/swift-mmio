@@ -1,0 +1,49 @@
+name: Swift
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Swift (${{ matrix.swift.version }}) / Ubuntu (${{ matrix.os.version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - name: jammy
+            version: "22.04"
+        swift:
+          - repo: swift
+            version: "5.9"
+          - repo: swift
+            version: "5.10"
+          - repo: swiftlang/swift
+            version: "nightly-6.0"
+          - repo: swiftlang/swift
+            version: "nightly-main"
+    container: ${{ matrix.swift.repo }}:${{ matrix.swift.version }}-${{ matrix.os.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: apt-get -qq update && apt-get -qq -y install make
+      - name: Build & Test
+        run: make test CONFIGURATION=release
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    container: swiftlang/swift:nightly-6.0-jammy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: apt-get -qq update && apt-get -qq -y install make
+      - name: Lint
+        run: make lint

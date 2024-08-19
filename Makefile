@@ -16,10 +16,6 @@ SKIP_LINT =
 .PHONY: all lint format build test clean
 all: test
 
-ifdef SKIP_LINT
-lint:
-	@echo "skipping linting..."
-else
 lint:
 	@echo "linting..."
 	@swift-format lint \
@@ -27,7 +23,6 @@ lint:
 		--recursive \
 		--strict \
 		Package.swift Plugins Sources Tests
-endif
 
 format:
 	@echo "formatting..."
@@ -37,7 +32,7 @@ format:
 		--in-place \
 		Package.swift Plugins Sources Tests
 
-build: lint
+build:
 	@echo "building..."
 	@swift build \
 		--configuration $(CONFIGURATION) \
