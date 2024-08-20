@@ -17,10 +17,8 @@ struct SVD2SwiftPluginConfigurationDecodingError {
 
 extension SVD2SwiftPluginConfigurationDecodingError: CustomStringConvertible {
   init(url: URL, error: DecodingError) {
-    func format(_ codingPath: [any CodingKey]) -> String{
-      if codingPath.isEmpty {
-        return "<root>"
-      } else {
+    func format(_ codingPath: [any CodingKey]) -> String {
+      guard codingPath.isEmpty else {
         var path = ""
         for key in codingPath {
           if !path.isEmpty {
@@ -36,20 +34,22 @@ extension SVD2SwiftPluginConfigurationDecodingError: CustomStringConvertible {
         }
         return path
       }
+      return "<root>"
     }
 
-    let errorFragment = switch error {
-    case let .typeMismatch(type, context):
-      "Expected type \"\(type)\" at path \"\(format(context.codingPath))\"."
-    case let .valueNotFound(_, context):
-      "Expected value at path \"\(format(context.codingPath))\"."
-    case let .keyNotFound(key, context):
-      "Expected key at path \"\(format(context.codingPath + [key]))\"."
-    case let .dataCorrupted(context):
-      "Data corrupted at path \"\(format(context.codingPath))\"."
-    default:
-      "Unknown decoding error: \(error)"
-    }
+    let errorFragment =
+      switch error {
+      case .typeMismatch(let type, let context):
+        "Expected type \"\(type)\" at path \"\(format(context.codingPath))\"."
+      case .valueNotFound(_, let context):
+        "Expected value at path \"\(format(context.codingPath))\"."
+      case .keyNotFound(let key, let context):
+        "Expected key at path \"\(format(context.codingPath + [key]))\"."
+      case .dataCorrupted(let context):
+        "Data corrupted at path \"\(format(context.codingPath))\"."
+      default:
+        "Unknown decoding error: \(error)"
+      }
     self.description = """
       \(url.path):1:1: \
       Failed to read \(FileKind.svd2swift): \
