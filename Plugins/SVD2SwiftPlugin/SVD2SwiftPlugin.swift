@@ -30,8 +30,15 @@ struct SVD2SwiftPlugin: BuildToolPlugin {
     // Load the list of peripherals to generate from the config file.
     let pluginConfigURL = URL(fileURLWithPath: pluginConfigFile.string)
     let pluginConfigData = try Data(contentsOf: pluginConfigURL)
-    let pluginConfig = try JSONDecoder()
-      .decode(SVD2SwiftPluginConfiguration.self, from: pluginConfigData)
+    let pluginConfig: SVD2SwiftPluginConfiguration
+    do {
+      pluginConfig = try JSONDecoder()
+        .decode(SVD2SwiftPluginConfiguration.self, from: pluginConfigData)
+    } catch let error as DecodingError {
+      throw SVD2SwiftPluginConfigurationDecodingError(
+        url: pluginConfigURL,
+        error: error)
+    }
     guard !pluginConfig.peripherals.isEmpty else {
       throw SVD2SwiftPluginError.missingPeripherals(target, pluginConfigFile)
     }
