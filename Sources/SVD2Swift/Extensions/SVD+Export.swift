@@ -133,10 +133,12 @@ extension SVDDevice {
             context: &context,
             registerProperties: registerProperties)
           if !exports.isEmpty {
-            exportQueue.append((
-              exports,
-              parentTypes + [element.swiftName],
-              registerProperties))
+            exportQueue.append(
+              (
+                exports,
+                parentTypes + [element.swiftName],
+                registerProperties
+              ))
           }
           if index < elements.count - 1 {
             context.outputWriter.append("\n")
@@ -184,7 +186,7 @@ extension SVDPeripheral: SVDExportable {
         \(comment: self.swiftDescription)
         @RegisterBlock
         \(context.accessLevel)struct \(typeName) {
-        
+
         """)
       context.outputWriter.indent()
       if let registersAndClusters = self.registers {
@@ -323,12 +325,12 @@ extension SVDCluster: SVDExportable {
     } else {
 
       context.outputWriter.append(
-      """
-      \(comment: self.swiftDescription)
-      @RegisterBlock
-      \(context.accessLevel)struct \(self.swiftName) {
-      
-      """)
+        """
+        \(comment: self.swiftDescription)
+        @RegisterBlock
+        \(context.accessLevel)struct \(self.swiftName) {
+
+        """)
       context.outputWriter.indent()
       if let registers = self.register {
         for (index, register) in registers.enumerated() {
@@ -408,12 +410,12 @@ extension SVDRegister: SVDExportable {
 
     if let size = registerProperties.size {
       context.outputWriter.append(
-      """
-      \(comment: self.swiftDescription)
-      @Register(bitWidth: \(size))
-      \(context.accessLevel)struct \(self.swiftName) {
-      
-      """)
+        """
+        \(comment: self.swiftDescription)
+        @Register(bitWidth: \(size))
+        \(context.accessLevel)struct \(self.swiftName) {
+
+        """)
       context.outputWriter.indent()
       let fields = self.fields?.field ?? []
       for (index, field) in fields.enumerated() {

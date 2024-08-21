@@ -57,7 +57,7 @@ extension SVD2SwiftTests {
               .init(
                 name: "ExampleCluster1_1",
                 description: "Another example cluster level 1",
-                addressOffset: 0x200)
+                addressOffset: 0x200),
             ],
             register: [
               .init(
@@ -129,18 +129,18 @@ extension SVD2SwiftTests {
             /// An example register in cluster 1
             @RegisterBlock(offset: 0x10)
             var examplecluster1register: Register<ExampleCluster1Register>
-        
+
             /// An example cluster level 2
             @RegisterBlock(offset: 0x30)
             var examplecluster2: ExampleCluster2
           }
-        
+
           /// Another example cluster level 1
           @RegisterBlock
           struct ExampleCluster1_1 {
           }
         }
-        
+
         extension ExamplePeripheral.ExampleCluster1 {
           /// An example register in cluster 1
           @Register(bitWidth: 32)
