@@ -21,7 +21,6 @@ let device = SVDDevice(
   peripherals: .init(
     peripheral: [
       .init(
-        dimensionElement: .init(),
         name: "TestPeripheral",
         description: "A perisperhal with some registers.",
         baseAddress: 0x1000,

@@ -91,6 +91,9 @@ final class RegisterBlockMacroTests: XCTestCase {
           @OtherAttribute var v2: Int
           var v3: Int { willSet {} }
         }
+
+        extension S: RegisterProtocol {
+        }
         """,
       diagnostics: [
         .init(
@@ -170,6 +173,9 @@ final class RegisterBlockMacroTests: XCTestCase {
             self.unsafeAddress = unsafeAddress
           }
           #endif
+        }
+
+        extension S: RegisterProtocol {
         }
         """,
       diagnostics: [],
