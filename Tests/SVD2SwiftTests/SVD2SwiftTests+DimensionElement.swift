@@ -65,11 +65,11 @@ extension SVD2SwiftTests {
                                 dimIncrement: 5),
                               name: "ExampleField",
                               bitRange: .lsbMsb(.init(lsb: 2, msb: 3)))
-                          ])),
-                    ]),
-                ]),
+                          ]))
+                    ])
+                ])
             ],
-            register: [])),
+            register: []))
       ]))
 
   func test_dimIndex_output() throws {
@@ -89,7 +89,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = Vec<ExamplePeripheral>(unsafeAddress: 0x10000, stride: 0x1000, count: 1)
+        let exampleperipheral = RegisterArray<ExamplePeripheral>(unsafeAddress: 0x10000, stride: 0x1000, count: 1)
 
         """,
 
@@ -103,7 +103,7 @@ extension SVD2SwiftTests {
         struct ExamplePeripheral {
           /// An example cluster
           @RegisterBlock(offset: 0x20000, stride: 0x2000, count: 2)
-          var examplecluster1: Vec<ExampleCluster1>
+          var examplecluster1: RegisterArray<ExampleCluster1>
         }
 
         extension ExamplePeripheral {
@@ -112,7 +112,7 @@ extension SVD2SwiftTests {
           struct ExampleCluster1 {
             /// An example nested cluster
             @RegisterBlock(offset: 0x30000, stride: 0x3000, count: 3)
-            var examplecluster2: Vec<ExampleCluster2>
+            var examplecluster2: RegisterArray<ExampleCluster2>
           }
         }
 
@@ -122,7 +122,7 @@ extension SVD2SwiftTests {
           struct ExampleCluster2 {
             /// An example register
             @RegisterBlock(offset: 0x40000, stride: 0x4000, count: 4)
-            var exampleregister: Vec<ExampleRegister>
+            var exampleregister: RegisterArray<ExampleRegister>
           }
         }
 
@@ -133,19 +133,19 @@ extension SVD2SwiftTests {
             /// ExampleField
             @ReadWrite(bits: 2..<4)
             var examplefield0: ExampleField0
-        
+
             /// ExampleField
             @ReadWrite(bits: 7..<9)
             var examplefield1: ExampleField1
-        
+
             /// ExampleField
             @ReadWrite(bits: 12..<14)
             var examplefield2: ExampleField2
-        
+
             /// ExampleField
             @ReadWrite(bits: 17..<19)
             var examplefield3: ExampleField3
-        
+
             /// ExampleField
             @ReadWrite(bits: 22..<24)
             var examplefield4: ExampleField4

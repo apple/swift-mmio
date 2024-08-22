@@ -95,3 +95,24 @@ extension RegisterBlockMacro: MMIOMemberMacro {
     ]
   }
 }
+
+extension RegisterBlockMacro: MMIOExtensionMacro {
+  static var extensionMacroSuppressParsingDiagnostics: Bool { true }
+
+  func expansion(
+    of node: AttributeSyntax,
+    attachedTo declaration: some DeclGroupSyntax,
+    providingExtensionsOf type: some TypeSyntaxProtocol,
+    conformingTo protocols: [TypeSyntax],
+    in context: MacroContext<Self, some MacroExpansionContext>
+  ) throws -> [ExtensionDeclSyntax] {
+    // Avoid duplicating diagnostics produced by `MemberMacro` conformance.
+    // Only create extension when applied to struct decls.
+    guard declaration.is(StructDeclSyntax.self) else { return [] }
+
+    let `extension`: DeclSyntax =
+      "extension \(type.trimmed): RegisterProtocol {}"
+
+    return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
+  }
+}

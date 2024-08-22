@@ -244,7 +244,7 @@ extension SVDPeripheral: SVDExportable {
       context.outputWriter.append(
         """
         \(comment: self.swiftDescription)
-        \(context.accessLevel)\(accessorModifier)let \(identifier: instanceName) = Vec<\(typeName)>(\
+        \(context.accessLevel)\(accessorModifier)let \(identifier: instanceName) = RegisterArray<\(typeName)>(\
         unsafeAddress: \(hex: self.baseAddress), stride: \(hex: stride), count: \(count))
 
         """)
@@ -275,7 +275,7 @@ extension SVDCluster: SVDExportable {
         """
         \(comment: self.swiftDescription)
         @RegisterBlock(offset: \(hex: self.addressOffset), stride: \(hex: stride), count: \(count))
-        \(context.accessLevel)var \(identifier: instanceName): Vec<\(typeName)>
+        \(context.accessLevel)var \(identifier: instanceName): RegisterArray<\(typeName)>
 
         """)
     } else {
@@ -358,7 +358,7 @@ extension SVDRegister: SVDExportable {
         """
         \(comment: self.swiftDescription)
         @RegisterBlock(offset: \(hex: self.addressOffset), stride: \(hex: stride), count: \(count))
-        \(context.accessLevel)var \(identifier: instanceName): Vec<\(typeName)>
+        \(context.accessLevel)var \(identifier: instanceName): RegisterArray<\(typeName)>
 
         """)
     } else {

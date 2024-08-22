@@ -11,7 +11,7 @@
 
 /// A container type referencing of a region of memory whose layout is defined
 /// by another type.
-public struct Register<Value> where Value: RegisterValue {
+public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   public var unsafeAddress: UInt
 
   #if FEATURE_INTERPOSABLE
