@@ -140,7 +140,7 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
           }
           #endif
         }
-        
+
         extension I2C: RegisterProtocol {
         }
         """,
