@@ -9,9 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+public typealias Vec = RegisterArray
+
 /// A container type referencing of a region of memory whose layout is defined
 /// by another type.
-public struct RegisterArray<Value> where Value: RegisterValue {
+public struct RegisterArray<Value> { // where Value: RegisterValue {
   public var unsafeAddress: UInt
   public var stride: UInt
   public var count: UInt
@@ -22,23 +24,23 @@ public struct RegisterArray<Value> where Value: RegisterValue {
 
   @inlinable @inline(__always)
   static func preconditionAligned(unsafeAddress: UInt, stride: UInt) {
-    let alignment = MemoryLayout<Value.Raw.Storage>.alignment
-    #if $Embedded
-    // FIXME: Embedded doesn't have static interpolated strings yet
-    precondition(
-      unsafeAddress.isMultiple(of: UInt(alignment)),
-      "Misaligned address")
-    precondition(
-      stride.isMultiple(of: UInt(alignment)),
-      "Misaligned stride")
-    #else
-    precondition(
-      unsafeAddress.isMultiple(of: UInt(alignment)),
-      "Misaligned address '\(unsafeAddress)' for data of type '\(Value.self)'")
-    precondition(
-      stride.isMultiple(of: UInt(alignment)),
-      "Misaligned stride '\(unsafeAddress)' for data of type '\(Value.self)'")
-    #endif
+//    let alignment = MemoryLayout<Value.Raw.Storage>.alignment
+//    #if $Embedded
+//    // FIXME: Embedded doesn't have static interpolated strings yet
+//    precondition(
+//      unsafeAddress.isMultiple(of: UInt(alignment)),
+//      "Misaligned address")
+//    precondition(
+//      stride.isMultiple(of: UInt(alignment)),
+//      "Misaligned stride")
+//    #else
+//    precondition(
+//      unsafeAddress.isMultiple(of: UInt(alignment)),
+//      "Misaligned address '\(unsafeAddress)' for data of type '\(Value.self)'")
+//    precondition(
+//      stride.isMultiple(of: UInt(alignment)),
+//      "Misaligned stride '\(unsafeAddress)' for data of type '\(Value.self)'")
+//    #endif
   }
 
   #if FEATURE_INTERPOSABLE

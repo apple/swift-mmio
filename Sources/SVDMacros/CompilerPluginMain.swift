@@ -15,8 +15,7 @@ import SwiftSyntaxMacros
 @main
 struct CompilerPluginMain: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
-    XMLAttributeMacro.self,
     XMLElementMacro.self,
-    XMLInlineElementMacro.self,
+    XMLMarkerMacro.self,
   ]
 }

@@ -52,7 +52,7 @@ enum XMLElementMacro: ExtensionMacro {
           """
       } else if xmlInlineElement {
         `extension` += """
-          self.\(name) = try .init(element)
+          self.\(name) = try element.decode()
 
           """
       } else {

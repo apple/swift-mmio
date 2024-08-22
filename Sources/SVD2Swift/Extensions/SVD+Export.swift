@@ -165,7 +165,7 @@ protocol SVDExportable {
 
   func exportAccessor(
     context: inout ExportContext,
-    registerProperties: consuming SVDRegisterProperties)
+    registerProperties: SVDRegisterProperties)
 }
 
 extension SVDPeripheral: SVDExportable {
@@ -225,12 +225,10 @@ extension SVDPeripheral: SVDExportable {
 
   func exportAccessor(
     context: inout ExportContext,
-    registerProperties: consuming SVDRegisterProperties
+    registerProperties: SVDRegisterProperties
   ) {
     let typeName = self.swiftName
     let instanceName = typeName.lowercased()
-
-    let registerProperties = self.registerProperties.merging(registerProperties)
 
     let accessorModifier =
       if context.namespaceUnderDevice && !context.instanceMemberPeripherals {
@@ -239,26 +237,17 @@ extension SVDPeripheral: SVDExportable {
         ""
       }
 
-    if let count = self.dimensionElement.dim {
-      // FIXME: properties.size may be incorrect here.
-      let stride = self.dimensionElement.dimIncrement ?? registerProperties.size
-      guard let stride = stride else {
-        // FIXME: warning diagnostic
-        print("warning: skipped exporting \(instanceName): unknown stride")
-        return
-      }
-      for index in 0..<count {
-        let addressOffset = stride * index
-        context.outputWriter.append(
-          """
-          \(comment: self.swiftDescription)
-          \(context.accessLevel)\(accessorModifier)let \(identifier: "\(instanceName)\(index)") = \(typeName)(unsafeAddress: \(hex: self.baseAddress + addressOffset))
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
 
-          """)
-        if index < count - 1 {
-          context.outputWriter.append("\n")
-        }
-      }
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        \(context.accessLevel)\(accessorModifier)let \(identifier: instanceName) = Vec<\(typeName)>(\
+        unsafeAddress: \(hex: self.baseAddress), stride: \(hex: stride), count: \(count))
+
+        """)
     } else {
       context.outputWriter.append(
         """
@@ -278,30 +267,17 @@ extension SVDCluster: SVDExportable {
     let typeName = self.swiftName
     let instanceName = typeName.lowercased()
 
-    let registerProperties = self.registerProperties.merging(registerProperties)
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
 
-    if let count = self.dimensionElement.dim {
-      // FIXME: properties.size may be incorrect here.
-      let stride = self.dimensionElement.dimIncrement ?? registerProperties.size
-      guard let stride = stride else {
-        // FIXME: warning diagnostic
-        print("warning: skipped exporting \(instanceName): unknown stride")
-        return
-      }
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        @RegisterBlock(offset: \(hex: self.addressOffset), stride: \(hex: stride), count: \(count))
+        \(context.accessLevel)var \(identifier: instanceName): Vec<\(typeName)>
 
-      for index in 0..<count {
-        let addressOffset = self.addressOffset + (stride * index)
-        context.outputWriter.append(
-          """
-          \(comment: self.swiftDescription)
-          @RegisterBlock(offset: \(hex: addressOffset))
-          \(context.accessLevel)var \(identifier: "\(instanceName)\(index)"): \(typeName)
-
-          """)
-        if index < count - 1 {
-          context.outputWriter.append("\n")
-        }
-      }
+        """)
     } else {
       context.outputWriter.append(
         """
@@ -374,21 +350,15 @@ extension SVDRegister: SVDExportable {
     let typeName = self.swiftName
     let instanceName = typeName.lowercased()
 
-    let registerProperties = self.registerProperties.merging(registerProperties)
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
 
-    if let count = self.dimensionElement.dim {
-      // FIXME: properties.size may be incorrect here.
-      let stride = self.dimensionElement.dimIncrement ?? registerProperties.size
-      guard let stride = stride else {
-        // FIXME: warning diagnostic
-        print("warning: skipped exporting \(instanceName): unknown stride")
-        return
-      }
       context.outputWriter.append(
         """
         \(comment: self.swiftDescription)
         @RegisterBlock(offset: \(hex: self.addressOffset), stride: \(hex: stride), count: \(count))
-        \(context.accessLevel)var \(identifier: instanceName): RegisterArray<\(typeName)>
+        \(context.accessLevel)var \(identifier: instanceName): Vec<\(typeName)>
 
         """)
     } else {
@@ -481,8 +451,10 @@ extension SVDField {
       }
 
     let range = self.bitRange.range
-    if let count = self.dimensionElement.dim {
-      let stride = self.dimensionElement.dimIncrement ?? UInt64(range.count)
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
+
       // FIXME: array fields
       // Instead of splatting out N copies of the field we should have some way
       // to describe an array like RegisterArray

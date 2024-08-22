@@ -18,10 +18,11 @@ import FoundationXML
 @XMLElement
 public struct SVDDimensionElement {
   /// Define the number of elements in an array.
-  public var dim: UInt64?
+  public var dim: UInt64
   /// Specify the address increment, in Bytes, between two neighboring array
   /// members in the address map.
-  public var dimIncrement: UInt64?
+  public var dimIncrement: UInt64
+  // FIXME: this should be `DimIndexType?`
   /// Do not define on peripheral level. By default, `<dimIndex>` is an
   /// integer value starting at 0.
   public var dimIndex: String?

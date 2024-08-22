@@ -35,7 +35,7 @@ public struct SVDRegister {
   /// consecutive array elements and a comma separated list of strings used to
   /// identify each element in the array.
   @XMLInlineElement
-  public var dimensionElement: SVDDimensionElement = .init()
+  public var dimensionElement: SVDDimensionElement?
   /// String to identify the register. Register names are required to be
   /// unique within the scope of a peripheral. You can use the placeholder
   /// `%s`, which is replaced by the dimIndex substring. Use the placeholder

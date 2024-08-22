@@ -31,7 +31,7 @@ public struct SVDPeripheral {
   /// consecutive array elements and a comma separated list of strings used to
   /// identify each element in the array.
   @XMLInlineElement
-  public var dimensionElement: SVDDimensionElement = .init()
+  public var dimensionElement: SVDDimensionElement?
   /// The string identifies the peripheral. Peripheral names are required to
   /// be unique for a device. The name needs to be an ANSI C identifier to
   /// generate the header file. You can use the placeholder [%s] to create
