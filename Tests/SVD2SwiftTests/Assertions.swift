@@ -15,9 +15,19 @@ import Testing
 @testable import SVD
 @testable import SVD2Swift
 
+extension ExportOptions {
+  static let testDefault = Self(
+    indentation: .space(2),
+    accessLevel: nil,
+    selectedPeripherals: [],
+    namespaceUnderDevice: false,
+    instanceMemberPeripherals: false,
+    overrideDeviceName: nil)
+}
+
 func assertSVD2SwiftOutput(
   svdDevice: SVDDevice,
-  options: ExportOptions,
+  options: ExportOptions = .testDefault,
   expected: [String: String],
   sourceLocation: SourceLocation = #_sourceLocation
 ) {

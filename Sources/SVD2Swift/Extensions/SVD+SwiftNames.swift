@@ -25,59 +25,6 @@ extension String {
       .replacingOccurrences(of: "%s", with: "")
       .replacingOccurrences(of: "[]", with: "")
       .replacingOccurrences(of: "-", with: "_")
-  }
-}
-
-extension SVDDevice {
-  var swiftName: String {
-    self.name.removingUnsafeCharacters()
-  }
-
-  var swiftDescription: String? {
-    self.description?.coalescingConsecutiveSpaces()
-      ?? self.swiftName
-  }
-}
-
-extension SVDPeripheral {
-  var swiftName: String {
-    self.name.removingUnsafeCharacters()
-  }
-
-  var swiftDescription: String? {
-    self.description?.coalescingConsecutiveSpaces()
-      ?? self.swiftName
-  }
-}
-
-extension SVDCluster {
-  var swiftName: String {
-    self.name.removingUnsafeCharacters()
-  }
-
-  var swiftDescription: String {
-    self.description.coalescingConsecutiveSpaces()
-  }
-}
-
-extension SVDRegister {
-  var swiftName: String {
-    self.name.removingUnsafeCharacters()
-  }
-
-  var swiftDescription: String? {
-    self.description?.coalescingConsecutiveSpaces()
-      ?? self.swiftName
-  }
-}
-
-extension SVDField {
-  var swiftName: String {
-    self.name.removingUnsafeCharacters()
-  }
-
-  var swiftDescription: String? {
-    self.description?.coalescingConsecutiveSpaces()
-      ?? self.swiftName
+      .replacingOccurrences(of: " ", with: "_")
   }
 }
