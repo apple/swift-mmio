@@ -28,6 +28,20 @@ public struct SVDRegisterProperties {
   public var resetValue: UInt64?
   /// Identifies which register bits have a defined reset value.
   public var resetMask: UInt64?
+
+  public init(
+    size: UInt64? = nil,
+    access: SVDAccess? = nil,
+    protection: SVDProtection? = nil,
+    resetValue: UInt64? = nil,
+    resetMask: UInt64? = nil
+  ) {
+    self.size = size
+    self.access = access
+    self.protection = protection
+    self.resetValue = resetValue
+    self.resetMask = resetMask
+  }
 }
 
 extension SVDRegisterProperties {
