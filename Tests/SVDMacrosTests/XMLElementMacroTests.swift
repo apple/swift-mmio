@@ -18,9 +18,9 @@ import XCTest
 
 final class XMLElementMacroTests: XCTestCase {
   static let macros: [String: Macro.Type] = [
-    "XMLAttribute": XMLAttributeMacro.self,
+    "XMLAttribute": XMLMarkerMacro.self,
     "XMLElement": XMLElementMacro.self,
-    "XMLInlineElement": XMLInlineElementMacro.self,
+    "XMLInlineElement": XMLMarkerMacro.self,
   ]
   static let indentationWidth = Trivia.spaces(2)
 
@@ -47,7 +47,7 @@ final class XMLElementMacroTests: XCTestCase {
           init(_ element: XMLElement) throws {
             self.v0 = try element.decode(fromChild: "v0")
             self.v1 = try element.decode(fromAttribute: "v1")
-            self.v2 = try .init(element)
+            self.v2 = try element.decode()
           }
         }
         """,

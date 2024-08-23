@@ -11,6 +11,7 @@
 
 // RegisterBlock macros
 @attached(member, names: named(unsafeAddress), named(init), named(interposer))
+@attached(extension, conformances: RegisterProtocol)
 public macro RegisterBlock() =
   #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
 

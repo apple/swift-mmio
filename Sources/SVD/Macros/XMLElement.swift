@@ -22,7 +22,30 @@ enum Errors: Error, @unchecked Sendable {
   case unknownElement(XMLElement)
 }
 
-// XMLElement.child(element) -> T
+// Support for @XMLElement properties
+// where: @XMLInlineElement & XMLElementInitializable
+extension XMLElement {
+  func decode<T>(
+    _: T.Type = T.self
+  ) throws -> T where T: XMLElementInitializable {
+    try self
+      .decode(T?.self)
+      .unwrap()
+  }
+
+  func decode<T>(
+    _: T?.Type = T?.self
+  ) throws -> T? where T: XMLElementInitializable {
+    do {
+      return try T.init(self)
+    } catch Errors.missingValue {
+      return nil
+    }
+  }
+}
+
+// Support for @XMLElement properties
+// where: implied @XMLChild & XMLElementInitializable
 extension XMLElement {
   func decode<T>(
     _: T.Type = T.self,
@@ -64,7 +87,8 @@ extension XMLElement {
   }
 }
 
-// XMLElement.child(node) -> T
+// Support for @XMLElement properties
+// where: implied @XMLChild & XMLNodeInitializable
 extension XMLElement {
   func decode<T>(
     _: T.Type = T.self,
@@ -86,7 +110,8 @@ extension XMLElement {
   }
 }
 
-// XMLElement.attribute(node) -> T
+// Support for @XMLElement properties
+// where: @XMLAttribute & XMLNodeInitializable
 extension XMLElement {
   func decode<T>(
     _: T.Type = T.self,

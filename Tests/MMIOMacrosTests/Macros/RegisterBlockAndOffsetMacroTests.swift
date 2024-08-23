@@ -81,6 +81,9 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
           }
           #endif
         }
+
+        extension I2C: RegisterProtocol {
+        }
         """,
       macros: Self.scalarMacros,
       indentationWidth: Self.indentationWidth)
@@ -136,6 +139,9 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
             self.unsafeAddress = unsafeAddress
           }
           #endif
+        }
+
+        extension I2C: RegisterProtocol {
         }
         """,
       macros: Self.arrayMacros,
