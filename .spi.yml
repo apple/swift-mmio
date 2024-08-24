@@ -6,3 +6,5 @@ builder:
       - SVD
       - SVD2LLDB
       - SVD2Swift
+      custom_documentation_parameters:
+      - "--minimum-access-level public"
