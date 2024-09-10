@@ -43,7 +43,7 @@ extension SVD2SwiftTests {
                       enumeratedValues: .init(
                         usage: .readWrite,
                         enumeratedValue: [
-                          .init(data: .value(0x0, mask: .max)),
+                          .init(data: .value(0x0, mask: .max))
                         ]))
                   ]))
             ]))
@@ -140,19 +140,19 @@ extension SVD2SwiftTests {
         extension ExamplePeripheral.ExampleRegister {
           struct AValues: BitFieldProjectable, RawRepresentable {
             static let bitWidth = 5
-        
+
             /// 0b00000
             static let _0b00000 = Self(rawValue: 0x0)
-        
+
             var rawValue: UInt8
-        
+
             @inlinable @inline(__always)
             init(rawValue: Self.RawValue) {
               self.rawValue = rawValue
             }
           }
         }
-        
+
         """,
       ])
   }
@@ -202,42 +202,42 @@ extension SVD2SwiftTests {
               var rawValue: UInt8
               var mask: UInt8
             }
-        
+
             static func ~= (pattern: Pattern, value: Self) -> Bool {
               (value.rawValue & pattern.mask) == pattern.rawValue
             }
-        
+
             /// An example enumerated value 0
             static let NamedExample0 = Self(rawValue: 0x0)
 
             /// NamedExample1
             static let NamedExample1 = Self(rawValue: 0x1)
-        
+
             /// An example enumerated value 2
             static let _0b00010 = Self(rawValue: 0x2)
-        
+
             /// 0b00011
             static let _0b00011 = Self(rawValue: 0x3)
 
             /// An example with dont-care bits
             static let ExampleDontCareBits = Pattern(rawValue: 0x1c, mask: 0x1c)
-        
+
             /// An example with dont-care bits
             static func ExampleDontCareBits(_ rawValue: UInt8 = ExampleDontCareBits.value) -> Self {
               let value = Self(rawValue: rawValue)
               precondition(ExampleDontCareBits ~= 28, "Invalid bits set in rawValue")
               return value
             }
-        
+
             var rawValue: UInt8
-        
+
             @inlinable @inline(__always)
             init(rawValue: Self.RawValue) {
               self.rawValue = rawValue
             }
           }
         }
-        
+
         """,
       ])
   }
