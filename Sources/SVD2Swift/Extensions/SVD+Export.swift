@@ -106,7 +106,7 @@ extension SVDDevice {
     }
 
     outputWriter.insert(fileHeader)
-    let childTypes = self.exportType(
+    let childTypes = try self.exportType(
       outputWriter: &outputWriter,
       options: options,
       context: deviceContext)
@@ -150,11 +150,11 @@ extension SVDDevice {
             ""
           }
 
-        outputWriter.scope(scope, lazy: true) { outputWriter in
+        try outputWriter.scope(scope, lazy: true) { outputWriter in
           for child in currentContext.types {
             var childContext = currentContext.childContext(for: child)
 
-            let subchildTypes = child.exportType(
+            let subchildTypes = try child.exportType(
               outputWriter: &outputWriter,
               options: options,
               context: childContext)
@@ -183,7 +183,7 @@ protocol SVDExportable {
     outputWriter: inout OutputWriter,
     options: ExportOptions,
     context: ExportContext
-  ) -> [any SVDExportable]
+  ) throws -> [any SVDExportable]
 
   func exportAccessor(
     outputWriter: inout OutputWriter,
@@ -227,8 +227,8 @@ extension SVDDevice: SVDExportable {
     outputWriter: inout OutputWriter,
     options: ExportOptions,
     context: ExportContext
-  ) -> [any SVDExportable] {
-    let outputPeripherals = try! self.outputPeripherals(options: options)
+  ) throws -> [any SVDExportable] {
+    let outputPeripherals = try self.outputPeripherals(options: options)
 
     let deviceDeclarationType =
       if options.instanceMemberPeripherals {
