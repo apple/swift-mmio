@@ -69,3 +69,5 @@ extension SVDEnumeration: Encodable {}
 extension SVDEnumeration: Equatable {}
 
 extension SVDEnumeration: Hashable {}
+
+extension SVDEnumeration: Sendable {}

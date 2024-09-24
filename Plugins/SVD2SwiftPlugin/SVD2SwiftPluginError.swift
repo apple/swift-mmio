@@ -9,12 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import PackagePlugin
+// Silence warnings about `Target` not being Sendable.
+@preconcurrency import PackagePlugin
 
 enum SVD2SwiftPluginError: Error {
   case missingFile(Target, FileKind)
   case tooManyFiles(Target, FileKind)
-  case missingPeripherals(Target, Path)
+  case missingPeripherals(Target, String)
 }
 
 extension SVD2SwiftPluginError: CustomStringConvertible {

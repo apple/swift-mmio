@@ -83,3 +83,5 @@ extension SVDCluster: Encodable {}
 extension SVDCluster: Equatable {}
 
 extension SVDCluster: Hashable {}
+
+extension SVDCluster: Sendable {}

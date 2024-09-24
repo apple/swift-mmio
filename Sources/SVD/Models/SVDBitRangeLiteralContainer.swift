@@ -28,3 +28,5 @@ extension SVDBitRangeLiteralContainer: Encodable {}
 extension SVDBitRangeLiteralContainer: Equatable {}
 
 extension SVDBitRangeLiteralContainer: Hashable {}
+
+extension SVDBitRangeLiteralContainer: Sendable {}

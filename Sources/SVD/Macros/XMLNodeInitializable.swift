@@ -27,7 +27,7 @@ where Self: LosslessStringConvertible {
     self =
       try Self
       .init(stringValue)
-      .unwrap(or: Errors.unknownValue(stringValue))
+      .unwrap(or: XMLError.unknownValue(stringValue))
   }
 }
 
@@ -38,7 +38,7 @@ where Self: RawRepresentable, Self.RawValue == String {
     self =
       try Self
       .init(rawValue: stringValue)
-      .unwrap(or: Errors.unknownValue(stringValue))
+      .unwrap(or: XMLError.unknownValue(stringValue))
   }
 }
 
@@ -69,7 +69,7 @@ extension UInt64: XMLNodeInitializable {
     guard
       let value = parser.run(&description),
       description.isEmpty
-    else { throw Errors.unknownValue(stringValue) }
+    else { throw XMLError.unknownValue(stringValue) }
 
     self = value
   }

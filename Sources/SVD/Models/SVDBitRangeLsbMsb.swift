@@ -30,3 +30,5 @@ extension SVDBitRangeLsbMsb: Encodable {}
 extension SVDBitRangeLsbMsb: Equatable {}
 
 extension SVDBitRangeLsbMsb: Hashable {}
+
+extension SVDBitRangeLsbMsb: Sendable {}

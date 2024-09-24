@@ -40,3 +40,5 @@ extension SVDDimensionElement: Encodable {}
 extension SVDDimensionElement: Equatable {}
 
 extension SVDDimensionElement: Hashable {}
+
+extension SVDDimensionElement: Sendable {}

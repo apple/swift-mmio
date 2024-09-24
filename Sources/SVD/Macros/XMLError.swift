@@ -15,19 +15,10 @@ import Foundation
 import FoundationXML
 #endif
 
-/// Grouping element to define bit-field properties of a register.
-@XMLElement
-public struct SVDFields {
-  /// Define the bit-field properties of a register.
-  public var field: [SVDField]
+enum XMLError: Error {
+  case missingValue(name: String)
+  case unknownValue(String)
+  case unknownElement(XMLElement)
 }
 
-extension SVDFields: Decodable {}
-
-extension SVDFields: Encodable {}
-
-extension SVDFields: Equatable {}
-
-extension SVDFields: Hashable {}
-
-extension SVDFields: Sendable {}
+extension XMLError: @unchecked Sendable {}

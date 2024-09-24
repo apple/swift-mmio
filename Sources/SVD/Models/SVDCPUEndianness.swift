@@ -31,4 +31,6 @@ extension SVDCPUEndianness: Equatable {}
 
 extension SVDCPUEndianness: Hashable {}
 
+extension SVDCPUEndianness: Sendable {}
+
 extension SVDCPUEndianness: XMLNodeInitializable {}

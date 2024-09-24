@@ -55,3 +55,5 @@ extension SVDRegisterProperties: Encodable {}
 extension SVDRegisterProperties: Equatable {}
 
 extension SVDRegisterProperties: Hashable {}
+
+extension SVDRegisterProperties: Sendable {}

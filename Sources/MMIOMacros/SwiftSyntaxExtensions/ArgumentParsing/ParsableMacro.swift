@@ -9,11 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-private var signatureCache =
-  [AnyHashable: (String, AttributeListSyntax.Element)]()
+typealias SignatureCache = [AnyHashable: (String, AttributeListSyntax.Element)]
+private let signatureCache = Mutex<SignatureCache>([:])
 
 protocol ParsableMacro {
   static var baseName: String { get }
@@ -40,7 +41,8 @@ extension ParsableMacro {
 extension ParsableMacro {
   private static func signatures() -> (String, AttributeListSyntax.Element) {
     let key = ObjectIdentifier(Self.self)
-    if let signatures = signatureCache[key] { return signatures }
+    let signatures = signatureCache.withLock { $0[key] }
+    if let signatures = signatures { return signatures }
 
     // Avoid calling computed property multiple times.
     let baseName = Self.baseName
@@ -83,7 +85,7 @@ extension ParsableMacro {
 
     let attribute: AttributeListSyntax.Element =
       .attribute(attributeWithPlaceholders)
-    signatureCache[key] = (signature, attribute)
+    signatureCache.withLock { $0[key] = (signature, attribute) }
     return (signature, attribute)
   }
 

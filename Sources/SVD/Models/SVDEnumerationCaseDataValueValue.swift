@@ -30,6 +30,8 @@ extension SVDEnumerationCaseDataValueValue: Equatable {}
 
 extension SVDEnumerationCaseDataValueValue: Hashable {}
 
+extension SVDEnumerationCaseDataValueValue: Sendable {}
+
 extension SVDEnumerationCaseDataValueValue: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
@@ -39,7 +41,7 @@ extension SVDEnumerationCaseDataValueValue: XMLNodeInitializable {
     guard
       let value = parser.run(&description),
       description.isEmpty
-    else { throw Errors.unknownValue(stringValue) }
+    else { throw XMLError.unknownValue(stringValue) }
 
     self.value = value.0
     self.mask = value.1

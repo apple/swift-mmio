@@ -21,7 +21,7 @@ func XCTAssertCommand<Command: SVD2LLDBCommand>(
   success: Bool,
   debugger expectedDebugger: String,
   result expectedResult: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   let context = SVD2LLDB(device: device)

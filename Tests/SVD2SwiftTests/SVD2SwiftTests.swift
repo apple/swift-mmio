@@ -20,7 +20,7 @@ func XCTAssertSVD2SwiftOutput(
   svdDevice: SVDDevice,
   options: ExportOptions,
   expected: [String: String],
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   var output = Output.inMemory([:])

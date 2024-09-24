@@ -35,3 +35,5 @@ extension SVDEnumerationCase: Encodable {}
 extension SVDEnumerationCase: Equatable {}
 
 extension SVDEnumerationCase: Hashable {}
+
+extension SVDEnumerationCase: Sendable {}
