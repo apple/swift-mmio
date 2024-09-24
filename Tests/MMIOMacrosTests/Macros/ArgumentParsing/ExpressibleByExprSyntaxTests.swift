@@ -82,9 +82,9 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
 
   func test_bitRange() throws {
     // UnboundedRange_
-    let unboundedRange = DeclReferenceExprSyntax(
+    let unboundedRange = ExprSyntax(DeclReferenceExprSyntax(
       baseName: .binaryOperator("...")
-    ).as(ExprSyntax.self)!
+    ))!
     XCTAssertParse(expression: unboundedRange, expected: "(-∞, +∞)" as BitRange)
     // PartialRangeThrough
     XCTAssertParse(expression: "...0", expected: "(-∞, 0]" as BitRange)

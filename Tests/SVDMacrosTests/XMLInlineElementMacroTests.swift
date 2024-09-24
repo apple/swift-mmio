@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-@preconcurrency import SwiftSyntax
+import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest

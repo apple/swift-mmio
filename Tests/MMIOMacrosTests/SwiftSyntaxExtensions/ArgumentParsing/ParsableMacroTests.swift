@@ -72,7 +72,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "_").message,
           line: 1,
           column: 4,
-          highlight: "0")
+          highlights: ["0"])
       ],
       macros: ["A": A.self])
   }
@@ -119,8 +119,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "@A ")
+          highlights: ["@A"])
       ],
       macros: ["A": A.self])
 
@@ -136,8 +135,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "@A() ")
+          highlights: ["@A()"])
       ],
       macros: ["A": A.self])
 
@@ -153,7 +151,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedArgumentLabel(expected: "foo", actual: "bar").message,
           line: 1,
           column: 4,
-          highlight: "bar: 1")
+          highlights: ["bar: 1"])
       ],
       macros: ["A": A.self])
 
@@ -169,7 +167,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
           line: 1,
           column: 12,
-          highlight: "baz: 1")
+          highlights: ["baz: 1"])
       ],
       macros: ["A": A.self])
   }
@@ -234,7 +232,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "bar").message,
           line: 1,
           column: 4,
-          highlight: "bar: 1")
+          highlights: ["bar: 1"])
       ],
       macros: ["A": A.self])
 
@@ -250,7 +248,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
           line: 1,
           column: 12,
-          highlight: "baz: 1")
+          highlights: ["baz: 1"])
       ],
       macros: ["A": A.self])
   }
@@ -338,7 +336,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
           line: 1,
           column: 12,
-          highlight: "baz: 1")
+          highlights: ["baz: 1"])
       ],
       macros: ["A": A.self])
   }
@@ -395,8 +393,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "@A ")
+          highlights: ["@A"])
       ],
       macros: ["A": A.self])
 
@@ -413,8 +410,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
           line: 1,
           column: 1,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "@A() ")
+          highlights: ["@A()"])
       ],
       macros: ["A": A.self])
 
@@ -431,7 +427,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedArgumentLabel(expected: "foo", actual: "bar").message,
           line: 1,
           column: 4,
-          highlight: "bar: 1")
+          highlights: ["bar: 1"])
       ],
       macros: ["A": A.self])
 
@@ -447,7 +443,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
           line: 1,
           column: 12,
-          highlight: "baz: 1")
+          highlights: ["baz: 1"])
       ],
       macros: ["A": A.self])
   }
@@ -508,7 +504,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedArgumentLabel(expected: "foo", actual: "bar").message,
           line: 1,
           column: 4,
-          highlight: "bar: 2")
+          highlights: ["bar: 2"])
       ],
       macros: ["A": A.self])
 
@@ -524,7 +520,7 @@ final class ParsableMacroTests: XCTestCase {
           message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
           line: 1,
           column: 12,
-          highlight: "baz: 1")
+          highlights: ["baz: 1"])
       ],
       macros: ["A": A.self])
   }

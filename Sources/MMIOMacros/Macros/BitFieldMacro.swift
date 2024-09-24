@@ -12,7 +12,6 @@
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
-import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 // @BaseName(bits: 3..<4, 0..<1, as: Swift.Bool.self)

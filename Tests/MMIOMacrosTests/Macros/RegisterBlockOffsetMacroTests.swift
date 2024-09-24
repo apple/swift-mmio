@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if canImport(MMIOMacros)
-@preconcurrency import SwiftSyntax
+import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
@@ -57,8 +57,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 1,
           column: 29,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "inout ",
+          highlights: ["inout"],
           fixIts: [
             .init(message: "Replace 'inout' with 'var'")
           ]),
@@ -66,8 +65,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedBindingSpecifier(.var).message,
           line: 2,
           column: 29,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "let ",
+          highlights: ["let"],
           fixIts: [
             .init(message: "Replace 'let' with 'var'")
           ]),
@@ -77,12 +75,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
   }
 
   func test_binding_noMultiple() {
-    let message = """
-      swift-syntax applies macros syntactically and there is no way to \
-      represent a variable declaration with multiple bindings that have \
-      accessors syntactically. While the compiler allows this expansion, \
-      swift-syntax cannot represent it and thus disallows it.
-      """
+    let message = "accessor macro can only be applied to a single variable"
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a, b: Int
@@ -113,7 +106,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
           column: 33,
-          highlight: "_")
+          highlights: ["_"])
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -132,7 +125,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingIdentifier().message,
           line: 1,
           column: 33,
-          highlight: "(a, b)")
+          highlights: ["(a, b)"])
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -151,7 +144,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 33,
-          highlight: "v",
+          highlights: ["v"],
           fixIts: [
             .init(message: "Insert explicit type annotation")
           ])
@@ -173,7 +166,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 36,
-          highlight: "_",
+          highlights: ["_"],
           fixIts: [
             .init(message: "Insert explicit type annotation")
           ])
@@ -196,7 +189,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 36,
-          highlight: "Int?")
+          highlights: ["Int?"])
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -215,7 +208,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 36,
-          highlight: "[Int]")
+          highlights: ["[Int]"])
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -234,7 +227,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.unexpectedBindingType().message,
           line: 1,
           column: 36,
-          highlight: "(Int, Int)")
+          highlights: ["(Int, Int)"])
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -293,7 +286,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedStoredProperty().message,
           line: 1,
           column: 40,
-          highlight: "{}",
+          highlights: ["{}"],
           fixIts: [
             .init(message: "Remove accessor block")
           ])
