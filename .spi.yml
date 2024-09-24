@@ -7,4 +7,5 @@ builder:
       - SVD2LLDB
       - SVD2Swift
       custom_documentation_parameters:
-      - "--symbol-graph-minimum-access-level public"
+      - --symbol-graph-minimum-access-level
+      - public
