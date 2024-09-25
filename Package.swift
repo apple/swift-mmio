@@ -34,7 +34,7 @@ let package = Package(
       from: "1.4.0"),
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
-      from: "600.0.0"),
+      from: "600.0.1"),
   ],
   targets: [
     // MMIO
