@@ -52,7 +52,7 @@ extension RegisterArray where Value: RegisterValue {
   public subscript<Index>(
     _ index: Index
   ) -> Register<Value> where Index: BinaryInteger {
-    #if $Embedded
+    #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
     precondition(
       0 <= index && index < self.count,
@@ -78,7 +78,7 @@ extension RegisterArray where Value: RegisterProtocol {
   public subscript<Index>(
     _ index: Index
   ) -> Value where Index: BinaryInteger {
-    #if $Embedded
+    #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
     precondition(
       0 <= index && index < self.count,

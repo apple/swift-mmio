@@ -21,7 +21,7 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   @inlinable @inline(__always)
   static func preconditionAligned(unsafeAddress: UInt) {
     let alignment = MemoryLayout<Value.Raw.Storage>.alignment
-    #if $Embedded
+    #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
     precondition(
       unsafeAddress.isMultiple(of: UInt(alignment)),
