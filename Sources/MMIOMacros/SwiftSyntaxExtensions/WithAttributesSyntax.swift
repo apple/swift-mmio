@@ -11,7 +11,6 @@
 
 import SwiftDiagnostics
 import SwiftSyntax
-import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 struct MatchingAttributeAndMacro {

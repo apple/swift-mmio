@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if canImport(MMIOMacros)
-@preconcurrency import SwiftSyntax
+import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
@@ -48,20 +48,17 @@ final class RegisterMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 1,
           column: 26,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "actor "),
+          highlights: ["actor"]),
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 2,
           column: 26,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "class "),
+          highlights: ["class"]),
         .init(
           message: ErrorDiagnostic.expectedDecl(StructDeclSyntax.self).message,
           line: 3,
           column: 26,
-          // FIXME: https://github.com/swiftlang/swift-syntax/pull/2213
-          highlight: "enum "),
+          highlights: ["enum"]),
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
@@ -106,7 +103,7 @@ final class RegisterMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 3,
           column: 3,
-          highlight: "var v1: Int",
+          highlights: ["var v1: Int"],
           fixIts: [
             .init(message: "Insert '@Reserved(bits:)' macro"),
             .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
@@ -117,7 +114,7 @@ final class RegisterMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 4,
           column: 3,
-          highlight: "@OtherAttribute var v2: Int",
+          highlights: ["@OtherAttribute var v2: Int"],
           fixIts: [
             .init(message: "Insert '@Reserved(bits:)' macro"),
             .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
@@ -128,7 +125,7 @@ final class RegisterMacroTests: XCTestCase {
           message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
           line: 5,
           column: 3,
-          highlight: "var v3: Int { willSet {} }",
+          highlights: ["var v3: Int { willSet {} }"],
           fixIts: [
             .init(message: "Insert '@Reserved(bits:)' macro"),
             .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
@@ -251,7 +248,8 @@ final class RegisterMacroTests: XCTestCase {
               self.storage = value.storage
             }
 
-          }}
+          }
+        }
 
         extension S: RegisterValue {
         }
