@@ -85,7 +85,6 @@ public func sh(
 
   // Launch the process and wait for it to complete.
   print(command)
-  fflush(stdout)
   try? process.run()
   process.waitUntilExit()
 
