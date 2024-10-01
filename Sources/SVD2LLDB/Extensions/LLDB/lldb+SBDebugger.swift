@@ -12,13 +12,6 @@
 import CLLDB
 import MMIOUtilities
 
-#if compiler(<5.10)
-// Swift 5.9 is not able to import this symbol for an unknown reason.
-extension lldb {
-  static let eErrorTypePOSIX = ErrorType(3)
-}
-#endif
-
 extension lldb.SBDebugger: SVD2LLDBDebugger {
   mutating func read(
     address: UInt64,

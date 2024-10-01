@@ -22,30 +22,38 @@ struct SVD2SwiftPlugin: BuildToolPlugin {
     guard let target = target as? SourceModuleTarget else { return [] }
 
     // Locate the input files.
-    let executable = try context.tool(named: "SVD2Swift").path
-    let svdFile = try target.sourceFile(kind: .svd)
-    let pluginConfigFile = try target.sourceFile(kind: .svd2swift)
-    let inputFiles = [executable, svdFile, pluginConfigFile]
+    let executableFile = try context.tool(named: "SVD2Swift").url
+    let svdFile = try target.sourceFile(kind: .svd).url
+    let pluginConfigFile = try target.sourceFile(kind: .svd2swift).url
+    let inputFiles = [executableFile, svdFile, pluginConfigFile]
 
     // Load the list of peripherals to generate from the config file.
-    let pluginConfigURL = URL(fileURLWithPath: pluginConfigFile.string)
-    let pluginConfigData = try Data(contentsOf: pluginConfigURL)
-    let pluginConfig = try JSONDecoder()
-      .decode(SVD2SwiftPluginConfiguration.self, from: pluginConfigData)
+    let pluginConfigData = try Data(contentsOf: pluginConfigFile)
+    let pluginConfig: SVD2SwiftPluginConfiguration
+    do {
+      pluginConfig = try JSONDecoder()
+        .decode(SVD2SwiftPluginConfiguration.self, from: pluginConfigData)
+    } catch let error as DecodingError {
+      throw SVD2SwiftPluginConfigurationDecodingError(
+        url: pluginConfigFile,
+        error: error)
+    }
     guard !pluginConfig.peripherals.isEmpty else {
-      throw SVD2SwiftPluginError.missingPeripherals(target, pluginConfigFile)
+      throw SVD2SwiftPluginError.missingPeripherals(
+        target,
+        pluginConfigFile.path)
     }
 
     // Create a list of output files.
-    let outputDirectory = context.pluginWorkDirectory
+    let outputDirectory = context.pluginWorkDirectoryURL
     let outputFiles = (pluginConfig.peripherals + ["Device"])
-      .map { outputDirectory.appending("\($0).swift") }
+      .map { outputDirectory.appendingPathComponent("\($0).swift") }
 
     // Produce argument list.
     var arguments = [
       "--plugin",
-      "--input", svdFile.string,
-      "--output", outputDirectory.string,
+      "--input", svdFile.path,
+      "--output", outputDirectory.path,
     ]
     if let accessLevel = pluginConfig.accessLevel {
       arguments += ["--access-level", accessLevel]
@@ -71,10 +79,10 @@ struct SVD2SwiftPlugin: BuildToolPlugin {
     let command = Command.buildCommand(
       displayName: """
         Generating register interface in '\(target.name)' from \
-        \(FileKind.svd) file '\(svdFile.lastComponent)' using \
-        \(FileKind.svd2swift) file '\(pluginConfigFile.lastComponent)'.
+        \(FileKind.svd) file '\(svdFile.lastPathComponent)' using \
+        \(FileKind.svd2swift) file '\(pluginConfigFile.lastPathComponent)'.
         """,
-      executable: executable,
+      executable: executableFile,
       arguments: arguments,
       inputFiles: inputFiles,
       outputFiles: outputFiles)

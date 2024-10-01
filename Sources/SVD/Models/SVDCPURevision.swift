@@ -48,6 +48,10 @@ extension SVDCPURevision: Encodable {
   }
 }
 
+extension SVDCPURevision: Equatable {}
+
+extension SVDCPURevision: Hashable {}
+
 extension SVDCPURevision: LosslessStringConvertible {
   public init?(_ description: String) {
     // Some SVD files use a single int value instead of proper revision, parse
@@ -74,5 +78,7 @@ extension SVDCPURevision: LosslessStringConvertible {
     self.patch = patch
   }
 }
+
+extension SVDCPURevision: Sendable {}
 
 extension SVDCPURevision: XMLNodeInitializable {}

@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 
 import CompilerPluginSupport
 import PackageDescription
@@ -34,7 +34,7 @@ let package = Package(
       from: "1.4.0"),
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
-      from: "509.0.2"),
+      from: "600.0.1"),
   ],
   targets: [
     // MMIO
@@ -134,10 +134,6 @@ let package = Package(
     .testTarget(
       name: "SVD2SwiftPluginTests",
       dependencies: ["MMIO"],
-      // FIXME: rdar://113256834,swiftlang/swift-package-manager#6935
-      // SPM 5.9 produces warnings for plugin input files.
-      // Remove this exclude list when Swift Package Manager bug is resolved.
-      exclude: ["ARM_Sample.svd", "svd2swift.json"],
       plugins: ["SVD2SwiftPlugin"]),
 
     .macro(
@@ -158,12 +154,6 @@ let package = Package(
   ],
   cxxLanguageStandard: .cxx11)
 
-#if compiler(<6.0) && os(Linux)
-#warning("Skipping SVD2LLDBTests, see apple/swift-package-manager#6990")
-// Note: Additional needed bug fixes were only merged to SwiftPM 6.0.
-package.targets = package.targets.filter { $0.name != "SVD2LLDBTests" }
-#endif
-
 let svd2lldb = "FEATURE_SVD2LLDB"
 if featureIsEnabled(named: svd2lldb, override: nil) {
   let target = package.targets.first { $0.name == "SVD2LLDB" }
@@ -176,12 +166,4 @@ func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
   let key = "SWIFT_MMIO_\(featureName)"
   let environment = Context.environment[key] != nil
   return override ?? environment
-}
-
-extension Target {
-  func swiftDefine(_ value: String) {
-    var swiftSettings = self.swiftSettings ?? []
-    swiftSettings.append(.define(value))
-    self.swiftSettings = swiftSettings
-  }
 }

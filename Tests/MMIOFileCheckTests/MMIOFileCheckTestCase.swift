@@ -18,8 +18,8 @@ import Foundation
 import XCTest
 import MMIOUtilities
 
-final class MMIOFileCheckTests: XCTestCase {
-  func test() {
+final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
+  func test() throws {
     let selfFileURL = URL(fileURLWithPath: #file)
     let selfDirectoryURL =
       selfFileURL
@@ -33,73 +33,41 @@ final class MMIOFileCheckTests: XCTestCase {
       .appendingPathComponent("Tests")
 
     // Get a list of the test files from disk.
-    let testFileURLs =
-      try! FileManager
-      .default
-      .contentsOfDirectory(
-        at: testsDirectoryURL,
-        includingPropertiesForKeys: []
-      )
-      .filter { $0.pathExtension == "swift" }
+    print("Finding Tests...")
+    let testFileURLs = FileManager.default.files(
+      inDirectory: testsDirectoryURL,
+      withPathExtension: "swift")
 
-    let setup = MMIOFileCheckTestCaseSetup(
-      packageDirectoryURL: packageDirectoryURL)
-    let tests = testFileURLs.map {
-      MMIOFileCheckTestCase(
-        setup: setup,
-        packageDirectoryURL: packageDirectoryURL,
-        testFileURL: $0)
-    }
-
-    DispatchQueue.concurrentPerform(iterations: tests.count) { index in
-      let test = tests[index]
-      let diagnostics = test.run()
-      for diagnostic in diagnostics {
-        self.record(diagnostic: diagnostic)
-      }
-    }
-
-    print("Finished running \(tests.count) tests")
-  }
-}
-
-class MMIOFileCheckTestCaseSetup {
-  struct SetupResult {
-    var hasLLVMFileCheck: Bool
-    var buildOutputsURL: URL
-  }
-
-  var packageDirectoryURL: URL
-  var lock: NSLock
-  var result: Result<SetupResult, Error>?
-
-  init(packageDirectoryURL: URL) {
-    self.packageDirectoryURL = packageDirectoryURL
-    self.lock = .init()
-    self.result = nil
-  }
-
-  func run() throws -> SetupResult {
-    // `NSLock.withLock(_:)` is unavailable on linux.
-    self.lock.lock()
-    defer { self.lock.unlock() }
-    if let result = self.result { return try result.get() }
-
-    // Run the common setup phase and record the time it took.
+    // Run test setup step.
+    print("Running Test Setup...")
     let start = DispatchTime.now()
-    let result = Result { try self._run() }
+    let (hasLLVMFileCheck, buildOutputsURL) = try Self.prerun(
+      packageDirectoryURL: packageDirectoryURL)
     let end = DispatchTime.now()
 
     // `DispatchTime.distance(to:)` is unavailable on linux.
     let duration = end.uptimeNanoseconds - start.uptimeNanoseconds
     print("Setup took \(duration) nanoseconds")
 
-    // Cache the setup result.
-    self.result = result
-    return try result.get()
+    print("Running Tests...")
+    DispatchQueue.concurrentPerform(iterations: testFileURLs.count) { index in
+      let testFileURL = testFileURLs[index]
+      let diagnostics = Self.run(
+        testFileURL: testFileURL,
+        hasLLVMFileCheck: hasLLVMFileCheck,
+        packageDirectoryURL: packageDirectoryURL,
+        buildOutputsURL: buildOutputsURL)
+      for diagnostic in diagnostics {
+        self.record(diagnostic: diagnostic)
+      }
+    }
+
+    print("Finished running \(testFileURLs.count) tests")
   }
 
-  private func _run() throws -> SetupResult {
+  static func prerun(
+    packageDirectoryURL: URL
+  ) throws -> (Bool, URL) {
     let hasLLVMFileCheck: Bool
     do {
       print("Locating FileCheck...")
@@ -117,31 +85,14 @@ class MMIOFileCheckTestCaseSetup {
       print("Using Simple FileCheck")
     }
 
-    print("Determining Swift Version...")
-    let versionString = try sh(
-      """
-      swift --version
-      """)
-
-    let regex = #/Apple Swift version (\d+)/#
-    let swift6Plus =
-      if let match = versionString.firstMatch(of: regex),
-        let majorVersion = Int(match.output.1),
-        majorVersion > 5
-      {
-        true
-      } else {
-        false
-      }
-
     print("Determining Dependency Paths...")
     let buildOutputsURL = URL(
       fileURLWithPath: try sh(
         """
         swift build \
-          \(swift6Plus ? "--ignore-lock" : "") \
+          --ignore-lock \
           --configuration release \
-          --package-path \(self.packageDirectoryURL.path) \
+          --package-path \(packageDirectoryURL.path) \
           --show-bin-path
         """))
 
@@ -149,59 +100,58 @@ class MMIOFileCheckTestCaseSetup {
     _ = try sh(
       """
       swift build \
-        \(swift6Plus ? "--ignore-lock" : "") \
+        --ignore-lock \
         --configuration release \
-        --package-path \(self.packageDirectoryURL.path)
+        --package-path \(packageDirectoryURL.path)
       """)
 
-    return .init(hasLLVMFileCheck: hasLLVMFileCheck, buildOutputsURL: buildOutputsURL)
+    return (hasLLVMFileCheck, buildOutputsURL)
   }
-}
 
-struct MMIOFileCheckTestCase {
-  var setup: MMIOFileCheckTestCaseSetup
-  var packageDirectoryURL: URL
-  var testFileURL: URL
-
-  func run() -> [LLVMDiagnostic] {
+  static func run(
+    testFileURL: URL,
+    hasLLVMFileCheck: Bool,
+    packageDirectoryURL: URL,
+    buildOutputsURL: URL
+  ) -> [LLVMDiagnostic] {
     do {
-      let paths = try self.setup.run()
+      print("Running: \(testFileURL.lastPathComponent)")
 
-      print("Running: \(self.testFileURL.lastPathComponent)")
-
-      let testOutputFileURL = paths.buildOutputsURL
-        .appendingPathComponent(self.testFileURL.lastPathComponent)
+      let testOutputFileURL =
+        buildOutputsURL
+        .appendingPathComponent(testFileURL.lastPathComponent)
         .appendingPathExtension("ll")
-      let mmioVolatileDirectoryURL = self.packageDirectoryURL
+      let mmioVolatileDirectoryURL =
+        packageDirectoryURL
         .appendingPathComponent("Sources")
         .appendingPathComponent("MMIOVolatile")
 
       _ = try sh(
         """
         swiftc \
-          -emit-ir \(self.testFileURL.path) \
+          -emit-ir \(testFileURL.path) \
           -o \(testOutputFileURL.path) \
           -O -wmo \
-          -I \(paths.buildOutputsURL.path) \
-          -I \(paths.buildOutputsURL.path)/Modules \
+          -I \(buildOutputsURL.path) \
+          -I \(buildOutputsURL.path)/Modules \
           -I \(mmioVolatileDirectoryURL.path) \
           -load-plugin-executable \
-            \(paths.buildOutputsURL.path)/MMIOMacros#MMIOMacros \
+            \(buildOutputsURL.path)/MMIOMacros#MMIOMacros \
           -parse-as-library \
           -diagnostic-style llvm
         """)
 
-      if paths.hasLLVMFileCheck {
+      if hasLLVMFileCheck {
         _ = try sh(
           """
           FileCheck \
-            \(self.testFileURL.path) \
+            \(testFileURL.path) \
             --input-file \(testOutputFileURL.path) \
             --dump-input never
           """)
       } else {
         let fileCheck = SimpleFileCheck(
-          inputFileURL: self.testFileURL,
+          inputFileURL: testFileURL,
           outputFileURL: testOutputFileURL)
         let diagnostics = fileCheck.run()
         guard diagnostics.isEmpty else {
@@ -243,6 +193,24 @@ extension XCTestCase {
           lineNumber: diagnostic.line)))
     self.record(issue)
     #endif
+  }
+}
+
+extension FileManager {
+  func files(
+    inDirectory directoryURL: URL,
+    withPathExtension pathExtension: String
+  ) -> [URL] {
+    let enumerator = self.enumerator(
+      at: directoryURL,
+      includingPropertiesForKeys: [])
+    guard let enumerator = enumerator else { return [] }
+
+    return enumerator
+      .lazy
+      .compactMap { $0 as? URL }
+      .filter { $0.pathExtension == pathExtension }
+      .sorted { $0.path < $1.path }
   }
 }
 

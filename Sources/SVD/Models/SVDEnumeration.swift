@@ -61,3 +61,13 @@ public struct SVDEnumeration {
   /// field.
   public var enumeratedValue: [SVDEnumerationCase]
 }
+
+extension SVDEnumeration: Decodable {}
+
+extension SVDEnumeration: Encodable {}
+
+extension SVDEnumeration: Equatable {}
+
+extension SVDEnumeration: Hashable {}
+
+extension SVDEnumeration: Sendable {}

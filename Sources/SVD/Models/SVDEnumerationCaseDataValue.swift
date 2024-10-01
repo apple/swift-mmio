@@ -18,31 +18,19 @@ import FoundationXML
 
 @XMLElement
 public struct SVDEnumerationCaseDataValue {
-  public var value: SVDEnumeratedValueDataType
+  public var value: SVDEnumerationCaseDataValueValue
 }
 
 extension SVDEnumerationCaseDataValue {
   public func bitPatterns() -> [UInt64] { [] }
 }
 
-/// literal format: [+]?(((0x|0X)[0-9a-fA-F]+)|([0-9]+)|((#|0b)[01xX]+))
-public struct SVDEnumeratedValueDataType {
-  public var value: UInt64
-  public var mask: UInt64
-}
+extension SVDEnumerationCaseDataValue: Decodable {}
 
-extension SVDEnumeratedValueDataType: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
-    let stringValue = try String(node)
-    var description = stringValue[...]
-    let parser = Parser<Substring, (UInt64, UInt64)>
-      .enumeratedValueDataType(UInt64.self)
-    guard
-      let value = parser.run(&description),
-      description.isEmpty
-    else { throw Errors.unknownValue(stringValue) }
+extension SVDEnumerationCaseDataValue: Encodable {}
 
-    self.value = value.0
-    self.mask = value.1
-  }
-}
+extension SVDEnumerationCaseDataValue: Equatable {}
+
+extension SVDEnumerationCaseDataValue: Hashable {}
+
+extension SVDEnumerationCaseDataValue: Sendable {}

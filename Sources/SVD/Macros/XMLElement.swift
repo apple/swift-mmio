@@ -16,13 +16,30 @@ import MMIOUtilities
 import FoundationXML
 #endif
 
-enum Errors: Error, @unchecked Sendable {
-  case missingValue(name: String)
-  case unknownValue(String)
-  case unknownElement(XMLElement)
+// Support for @XMLElement properties
+// where: @XMLInlineElement & XMLElementInitializable
+extension XMLElement {
+  func decode<T>(
+    _: T.Type = T.self
+  ) throws -> T where T: XMLElementInitializable {
+    try self
+      .decode(T?.self)
+      .unwrap()
+  }
+
+  func decode<T>(
+    _: T?.Type = T?.self
+  ) throws -> T? where T: XMLElementInitializable {
+    do {
+      return try T.init(self)
+    } catch XMLError.missingValue {
+      return nil
+    }
+  }
 }
 
-// XMLElement.child(element) -> T
+// Support for @XMLElement properties
+// where: implied @XMLChild & XMLElementInitializable
 extension XMLElement {
   func decode<T>(
     _: T.Type = T.self,
@@ -30,7 +47,7 @@ extension XMLElement {
   ) throws -> T where T: XMLElementInitializable {
     try self
       .decode(T?.self, fromChild: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(
@@ -49,7 +66,7 @@ extension XMLElement {
   ) throws -> [T] where T: XMLElementInitializable {
     try self
       .decode([T]?.self, fromChild: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(
@@ -64,7 +81,8 @@ extension XMLElement {
   }
 }
 
-// XMLElement.child(node) -> T
+// Support for @XMLElement properties
+// where: implied @XMLChild & XMLNodeInitializable
 extension XMLElement {
   func decode<T>(
     _: T.Type = T.self,
@@ -72,7 +90,7 @@ extension XMLElement {
   ) throws -> T where T: XMLNodeInitializable {
     try self
       .decode(T?.self, fromChild: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(
@@ -86,7 +104,8 @@ extension XMLElement {
   }
 }
 
-// XMLElement.attribute(node) -> T
+// Support for @XMLElement properties
+// where: @XMLAttribute & XMLNodeInitializable
 extension XMLElement {
   func decode<T>(
     _: T.Type = T.self,
@@ -94,7 +113,7 @@ extension XMLElement {
   ) throws -> T where T: XMLNodeInitializable {
     try self
       .decode(T?.self, fromAttribute: name)
-      .unwrap(or: Errors.missingValue(name: name))
+      .unwrap(or: XMLError.missingValue(name: name))
   }
 
   func decode<T>(

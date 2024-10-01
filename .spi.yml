@@ -6,4 +6,7 @@ builder:
       - SVD
       - SVD2LLDB
       - SVD2Swift
+      custom_documentation_parameters:
+      - --symbol-graph-minimum-access-level
+      - public
       swift_version: 6.0

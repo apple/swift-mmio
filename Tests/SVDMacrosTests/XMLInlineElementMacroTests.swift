@@ -18,7 +18,7 @@ import XCTest
 
 final class XMLInlineElementMacroTests: XCTestCase {
   static let macros: [String: Macro.Type] = [
-    "XMLInlineElement": XMLInlineElementMacro.self
+    "XMLInlineElement": XMLMarkerMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
 

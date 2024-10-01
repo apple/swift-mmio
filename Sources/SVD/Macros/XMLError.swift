@@ -9,13 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftSyntax
-import SwiftSyntaxMacros
+import Foundation
 
-enum XMLInlineElementMacro: PeerMacro {
-  static func expansion(
-    of node: AttributeSyntax,
-    providingPeersOf declaration: some DeclSyntaxProtocol,
-    in context: some MacroExpansionContext
-  ) throws -> [DeclSyntax] { [] }
+#if canImport(FoundationXML)
+import FoundationXML
+#endif
+
+enum XMLError: Error {
+  case missingValue(name: String)
+  case unknownValue(String)
+  case unknownElement(XMLElement)
 }
+
+extension XMLError: @unchecked Sendable {}

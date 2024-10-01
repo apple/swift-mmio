@@ -15,19 +15,29 @@ import Foundation
 import FoundationXML
 #endif
 
-public enum SVDAddressBlockUsage {
+public enum SVDAddressBlockUsage: String {
   case registers
   case buffer
   case reserved
 }
 
+extension SVDAddressBlockUsage: Decodable {}
+
+extension SVDAddressBlockUsage: Encodable {}
+
+extension SVDAddressBlockUsage: Equatable {}
+
+extension SVDAddressBlockUsage: Hashable {}
+
+extension SVDAddressBlockUsage: Sendable {}
+
 extension SVDAddressBlockUsage: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
     switch stringValue {
-    case "registers": self = .registers
-    case "buffer": self = .buffer
-    case "reserved": self = .reserved
+    case Self.registers.rawValue: self = .registers
+    case Self.buffer.rawValue: self = .buffer
+    case Self.reserved.rawValue: self = .reserved
     // FIXME: esp8266.svd
     // FIXME: esp32.svd
     // These SVDs have invalid usage strings

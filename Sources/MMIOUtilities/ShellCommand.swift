@@ -61,22 +61,21 @@ public func sh(
   // drain standard output and error into in-memory data.
   let drainQueue = DispatchQueue(label: "sh-drain-queue")
 
-  var outputData = Data()
+  let outputData = Mutex(Data())
   let outputPipe = Pipe()
   process.standardOutput = outputPipe
   outputPipe.fileHandleForReading.readabilityHandler = { handler in
-    let data = handler.availableData
     drainQueue.async {
-      outputData.append(data)
+      outputData.withLock { $0.append(handler.availableData) }
     }
   }
 
-  var errorData = Data()
+  let errorData = Mutex(Data())
   let errorPipe = Pipe()
   process.standardError = errorPipe
   errorPipe.fileHandleForReading.readabilityHandler = { handler in
-    drainQueue.async { [data = handler.availableData] in
-      errorData.append(data)
+    drainQueue.async {
+      errorData.withLock { $0.append(handler.availableData) }
     }
   }
 
@@ -96,10 +95,10 @@ public func sh(
     throw ShellCommandError(
       command: command,
       exitCode: process.terminationStatus,
-      outputData: outputData,
-      errorData: errorData)
+      outputData: outputData.withLock { $0 },
+      errorData: errorData.withLock { $0 })
   }
 
-  return outputData.asUTF8String()
+  return outputData.withLock { $0 }.asUTF8String()
 }
 #endif

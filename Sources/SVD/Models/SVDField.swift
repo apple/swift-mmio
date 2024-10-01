@@ -45,7 +45,7 @@ public struct SVDField {
   /// consecutive array elements and a comma separated list of strings used to
   /// identify each element in the array.
   @XMLInlineElement
-  public var dimensionElement: SVDDimensionElement = .init()
+  public var dimensionElement: SVDDimensionElement?
   /// Name string used to identify the field. Field names must be unique
   /// within a register.
   public var name: String
@@ -71,3 +71,13 @@ public struct SVDField {
   /// Next lower level of description.
   public var enumeratedValues: SVDEnumeration?
 }
+
+extension SVDField: Decodable {}
+
+extension SVDField: Encodable {}
+
+extension SVDField: Equatable {}
+
+extension SVDField: Hashable {}
+
+extension SVDField: Sendable {}

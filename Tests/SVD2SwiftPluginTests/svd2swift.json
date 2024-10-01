@@ -3,7 +3,7 @@
     "TIMER0",
     "TIMER1",
   ],
-  "indentation-width": 2,
+  "indentation-width": 1,
   "namespace-under-device": true,
   "instance-member-peripherals": false,
   "device-name": "Banana"

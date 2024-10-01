@@ -12,12 +12,9 @@
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
-import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 public struct RegisterBlockMacro {}
-
-extension RegisterBlockMacro: Sendable {}
 
 extension RegisterBlockMacro: ParsableMacro {
   mutating func update(
@@ -30,16 +27,13 @@ extension RegisterBlockMacro: ParsableMacro {
 }
 
 extension RegisterBlockMacro: MMIOMemberMacro {
-  static var memberMacroSuppressParsingDiagnostics: Bool = false
+  static let memberMacroSuppressParsingDiagnostics: Bool = false
 
   func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    // FIXME: https://github.com/swiftlang/swift-syntax/pull/2366
-    // swift-format-ignore: NeverForceUnwrap
-    let declaration = declaration as! DeclSyntaxProtocol
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
 
@@ -93,5 +87,26 @@ extension RegisterBlockMacro: MMIOMemberMacro {
       #endif
       """,
     ]
+  }
+}
+
+extension RegisterBlockMacro: MMIOExtensionMacro {
+  static var extensionMacroSuppressParsingDiagnostics: Bool { true }
+
+  func expansion(
+    of node: AttributeSyntax,
+    attachedTo declaration: some DeclGroupSyntax,
+    providingExtensionsOf type: some TypeSyntaxProtocol,
+    conformingTo protocols: [TypeSyntax],
+    in context: MacroContext<Self, some MacroExpansionContext>
+  ) throws -> [ExtensionDeclSyntax] {
+    // Avoid duplicating diagnostics produced by `MemberMacro` conformance.
+    // Only create extension when applied to struct decls.
+    guard declaration.is(StructDeclSyntax.self) else { return [] }
+
+    let `extension`: DeclSyntax =
+      "extension \(type.trimmed): RegisterProtocol {}"
+
+    return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
   }
 }

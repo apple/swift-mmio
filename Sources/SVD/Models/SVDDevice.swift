@@ -84,3 +84,13 @@ public struct SVDDevice {
   // /// the silicon vendor to specify a schema for this section.
   // var vendorExtensions: [AnyHashable: Any]
 }
+
+extension SVDDevice: Decodable {}
+
+extension SVDDevice: Encodable {}
+
+extension SVDDevice: Equatable {}
+
+extension SVDDevice: Hashable {}
+
+extension SVDDevice: Sendable {}

@@ -48,7 +48,7 @@ public struct SVDCluster {
   /// consecutive array elements and a comma separated list of strings used to
   /// identify each element in the array.
   @XMLInlineElement
-  public var dimensionElement: SVDDimensionElement = .init()
+  public var dimensionElement: SVDDimensionElement?
   /// String to identify the cluster. Cluster names are required to be unique
   /// within the scope of a peripheral. A list of cluster names can be build
   /// using the placeholder `%s`. Use the placeholder `[%s]` at the end of the
@@ -75,3 +75,13 @@ public struct SVDCluster {
   /// Define the sequence of registers.
   public var register: [SVDRegister]?
 }
+
+extension SVDCluster: Decodable {}
+
+extension SVDCluster: Encodable {}
+
+extension SVDCluster: Equatable {}
+
+extension SVDCluster: Hashable {}
+
+extension SVDCluster: Sendable {}

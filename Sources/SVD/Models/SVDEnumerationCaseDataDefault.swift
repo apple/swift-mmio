@@ -19,3 +19,13 @@ import FoundationXML
 public struct SVDEnumerationCaseDataDefault {
   public var isDefault: Bool
 }
+
+extension SVDEnumerationCaseDataDefault: Decodable {}
+
+extension SVDEnumerationCaseDataDefault: Encodable {}
+
+extension SVDEnumerationCaseDataDefault: Equatable {}
+
+extension SVDEnumerationCaseDataDefault: Hashable {}
+
+extension SVDEnumerationCaseDataDefault: Sendable {}

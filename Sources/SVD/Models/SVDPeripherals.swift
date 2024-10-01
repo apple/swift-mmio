@@ -21,3 +21,13 @@ public struct SVDPeripherals {
   /// Define the sequence of peripherals.
   public var peripheral: [SVDPeripheral]
 }
+
+extension SVDPeripherals: Decodable {}
+
+extension SVDPeripherals: Encodable {}
+
+extension SVDPeripherals: Equatable {}
+
+extension SVDPeripherals: Hashable {}
+
+extension SVDPeripherals: Sendable {}

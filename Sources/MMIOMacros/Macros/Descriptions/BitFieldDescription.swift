@@ -43,7 +43,7 @@ extension BitFieldDescription {
       leftOperand: IntegerLiteralExprSyntax(clampedRange.lowerBound),
       operator: BinaryOperatorExprSyntax(operator: .binaryOperator("..<")),
       rightOperand: IntegerLiteralExprSyntax(clampedRange.upperBound + 1))
-    guard let expression = infix.as(ExprSyntax.self) else {
+    guard let expression = ExprSyntax(infix) else {
       preconditionFailure("InfixOperatorExprSyntax must be an ExprSyntax")
     }
     return expression

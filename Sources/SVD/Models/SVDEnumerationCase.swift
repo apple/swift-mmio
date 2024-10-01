@@ -27,3 +27,13 @@ public struct SVDEnumerationCase {
   @XMLInlineElement
   public var data: SVDEnumerationCaseData
 }
+
+extension SVDEnumerationCase: Decodable {}
+
+extension SVDEnumerationCase: Encodable {}
+
+extension SVDEnumerationCase: Equatable {}
+
+extension SVDEnumerationCase: Hashable {}
+
+extension SVDEnumerationCase: Sendable {}

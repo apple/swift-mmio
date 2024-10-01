@@ -22,3 +22,13 @@ public struct SVDBitRangeLsbMsb {
   public var lsb: UInt64
   public var msb: UInt64
 }
+
+extension SVDBitRangeLsbMsb: Decodable {}
+
+extension SVDBitRangeLsbMsb: Encodable {}
+
+extension SVDBitRangeLsbMsb: Equatable {}
+
+extension SVDBitRangeLsbMsb: Hashable {}
+
+extension SVDBitRangeLsbMsb: Sendable {}

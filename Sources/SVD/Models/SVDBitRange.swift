@@ -21,6 +21,16 @@ public enum SVDBitRange {
   case literal(SVDBitRangeLiteralContainer)
 }
 
+extension SVDBitRange: Decodable {}
+
+extension SVDBitRange: Encodable {}
+
+extension SVDBitRange: Equatable {}
+
+extension SVDBitRange: Hashable {}
+
+extension SVDBitRange: Sendable {}
+
 extension SVDBitRange: XMLElementInitializable {
   init(_ element: XMLElement) throws {
     if let value = try? SVDBitRangeLsbMsb(element) {
@@ -30,7 +40,7 @@ extension SVDBitRange: XMLElementInitializable {
     } else if let value = try? SVDBitRangeLiteralContainer(element) {
       self = .literal(value)
     } else {
-      throw Errors.unknownElement(element)
+      throw XMLError.unknownElement(element)
     }
   }
 }

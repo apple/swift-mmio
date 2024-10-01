@@ -11,6 +11,7 @@
 
 // RegisterBlock macros
 @attached(member, names: named(unsafeAddress), named(init), named(interposer))
+@attached(extension, conformances: RegisterProtocol)
 public macro RegisterBlock() =
   #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
 
@@ -59,7 +60,7 @@ where Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProject
 
 @attached(accessor)
 public macro ReadOnly<Value>(bits: UnboundedRange, as: Value.Type = Never.self) =
-  #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
+  #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
 where Value: BitFieldProjectable
 
 @attached(accessor)

@@ -18,7 +18,7 @@ import XCTest
 
 final class XMLAttributeMacroTests: XCTestCase {
   static let macros: [String: Macro.Type] = [
-    "XMLAttribute": XMLAttributeMacro.self
+    "XMLAttribute": XMLMarkerMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
 

@@ -18,7 +18,7 @@ final class SVD2LLDB {
   // swift-format-ignore: NeverUseImplicitlyUnwrappedOptionals
   /// The main instance of SVD2LLDB created on plugin initialization. This value
   /// will always be valid throughout the duration of the plugin's execution.
-  static var shared: SVD2LLDB!
+  nonisolated(unsafe) static var shared: SVD2LLDB!
 
   var device: SVDDevice?
 

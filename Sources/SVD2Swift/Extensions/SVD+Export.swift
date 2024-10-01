@@ -36,7 +36,6 @@ struct ExportContext {
 }
 
 extension SVDDevice {
-  // FIXME: pass register props throughout this
   func export(
     with options: ExportOptions,
     to output: inout Output
@@ -55,8 +54,6 @@ extension SVDDevice {
   fileprivate func export(
     context: inout ExportContext
   ) throws {
-    let registerProperties = self.registerProperties
-
     var outputPeripherals = [SVDPeripheral]()
     if context.selectedPeripherals.isEmpty {
       outputPeripherals = self.peripherals.peripheral
@@ -108,24 +105,130 @@ extension SVDDevice {
 
     for peripheral in outputPeripherals {
       context.outputWriter.append(fileHeader)
-      peripheral.exportType(
-        context: &context,
-        registerProperties: registerProperties,
-        deviceName: deviceName)
+
+      var parentTypes = [String]()
+      if context.namespaceUnderDevice {
+        parentTypes.append(deviceName)
+      }
+
+      var exportQueue = [([any SVDExportable], [String], SVDRegisterProperties)]()
+      exportQueue.append(([peripheral], parentTypes, self.registerProperties))
+
+      // Track indices instead of popping front to avoid O(N) pop.
+      var currentIndex = exportQueue.startIndex
+      while currentIndex < exportQueue.endIndex {
+        defer { exportQueue.formIndex(after: &currentIndex) }
+        if currentIndex != exportQueue.startIndex {
+          context.outputWriter.append("\n")
+        }
+        let (elements, parentTypes, registerProperties) = exportQueue[currentIndex]
+        if !parentTypes.isEmpty {
+          let parentTypeFullName = parentTypes.joined(separator: ".")
+          context.outputWriter.append("extension \(parentTypeFullName) {\n")
+          context.outputWriter.indent()
+        }
+
+        for (index, element) in elements.enumerated() {
+          let (exports, registerProperties) = element.exportType(
+            context: &context,
+            registerProperties: registerProperties)
+          if !exports.isEmpty {
+            exportQueue.append(
+              (
+                exports,
+                parentTypes + [element.swiftName],
+                registerProperties
+              ))
+          }
+          if index < elements.count - 1 {
+            context.outputWriter.append("\n")
+          }
+        }
+
+        if !parentTypes.isEmpty {
+          context.outputWriter.outdent()
+          context.outputWriter.append("}\n")
+        }
+      }
       try context.outputWriter.writeOutput(to: "\(peripheral.swiftName).swift")
     }
   }
 }
 
-extension SVDPeripheral {
-  fileprivate func exportAccessor(
+protocol SVDExportable {
+  var swiftName: String { get }
+
+  func exportType(
     context: inout ExportContext,
-    registerProperties: consuming SVDRegisterProperties
+    registerProperties: SVDRegisterProperties
+  ) -> ([any SVDExportable], SVDRegisterProperties)
+
+  func exportAccessor(
+    context: inout ExportContext,
+    registerProperties: SVDRegisterProperties)
+}
+
+extension SVDPeripheral: SVDExportable {
+  func exportType(
+    context: inout ExportContext,
+    registerProperties: SVDRegisterProperties
+  ) -> ([any SVDExportable], SVDRegisterProperties) {
+    let typeName = self.swiftName
+    let registerProperties = self.registerProperties.merging(registerProperties)
+
+    var exports = [any SVDExportable]()
+    if let derivedFrom = self.derivedFrom {
+      // FIXME: Handle only exporting B where B deriveFrom A
+      context.outputWriter.append("\(context.accessLevel)typealias \(typeName) = \(derivedFrom)\n")
+    } else {
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        @RegisterBlock
+        \(context.accessLevel)struct \(typeName) {
+
+        """)
+      context.outputWriter.indent()
+      if let registersAndClusters = self.registers {
+        let registers = registersAndClusters.register
+        let clusters = registersAndClusters.cluster
+
+        for (index, register) in registers.enumerated() {
+          register.exportAccessor(
+            context: &context,
+            registerProperties: registerProperties)
+          exports.append(register)
+          if index < registers.count - 1 {
+            context.outputWriter.append("\n")
+          }
+        }
+
+        if !registers.isEmpty, !clusters.isEmpty {
+          context.outputWriter.append("\n")
+        }
+
+        for (index, cluster) in clusters.enumerated() {
+          cluster.exportAccessor(
+            context: &context,
+            registerProperties: registerProperties)
+          exports.append(cluster)
+          if index < clusters.count - 1 {
+            context.outputWriter.append("\n")
+          }
+        }
+      }
+      context.outputWriter.outdent()
+      context.outputWriter.append("}\n")
+    }
+    return (exports, registerProperties)
+  }
+
+  func exportAccessor(
+    context: inout ExportContext,
+    registerProperties: SVDRegisterProperties
   ) {
     let typeName = self.swiftName
     let instanceName = typeName.lowercased()
-
-    let registerProperties = self.registerProperties.merging(registerProperties)
 
     let accessorModifier =
       if context.namespaceUnderDevice && !context.instanceMemberPeripherals {
@@ -134,23 +237,17 @@ extension SVDPeripheral {
         ""
       }
 
-    if let count = self.dimensionElement.dim {
-      // FIXME: properties.size may be incorrect here.
-      let stride = self.dimensionElement.dimIncrement ?? registerProperties.size
-      guard let stride = stride else {
-        // FIXME: warning diagnostic
-        print("warning: skipped exporting \(instanceName): unknown stride")
-        return
-      }
-      for index in 0..<count {
-        let addressOffset = stride * index
-        context.outputWriter.append(
-          """
-          \(comment: self.swiftDescription)
-          \(context.accessLevel)\(accessorModifier)let \(identifier: "\(instanceName)\(index)") = \(typeName)(unsafeAddress: \(hex: self.baseAddress + addressOffset))
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
 
-          """)
-      }
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        \(context.accessLevel)\(accessorModifier)let \(identifier: instanceName) = RegisterArray<\(typeName)>(\
+        unsafeAddress: \(hex: self.baseAddress), stride: \(hex: stride), count: \(count))
+
+        """)
     } else {
       context.outputWriter.append(
         """
@@ -160,103 +257,103 @@ extension SVDPeripheral {
         """)
     }
   }
-
-  fileprivate func exportType(
-    context: inout ExportContext,
-    registerProperties: SVDRegisterProperties,
-    deviceName: String
-  ) {
-    let typeName = self.swiftName
-
-    let registerProperties = self.registerProperties.merging(registerProperties)
-
-    if context.namespaceUnderDevice {
-      context.outputWriter.append("extension \(deviceName) {\n")
-      context.outputWriter.indent()
-    }
-
-    if let derivedFrom = self.derivedFrom {
-      // FIXME: Handle only exporting B where B deriveFrom A
-      context.outputWriter.append("\(context.accessLevel)typealias \(typeName) = \(derivedFrom)\n")
-      if context.namespaceUnderDevice {
-        context.outputWriter.outdent()
-        context.outputWriter.append("}\n")
-      }
-      return
-    }
-
-    context.outputWriter.append(
-      """
-      \(comment: self.swiftDescription)
-      @RegisterBlock
-      \(context.accessLevel)struct \(typeName) {
-
-      """)
-    context.outputWriter.indent()
-    if let registers = self.registers {
-      // FIXME: add cluster export
-      let registers = registers.register
-      for (index, register) in registers.enumerated() {
-        register.exportAccessor(
-          context: &context,
-          registerProperties: registerProperties)
-        if index < registers.count - 1 {
-          context.outputWriter.append("\n")
-        }
-      }
-    }
-    context.outputWriter.outdent()
-    context.outputWriter.append("}\n")
-    if context.namespaceUnderDevice {
-      context.outputWriter.outdent()
-      context.outputWriter.append("}\n")
-    }
-
-    context.outputWriter.append("\n")
-
-    let name =
-      if context.namespaceUnderDevice {
-        "\(deviceName).\(typeName)"
-      } else {
-        typeName
-      }
-    context.outputWriter.append("extension \(name) {\n")
-    context.outputWriter.indent()
-    if let registers = self.registers {
-      // FIXME: add cluster export
-      let registers = registers.register
-      for (index, register) in registers.enumerated() {
-        register.exportType(
-          context: &context,
-          registerProperties: registerProperties)
-        if index < registers.count - 1 {
-          context.outputWriter.append("\n")
-        }
-      }
-    }
-    context.outputWriter.outdent()
-    context.outputWriter.append("}\n")
-  }
 }
 
-extension SVDRegister {
-  fileprivate func exportAccessor(
+extension SVDCluster: SVDExportable {
+  func exportAccessor(
     context: inout ExportContext,
     registerProperties: SVDRegisterProperties
   ) {
     let typeName = self.swiftName
     let instanceName = typeName.lowercased()
 
-    let registerProperties = self.registerProperties.merging(registerProperties)
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
 
-    if let count = self.dimensionElement.dim {
-      // FIXME: properties.size may be incorrect here.
-      let stride = self.dimensionElement.dimIncrement ?? registerProperties.size
-      guard let stride = stride else {
-        // FIXME: warning diagnostic
-        print("warning: skipped exporting \(instanceName): unknown stride")
-        return
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        @RegisterBlock(offset: \(hex: self.addressOffset), stride: \(hex: stride), count: \(count))
+        \(context.accessLevel)var \(identifier: instanceName): RegisterArray<\(typeName)>
+
+        """)
+    } else {
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        @RegisterBlock(offset: \(hex: self.addressOffset))
+        \(context.accessLevel)var \(identifier: instanceName): \(typeName)
+
+        """)
+    }
+  }
+
+  func exportType(
+    context: inout ExportContext,
+    registerProperties: SVD.SVDRegisterProperties
+  ) -> ([any SVDExportable], SVDRegisterProperties) {
+    let registerProperties = self.registerProperties.merging(registerProperties)
+    var exports = [any SVDExportable]()
+
+    if let derivedFrom = self.derivedFrom {
+      context.outputWriter.append("\(context.accessLevel)typealias \(self.swiftName) = \(derivedFrom)\n")
+    } else {
+
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        @RegisterBlock
+        \(context.accessLevel)struct \(self.swiftName) {
+
+        """)
+      context.outputWriter.indent()
+      if let registers = self.register {
+        for (index, register) in registers.enumerated() {
+          register.exportAccessor(
+            context: &context,
+            registerProperties: registerProperties)
+          exports.append(register)
+          if index < registers.count - 1 {
+            context.outputWriter.append("\n")
+          }
+        }
       }
+
+      if !(self.register ?? []).isEmpty, !(self.cluster ?? []).isEmpty {
+        context.outputWriter.append("\n")
+      }
+
+      if let clusters = self.cluster {
+        for (index, cluster) in clusters.enumerated() {
+          cluster.exportAccessor(
+            context: &context,
+            registerProperties: registerProperties)
+          exports.append(cluster)
+          if index < clusters.count - 1 {
+            context.outputWriter.append("\n")
+          }
+        }
+      }
+      context.outputWriter.outdent()
+      context.outputWriter.append("}\n")
+    }
+    return (exports, registerProperties)
+  }
+}
+
+extension SVDRegister: SVDExportable {
+  func exportAccessor(
+    context: inout ExportContext,
+    registerProperties: SVDRegisterProperties
+  ) {
+    let typeName = self.swiftName
+    let instanceName = typeName.lowercased()
+
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
+
       context.outputWriter.append(
         """
         \(comment: self.swiftDescription)
@@ -275,39 +372,38 @@ extension SVDRegister {
     }
   }
 
-  fileprivate func exportType(
+  func exportType(
     context: inout ExportContext,
-    registerProperties: SVDRegisterProperties
-  ) {
-    let typeName = self.swiftName
-
+    registerProperties: SVD.SVDRegisterProperties
+  ) -> ([any SVDExportable], SVDRegisterProperties) {
     let registerProperties = self.registerProperties.merging(registerProperties)
-    guard let size = registerProperties.size else {
-      // FIXME: warning diagnostic
-      print("warning: skipped exporting \(typeName): unknown register size")
-      return
-    }
 
-    context.outputWriter.append(
-      """
-      \(comment: self.swiftDescription)
-      @Register(bitWidth: \(size))
-      \(context.accessLevel)struct \(typeName) {
+    if let size = registerProperties.size {
+      context.outputWriter.append(
+        """
+        \(comment: self.swiftDescription)
+        @Register(bitWidth: \(size))
+        \(context.accessLevel)struct \(self.swiftName) {
 
-      """)
-    context.outputWriter.indent()
-    let fields = self.fields?.field ?? []
-    for (index, field) in fields.enumerated() {
-      field.exportAccessor(
-        context: &context,
-        register: self,
-        registerProperties: registerProperties)
-      if index < fields.count - 1 {
-        context.outputWriter.append("\n")
+        """)
+      context.outputWriter.indent()
+      let fields = self.fields?.field ?? []
+      for (index, field) in fields.enumerated() {
+        field.exportAccessor(
+          context: &context,
+          register: self,
+          registerProperties: registerProperties)
+        if index < fields.count - 1 {
+          context.outputWriter.append("\n")
+        }
       }
+      context.outputWriter.outdent()
+      context.outputWriter.append("}\n")
+    } else {
+      // FIXME: warning diagnostic
+      print("warning: skipped exporting \(self.swiftName): unknown register size")
     }
-    context.outputWriter.outdent()
-    context.outputWriter.append("}\n")
+    return ([], registerProperties)
   }
 }
 
@@ -355,11 +451,13 @@ extension SVDField {
       }
 
     let range = self.bitRange.range
-    if let count = self.dimensionElement.dim {
-      let stride = self.dimensionElement.dimIncrement ?? UInt64(range.count)
+    if let dimensionElement = self.dimensionElement {
+      let count = dimensionElement.dim
+      let stride = dimensionElement.dimIncrement
+
       // FIXME: array fields
-      // Instead of splatting out N copies of the field we should have some way to
-      // describe an array like RegisterArray
+      // Instead of splatting out N copies of the field we should have some way
+      // to describe an array like RegisterArray
       for index in 0..<count {
         let bitOffset = stride * index
         context.outputWriter.append(

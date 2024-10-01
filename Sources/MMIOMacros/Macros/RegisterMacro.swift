@@ -12,15 +12,12 @@
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
-import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 
 public struct RegisterMacro {
   @Argument(label: "bitWidth")
   var bitWidth: BitWidth
 }
-
-extension RegisterMacro: Sendable {}
 
 extension RegisterMacro: ParsableMacro {
   mutating func update(
@@ -45,9 +42,6 @@ extension RegisterMacro: MMIOMemberMacro {
     providingMembersOf declaration: some DeclGroupSyntax,
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
-    // FIXME: https://github.com/swiftlang/swift-syntax/pull/2366
-    // swift-format-ignore: NeverForceUnwrap
-    let declaration = declaration as! DeclSyntaxProtocol
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
     let accessLevel = structDecl.accessLevel?.trimmed

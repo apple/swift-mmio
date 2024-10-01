@@ -26,3 +26,13 @@ public struct SVDRegisters {
   /// Define the sequence of registers.
   public var register: [SVDRegister]
 }
+
+extension SVDRegisters: Decodable {}
+
+extension SVDRegisters: Encodable {}
+
+extension SVDRegisters: Equatable {}
+
+extension SVDRegisters: Hashable {}
+
+extension SVDRegisters: Sendable {}

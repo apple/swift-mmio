@@ -18,7 +18,7 @@ protocol DiagnosableDeclSyntaxProtocol: DeclSyntaxProtocol {
 }
 
 extension AccessorDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "accessor"
+  static let declTypeName = "accessor"
   var introducerKeyword: TokenSyntax { self.accessorSpecifier }
 }
 
@@ -28,7 +28,7 @@ extension ActorDeclSyntax: DiagnosableDeclSyntaxProtocol {
 }
 
 extension AssociatedTypeDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "associated type"
+  static let declTypeName = "associated type"
   var introducerKeyword: TokenSyntax { self.associatedtypeKeyword }
 }
 
@@ -38,12 +38,12 @@ extension ClassDeclSyntax: DiagnosableDeclSyntaxProtocol {
 }
 
 extension DeinitializerDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "deinitializer"
+  static let declTypeName = "deinitializer"
   var introducerKeyword: TokenSyntax { self.deinitKeyword }
 }
 
 extension EditorPlaceholderDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "editor placeholder"
+  static let declTypeName = "editor placeholder"
   var introducerKeyword: TokenSyntax { self.placeholder }
 }
 
@@ -63,54 +63,54 @@ extension ExtensionDeclSyntax: DiagnosableDeclSyntaxProtocol {
 }
 
 extension FunctionDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "function"
+  static let declTypeName = "function"
   var introducerKeyword: TokenSyntax { self.funcKeyword }
 }
 
 extension IfConfigDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "if config"
+  static let declTypeName = "if config"
   var introducerKeyword: TokenSyntax {
     self.clauses.first?.poundKeyword ?? .poundToken()
   }
 }
 
 extension ImportDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "import"
+  static let declTypeName = "import"
   var introducerKeyword: TokenSyntax { self.importKeyword }
 }
 
 extension InitializerDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "initializer"
+  static let declTypeName = "initializer"
   var introducerKeyword: TokenSyntax { self.initKeyword }
 }
 
 extension MacroDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "macro"
+  static let declTypeName = "macro"
   var introducerKeyword: TokenSyntax { self.macroKeyword }
 }
 
 extension MacroExpansionDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "macro expansion"
+  static let declTypeName = "macro expansion"
   var introducerKeyword: TokenSyntax { self.macroName }
 }
 
 extension MissingDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "missing"
+  static let declTypeName = "missing"
   var introducerKeyword: TokenSyntax { self.placeholder }
 }
 
 extension OperatorDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "operator"
+  static let declTypeName = "operator"
   var introducerKeyword: TokenSyntax { self.operatorKeyword }
 }
 
 extension PoundSourceLocationSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "pound source location"
+  static let declTypeName = "pound source location"
   var introducerKeyword: TokenSyntax { self.poundSourceLocation }
 }
 
 extension PrecedenceGroupDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "precedence group"
+  static let declTypeName = "precedence group"
   var introducerKeyword: TokenSyntax { self.precedencegroupKeyword }
 }
 
@@ -125,17 +125,17 @@ extension StructDeclSyntax: DiagnosableDeclSyntaxProtocol {
 }
 
 extension SubscriptDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "subscript"
+  static let declTypeName = "subscript"
   var introducerKeyword: TokenSyntax { self.subscriptKeyword }
 }
 
 extension TypeAliasDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "type alias"
+  static let declTypeName = "type alias"
   var introducerKeyword: TokenSyntax { self.typealiasKeyword }
 }
 
 extension VariableDeclSyntax: DiagnosableDeclSyntaxProtocol {
-  static var declTypeName = "variable"
+  static let declTypeName = "variable"
   var introducerKeyword: TokenSyntax { self.bindingSpecifier }
 }
 

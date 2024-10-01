@@ -11,7 +11,7 @@
 
 @attached(peer)
 macro XMLAttribute() =
-  #externalMacro(module: "SVDMacros", type: "XMLAttributeMacro")
+  #externalMacro(module: "SVDMacros", type: "XMLMarkerMacro")
 
 @attached(extension, names: named(init(_:)), conformances: XMLElementInitializable)
 macro XMLElement() =
@@ -19,4 +19,4 @@ macro XMLElement() =
 
 @attached(peer)
 macro XMLInlineElement() =
-  #externalMacro(module: "SVDMacros", type: "XMLInlineElementMacro")
+  #externalMacro(module: "SVDMacros", type: "XMLMarkerMacro")
