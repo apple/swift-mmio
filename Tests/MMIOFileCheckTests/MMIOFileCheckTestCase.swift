@@ -185,6 +185,26 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
         .appendingPathComponent("Sources")
         .appendingPathComponent("MMIOVolatile")
 
+      do {
+        print("RAUHUL1:")
+        try print(sh("ls -asl"))
+      } catch {
+        print(error)
+      }
+      do {
+        print("RAUHUL2:")
+        try print(sh("ls -asl \(buildOutputsURL.path)"))
+      } catch {
+        print(error)
+      }
+      do {
+        print("RAUHUL3:")
+        try print(sh("ls -asl \(buildOutputsURL.path)/Modules"))
+      } catch {
+        print(error)
+      }
+
+
       _ = try sh(
         """
         TOOLCHAINS=\(toolchainID) swiftc \
