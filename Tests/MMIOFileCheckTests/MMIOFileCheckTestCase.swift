@@ -197,7 +197,7 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
             \(buildOutputsURL.path)/MMIOMacros-tool#MMIOMacros \
           -parse-as-library \
           -diagnostic-style llvm \
-          -verbose \
+          -v \
           -Rmodule-loading
         """)
 
