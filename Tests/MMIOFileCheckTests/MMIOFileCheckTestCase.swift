@@ -149,7 +149,7 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
           --show-bin-path
         """))
 
-    if ci {
+    if ci && false {
       print("Skipping building MMIO...")
     } else {
       print("Building MMIO...")
@@ -203,7 +203,6 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
       } catch {
         print(error)
       }
-
 
       _ = try sh(
         """
