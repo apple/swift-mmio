@@ -46,7 +46,7 @@ public class Mutex<T>: @unchecked Sendable {
   ///   considered the critical section as it will only be executed once the
   ///   calling thread has acquired the lock.
   ///
-  /// - Throws: Rethrows any error thrown by `body`.
+  /// - Throws: Re-throws any error thrown by `body`.
   ///
   /// - Returns: The return value, if any, of the `body` closure parameter.
   public func withLock<U, E>(
