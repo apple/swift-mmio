@@ -104,24 +104,6 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
     }
     print("Using TOOLCHAINS=\(toolchainID)")
 
-    print("Determining Swift Compiler Version...")
-    let versionString = try sh("TOOLCHAINS=\(toolchainID) swift --version")
-    let regex = #/Swift version (\d+)/#
-    let swift6Plus =
-      if let match = versionString.firstMatch(of: regex),
-        let majorVersion = Int(match.output.1),
-        majorVersion > 5
-      {
-        true
-      } else {
-        false
-      }
-    print("Using Swift Compiler Version \(swift6Plus ? 6 : 5)")
-
-    if !swift6Plus {
-      throw XCTSkip("Unsupported on Swift < 6")
-    }
-
     let hasLLVMFileCheck: Bool
     do {
       print("Locating FileCheck...")
@@ -149,19 +131,17 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
           --show-bin-path
         """))
 
-    if ci && false {
-      print("Skipping building MMIO...")
-    } else {
-      print("Building MMIO...")
-      _ = try sh(
-        """
-        TOOLCHAINS=\(toolchainID) swift build \
-          --ignore-lock \
-          --configuration release \
-          --package-path \(packageDirectoryURL.path) \
-          --verbose
-        """, collectStandardOutput: false)
-    }
+    #if DEBUG
+    print("Building MMIO...")
+    _ = try sh(
+      """
+      TOOLCHAINS=\(toolchainID) swift build \
+        --ignore-lock \
+        --configuration release \
+        --package-path \(packageDirectoryURL.path) \
+        --verbose
+      """, collectStandardOutput: false)
+    #endif
 
     return (hasLLVMFileCheck, toolchainID, buildOutputsURL)
   }
@@ -180,29 +160,16 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
         buildOutputsURL
         .appendingPathComponent(testFileURL.lastPathComponent)
         .appendingPathExtension("ll")
+      let buildModulesDirectoryURL =
+        buildOutputsURL
+        .appendingPathComponent("Modules")
+      let buildMMIOMacrosFileURL =
+        buildOutputsURL
+        .appendingPathComponent("MMIOMacros-tool")
       let mmioVolatileDirectoryURL =
         packageDirectoryURL
         .appendingPathComponent("Sources")
         .appendingPathComponent("MMIOVolatile")
-
-      do {
-        print("RAUHUL1:")
-        try print(sh("ls -asl"))
-      } catch {
-        print(error)
-      }
-      do {
-        print("RAUHUL2:")
-        try print(sh("ls -asl \(buildOutputsURL.path)"))
-      } catch {
-        print(error)
-      }
-      do {
-        print("RAUHUL3:")
-        try print(sh("ls -asl \(buildOutputsURL.path)/Modules"))
-      } catch {
-        print(error)
-      }
 
       _ = try sh(
         """
@@ -210,10 +177,9 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
           -emit-ir \(testFileURL.path) \
           -o \(testOutputFileURL.path) \
           -O -wmo \
-          -I \(buildOutputsURL.path)/Modules \
+          -I \(buildModulesDirectoryURL.path) \
           -I \(mmioVolatileDirectoryURL.path) \
-          -load-plugin-executable \
-            \(buildOutputsURL.path)/MMIOMacros-tool#MMIOMacros \
+          -load-plugin-executable \(buildMMIOMacrosFileURL.path)#MMIOMacros \
           -parse-as-library \
           -diagnostic-style llvm \
           -v \
