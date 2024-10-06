@@ -89,4 +89,8 @@ class SuppressionContext: MacroExpansionContext {
   func diagnose(_ diagnostic: SwiftDiagnostics.Diagnostic) {
     // ignore
   }
+
+  var lexicalContext: [Syntax] {
+    []
+  }
 }
