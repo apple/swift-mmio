@@ -147,5 +147,64 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
       macros: Self.arrayMacros,
       indentationWidth: Self.indentationWidth)
   }
+
+  func test_accessLevel_propagation() {
+    assertMacroExpansion(
+      """
+      @RegisterBlockType
+      public struct I2C {
+        @RegisterBlock(offset: 0x0)
+        var control: Control
+        @RegisterBlock(offset: 0x8)
+        var dr: Register<DR>
+      }
+      """,
+      expandedSource: """
+        public struct I2C {
+          var control: Control {
+            @inlinable @inline(__always) get {
+              #if FEATURE_INTERPOSABLE
+              return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
+              #else
+              return .init(unsafeAddress: self.unsafeAddress + (0x0))
+              #endif
+            }
+          }
+          var dr: Register<DR> {
+            @inlinable @inline(__always) get {
+              #if FEATURE_INTERPOSABLE
+              return .init(unsafeAddress: self.unsafeAddress + (0x8), interposer: self.interposer)
+              #else
+              return .init(unsafeAddress: self.unsafeAddress + (0x8))
+              #endif
+            }
+          }
+
+          public let unsafeAddress: UInt
+
+          #if FEATURE_INTERPOSABLE
+          public var interposer: (any MMIOInterposer)?
+          #endif
+
+          #if FEATURE_INTERPOSABLE
+          @inlinable @inline(__always)
+          public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
+            self.unsafeAddress = unsafeAddress
+            self.interposer = interposer
+          }
+          #else
+          @inlinable @inline(__always)
+          public init(unsafeAddress: UInt) {
+            self.unsafeAddress = unsafeAddress
+          }
+          #endif
+        }
+
+        extension I2C: RegisterProtocol {
+        }
+        """,
+      macros: Self.scalarMacros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
 #endif

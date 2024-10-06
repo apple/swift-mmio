@@ -44,7 +44,8 @@ extension RegisterMacro: MMIOMemberMacro {
   ) throws -> [DeclSyntax] {
     // Can only applied to structs.
     let structDecl = try declaration.requireAs(StructDeclSyntax.self, context)
-    let accessLevel = structDecl.accessLevel?.trimmed
+    var accessLevel = structDecl.accessLevel?.trimmed
+    accessLevel?.trailingTrivia = .spaces(1)
     let bitWidth = self.bitWidth.value
 
     // Walk all the members of the struct.
@@ -100,7 +101,7 @@ extension RegisterMacro: MMIOMemberMacro {
 
     let register = RegisterDescription(
       name: structDecl.name,
-      accessLevel: structDecl.accessLevel,
+      accessLevel: accessLevel,
       bitWidth: self.bitWidth.value,
       bitFields: bitFields,
       isSymmetric: isSymmetric)

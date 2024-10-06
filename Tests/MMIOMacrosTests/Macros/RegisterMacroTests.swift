@@ -915,5 +915,123 @@ final class RegisterMacroTests: XCTestCase {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+
+  func test_accessLevel_propagation() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      public struct S {
+        @ReadOnly(bits: 0..<1, as: Bool.self)
+        var v1: V1
+        @WriteOnly(bits: 1..<2, as: Bool.self)
+        var v2: V2
+      }
+      """,
+      expandedSource: """
+        public struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var v2: V2 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          public enum V1: ContiguousBitField {
+            public typealias Storage = UInt8
+            public static let bitRange = 0 ..< 1
+          }
+
+          public enum V2: ContiguousBitField {
+            public typealias Storage = UInt8
+            public static let bitRange = 1 ..< 2
+          }
+
+          public struct Raw: RegisterValueRaw {
+            public typealias Value = S
+            public typealias Storage = UInt8
+            public var storage: Storage
+            public init(_ storage: Storage) {
+              self.storage = storage
+            }
+            public init(_ value: Value.Read) {
+              self.storage = value.storage
+            }
+            public init(_ value: Value.Write) {
+              self.storage = value.storage
+            }
+            public var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insert(newValue, into: &self.storage)
+              }
+            }
+            public var v2: UInt8 {
+              @inlinable @inline(__always) get {
+                V2.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V2.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          public struct Read: RegisterValueRead {
+            public typealias Value = S
+            var storage: UInt8
+            public init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            public var v1: Bool {
+              @inlinable @inline(__always) get {
+                preconditionMatchingBitWidth(V1.self, Bool.self)
+                return Bool(storage: self.raw.v1)
+              }
+            }
+          }
+
+          public struct Write: RegisterValueWrite {
+            public typealias Value = S
+            var storage: UInt8
+            public init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            public init(_ value: Read) {
+              // FIXME: mask off bits
+              self.storage = value.storage
+            }
+            public var v2: Bool {
+              @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
+              @inlinable @inline(__always) get {
+                preconditionMatchingBitWidth(V2.self, Bool.self)
+                return Bool(storage: self.raw.v2)
+              }
+              @inlinable @inline(__always) set {
+                preconditionMatchingBitWidth(V2.self, Bool.self)
+                self.raw.v2 = newValue.storage(Self.Value.Raw.Storage.self)
+              }
+            }
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
 #endif

@@ -104,8 +104,8 @@ extension RegisterDescription {
         \(self.accessLevel)init(_ storage: Storage) {
           self.storage = storage
         }
-        \(initDeclarations)
-        \(bitFieldDeclarations)
+        \(nodes: initDeclarations)
+        \(nodes: bitFieldDeclarations)
       }
       """)
     return declarations
@@ -136,7 +136,7 @@ extension RegisterDescription {
         \(self.accessLevel)init(_ value: Raw) {
           self.storage = value.storage
         }
-        \(bitFieldDeclarations)
+        \(nodes: bitFieldDeclarations)
       }
       """)
     return declarations
@@ -157,7 +157,7 @@ extension RegisterDescription {
         \(self.accessLevel)typealias Value = \(self.name)
         var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: Raw) { self.storage = value.storage }
-        \(bitFieldDeclarations)
+        \(nodes: bitFieldDeclarations)
       }
       """)
     return declarations
@@ -184,7 +184,7 @@ extension RegisterDescription {
           // FIXME: mask off bits
           self.storage = value.storage
         }
-        \(bitFieldDeclarations)
+        \(nodes: bitFieldDeclarations)
       }
       """)
     return declarations
