@@ -100,21 +100,21 @@ extension BitFieldProjectable where Self: FixedWidthInteger {
   }
 }
 
-extension UInt8: BitFieldProjectable { }
+extension UInt8: BitFieldProjectable {}
 
-extension UInt16: BitFieldProjectable { }
+extension UInt16: BitFieldProjectable {}
 
-extension UInt32: BitFieldProjectable { }
+extension UInt32: BitFieldProjectable {}
 
-extension UInt64: BitFieldProjectable { }
+extension UInt64: BitFieldProjectable {}
 
-extension Int8: BitFieldProjectable { }
+extension Int8: BitFieldProjectable {}
 
-extension Int16: BitFieldProjectable { }
+extension Int16: BitFieldProjectable {}
 
-extension Int32: BitFieldProjectable { }
+extension Int32: BitFieldProjectable {}
 
-extension Int64: BitFieldProjectable { }
+extension Int64: BitFieldProjectable {}
 
 /// Default implementation of `BitFieldProjectable` for `RawRepresentable`
 /// types.
