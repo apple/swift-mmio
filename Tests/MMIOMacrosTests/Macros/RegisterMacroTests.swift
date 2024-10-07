@@ -292,11 +292,13 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V1: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Never
             static let bitRange = 0 ..< 1
           }
 
           enum V2: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Never
             static let bitRange = 1 ..< 2
           }
 
@@ -312,18 +314,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                V1.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                V1.insertBits(newValue, into: &self.storage)
               }
             }
             var v2: UInt8 {
               @inlinable @inline(__always) get {
-                V2.extract(from: self.storage)
+                V2.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V2.insert(newValue, into: &self.storage)
+                V2.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -386,11 +388,13 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V1: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Bool
             static let bitRange = 0 ..< 1
           }
 
           enum V2: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Never
             static let bitRange = 1 ..< 2
           }
 
@@ -406,18 +410,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                V1.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                V1.insertBits(newValue, into: &self.storage)
               }
             }
             var v2: UInt8 {
               @inlinable @inline(__always) get {
-                V2.extract(from: self.storage)
+                V2.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V2.insert(newValue, into: &self.storage)
+                V2.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -437,12 +441,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: Bool {
               @inlinable @inline(__always) get {
-                preconditionMatchingBitWidth(V1.self, Bool.self)
-                return Bool(storage: self.raw.v1)
+                V1.extract(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                preconditionMatchingBitWidth(V1.self, Bool.self)
-                self.raw.v1 = newValue.storage(Self.Value.Raw.Storage.self)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
@@ -460,7 +462,7 @@ final class RegisterMacroTests: XCTestCase {
       """
       @Register(bitWidth: 0x8)
       struct S {
-        @ReadWrite(bits: 0..<1, 3..<4, as: UInt8.self)
+        @ReadWrite(bits: 0..<1, 3..<4, as: UInt16.self)
         var v1: V1
       }
       """,
@@ -481,6 +483,7 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V1: DiscontiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = UInt16
             static let bitRanges = [0 ..< 1, 3 ..< 4]
           }
 
@@ -496,10 +499,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                V1.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                V1.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -517,14 +520,12 @@ final class RegisterMacroTests: XCTestCase {
             init(_ value: Raw) {
               self.storage = value.storage
             }
-            var v1: UInt8 {
+            var v1: UInt16 {
               @inlinable @inline(__always) get {
-                preconditionMatchingBitWidth(V1.self, UInt8.self)
-                return UInt8(storage: self.raw.v1)
+                V1.extract(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                preconditionMatchingBitWidth(V1.self, UInt8.self)
-                self.raw.v1 = newValue.storage(Self.Value.Raw.Storage.self)
+                V1.insert(newValue, into: &self.storage)
               }
             }
           }
@@ -571,11 +572,13 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V1: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Bool
             static let bitRange = 0 ..< 1
           }
 
           enum V2: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Bool
             static let bitRange = 1 ..< 2
           }
 
@@ -594,18 +597,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                V1.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                V1.insertBits(newValue, into: &self.storage)
               }
             }
             var v2: UInt8 {
               @inlinable @inline(__always) get {
-                V2.extract(from: self.storage)
+                V2.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V2.insert(newValue, into: &self.storage)
+                V2.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -618,8 +621,7 @@ final class RegisterMacroTests: XCTestCase {
             }
             var v1: Bool {
               @inlinable @inline(__always) get {
-                preconditionMatchingBitWidth(V1.self, Bool.self)
-                return Bool(storage: self.raw.v1)
+                V1.extract(from: self.storage)
               }
             }
           }
@@ -637,12 +639,10 @@ final class RegisterMacroTests: XCTestCase {
             var v2: Bool {
               @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
               @inlinable @inline(__always) get {
-                preconditionMatchingBitWidth(V2.self, Bool.self)
-                return Bool(storage: self.raw.v2)
+                V2.extract(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                preconditionMatchingBitWidth(V2.self, Bool.self)
-                self.raw.v2 = newValue.storage(Self.Value.Raw.Storage.self)
+                V2.insert(newValue, into: &self.storage)
               }
             }
           }
@@ -681,6 +681,7 @@ final class RegisterMacroTests: XCTestCase {
 
           enum Unbounded: ContiguousBitField {
             typealias Storage = UInt32
+            typealias Projection = Never
             static let bitRange = 0 ..< 32
           }
 
@@ -696,10 +697,10 @@ final class RegisterMacroTests: XCTestCase {
             }
             var unbounded: UInt32 {
               @inlinable @inline(__always) get {
-                Unbounded.extract(from: self.storage)
+                Unbounded.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                Unbounded.insert(newValue, into: &self.storage)
+                Unbounded.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -762,11 +763,13 @@ final class RegisterMacroTests: XCTestCase {
 
           enum PartialThrough: ContiguousBitField {
             typealias Storage = UInt32
+            typealias Projection = Never
             static let bitRange = 0 ..< 17
           }
 
           enum PartialFrom: ContiguousBitField {
             typealias Storage = UInt32
+            typealias Projection = Never
             static let bitRange = 17 ..< 32
           }
 
@@ -782,18 +785,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             var partialThrough: UInt32 {
               @inlinable @inline(__always) get {
-                PartialThrough.extract(from: self.storage)
+                PartialThrough.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                PartialThrough.insert(newValue, into: &self.storage)
+                PartialThrough.insertBits(newValue, into: &self.storage)
               }
             }
             var partialFrom: UInt32 {
               @inlinable @inline(__always) get {
-                PartialFrom.extract(from: self.storage)
+                PartialFrom.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                PartialFrom.insert(newValue, into: &self.storage)
+                PartialFrom.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -856,11 +859,13 @@ final class RegisterMacroTests: XCTestCase {
 
           enum PartialUpTo: ContiguousBitField {
             typealias Storage = UInt32
+            typealias Projection = Never
             static let bitRange = 0 ..< 16
           }
 
           enum Closed: ContiguousBitField {
             typealias Storage = UInt32
+            typealias Projection = Never
             static let bitRange = 16 ..< 32
           }
 
@@ -876,18 +881,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             var partialUpTo: UInt32 {
               @inlinable @inline(__always) get {
-                PartialUpTo.extract(from: self.storage)
+                PartialUpTo.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                PartialUpTo.insert(newValue, into: &self.storage)
+                PartialUpTo.insertBits(newValue, into: &self.storage)
               }
             }
             var closed: UInt32 {
               @inlinable @inline(__always) get {
-                Closed.extract(from: self.storage)
+                Closed.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                Closed.insert(newValue, into: &self.storage)
+                Closed.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -950,11 +955,13 @@ final class RegisterMacroTests: XCTestCase {
 
           public enum V1: ContiguousBitField {
             public typealias Storage = UInt8
+            public typealias Projection = Bool
             public static let bitRange = 0 ..< 1
           }
 
           public enum V2: ContiguousBitField {
             public typealias Storage = UInt8
+            public typealias Projection = Bool
             public static let bitRange = 1 ..< 2
           }
 
@@ -973,18 +980,18 @@ final class RegisterMacroTests: XCTestCase {
             }
             public var v1: UInt8 {
               @inlinable @inline(__always) get {
-                V1.extract(from: self.storage)
+                V1.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V1.insert(newValue, into: &self.storage)
+                V1.insertBits(newValue, into: &self.storage)
               }
             }
             public var v2: UInt8 {
               @inlinable @inline(__always) get {
-                V2.extract(from: self.storage)
+                V2.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V2.insert(newValue, into: &self.storage)
+                V2.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -997,8 +1004,7 @@ final class RegisterMacroTests: XCTestCase {
             }
             public var v1: Bool {
               @inlinable @inline(__always) get {
-                preconditionMatchingBitWidth(V1.self, Bool.self)
-                return Bool(storage: self.raw.v1)
+                V1.extract(from: self.storage)
               }
             }
           }
@@ -1016,12 +1022,10 @@ final class RegisterMacroTests: XCTestCase {
             public var v2: Bool {
               @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
               @inlinable @inline(__always) get {
-                preconditionMatchingBitWidth(V2.self, Bool.self)
-                return Bool(storage: self.raw.v2)
+                V2.extract(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                preconditionMatchingBitWidth(V2.self, Bool.self)
-                self.raw.v2 = newValue.storage(Self.Value.Raw.Storage.self)
+                V2.insert(newValue, into: &self.storage)
               }
             }
           }

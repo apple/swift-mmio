@@ -91,13 +91,18 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
       print("TOOLCHAINS not set.")
       #if os(macOS)
       print("Searching for swift-latest toolchain")
-      toolchainID = try sh(
-        """
-        plutil \
-          -extract CFBundleIdentifier raw \
-          -o - \
-          /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-        """)
+      do {
+        toolchainID = try sh(
+          """
+          plutil \
+            -extract CFBundleIdentifier raw \
+            -o - \
+            /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+          """)
+      } catch {
+        print("Failed to locate toolchain by plist: \(error)")
+        toolchainID = ""
+      }
       #else
       toolchainID = ""
       #endif
