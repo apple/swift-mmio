@@ -247,7 +247,7 @@ extension ErrorDiagnostic {
     .init(
       """
       bit range\(pluralize ? "s" : "") in '\(attribute)' \
-      extend\(pluralize ? "" : "s") past register bounds
+      extend\(pluralize ? "" : "s") outside register bounds
       """)
   }
 
@@ -267,8 +267,8 @@ extension Note {
       node: Syntax(bitRangeExpression),
       message: MacroExpansionNoteMessage(
         """
-        bit range '\(bitRangeExpression)' extends past register bit range \
-        bounds '\(registerBitRange)'
+        bit range '\(bitRangeExpression)' extends outside register bit range \
+        '\(registerBitRange)'
         """
       ))
   }

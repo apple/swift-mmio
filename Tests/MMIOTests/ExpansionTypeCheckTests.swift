@@ -87,9 +87,3 @@ public struct Block {
   @RegisterBlock(offset: 0x8, stride: 0x10, count: 100)
   var asym: RegisterArray<SampleAsym>
 }
-
-@Register(bitWidth: 0x8)
-struct S {
-  @Reserved(bits: 0..<10, 1..<11)
-  var v: V
-}

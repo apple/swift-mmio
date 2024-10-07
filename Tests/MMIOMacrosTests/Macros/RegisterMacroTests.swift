@@ -1039,7 +1039,7 @@ final class RegisterMacroTests: XCTestCase {
       """
       @Register(bitWidth: 0x8)
       struct S {
-        @Reserved(bits: ..<10)
+        @Reserved(bits: 3..<10)
         var v: V
       }
       """,
@@ -1060,7 +1060,7 @@ final class RegisterMacroTests: XCTestCase {
 
           enum V: ContiguousBitField {
             typealias Storage = UInt8
-            static let bitRange = 0 ..< 8
+            static let bitRange = 3 ..< 8
           }
 
           struct Raw: RegisterValueRaw {
@@ -1105,13 +1105,18 @@ final class RegisterMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.bitFieldOutOfRange(
-            fieldName: "v",
-            bitRange: "..<10",
-            bitWidth: 0x8).message,
+          message: ErrorDiagnostic.bitFieldOutOfBounds(
+            attribute: "@Reserved(bits: 3..<10)",
+            pluralize: false).message,
           line: 3,
-          column: 19,
-          highlights: ["..<10"]),
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message: "bit range '3..<10' extends outside register bit range '0..<8'",
+              line: 3,
+              column: 19),
+          ]),
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
