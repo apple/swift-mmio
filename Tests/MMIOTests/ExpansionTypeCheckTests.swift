@@ -13,7 +13,7 @@ import MMIO
 
 // Sample register from an STM32F746
 @Register(bitWidth: 32)
-struct OTG_HPRT {
+public struct OTG_HPRT {
   @ReadWrite(bits: 0..<1)
   var pcsts: PCSTS
   @ReadWrite(bits: 1..<2)
@@ -81,7 +81,7 @@ struct OtherRangeTypes2 {
 }
 
 @RegisterBlock
-struct Block {
+public struct Block {
   @RegisterBlock(offset: 0x4)
   var otgHprt: Register<OTG_HPRT>
   @RegisterBlock(offset: 0x8, stride: 0x10, count: 100)

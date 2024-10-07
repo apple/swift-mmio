@@ -14,16 +14,7 @@ import SwiftSyntaxBuilder
 
 extension SyntaxStringInterpolation {
   mutating func appendInterpolation(
-    _ node: (some SyntaxProtocol)?,
-    trailingTrivia: Trivia = .space
-  ) {
-    guard let node = node else { return }
-    self.appendInterpolation(node)
-    self.appendInterpolation(trailingTrivia)
-  }
-
-  mutating func appendInterpolation(
-    _ nodes: [some SyntaxProtocol],
+    nodes: [some SyntaxProtocol],
     intermediateTrivia: Trivia = .newline
   ) {
     guard let first = nodes.first else { return }

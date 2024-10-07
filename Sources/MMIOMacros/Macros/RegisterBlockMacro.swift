@@ -63,25 +63,26 @@ extension RegisterBlockMacro: MMIOMemberMacro {
 
     // Retrieve the access level of the struct, so we can use the same
     // access level for the unsafeAddress property and initializer.
-    let acl = structDecl.accessLevel?.trimmed
+    var accessLevel = structDecl.accessLevel?.trimmed
+    accessLevel?.trailingTrivia = .spaces(1)
 
     return [
-      "\(acl) let unsafeAddress: UInt",
+      "\(accessLevel)let unsafeAddress: UInt",
       """
       #if FEATURE_INTERPOSABLE
-      var interposer: (any MMIOInterposer)?
+      \(accessLevel)var interposer: (any MMIOInterposer)?
       #endif
       """,
       """
       #if FEATURE_INTERPOSABLE
       @inlinable @inline(__always)
-      \(acl)init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
+      \(accessLevel)init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
         self.unsafeAddress = unsafeAddress
         self.interposer = interposer
       }
       #else
       @inlinable @inline(__always)
-      \(acl)init(unsafeAddress: UInt) {
+      \(accessLevel)init(unsafeAddress: UInt) {
         self.unsafeAddress = unsafeAddress
       }
       #endif
