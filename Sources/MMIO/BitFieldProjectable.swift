@@ -49,13 +49,12 @@ extension Bool: BitFieldProjectable {
   }
 }
 
-/// Default implementation of `BitFieldProjectable` for `RawRepresentable`
+/// Default implementation of `BitFieldProjectable` for `FixedWidthInteger`
 /// types.
 ///
-/// Conforming a `RawRepresentable` type to `BitFieldProjectable` only needs to
-/// implement ``BitFieldProjectable.bitWidth``.
-extension RawRepresentable
-where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
+/// Conforming a `FixedWidthInteger` type to `BitFieldProjectable` does not
+/// require any customization.
+extension BitFieldProjectable where Self: FixedWidthInteger {
   @inlinable @inline(__always)
   public init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger {
@@ -70,8 +69,76 @@ where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
     precondition(
       storageBitWidth >= Self.bitWidth,
       """
-      Value type '\(Self.self)' of bit width '\(storageBitWidth)' cannot be \
-      formed from storage '\(storage)' of bit width '\(Self.bitWidth)'
+      Value type '\(Self.self)' of bit width '\(Self.bitWidth)' cannot be \
+      formed from storage '\(storage)' of bit width '\(storageBitWidth)'
+      """)
+    #endif
+
+    // Convert the storage integer type to `Self`.
+    self = Self(storage)
+  }
+
+  @inlinable @inline(__always)
+  public func storage<Storage>(_: Storage.Type) -> Storage
+  where Storage: FixedWidthInteger & UnsignedInteger {
+    // Ensure the storage type can fully represent all the bits of `Self`.
+    let storageBitWidth = MemoryLayout<Storage>.size * 8
+    #if hasFeature(Embedded)
+    // FIXME: Embedded doesn't have static interpolated strings yet
+    precondition(
+      storageBitWidth >= Self.bitWidth,
+      "Storage type cannot represent value")
+    #else
+    precondition(
+      storageBitWidth >= Self.bitWidth,
+      """
+      Storage type '\(Storage.self)' of bit width '\(storageBitWidth)' cannot \
+      represent value '\(self)' of bit width '\(Self.bitWidth)'
+      """)
+    #endif
+    return Storage(self)
+  }
+}
+
+extension UInt8: BitFieldProjectable { }
+
+extension UInt16: BitFieldProjectable { }
+
+extension UInt32: BitFieldProjectable { }
+
+extension UInt64: BitFieldProjectable { }
+
+extension Int8: BitFieldProjectable { }
+
+extension Int16: BitFieldProjectable { }
+
+extension Int32: BitFieldProjectable { }
+
+extension Int64: BitFieldProjectable { }
+
+/// Default implementation of `BitFieldProjectable` for `RawRepresentable`
+/// types.
+///
+/// Conforming a `RawRepresentable` type to `BitFieldProjectable` only needs to
+/// implement ``BitFieldProjectable.bitWidth``.
+extension BitFieldProjectable
+where Self: RawRepresentable, RawValue: FixedWidthInteger {
+  @inlinable @inline(__always)
+  public init<Storage>(storage: Storage)
+  where Storage: FixedWidthInteger & UnsignedInteger {
+    // Ensure the storage type can fully represent all the bits of `Self`.
+    let storageBitWidth = MemoryLayout<Storage>.size * 8
+    #if hasFeature(Embedded)
+    // FIXME: Embedded doesn't have static interpolated strings yet
+    precondition(
+      storageBitWidth >= Self.bitWidth,
+      "Value cannot be formed from storage type")
+    #else
+    precondition(
+      storageBitWidth >= Self.bitWidth,
+      """
+      Value type '\(Self.self)' of bit width '\(Self.bitWidth)' cannot be \
+      formed from storage '\(storage)' of bit width '\(storageBitWidth)'
       """)
     #endif
 
@@ -112,7 +179,7 @@ where Self: BitFieldProjectable, RawValue: FixedWidthInteger {
     precondition(
       storageBitWidth >= Self.bitWidth,
       """
-      Storage type '\(Self.self)' of bit width '\(storageBitWidth)' cannot \
+      Storage type '\(Storage.self)' of bit width '\(storageBitWidth)' cannot \
       represent value '\(self)' of bit width '\(Self.bitWidth)'
       """)
     #endif
