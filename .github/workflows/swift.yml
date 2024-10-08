@@ -34,7 +34,7 @@ jobs:
             version: "22.04"
         swift:
           - repo: al45tair/swift-dispatch-test
-            version "6.0"
+            version: "6.0"
     container: ${{ matrix.swift.repo }}:${{ matrix.swift.version }}-${{ matrix.os.name }}
     steps:
       - uses: actions/checkout@v4
