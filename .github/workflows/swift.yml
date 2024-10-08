@@ -11,31 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    container: swift:6.0-jammy
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Dependencies
-        run: apt-get -qq update && apt-get -qq -y install make
-      - name: Lint
-        run: make lint
-
   test:
     name: Swift (${{ matrix.swift.version }}) / Ubuntu (${{ matrix.os.version }})
     runs-on: ubuntu-latest
-    needs: lint
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - name: jammy
-            version: "22.04"
-        swift:
-          - repo: al45tair/swift-dispatch-test
-            version: "6.0"
-    container: ${{ matrix.swift.repo }}:${{ matrix.swift.version }}-${{ matrix.os.name }}
+
+    container: "al45tair/swift-dispatch-test:6.0"
     steps:
       - uses: actions/checkout@v4
       - name: Install Dependencies
