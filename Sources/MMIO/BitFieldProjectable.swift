@@ -186,29 +186,3 @@ where Self: RawRepresentable, RawValue: FixedWidthInteger {
     return Storage(rawValue)
   }
 }
-
-@inlinable @inline(__always)
-public func preconditionMatchingBitWidth(
-  _ fieldType: (some BitField).Type,
-  _ projectedType: (some BitFieldProjectable).Type,
-  file: StaticString = #file,
-  line: UInt = #line
-) {
-  #if hasFeature(Embedded)
-  // FIXME: Embedded doesn't have static interpolated strings yet
-  precondition(
-    fieldType.bitWidth == projectedType.bitWidth,
-    "Illegal projection of bit-field as type of differing bit-width",
-    file: file,
-    line: line)
-  #else
-  precondition(
-    fieldType.bitWidth == projectedType.bitWidth,
-    """
-    Illegal projection of \(fieldType.bitWidth) bit bit-field '\(fieldType)' \
-    as \(projectedType.bitWidth) bit type '\(projectedType)'
-    """,
-    file: file,
-    line: line)
-  #endif
-}

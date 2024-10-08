@@ -99,10 +99,53 @@ extension FixedWidthInteger {
 
 public protocol BitField {
   associatedtype Storage: FixedWidthInteger & UnsignedInteger
+  associatedtype Projection: BitFieldProjectable
+
   static var bitWidth: Int { get }
 
-  static func insert(_ value: Storage, into storage: inout Storage)
-  static func extract(from storage: Storage) -> Storage
+  static func insertBits(_ value: Storage, into storage: inout Storage)
+  static func extractBits(from storage: Storage) -> Storage
+
+  static func insert(_ value: Projection, into storage: inout Storage)
+  static func extract(from storage: Storage) -> Projection
+}
+
+extension BitField {
+  @inlinable @inline(__always)
+  static func preconditionMatchingBitWidth(
+    file: StaticString = #file,
+    line: UInt = #line
+  ) {
+    #if hasFeature(Embedded)
+    // FIXME: Embedded doesn't have static interpolated strings yet
+    precondition(
+      Self.bitWidth == Projection.bitWidth,
+      "Illegal projection of bit-field as type of differing bit-width",
+      file: file,
+      line: line)
+    #else
+    precondition(
+      Self.bitWidth == Projection.bitWidth,
+      """
+      Illegal projection of \(Self.bitWidth) bit bit-field '\(Self.self)' \
+      as \(Projection.bitWidth) bit type '\(Projection.self)'
+      """,
+      file: file,
+      line: line)
+    #endif
+  }
+
+  @inlinable @inline(__always)
+  public static func insert(_ value: Projection, into storage: inout Storage) {
+    Self.preconditionMatchingBitWidth()
+    Self.insertBits(value.storage(Storage.self), into: &storage)
+  }
+
+  @inlinable @inline(__always)
+  public static func extract(from storage: Self.Storage) -> Projection {
+    Self.preconditionMatchingBitWidth()
+    return Projection(storage: Self.extractBits(from: storage))
+  }
 }
 
 public protocol ContiguousBitField: BitField {
@@ -125,12 +168,12 @@ extension ContiguousBitField {
 
   // FIXME: value.bitWidth <= Self.bitWidth <= Storage.bitWidth
   @inlinable @inline(__always)
-  public static func insert(_ value: Storage, into storage: inout Storage) {
+  public static func insertBits(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRange] = value
   }
 
   @inlinable @inline(__always)
-  public static func extract(from storage: Storage) -> Storage {
+  public static func extractBits(from storage: Storage) -> Storage {
     storage[bits: Self.bitRange]
   }
 }
@@ -152,12 +195,12 @@ extension DiscontiguousBitField {
   }
 
   @inlinable @inline(__always)
-  public static func insert(_ value: Storage, into storage: inout Storage) {
+  public static func insertBits(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRanges] = value
   }
 
   @inlinable @inline(__always)
-  public static func extract(from storage: Storage) -> Storage {
+  public static func extractBits(from storage: Storage) -> Storage {
     storage[bits: Self.bitRanges]
   }
 }

@@ -59,6 +59,7 @@ extension BitFieldDescription {
         """
         \(self.accessLevel)enum \(self.fieldType): ContiguousBitField {
           \(self.accessLevel)typealias Storage = \(self.storageType())
+          \(self.accessLevel)typealias Projection = \(self.projectedType ?? "Never")
           \(self.accessLevel)static let bitRange = \(bitRangeExpression)
         }
         """
@@ -71,6 +72,7 @@ extension BitFieldDescription {
         """
         \(self.accessLevel)enum \(self.fieldType): DiscontiguousBitField {
           \(self.accessLevel)typealias Storage = \(self.storageType())
+          \(self.accessLevel)typealias Projection = \(self.projectedType ?? "Never")
           \(self.accessLevel)static let bitRanges = \(ArrayExprSyntax(expressions: bitRangeExpressions))
         }
         """
@@ -84,10 +86,10 @@ extension BitFieldDescription {
     """
     \(self.accessLevel)var \(self.fieldName): \(self.storageType()) {
       @inlinable @inline(__always) get {
-        \(self.fieldType).extract(from: self.storage)
+        \(self.fieldType).extractBits(from: self.storage)
       }
       @inlinable @inline(__always) set {
-        \(self.fieldType).insert(newValue, into: &self.storage)
+        \(self.fieldType).insertBits(newValue, into: &self.storage)
       }
     }
     """
@@ -105,12 +107,10 @@ extension BitFieldDescription {
     return """
       \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @inlinable @inline(__always) get {
-          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
-          return \(projectedType)(storage: self.raw.\(self.fieldName))
+          \(self.fieldType).extract(from: self.storage)
         }
         @inlinable @inline(__always) set {
-          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
-          self.raw.\(self.fieldName) = newValue.storage(Self.Value.Raw.Storage.self)
+          \(self.fieldType).insert(newValue, into: &self.storage)
         }
       }
       """
@@ -127,8 +127,7 @@ extension BitFieldDescription {
     return """
       \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @inlinable @inline(__always) get {
-          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
-          return \(projectedType)(storage: self.raw.\(self.fieldName))
+          \(self.fieldType).extract(from: self.storage)
         }
       }
       """
@@ -149,12 +148,10 @@ extension BitFieldDescription {
       \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
         @inlinable @inline(__always) get {
-          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
-          return \(projectedType)(storage: self.raw.\(self.fieldName))
+          \(self.fieldType).extract(from: self.storage)
         }
         @inlinable @inline(__always) set {
-          preconditionMatchingBitWidth(\(self.fieldType).self, \(projectedType).self)
-          self.raw.\(self.fieldName) = newValue.storage(Self.Value.Raw.Storage.self)
+          \(self.fieldType).insert(newValue, into: &self.storage)
         }
       }
       """
