@@ -17,4 +17,10 @@ extension FixedWidthInteger {
     // result would have overflowed anyway.
     return (self + (powerOfTwo &- 1)) & (0 &- powerOfTwo)
   }
+
+  public func roundedUpToPowerOfTwo() -> Self {
+    if self == 0 { return 0 }
+    let shifts = self.bitWidth &- self.leadingZeroBitCount
+    return self.nonzeroBitCount == 1 ? self : 1 &<< shifts
+  }
 }
