@@ -44,6 +44,12 @@ extension ErrorDiagnostic {
   }
 }
 
+extension ErrorDiagnostic {
+  static func cannotHaveOverlappedBitRanges(_ bitRanges: [BitRange]) -> Self {
+    .init("'\(Macro.signature)' the specified bit ranges are overlapped with each other: \(bitRanges)")
+  }
+}
+
 extension FixIt {
   static func replaceExpressionWithTypeReference(
     node: ExprSyntax

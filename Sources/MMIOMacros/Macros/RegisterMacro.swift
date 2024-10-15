@@ -147,6 +147,14 @@ extension RegisterMacro: MMIOExtensionMacro {
     // Only create extension when applied to struct decls.
     guard declaration.is(StructDeclSyntax.self) else { return [] }
 
+    // Check if there are bit ranges overlapping with each other
+    let bitRanges = try declaration.allBitRanges(with: context)
+    guard !bitRanges.isOverlapped else {
+      throw context.error(
+        at: node,
+        message: .cannotHaveOverlappedBitRanges(bitRanges))
+    }
+    
     let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterValue {}"
 
     return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]

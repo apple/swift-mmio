@@ -1037,5 +1037,242 @@ final class RegisterMacroTests: XCTestCase {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+
+  func test_bitRange_overlap() {
+    XCTAssertTrue(![BitRange]().isOverlapped)
+    let bitRange1 = BitRange("[1, 1]")
+    let bitRange2 = BitRange("[1, 1]")
+    XCTAssertTrue([bitRange1, bitRange2].isOverlapped)
+    let bitRange3 = BitRange("(-∞, 1]")
+    let bitRange4 = BitRange("(-∞, 1]")
+    XCTAssertTrue([bitRange3, bitRange4].isOverlapped)
+    let bitRange5 = BitRange("(1, +∞)")
+    let bitRange6 = BitRange("(1, +∞)")
+    XCTAssertTrue([bitRange5, bitRange6].isOverlapped)
+    let bitRange7 = BitRange("(1, 2]")
+    let bitRange8 = BitRange("[2, +∞)")
+    XCTAssertTrue([bitRange7, bitRange8].isOverlapped)
+    XCTAssertTrue([bitRange8, bitRange7].isOverlapped)
+    let bitRange9 = BitRange("[1, 2)")
+    let bitRange10 = BitRange("(1, +∞)")
+    XCTAssertTrue(![bitRange9, bitRange10].isOverlapped)
+    XCTAssertTrue(![bitRange10, bitRange9].isOverlapped)
+  }
+
+  func test_overlapped_bitRanges_detection_multipleFields() {
+    let bitRanges: [BitRange] = [
+      .init("[0, 2)")!,
+      .init("[1, 2)")!,
+    ]
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      public struct S {
+        @ReadOnly(bits: 0..<2, as: Bool.self)
+        var v1: V1
+        @WriteOnly(bits: 1..<2, as: Bool.self)
+        var v2: V2
+      }
+      """,
+      expandedSource: """
+        public struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var v2: V2 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          public enum V1: ContiguousBitField {
+            public typealias Storage = UInt8
+            public typealias Projection = Bool
+            public static let bitRange = 0 ..< 2
+          }
+
+          public enum V2: ContiguousBitField {
+            public typealias Storage = UInt8
+            public typealias Projection = Bool
+            public static let bitRange = 1 ..< 2
+          }
+
+          public struct Raw: RegisterValueRaw {
+            public typealias Value = S
+            public typealias Storage = UInt8
+            public var storage: Storage
+            public init(_ storage: Storage) {
+              self.storage = storage
+            }
+            public init(_ value: Value.Read) {
+              self.storage = value.storage
+            }
+            public init(_ value: Value.Write) {
+              self.storage = value.storage
+            }
+            public var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insertBits(newValue, into: &self.storage)
+              }
+            }
+            public var v2: UInt8 {
+              @inlinable @inline(__always) get {
+                V2.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V2.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          public struct Read: RegisterValueRead {
+            public typealias Value = S
+            var storage: UInt8
+            public init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            public var v1: Bool {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+            }
+          }
+
+          public struct Write: RegisterValueWrite {
+            public typealias Value = S
+            var storage: UInt8
+            public init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            public init(_ value: Read) {
+              // FIXME: mask off bits
+              self.storage = value.storage
+            }
+            public var v2: Bool {
+              @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
+              @inlinable @inline(__always) get {
+                V2.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V2.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+        }
+
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.cannotHaveOverlappedBitRanges(bitRanges).message,
+          line: 1,
+          column: 1,
+          highlights: ["@Register(bitWidth: 0x8)"]),
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  func test_overlapped_bitRanges_detection_multipleBitRangesInOneFields() {
+    let bitRanges: [BitRange] = [
+      .init("[0, 4)")!,
+      .init("[3, 4)")!,
+    ]
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @ReadWrite(bits: 0..<4, 3..<4, as: UInt16.self)
+        var v1: V1
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V1: DiscontiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = UInt16
+            static let bitRanges = [0 ..< 4, 3 ..< 4]
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            var v1: UInt16 {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+        }
+
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.cannotHaveOverlappedBitRanges(bitRanges).message,
+          line: 1,
+          column: 1,
+          highlights: ["@Register(bitWidth: 0x8)"]),
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
 #endif
