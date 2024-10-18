@@ -202,3 +202,17 @@ extension ErrorDiagnostic {
     .init("'\(Macro.signature)' requires expression to be a range literal")
   }
 }
+
+extension Array where Element == BitRange {
+    var isOverlapped: Bool {
+        guard count > 1 else { return false }
+        let sorted = map { $0.canonicalizedClosedRange }
+            .sorted(by: { $0.lowerBound < $1.lowerBound })
+        for i in 0..<(sorted.count - 1) {
+            if sorted[i].upperBound >= sorted[i+1].lowerBound {
+                return true
+            }
+        }
+        return false
+    }
+}
