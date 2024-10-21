@@ -107,4 +107,4 @@ public func sh(
   return outputData.withLock { $0 }.asUTF8String()
 }
 
-#endif // !os(WASI)
+#endif
