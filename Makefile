@@ -1,51 +1,5 @@
-#===-------------------------------------------------------------*- make -*-===#
-#
-# This source file is part of the Swift MMIO open source project
-#
-# Copyright (c) 2023 Apple Inc. and the Swift project authors
-# Licensed under Apache License v2.0 with Runtime Library Exception
-#
-# See https://swift.org/LICENSE.txt for license information
-#
-#===------------------------------------------------------------------------===#
+Sources/MMIOMacros.wasm:
+	SWIFT_BUILD_MACRO_WASM=1 TOOLCHAINS=org.swift.61202409251a swift build --swift-sdk DEVELOPMENT-SNAPSHOT-2024-09-26-a-wasm32-unknown-wasi --product MMIOMacros -c release -Xswiftc -Osize
+	cp -a .build/wasm32-unknown-wasi/release/MMIOMacros.wasm Sources/MMIOMacros.wasm
+	command -v wasm-opt && wasm-opt -Os Sources/MMIOMacros.wasm -o Sources/MMIOMacros.wasm || :
 
-CONFIGURATION = debug
-SWIFT_FORMAT_CONFIGURATION := SupportingFiles/Tools/swift-format/.swift-format
-SKIP_LINT =
-
-.PHONY: all lint format build test clean
-all: test
-
-lint:
-	@echo "linting..."
-	@swift-format lint \
-		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
-		--recursive \
-		--strict \
-		Package.swift Plugins Sources Tests
-
-format:
-	@echo "formatting..."
-	@swift-format format \
-		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
-		--recursive \
-		--in-place \
-		Package.swift Plugins Sources Tests
-
-build:
-	@echo "building..."
-	@swift build \
-		--configuration $(CONFIGURATION) \
-		--explicit-target-dependency-import-check error
-
-test: build
-	@echo "testing..."
-	@swift test \
-		--configuration $(CONFIGURATION) \
-		--parallel \
-		--explicit-target-dependency-import-check error
-
-clean:
-	@echo "cleaning..."
-	@swift package clean
-	@rm -rf .build
