@@ -199,7 +199,13 @@ if Context.environment["SWIFT_BUILD_MACRO_WASM"] != nil {
   // Ad-hoc build hack for building macro targets as WebAssembly executables
   for (index, target) in package.targets.enumerated() {
     guard case .macro = target.type else { continue }
-    package.targets[index] = .executableTarget(name: target.name, dependencies: target.dependencies)
+    package.targets[index] = .executableTarget(
+      name: target.name,
+      dependencies: target.dependencies,
+      linkerSettings: [.unsafeFlags([
+        "-Xlinker", "-z", "-Xlinker", "stack-size=\(4 * 1024 * 1024)",
+      ])]
+    )
   }
 } else if let swiftPluginServerPath = Context.environment["SWIFT_PLUGIN_SERVER_PATH"] {
   // Ad-hoc build hack for loading WebAssembly executables placed in `Sources/<target>.wasm`
