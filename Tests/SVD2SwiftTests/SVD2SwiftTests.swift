@@ -15,10 +15,20 @@ import XCTest
 @testable import SVD
 @testable import SVD2Swift
 
+extension ExportOptions {
+  static let testDefault = Self(
+    indentation: .space(2),
+    accessLevel: nil,
+    selectedPeripherals: [],
+    namespaceUnderDevice: false,
+    instanceMemberPeripherals: false,
+    overrideDeviceName: nil)
+}
+
 // swift-format-ignore: AlwaysUseLowerCamelCase
 func XCTAssertSVD2SwiftOutput(
   svdDevice: SVDDevice,
-  options: ExportOptions,
+  options: ExportOptions = .testDefault,
   expected: [String: String],
   file: StaticString = #filePath,
   line: UInt = #line

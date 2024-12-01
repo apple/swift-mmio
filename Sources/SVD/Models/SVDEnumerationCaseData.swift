@@ -23,6 +23,14 @@ public enum SVDEnumerationCaseData {
 extension SVDEnumerationCaseData: Sendable {}
 
 extension SVDEnumerationCaseData: XMLElementInitializable {
+  static func value(_ value: UInt64, mask: UInt64) -> Self {
+    .value(.init(value: .init(value: value, mask: mask)))
+  }
+
+  static func isDefault() -> Self {
+    .isDefault(.init(isDefault: true))
+  }
+
   init(_ element: XMLElement) throws {
     if let value = try? SVDEnumerationCaseDataValue(element) {
       self = .value(value)
