@@ -18,7 +18,9 @@ import XCTest
 @testable import MMIOMacros
 
 final class RegisterBlockOffsetMacroTests: XCTestCase {
-  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBlockScalarMemberMacro>
+  typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<
+    RegisterBlockScalarMemberMacro
+  >
 
   static let macros: [String: Macro.Type] = [
     "RegisterBlock": RegisterBlockScalarMemberMacro.self

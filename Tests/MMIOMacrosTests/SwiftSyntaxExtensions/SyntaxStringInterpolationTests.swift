@@ -19,7 +19,8 @@ final class SyntaxStringInterpolationTests: XCTestCase {
   func test_appendInterpolationNodesIntermediateTrivia_none() {
     let expected: DeclSyntax = "struct S {}"
     let decls: [DeclSyntax] = []
-    let actual: DeclSyntax = "struct S {\(nodes: decls, intermediateTrivia: .newlines(2))}"
+    let actual: DeclSyntax =
+      "struct S {\(nodes: decls, intermediateTrivia: .newlines(2))}"
     XCTAssertEqual(expected.description, actual.description)
   }
 

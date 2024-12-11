@@ -42,11 +42,17 @@ extension SVDWriteConstraint: Sendable {}
 
 extension SVDWriteConstraint: XMLElementInitializable {
   init(_ element: XMLElement) throws {
-    if let value = try? element.decode(SVDWriteConstraintWriteAsRead.self, fromChild: "writeAsRead") {
+    if let value = try? element.decode(
+      SVDWriteConstraintWriteAsRead.self, fromChild: "writeAsRead")
+    {
       self = .writeAsRead(value)
-    } else if let value = try? element.decode(Bool.self, fromChild: "useEnumeratedValues") {
+    } else if let value = try? element.decode(
+      Bool.self, fromChild: "useEnumeratedValues")
+    {
       self = .useEnumeratedValues(value)
-    } else if let value = try? element.decode(SVDWriteConstraintRange.self, fromChild: "range") {
+    } else if let value = try? element.decode(
+      SVDWriteConstraintRange.self, fromChild: "range")
+    {
       self = .range(value)
     } else {
       throw XMLError.unknownElement(element)

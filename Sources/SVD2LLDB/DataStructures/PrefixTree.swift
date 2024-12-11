@@ -33,7 +33,8 @@ extension PrefixTree {
   }
 
   private func insert(element: Element) -> PrefixTree {
-    guard let tree = self.children.first(where: { $0.element == element }) else {
+    guard let tree = self.children.first(where: { $0.element == element })
+    else {
       let tree = Self(element: element)
       self.children.append(tree)
       return tree

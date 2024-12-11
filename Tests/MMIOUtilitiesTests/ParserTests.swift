@@ -105,23 +105,33 @@ final class ParserTests: XCTestCase {
 
     XCTAssertParse(Parser.swiftInteger(Int.self), "0b1_0__1___0", 10)
     XCTAssertParse(Parser.swiftInteger(Int.self), "0o1_0_23456___7", 2_177_399)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "01_0_2345678___9", 1_023_456_789)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "01_0_2345678___9", 1_023_456_789)
     #if arch(x86_64) || arch(arm64)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "0x1_0_23456789abcde___f", 1_162_849_439_785_405_935)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "0x1_0_23456789abcde___f",
+      1_162_849_439_785_405_935)
     #endif
 
     XCTAssertParse(Parser.swiftInteger(Int.self), "-0b1_0__1___0", -10)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "-0o1_0_23456___7", -2_177_399)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "-01_0_2345678___9", -1_023_456_789)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "-0o1_0_23456___7", -2_177_399)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "-01_0_2345678___9", -1_023_456_789)
     #if arch(x86_64) || arch(arm64)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "-0x1_0_23456789abcde___f", -1_162_849_439_785_405_935)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "-0x1_0_23456789abcde___f",
+      -1_162_849_439_785_405_935)
     #endif
 
     XCTAssertParse(Parser.swiftInteger(Int.self), "+0b1_0__1___0", 10)
     XCTAssertParse(Parser.swiftInteger(Int.self), "+0o1_0_23456___7", 2_177_399)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "+01_0_2345678___9", 1_023_456_789)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "+01_0_2345678___9", 1_023_456_789)
     #if arch(x86_64) || arch(arm64)
-    XCTAssertParse(Parser.swiftInteger(Int.self), "+0x1_0_23456789abcde___f", 1_162_849_439_785_405_935)
+    XCTAssertParse(
+      Parser.swiftInteger(Int.self), "+0x1_0_23456789abcde___f",
+      1_162_849_439_785_405_935)
     #endif
 
     XCTAssertNoParse(Parser.swiftInteger(Int.self), "0b_0")

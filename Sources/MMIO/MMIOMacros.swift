@@ -44,31 +44,46 @@ public macro Reserved(bits: UnboundedRange) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
 
 @attached(accessor)
-public macro ReadWrite<Range, Value>(bits: Range..., as: Value.Type = Never.self) =
+public macro ReadWrite<Range, Value>(
+  bits: Range..., as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "ReadWriteMacro")
-where Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where
+  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
 
 @attached(accessor)
-public macro ReadWrite<Value>(bits: UnboundedRange, as: Value.Type = Never.self) =
+public macro ReadWrite<Value>(
+  bits: UnboundedRange, as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "ReadWriteMacro")
 where Value: BitFieldProjectable
 
 @attached(accessor)
-public macro ReadOnly<Range, Value>(bits: Range..., as: Value.Type = Never.self) =
+public macro ReadOnly<Range, Value>(
+  bits: Range..., as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
-where Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where
+  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
 
 @attached(accessor)
-public macro ReadOnly<Value>(bits: UnboundedRange, as: Value.Type = Never.self) =
+public macro ReadOnly<Value>(
+  bits: UnboundedRange, as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
 where Value: BitFieldProjectable
 
 @attached(accessor)
-public macro WriteOnly<Range, Value>(bits: Range..., as: Value.Type = Never.self) =
+public macro WriteOnly<Range, Value>(
+  bits: Range..., as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
-where Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where
+  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
 
 @attached(accessor)
-public macro WriteOnly<Value>(bits: UnboundedRange, as: Value.Type = Never.self) =
+public macro WriteOnly<Value>(
+  bits: UnboundedRange, as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
 where Value: BitFieldProjectable
