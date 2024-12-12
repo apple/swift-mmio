@@ -16,18 +16,18 @@ import MMIOUtilities
 ///
 /// SimpleFileCheck is not intended for general use.
 struct SimpleFileCheck {
-  var inputFileURL: URL
-  var outputFileURL: URL
+  var inputFile: URL
+  var outputFile: URL
 }
 
 extension SimpleFileCheck {
   func run() -> [LLVMDiagnostic] {
     // Load the input file and split it into lines. If we can't load the file,
     // return and report diagnostics.
-    let inputPath = self.inputFileURL.path
+    let inputPath = self.inputFile.path
     let input: String
     do {
-      input = try String(contentsOf: self.inputFileURL, encoding: .utf8)
+      input = try String(contentsOf: self.inputFile, encoding: .utf8)
     } catch {
       return [.failedToLoadFile(at: inputPath, error: error)]
     }
@@ -37,10 +37,10 @@ extension SimpleFileCheck {
 
     // Load the output file and split it into lines. If we can't load the file,
     // return and report diagnostics.
-    let outputPath = self.outputFileURL.path
+    let outputPath = self.outputFile.path
     let output: String
     do {
-      output = try String(contentsOf: self.outputFileURL, encoding: .utf8)
+      output = try String(contentsOf: self.outputFile, encoding: .utf8)
     } catch {
       return [.failedToLoadFile(at: outputPath, error: error)]
     }
