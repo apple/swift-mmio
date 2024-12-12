@@ -342,7 +342,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws {
+  func test_outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws
+  {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(

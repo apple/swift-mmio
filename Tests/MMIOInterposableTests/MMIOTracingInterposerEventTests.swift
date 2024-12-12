@@ -33,13 +33,16 @@ final class MMIOTracingInterposerEventTests: XCTestCase {
       MMIOTracingInterposerEvent(load: false, address: 0x10, size: 8, value: 1))
     XCTAssertEqual(
       MMIOTracingInterposerEvent.store(of: UInt16(2), to: 0x10),
-      MMIOTracingInterposerEvent(load: false, address: 0x10, size: 16, value: 2))
+      MMIOTracingInterposerEvent(load: false, address: 0x10, size: 16, value: 2)
+    )
     XCTAssertEqual(
       MMIOTracingInterposerEvent.store(of: UInt32(3), to: 0x10),
-      MMIOTracingInterposerEvent(load: false, address: 0x10, size: 32, value: 3))
+      MMIOTracingInterposerEvent(load: false, address: 0x10, size: 32, value: 3)
+    )
     XCTAssertEqual(
       MMIOTracingInterposerEvent.store(of: UInt64(4), to: 0x10),
-      MMIOTracingInterposerEvent(load: false, address: 0x10, size: 64, value: 4))
+      MMIOTracingInterposerEvent(load: false, address: 0x10, size: 64, value: 4)
+    )
   }
 
   func test_description() {

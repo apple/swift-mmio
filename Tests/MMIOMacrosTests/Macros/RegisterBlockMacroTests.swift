@@ -95,33 +95,42 @@ final class RegisterBlockMacroTests: XCTestCase {
       diagnostics: [
         .init(
           message:
-            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBlockMemberMacros).message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(
+              registerBlockMemberMacros
+            ).message,
           line: 3,
           column: 3,
           highlights: ["var v1: Int"],
           fixIts: [
             .init(message: "Insert '@RegisterBlock(offset:)' macro"),
-            .init(message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
+            .init(
+              message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
-            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBlockMemberMacros).message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(
+              registerBlockMemberMacros
+            ).message,
           line: 4,
           column: 3,
           highlights: ["@OtherAttribute var v2: Int"],
           fixIts: [
             .init(message: "Insert '@RegisterBlock(offset:)' macro"),
-            .init(message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
+            .init(
+              message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
-            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(registerBlockMemberMacros).message,
+            ErrorDiagnostic.expectedMemberAnnotatedWithMacro(
+              registerBlockMemberMacros
+            ).message,
           line: 5,
           column: 3,
           highlights: ["var v3: Int { willSet {} }"],
           fixIts: [
             .init(message: "Insert '@RegisterBlock(offset:)' macro"),
-            .init(message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
+            .init(
+              message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
           ]),
       ],
       macros: Self.macros,

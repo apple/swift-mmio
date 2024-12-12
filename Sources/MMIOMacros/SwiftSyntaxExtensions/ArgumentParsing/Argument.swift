@@ -58,17 +58,20 @@ struct Argument<Container: ArgumentContainer>: ArgumentProtocol {
 }
 
 extension Argument {
-  init<T>(label: String) where T: ExpressibleByExprSyntax, Container == ExactlyOne<T> {
+  init<T>(label: String)
+  where T: ExpressibleByExprSyntax, Container == ExactlyOne<T> {
     self.label = label
     self.container = nil
   }
 
-  init<T>(label: String) where T: ExpressibleByExprSyntax, Container == ZeroOrOne<T> {
+  init<T>(label: String)
+  where T: ExpressibleByExprSyntax, Container == ZeroOrOne<T> {
     self.label = label
     self.container = .init(parsed: nil)
   }
 
-  init<T>(label: String) where T: ExpressibleByExprSyntax, Container == OneOrMore<T> {
+  init<T>(label: String)
+  where T: ExpressibleByExprSyntax, Container == OneOrMore<T> {
     self.label = label
     self.container = nil
   }

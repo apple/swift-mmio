@@ -13,7 +13,8 @@
 macro XMLAttribute() =
   #externalMacro(module: "SVDMacros", type: "XMLMarkerMacro")
 
-@attached(extension, names: named(init(_:)), conformances: XMLElementInitializable)
+@attached(
+  extension, names: named(init(_:)), conformances: XMLElementInitializable)
 macro XMLElement() =
   #externalMacro(module: "SVDMacros", type: "XMLElementMacro")
 

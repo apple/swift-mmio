@@ -96,7 +96,8 @@ public func zip<Input, A, B>(
 }
 
 extension Parser {
-  public func map<T>(_ f: @escaping @Sendable (Output) -> T) -> Parser<Input, T> {
+  public func map<T>(_ f: @escaping @Sendable (Output) -> T) -> Parser<Input, T>
+  {
     .init { input in self.run(&input).map(f) }
   }
 }
@@ -130,12 +131,16 @@ extension Parser {
     zip(self, p).map { ab, c in (ab.0, ab.1, c) }
   }
 
-  public func take<A, B, C, D>(_ p: Parser<Input, D>) -> Parser<Input, (A, B, C, D)>
+  public func take<A, B, C, D>(_ p: Parser<Input, D>) -> Parser<
+    Input, (A, B, C, D)
+  >
   where Output == (A, B, C) {
     zip(self, p).map { abc, d in (abc.0, abc.1, abc.2, d) }
   }
 
-  public func take<A, B, C, D, E>(_ p: Parser<Input, E>) -> Parser<Input, (A, B, C, D, E)>
+  public func take<A, B, C, D, E>(_ p: Parser<Input, E>) -> Parser<
+    Input, (A, B, C, D, E)
+  >
   where Output == (A, B, C, D) {
     zip(self, p).map { abcd, e in (abcd.0, abcd.1, abcd.2, abcd.3, e) }
   }

@@ -69,7 +69,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "_").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "_")
+            .message,
           line: 1,
           column: 4,
           highlights: ["0"])
@@ -116,7 +117,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
+          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo")
+            .message,
           line: 1,
           column: 1,
           highlights: ["@A"])
@@ -132,7 +134,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
+          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo")
+            .message,
           line: 1,
           column: 1,
           highlights: ["@A()"])
@@ -148,7 +151,9 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedArgumentLabel(expected: "foo", actual: "bar").message,
+          message: ErrorDiagnostic<A>.unexpectedArgumentLabel(
+            expected: "foo", actual: "bar"
+          ).message,
           line: 1,
           column: 4,
           highlights: ["bar: 1"])
@@ -164,7 +169,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz")
+            .message,
           line: 1,
           column: 12,
           highlights: ["baz: 1"])
@@ -229,7 +235,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "bar").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "bar")
+            .message,
           line: 1,
           column: 4,
           highlights: ["bar: 1"])
@@ -245,7 +252,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz")
+            .message,
           line: 1,
           column: 12,
           highlights: ["baz: 1"])
@@ -333,7 +341,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz")
+            .message,
           line: 1,
           column: 12,
           highlights: ["baz: 1"])
@@ -390,7 +399,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
+          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo")
+            .message,
           line: 1,
           column: 1,
           highlights: ["@A"])
@@ -407,7 +417,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo").message,
+          message: ErrorDiagnostic<A>.unexpectedMissingArgument(label: "foo")
+            .message,
           line: 1,
           column: 1,
           highlights: ["@A()"])
@@ -424,7 +435,9 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedArgumentLabel(expected: "foo", actual: "bar").message,
+          message: ErrorDiagnostic<A>.unexpectedArgumentLabel(
+            expected: "foo", actual: "bar"
+          ).message,
           line: 1,
           column: 4,
           highlights: ["bar: 1"])
@@ -440,7 +453,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz")
+            .message,
           line: 1,
           column: 12,
           highlights: ["baz: 1"])
@@ -501,7 +515,9 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedArgumentLabel(expected: "foo", actual: "bar").message,
+          message: ErrorDiagnostic<A>.unexpectedArgumentLabel(
+            expected: "foo", actual: "bar"
+          ).message,
           line: 1,
           column: 4,
           highlights: ["bar: 2"])
@@ -517,7 +533,8 @@ final class ParsableMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz").message,
+          message: ErrorDiagnostic<A>.unexpectedExtraArgument(label: "baz")
+            .message,
           line: 1,
           column: 12,
           highlights: ["baz: 1"])
@@ -560,7 +577,8 @@ final class ParsableMacroTests: XCTestCase {
 
     XCTAssertEqual("\(A.attributeWithPlaceholders)", "@A")
     XCTAssertEqual("\(B.attributeWithPlaceholders)", "@B(foo: <#Int#>)")
-    XCTAssertEqual("\(C.attributeWithPlaceholders)", "@C(foo: <#Int#>, bar: <#Int#>)")
+    XCTAssertEqual(
+      "\(C.attributeWithPlaceholders)", "@C(foo: <#Int#>, bar: <#Int#>)")
     XCTAssertEqual("\(D.attributeWithPlaceholders)", "@D(foo: <#Int#>)")
     XCTAssertEqual("\(E.attributeWithPlaceholders)", "@E(foo: <#Int#>)")
     XCTAssertEqual("\(F.attributeWithPlaceholders)", "@F(foo: <#Int#>)")

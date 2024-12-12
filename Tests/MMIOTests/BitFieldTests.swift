@@ -87,8 +87,10 @@ final class BitFieldTests: XCTestCase {
     XCTAssertFalse(UInt8.bitRangeWithinBounds(bits: -2..<12))  // both side
 
     XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -1..<2))  // partial lower
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -2..<(-1)))  // fully lower
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: 30..<36))  // partial upper
+    // fully lower
+    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -2..<(-1)))
+    // partial upper
+    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: 30..<36))
     XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: 33..<36))  // fully upper
     XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -2..<36))  // both side
   }
@@ -96,7 +98,8 @@ final class BitFieldTests: XCTestCase {
   func test_bitRangeCoalesced() {
     // Coalesced
     XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [0..<1, 2..<5, 7..<8]))
-    XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [2..<3, 0..<1]))  // Not sorted
+    // Not sorted
+    XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [2..<3, 0..<1]))
     // FIXME: this should only be valid if in reverse order 1..<2, 0..<1
     XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [0..<1, 1..<2]))  // Touching
     // v Good. ^ Bad.

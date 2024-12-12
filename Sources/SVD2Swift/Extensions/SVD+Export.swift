@@ -111,7 +111,9 @@ extension SVDDevice {
         parentTypes.append(deviceName)
       }
 
-      var exportQueue = [([any SVDExportable], [String], SVDRegisterProperties)]()
+      var exportQueue = [
+        ([any SVDExportable], [String], SVDRegisterProperties)
+      ]()
       exportQueue.append(([peripheral], parentTypes, self.registerProperties))
 
       // Track indices instead of popping front to avoid O(N) pop.
@@ -121,7 +123,8 @@ extension SVDDevice {
         if currentIndex != exportQueue.startIndex {
           context.outputWriter.append("\n")
         }
-        let (elements, parentTypes, registerProperties) = exportQueue[currentIndex]
+        let (elements, parentTypes, registerProperties) = exportQueue[
+          currentIndex]
         if !parentTypes.isEmpty {
           let parentTypeFullName = parentTypes.joined(separator: ".")
           context.outputWriter.append("extension \(parentTypeFullName) {\n")
@@ -179,7 +182,8 @@ extension SVDPeripheral: SVDExportable {
     var exports = [any SVDExportable]()
     if let derivedFrom = self.derivedFrom {
       // FIXME: Handle only exporting B where B deriveFrom A
-      context.outputWriter.append("\(context.accessLevel)typealias \(typeName) = \(derivedFrom)\n")
+      context.outputWriter.append(
+        "\(context.accessLevel)typealias \(typeName) = \(derivedFrom)\n")
     } else {
       context.outputWriter.append(
         """
@@ -297,7 +301,8 @@ extension SVDCluster: SVDExportable {
     var exports = [any SVDExportable]()
 
     if let derivedFrom = self.derivedFrom {
-      context.outputWriter.append("\(context.accessLevel)typealias \(self.swiftName) = \(derivedFrom)\n")
+      context.outputWriter.append(
+        "\(context.accessLevel)typealias \(self.swiftName) = \(derivedFrom)\n")
     } else {
 
       context.outputWriter.append(
@@ -401,7 +406,8 @@ extension SVDRegister: SVDExportable {
       context.outputWriter.append("}\n")
     } else {
       // FIXME: warning diagnostic
-      print("warning: skipped exporting \(self.swiftName): unknown register size")
+      print(
+        "warning: skipped exporting \(self.swiftName): unknown register size")
     }
     return ([], registerProperties)
   }

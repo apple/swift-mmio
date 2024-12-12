@@ -260,7 +260,8 @@ extension String.StringInterpolation {
   }
 
   mutating func appendInterpolation(identifier: String) {
-    let name = identifier.replacingOccurrences(of: "-", with: "_").quotingReservedWords
+    let name = identifier.replacingOccurrences(of: "-", with: "_")
+      .quotingReservedWords
     self.appendLiteral(name)
   }
 }

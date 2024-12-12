@@ -167,12 +167,18 @@ extension SVDRegister: SVDItem {
     if let protection = registerProperties.protection {
       info.append(("Protection", "\(protection)"))
     }
-    if let dataType = self.dataType { info.append(("Data Type", "\(dataType)")) }
+    if let dataType = self.dataType {
+      info.append(("Data Type", "\(dataType)"))
+    }
     if let modifiedWriteValues = self.modifiedWriteValues {
       info.append(("Modified Write Values", "\(modifiedWriteValues)"))
     }
-    if let writeConstraint = self.writeConstraint { info.append(("Write Constraint", "\(writeConstraint)")) }
-    if let readAction = self.readAction { info.append(("Read Action", "\(readAction)")) }
+    if let writeConstraint = self.writeConstraint {
+      info.append(("Write Constraint", "\(writeConstraint)"))
+    }
+    if let readAction = self.readAction {
+      info.append(("Read Action", "\(readAction)"))
+    }
     if let fields = self.fields, !fields.field.isEmpty {
       let description = fields.field.lazy.map(\.name).joined(separator: ", ")
       info.append(("Fields", "[\(description)]"))
@@ -199,8 +205,12 @@ extension SVDField: SVDItem {
     if let modifiedWriteValues = self.modifiedWriteValues {
       info.append(("Modified Write Values", "\(modifiedWriteValues)"))
     }
-    if let writeConstraint = self.writeConstraint { info.append(("Write Constraint", "\(writeConstraint)")) }
-    if let readAction = self.readAction { info.append(("Read Action", "\(readAction)")) }
+    if let writeConstraint = self.writeConstraint {
+      info.append(("Write Constraint", "\(writeConstraint)"))
+    }
+    if let readAction = self.readAction {
+      info.append(("Read Action", "\(readAction)"))
+    }
     return info
   }
 }

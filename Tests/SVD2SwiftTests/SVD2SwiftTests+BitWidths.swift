@@ -51,7 +51,8 @@ extension SVD2SwiftTests {
                       bitRange: .offsetWidth(.init(bitOffset: 8, bitWidth: 2))),
                     .init(
                       name: "E",
-                      bitRange: .literal(.init(bitRange: .init(lsb: 10, msb: 14)))),
+                      bitRange: .literal(
+                        .init(bitRange: .init(lsb: 10, msb: 14)))),
                   ]))
             ]))
       ]))

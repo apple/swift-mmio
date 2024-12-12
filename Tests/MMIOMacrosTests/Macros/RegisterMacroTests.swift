@@ -100,7 +100,9 @@ final class RegisterMacroTests: XCTestCase {
         """,
       diagnostics: [
         .init(
-          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
+          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(
+            bitFieldMacros
+          ).message,
           line: 3,
           column: 3,
           highlights: ["var v1: Int"],
@@ -111,7 +113,9 @@ final class RegisterMacroTests: XCTestCase {
             .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
           ]),
         .init(
-          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
+          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(
+            bitFieldMacros
+          ).message,
           line: 4,
           column: 3,
           highlights: ["@OtherAttribute var v2: Int"],
@@ -122,7 +126,9 @@ final class RegisterMacroTests: XCTestCase {
             .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
           ]),
         .init(
-          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(bitFieldMacros).message,
+          message: ErrorDiagnostic.expectedMemberAnnotatedWithMacro(
+            bitFieldMacros
+          ).message,
           line: 5,
           column: 3,
           highlights: ["var v3: Int { willSet {} }"],
