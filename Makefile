@@ -10,7 +10,6 @@
 #===------------------------------------------------------------------------===#
 
 CONFIGURATION = debug
-SWIFT_FORMAT_CONFIGURATION := SupportingFiles/Tools/swift-format/.swift-format
 
 .PHONY: all lint format build test clean
 all: test
@@ -18,7 +17,6 @@ all: test
 lint:
 	@echo "linting..."
 	@swift-format lint \
-		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
 		--recursive \
 		--strict \
 		Package.swift Plugins Sources Tests
@@ -26,7 +24,6 @@ lint:
 format:
 	@echo "formatting..."
 	@swift-format format \
-		--configuration $(SWIFT_FORMAT_CONFIGURATION) \
 		--recursive \
 		--in-place \
 		Package.swift Plugins Sources Tests
