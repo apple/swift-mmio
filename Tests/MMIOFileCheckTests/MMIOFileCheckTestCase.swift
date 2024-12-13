@@ -12,13 +12,12 @@
 // FIXME: switch over to swift-testing
 // XCTest is really painful for dynamic test lists
 
-import Dispatch
 import Foundation
 import MMIOUtilities
 import XCTest
 
 final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
-  func test() throws {
+  func test() async throws {
     let selfFileURL = URL(fileURLWithPath: #filePath)
     let selfDirectoryURL =
       selfFileURL
@@ -39,18 +38,18 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
 
     // Run test setup step.
     print("Running Test Setup...")
-    let start = DispatchTime.now()
+    let start = ContinuousClock.now
     let (hasLLVMFileCheck, toolchainID, buildOutputsURL) = try Self.prerun(
       packageDirectoryURL: packageDirectoryURL)
-    let end = DispatchTime.now()
+    let end = ContinuousClock.now
 
-    // `DispatchTime.distance(to:)` is unavailable on linux.
-    let duration = end.uptimeNanoseconds - start.uptimeNanoseconds
-    print("Setup took \(duration) nanoseconds")
+    let duration = end - start
+    print("Setup took \(duration.formatted())")
 
     print("Running Tests...")
-    DispatchQueue.concurrentPerform(iterations: testFileURLs.count) { index in
-      let testFileURL = testFileURLs[index]
+    await testFileURLs.parallelForEach(
+      taskLimit: ProcessInfo.processInfo.processorCount
+    ) { testFileURL in
       let diagnostics = Self.run(
         testFileURL: testFileURL,
         hasLLVMFileCheck: hasLLVMFileCheck,
@@ -61,7 +60,6 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
         self.record(diagnostic: diagnostic)
       }
     }
-
     print("Finished running \(testFileURLs.count) tests")
   }
 
@@ -70,12 +68,9 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
   ) throws -> (Bool, String, URL) {
     let environment = ProcessInfo.processInfo.environment
 
-    let ci: Bool
-    if environment["CI"] != nil {
+    let ci = environment["CI"] != nil
+    if ci {
       print("Running in CI...")
-      ci = true
-    } else {
-      ci = false
     }
 
     print("Determining Swift Toolchain...")
@@ -261,5 +256,28 @@ extension FileManager {
       .compactMap { $0 as? URL }
       .filter { $0.pathExtension == pathExtension }
       .sorted { $0.path < $1.path }
+  }
+}
+
+extension Collection where Element: Sendable {
+  func parallelForEach(
+    taskLimit: Int,
+    priority: TaskPriority? = nil,
+    operation: @Sendable @escaping (Element) async -> ()
+  ) async {
+    await withTaskGroup(
+      of: Void.self,
+      returning: Void.self
+    ) { group in
+      var tasks = 0
+      for element in self {
+        if tasks < taskLimit {
+          tasks += 1
+        } else {
+          await group.next()
+        }
+        group.addTask(priority: priority) { await operation(element) }
+      }
+    }
   }
 }
