@@ -263,7 +263,7 @@ extension Collection where Element: Sendable {
   func parallelForEach(
     taskLimit: Int,
     priority: TaskPriority? = nil,
-    operation: @Sendable @escaping (Element) async -> ()
+    operation: @Sendable @escaping (Element) async -> Void
   ) async {
     await withTaskGroup(
       of: Void.self,
