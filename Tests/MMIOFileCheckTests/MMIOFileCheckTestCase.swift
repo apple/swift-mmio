@@ -220,7 +220,8 @@ extension LLVMDiagnostic {
         return false
       }
       if !message.isEmpty {
-        Issue.record("Failed to parse all error diagnostics, remaining: \(message)")
+        Issue.record(
+          "Failed to parse all error diagnostics, remaining: \(message)")
       }
       for diagnostic in diagnostics {
         diagnostic.recordAsIssue()
