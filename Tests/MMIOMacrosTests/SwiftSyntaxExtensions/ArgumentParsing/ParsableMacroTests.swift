@@ -37,7 +37,7 @@ extension MMIOArgumentParsingMacro {
 }
 
 final class ParsableMacroTests: XCTestCase {
-  func test_noArguments_parse() {
+  @Test func noArguments_parse() {
     struct A: MMIOArgumentParsingMacro {}
 
     // Good...
@@ -78,7 +78,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_oneArgument_parse() {
+  @Test func oneArgument_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var bar: Int
@@ -178,7 +178,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_oneArgumentOptional_parse() {
+  @Test func oneArgumentOptional_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var bar: Int?
@@ -261,7 +261,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_twoArgumentOptional_parse() {
+  @Test func twoArgumentOptional_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var foo: Int?
@@ -350,7 +350,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_oneArgumentArray_parse() {
+  @Test func oneArgumentArray_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var bar: [Int]
@@ -462,7 +462,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_complex1_parse() {
+  @Test func complex1_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var foo: Int
@@ -542,7 +542,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_many_signatures() {
+  @Test func many_signatures() {
     struct A: MMIOArgumentParsingMacro {}
     struct B: MMIOArgumentParsingMacro {
       @Argument(label: "foo")

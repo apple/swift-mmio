@@ -72,7 +72,7 @@ func XCTAssertNoParse<Output>(
 }
 
 final class ParserTests: XCTestCase {
-  func test_swiftIntegerParsing() {
+  @Test func swiftIntegerParsing() {
     XCTAssertParse(Parser.swiftInteger(Int.self), "0b0", 0)
     XCTAssertParse(Parser.swiftInteger(Int.self), "0o0", 0)
     XCTAssertParse(Parser.swiftInteger(Int.self), "0", 0)
@@ -145,7 +145,7 @@ final class ParserTests: XCTestCase {
     XCTAssertNoParse(Parser.swiftInteger(Int.self), " 0x0")
   }
 
-  func test_swiftIntegerParsing_boundaryConditions() {
+  @Test func swiftIntegerParsing_boundaryConditions() {
     XCTAssertParse(Parser.swiftInteger(UInt8.self), "0xff", 0xff)
     XCTAssertNoParse(Parser.swiftInteger(UInt8.self), "0x100")
   }

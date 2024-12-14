@@ -67,7 +67,7 @@ func XCTAssertInsert<Storage>(
 }
 
 final class BitFieldTests: XCTestCase {
-  func test_bitRangeWithinBounds() {
+  @Test func bitRangeWithinBounds() {
     // In bounds
     XCTAssertTrue(UInt8.bitRangeWithinBounds(bits: 0..<8))  // full width
     XCTAssertTrue(UInt8.bitRangeWithinBounds(bits: 0..<1))  // prefix
@@ -95,7 +95,7 @@ final class BitFieldTests: XCTestCase {
     XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -2..<36))  // both side
   }
 
-  func test_bitRangeCoalesced() {
+  @Test func bitRangeCoalesced() {
     // Coalesced
     XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [0..<1, 2..<5, 7..<8]))
     // Not sorted
@@ -109,7 +109,7 @@ final class BitFieldTests: XCTestCase {
     XCTAssertFalse(UInt8.bitRangesCoalesced(bits: [0..<1, 0..<2]))
   }
 
-  func test_bitRangeExtract() {
+  @Test func bitRangeExtract() {
     XCTAssertExtract(
       bitRanges: 0..<1,
       from: UInt32(0xff00_ff00),
@@ -147,7 +147,7 @@ final class BitFieldTests: XCTestCase {
       equals: 0b00001111_10_0_1)
   }
 
-  func test_bitRangeInsert() {
+  @Test func bitRangeInsert() {
     // Set 0 -> 0
     XCTAssertInsert(
       value: 0b0,

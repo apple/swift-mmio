@@ -11,8 +11,8 @@
 
 import XCTest
 
-final class MMIOTracingInterposerTests: XCTestCase {
-  func test_memory_load() {
+struct MMIOTracingInterposerTests: XCTestCase {
+  @Test func memory_load() {
     let interposer = MMIOTracingInterposer()
     interposer.memory[0x10] = 0x5a
     interposer.memory[0x11] = 0xa5
@@ -26,7 +26,7 @@ final class MMIOTracingInterposerTests: XCTestCase {
       ])
   }
 
-  func test_memory_store() {
+  @Test func memory_store() {
     let interposer = MMIOTracingInterposer()
     interposer.store(
       UInt16(0xa55a),
@@ -40,18 +40,18 @@ final class MMIOTracingInterposerTests: XCTestCase {
       ])
   }
 
-  func test_XCTAssertMMIOAlignment_pass() {
+  @Test func XCTAssertMMIOAlignment_pass() {
     XCTAssertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x2)!)
   }
 
-  func test_XCTAssertMMIOAlignment_fail() {
+  @Test func XCTAssertMMIOAlignment_fail() {
     #if !os(Linux)
     XCTExpectFailure("testing negative case")
     XCTAssertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x1)!)
     #endif
   }
 
-  func test_XCTAssertMMIOInterposerTrace_pass() {
+  @Test func XCTAssertMMIOInterposerTrace_pass() {
     let interposer = MMIOTracingInterposer()
     interposer.trace = [
       .store(of: UInt8(0xa5), to: 0x10),
@@ -65,7 +65,7 @@ final class MMIOTracingInterposerTests: XCTestCase {
       ])
   }
 
-  func test_XCTAssertMMIOInterposerTrace_fail() {
+  @Test func XCTAssertMMIOInterposerTrace_fail() {
     #if !os(Linux)
     XCTExpectFailure("testing negative case")
     let interposer = MMIOTracingInterposer()

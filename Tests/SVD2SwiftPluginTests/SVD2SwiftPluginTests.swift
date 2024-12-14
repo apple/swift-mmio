@@ -9,15 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Testing
 
-final class SVD2SwiftTests: XCTestCase {
-  // swift-format-ignore: AlwaysUseLowerCamelCase
-  func _do_not_run() {
+struct SVD2SwiftPluginTests {
+  func neverActuallyRun() {
     Banana.timer1.cr.modify { _, _ in }
   }
 
-  func test() {
-    XCTAssertEqual(Banana.timer1.cr.unsafeAddress, 0x4001_0100)
+  @Test func test() {
+    #expect(Banana.timer1.cr.unsafeAddress == 0x4001_0100)
   }
 }

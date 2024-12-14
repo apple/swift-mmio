@@ -16,7 +16,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class WithModifiersSyntaxTests: XCTestCase {
-  func test_accessLevel() {
+  @Test func accessLevel() {
     struct Vector {
       var decl: any WithModifiersSyntax
       var accessLevel: DeclModifierSyntax?

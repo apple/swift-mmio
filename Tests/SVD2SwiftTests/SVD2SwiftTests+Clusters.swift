@@ -70,7 +70,7 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_cluster_output() throws {
+  @Test func cluster_output() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testClusterOutputDevice,
       options: .init(

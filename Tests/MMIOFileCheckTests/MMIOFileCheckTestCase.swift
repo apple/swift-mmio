@@ -9,9 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-// FIXME: switch over to swift-testing
-// XCTest is really painful for dynamic test lists
-
 import Dispatch
 import Foundation
 import MMIOUtilities

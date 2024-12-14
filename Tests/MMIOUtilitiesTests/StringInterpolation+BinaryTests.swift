@@ -13,7 +13,7 @@ import MMIOUtilities
 import XCTest
 
 final class StringInterpolationBinaryTests: XCTestCase {
-  func test_appendInterpolation_binary() {
+  @Test func appendInterpolation_binary() {
     // Int8
     XCTAssertEqual("\(binary: Int8.min)", "0b1000_0000")
     XCTAssertEqual("\(binary: Int8(-1))", "0b1111_1111")
@@ -95,7 +95,7 @@ final class StringInterpolationBinaryTests: XCTestCase {
     )
   }
 
-  func test_appendInterpolation_binary_bytes() {
+  @Test func appendInterpolation_binary_bytes() {
     // Int8
     XCTAssertEqual("\(binary: Int8.min, bits: 1)", "0b0")
     XCTAssertEqual("\(binary: Int8(-1), bits: 1)", "0b1")

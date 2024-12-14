@@ -15,7 +15,7 @@ import XCTest
 @testable import SVD2LLDB
 
 final class LoadCommandTests: XCTestCase {
-  func test_argumentParsing() {
+  @Test func argumentParsing() {
     XCTAssertCommand(
       command: LoadCommand.self,
       arguments: ["--help"],

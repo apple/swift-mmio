@@ -15,7 +15,7 @@ import XCTest
 @testable import SVD2LLDB
 
 final class WriteCommandTests: XCTestCase {
-  func test_argumentParsing() {
+  @Test func argumentParsing() {
     XCTAssertCommand(
       command: WriteCommand.self,
       arguments: ["--help"],
@@ -37,7 +37,7 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_badKeyPath() {
+  @Test func badKeyPath() {
     XCTAssertCommand(
       command: WriteCommand.self,
       // FIXME: remove "--force"
@@ -61,7 +61,7 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_invalidKeyPath() {
+  @Test func invalidKeyPath() {
     XCTAssertCommand(
       command: WriteCommand.self,
       // FIXME: remove "--force"
@@ -83,7 +83,7 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_unknownItem() {
+  @Test func unknownItem() {
     XCTAssertCommand(
       command: WriteCommand.self,
       arguments: ["ABC", "0", "--force"],
@@ -94,7 +94,7 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_write_register() {
+  @Test func write_register() {
     XCTAssertCommand(
       command: WriteCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "19088743", "--force"],
@@ -116,7 +116,7 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_write_field() {
+  @Test func write_field() {
     // TODO: implement and test
   }
 }

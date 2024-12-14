@@ -16,7 +16,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class SyntaxStringInterpolationTests: XCTestCase {
-  func test_appendInterpolationNodesIntermediateTrivia_none() {
+  @Test func appendInterpolationNodesIntermediateTrivia_none() {
     let expected: DeclSyntax = "struct S {}"
     let decls: [DeclSyntax] = []
     let actual: DeclSyntax =
@@ -24,7 +24,7 @@ final class SyntaxStringInterpolationTests: XCTestCase {
     XCTAssertEqual(expected.description, actual.description)
   }
 
-  func test_appendInterpolationNodesIntermediateTrivia_one() {
+  @Test func appendInterpolationNodesIntermediateTrivia_one() {
     let expected: DeclSyntax = """
       struct S {
       var x = 1
@@ -39,7 +39,7 @@ final class SyntaxStringInterpolationTests: XCTestCase {
     XCTAssertEqual(expected.description, actual.description)
   }
 
-  func test_appendInterpolationNodesIntermediateTrivia_many() {
+  @Test func appendInterpolationNodesIntermediateTrivia_many() {
     let expected: DeclSyntax = """
       struct S {
       var x = 1

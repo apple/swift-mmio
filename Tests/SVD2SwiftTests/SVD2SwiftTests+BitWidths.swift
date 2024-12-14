@@ -57,7 +57,7 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_field_bitWidths() throws {
+  @Test func field_bitWidths() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testBitWidthsDevice,
       options: .init(

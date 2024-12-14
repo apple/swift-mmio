@@ -16,7 +16,7 @@ import XCTest
 @testable import SVD2LLDB
 
 final class DecodeCommandTests: XCTestCase {
-  func test_argumentParsing() {
+  @Test func argumentParsing() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["--help"],
@@ -72,7 +72,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_badKeyPath() {
+  @Test func badKeyPath() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: [""],
@@ -94,7 +94,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_invalidKeyPath() {
+  @Test func invalidKeyPath() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral"],
@@ -114,7 +114,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_unknownItem() {
+  @Test func unknownItem() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["ABC"],
@@ -125,7 +125,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeExistingValue() {
+  @Test func decodeExistingValue() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x0123_4567"],
@@ -148,7 +148,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeReadValue() {
+  @Test func decodeReadValue() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "--read"],
@@ -197,7 +197,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeFormat() {
+  @Test func decodeFormat() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x0123_4567"],
@@ -223,7 +223,7 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeVisual() {
+  @Test func decodeVisual() {
     XCTAssertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister3", "0x0123_4567", "--visual"],

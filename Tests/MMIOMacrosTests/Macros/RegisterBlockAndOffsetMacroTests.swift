@@ -17,7 +17,7 @@ import XCTest
 
 @testable import MMIOMacros
 
-final class RegisterBlockAndOffsetMacroTests: XCTestCase {
+struct RegisterBlockAndOffsetMacroTests: XCTestCase {
   static let scalarMacros: [String: Macro.Type] = [
     "RegisterBlockType": RegisterBlockMacro.self,
     "RegisterBlock": RegisterBlockScalarMemberMacro.self,
@@ -30,7 +30,7 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
 
   static let indentationWidth = Trivia.spaces(2)
 
-  func test_expansion_scalarMembers() {
+  @Test func expansion_scalarMembers() {
     assertMacroExpansion(
       """
       @RegisterBlockType
@@ -89,7 +89,7 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_arrayMembers() {
+  @Test func expansion_arrayMembers() {
     assertMacroExpansion(
       """
       @RegisterBlockType
@@ -148,7 +148,7 @@ final class RegisterBlockAndOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_accessLevel_propagation() {
+  @Test func accessLevel_propagation() {
     assertMacroExpansion(
       """
       @RegisterBlockType

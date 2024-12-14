@@ -15,7 +15,7 @@ import XCTest
 @testable import SVD2LLDB
 
 final class InfoCommandTests: XCTestCase {
-  func test_argumentParsing() {
+  @Test func argumentParsing() {
     XCTAssertCommand(
       command: InfoCommand.self,
       arguments: ["--help"],
@@ -46,7 +46,7 @@ final class InfoCommandTests: XCTestCase {
         """)
   }
 
-  func test_info() {
+  @Test func info() {
     XCTAssertCommand(
       command: InfoCommand.self,
       arguments: [""],

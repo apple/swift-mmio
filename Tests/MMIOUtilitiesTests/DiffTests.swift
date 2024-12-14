@@ -13,7 +13,7 @@ import MMIOUtilities
 import XCTest
 
 final class DiffTests: XCTestCase {
-  func test_diffFormat() {
+  @Test func diffFormat() {
     XCTAssertEqual(
       diff(
         expected: """

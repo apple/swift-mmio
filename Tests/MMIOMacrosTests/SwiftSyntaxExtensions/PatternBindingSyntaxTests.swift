@@ -19,7 +19,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class PatternBindingSyntaxTests: XCTestCase {
-  func test_requireSimpleBindingIdentifier() {
+  @Test func requireSimpleBindingIdentifier() {
     struct Vector {
       var decl: VariableDeclSyntax
       var identifier: IdentifierPatternSyntax?
@@ -74,7 +74,7 @@ final class PatternBindingSyntaxTests: XCTestCase {
     }
   }
 
-  func test_requireSimpleTypeIdentifier() {
+  @Test func requireSimpleTypeIdentifier() {
     struct Vector {
       var decl: VariableDeclSyntax
       var type: String?
@@ -141,7 +141,7 @@ final class PatternBindingSyntaxTests: XCTestCase {
     }
   }
 
-  func test_requireNoAccessor() {
+  @Test func requireNoAccessor() {
     struct Vector {
       var decl: VariableDeclSyntax
       var accessor: Bool

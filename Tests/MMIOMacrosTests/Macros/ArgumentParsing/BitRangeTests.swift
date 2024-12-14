@@ -16,7 +16,7 @@ import XCTest
 
 @testable import MMIOMacros
 
-final class BitRangeTests: XCTestCase {
+struct BitRangeTests: XCTestCase {
   struct Vector {
     var value: BitRange
     var canonicalizedClosedRange: ClosedRange<Int>
@@ -98,7 +98,7 @@ final class BitRangeTests: XCTestCase {
       description: "[0, 2]"),
   ]
 
-  func test_description() {
+  @Test func description() {
     for vector in vectors {
       XCTAssertEqual(
         vector.value.description,
@@ -108,7 +108,7 @@ final class BitRangeTests: XCTestCase {
     }
   }
 
-  func test_initDescription() {
+  @Test func initDescription() {
     for vector in vectors {
       XCTAssertEqual(
         vector.value,
@@ -118,7 +118,7 @@ final class BitRangeTests: XCTestCase {
     }
   }
 
-  func test_canonicalizedClosedRange() {
+  @Test func canonicalizedClosedRange() {
     for vector in vectors {
       XCTAssertEqual(
         vector.value.canonicalizedClosedRange,

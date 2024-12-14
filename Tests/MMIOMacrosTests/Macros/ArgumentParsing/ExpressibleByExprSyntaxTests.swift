@@ -62,13 +62,13 @@ func XCTAssertNoParse<Value>(
   }
 }
 
-final class ExpressibleByExprSyntaxTests: XCTestCase {
-  func test_exprSyntax() throws {
+struct ExpressibleByExprSyntaxTests: XCTestCase {
+  @Test func exprSyntax() throws {
     let expression: ExprSyntax = "Bool.self"
     XCTAssertParse(expression: expression, expected: expression)
   }
 
-  func test_int() throws {
+  @Test func int() throws {
     XCTAssertParse(expression: "0b1_1110_0010_0100_0000", expected: 123456)
     XCTAssertParse(expression: "0o361_100", expected: 123456)
     XCTAssertParse(expression: "123456", expected: 123456)
@@ -80,7 +80,7 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertNoParse(expression: "(1234)", as: Int.self)
   }
 
-  func test_bitRange() throws {
+  @Test func bitRange() throws {
     // UnboundedRange_
     let unboundedRange = ExprSyntax(
       DeclReferenceExprSyntax(
@@ -106,7 +106,7 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertNoParse(expression: "(0)..<(1)", as: BitRange.self)
   }
 
-  func test_bitWidth() throws {
+  @Test func bitWidth() throws {
     XCTAssertParse(expression: "8", expected: BitWidth(value: 8))
     XCTAssertParse(expression: "16", expected: BitWidth(value: 16))
     XCTAssertParse(expression: "32", expected: BitWidth(value: 32))
@@ -115,7 +115,7 @@ final class ExpressibleByExprSyntaxTests: XCTestCase {
     XCTAssertNoParse(expression: "7", as: BitWidth.self)
   }
 
-  func test_bitFieldTypeProjection() throws {
+  @Test func bitFieldTypeProjection() throws {
     XCTAssertParseBitFieldTypeProjection(expression: "Bool.self")
     XCTAssertParseBitFieldTypeProjection(expression: "Swift.Bool.self")
     XCTAssertParseBitFieldTypeProjection(expression: "Array<Int>.self")

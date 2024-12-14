@@ -72,7 +72,7 @@ extension SVD2SwiftTests {
             register: []))
       ]))
 
-  func test_dimIndex_output() throws {
+  @Test func dimIndex_output() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testDimensionElementOutput,
       options: .init(

@@ -73,4 +73,4 @@ func XCTAssertSVD2SwiftOutput(
   }
 }
 
-final class SVD2SwiftTests: XCTestCase {}
+struct SVD2SwiftTests {}

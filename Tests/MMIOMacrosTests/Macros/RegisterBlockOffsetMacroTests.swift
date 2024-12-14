@@ -27,7 +27,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  func test_decl_onlyVar() {
+  @Test func decl_onlyVar() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) struct S {}
@@ -44,7 +44,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_binding_onlyVar() {
+  @Test func binding_onlyVar() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) inout a: Int
@@ -76,7 +76,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_binding_noMultiple() {
+  @Test func binding_noMultiple() {
     let message = "accessor macro can only be applied to a single variable"
     assertMacroExpansion(
       """
@@ -95,7 +95,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingIdentifier_noImplicit() {
+  @Test func bindingIdentifier_noImplicit() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var _: Int
@@ -114,7 +114,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingIdentifier_noTuple() {
+  @Test func bindingIdentifier_noTuple() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var (a, b): Int
@@ -133,7 +133,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noOmitted() {
+  @Test func bindingType_noOmitted() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var v
@@ -155,7 +155,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noImplicit() {
+  @Test func bindingType_noImplicit() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var v: _
@@ -178,7 +178,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noOptional() {
+  @Test func bindingType_noOptional() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a: Int?
@@ -197,7 +197,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noArray() {
+  @Test func bindingType_noArray() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a: [Int]
@@ -216,7 +216,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noTuple() {
+  @Test func bindingType_noTuple() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a: (Int, Int)
@@ -235,7 +235,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_genericOK() {
+  @Test func bindingType_genericOK() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a: Reg<T>
@@ -255,7 +255,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_nestedOK() {
+  @Test func bindingType_nestedOK() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a: Swift.Int
@@ -275,7 +275,7 @@ final class RegisterBlockOffsetMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingAccessor_omitted() {
+  @Test func bindingAccessor_omitted() {
     assertMacroExpansion(
       """
       @RegisterBlock(offset: 0x0) var a: Int {}

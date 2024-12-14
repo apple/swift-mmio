@@ -19,7 +19,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class VariableDeclSyntaxTests: XCTestCase {
-  func test_requireBindingSpecifier() {
+  @Test func requireBindingSpecifier() {
     struct Vector {
       var decl: VariableDeclSyntax
       var bindingSpecifier: Keyword
@@ -77,7 +77,7 @@ final class VariableDeclSyntaxTests: XCTestCase {
     }
   }
 
-  func test_requireSingleBinding() {
+  @Test func requireSingleBinding() {
     struct Vector {
       var decl: VariableDeclSyntax
       var singleBinding: String?
@@ -136,7 +136,7 @@ final class VariableDeclSyntaxTests: XCTestCase {
     }
   }
 
-  func test_isComputedProperty() {
+  @Test func isComputedProperty() {
     struct Vector {
       var decl: VariableDeclSyntax
       var isComputedProperty: Bool

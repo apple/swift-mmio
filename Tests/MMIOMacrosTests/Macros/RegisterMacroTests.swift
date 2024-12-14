@@ -31,7 +31,7 @@ final class RegisterMacroTests: XCTestCase {
 
   // FIXME: test bitwidths parsing/allowed widths
 
-  func test_decl_onlyStruct() {
+  @Test func decl_onlyStruct() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8) actor A {}
@@ -64,7 +64,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_decl_onlyStruct_broken() {
+  @Test func decl_onlyStruct_broken() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8) var v: Int
@@ -78,7 +78,7 @@ final class RegisterMacroTests: XCTestCase {
       macros: Self.macros)
   }
 
-  func test_members_storedVarDeclsAreAnnotated() {
+  @Test func members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -143,7 +143,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_members_nonStoredVarDeclsAreOk() {
+  @Test func members_nonStoredVarDeclsAreOk() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -211,7 +211,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_noFields() {
+  @Test func expansion_noFields() {
     // FIXME: see expanded source formatting
     assertMacroExpansion(
       """
@@ -264,7 +264,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_noTypedFields() {
+  @Test func expansion_noTypedFields() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -360,7 +360,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_symmetric() {
+  @Test func expansion_symmetric() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -463,7 +463,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_discontiguous() {
+  @Test func expansion_discontiguous() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -544,7 +544,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_asymmetric() {
+  @Test func expansion_asymmetric() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -661,7 +661,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_otherRangeTypes0() {
+  @Test func expansion_otherRangeTypes0() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 32)
@@ -735,7 +735,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_otherRangeTypes1() {
+  @Test func expansion_otherRangeTypes1() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 32)
@@ -831,7 +831,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion_otherRangeTypes2() {
+  @Test func expansion_otherRangeTypes2() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 32)
@@ -927,7 +927,7 @@ final class RegisterMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_accessLevel_propagation() {
+  @Test func accessLevel_propagation() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)

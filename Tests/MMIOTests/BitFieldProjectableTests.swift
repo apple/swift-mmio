@@ -14,7 +14,7 @@ import XCTest
 @testable import MMIO
 
 final class BitFieldProjectableTests: XCTestCase {
-  func test_bool_fromStorage() {
+  @Test func bool_fromStorage() {
     XCTAssertEqual(false, Bool(storage: UInt8(0x0)))
     XCTAssertEqual(false, Bool(storage: UInt16(0x0)))
     XCTAssertEqual(false, Bool(storage: UInt32(0x0)))
@@ -30,7 +30,7 @@ final class BitFieldProjectableTests: XCTestCase {
     #endif
   }
 
-  func test_bool_toStorage() {
+  @Test func bool_toStorage() {
     XCTAssertEqual(false.storage(UInt8.self), 0x0)
     XCTAssertEqual(false.storage(UInt16.self), 0x0)
     XCTAssertEqual(false.storage(UInt32.self), 0x0)
@@ -54,7 +54,7 @@ final class BitFieldProjectableTests: XCTestCase {
     case d = 0x4
   }
 
-  func test_rawRepresentable_fromStorage() {
+  @Test func rawRepresentable_fromStorage() {
     for `case` in Example.allCases {
       XCTAssertEqual(`case`, Example(storage: UInt8(`case`.rawValue)))
       XCTAssertEqual(`case`, Example(storage: UInt16(`case`.rawValue)))
@@ -65,7 +65,7 @@ final class BitFieldProjectableTests: XCTestCase {
     }
   }
 
-  func test_rawRepresentable_toStorage() {
+  @Test func rawRepresentable_toStorage() {
     for `case` in Example.allCases {
       XCTAssertEqual(`case`.storage(UInt8.self), UInt8(`case`.rawValue))
       XCTAssertEqual(`case`.storage(UInt16.self), UInt16(`case`.rawValue))

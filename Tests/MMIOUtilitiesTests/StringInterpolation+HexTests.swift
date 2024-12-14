@@ -13,7 +13,7 @@ import MMIOUtilities
 import XCTest
 
 final class StringInterpolationHexTests: XCTestCase {
-  func test_appendInterpolation_hexNibble() {
+  @Test func appendInterpolation_hexNibble() {
     XCTAssertEqual("\(hexNibble: 0x0)", "0")
     XCTAssertEqual("\(hexNibble: 0x1)", "1")
     XCTAssertEqual("\(hexNibble: 0x2)", "2")
@@ -32,7 +32,7 @@ final class StringInterpolationHexTests: XCTestCase {
     XCTAssertEqual("\(hexNibble: 0xf)", "f")
   }
 
-  func test_appendInterpolation_hex() {
+  @Test func appendInterpolation_hex() {
     // Int8
     XCTAssertEqual("\(hex: Int8.min)", "0x80")
     XCTAssertEqual("\(hex: Int8(-1))", "0xff")
@@ -82,7 +82,7 @@ final class StringInterpolationHexTests: XCTestCase {
     XCTAssertEqual("\(hex: UInt64.max)", "0xffff_ffff_ffff_ffff")
   }
 
-  func test_appendInterpolation_hex_bits() {
+  @Test func appendInterpolation_hex_bits() {
     XCTAssertEqual("\(hex: Int8(-1), bits: 1)", "0x1")
     XCTAssertEqual("\(hex: Int8(-1), bits: 2)", "0x3")
     XCTAssertEqual("\(hex: Int8(-1), bits: 3)", "0x7")

@@ -15,7 +15,7 @@ import XCTest
 @testable import SVD2LLDB
 
 final class ReadCommandTests: XCTestCase {
-  func test_argumentParsing() {
+  @Test func argumentParsing() {
     XCTAssertCommand(
       command: ReadCommand.self,
       arguments: ["--help"],
@@ -46,7 +46,7 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_badKeyPath() {
+  @Test func badKeyPath() {
     XCTAssertCommand(
       command: ReadCommand.self,
       arguments: [""],
@@ -66,7 +66,7 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_unknownItem() {
+  @Test func unknownItem() {
     XCTAssertCommand(
       command: ReadCommand.self,
       arguments: ["ABC"],
@@ -88,7 +88,7 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_read_single() {
+  @Test func read_single() {
     XCTAssertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister0"],
@@ -141,7 +141,7 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_read_multiple() {
+  @Test func read_multiple() {
     XCTAssertCommand(
       command: ReadCommand.self,
       arguments: [
@@ -251,7 +251,7 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_read_field() {
+  @Test func read_field() {
     XCTAssertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister0.Field0"],

@@ -45,7 +45,7 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_outputOptions_default() throws {
+  @Test func outputOptions_default() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
@@ -93,7 +93,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_indentationTab() throws {
+  @Test func outputOptions_indentationTab() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
@@ -141,7 +141,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_accessLevelPublic() throws {
+  @Test func outputOptions_accessLevelPublic() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
@@ -189,7 +189,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_selectedPeripheralsFilter() throws {
+  @Test func outputOptions_selectedPeripheralsFilter() throws {
     var device = Self.testOutputOptionsDevice
     device.peripherals.peripheral.append(
       .init(name: "ExamplePeripheral2", baseAddress: 0x2000))
@@ -241,7 +241,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_namespaceUnderDevice() throws {
+  @Test func outputOptions_namespaceUnderDevice() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
@@ -294,7 +294,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_instanceMemberPeripherals() throws {
+  @Test func outputOptions_instanceMemberPeripherals() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
@@ -342,7 +342,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws
+  @Test func outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws
   {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
@@ -396,7 +396,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_overrideDeviceName() throws {
+  @Test func outputOptions_overrideDeviceName() throws {
     XCTAssertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(

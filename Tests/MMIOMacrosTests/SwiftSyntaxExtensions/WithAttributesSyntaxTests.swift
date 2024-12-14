@@ -19,7 +19,7 @@ import XCTest
 @testable import MMIOMacros
 
 final class WithAttributesSyntaxTests: XCTestCase {
-  func test_requireMacro() throws {
+  @Test func requireMacro() throws {
     struct Vector {
       var decl: any WithAttributesSyntax
       var macros: [any (ParsableMacro.Type)]
