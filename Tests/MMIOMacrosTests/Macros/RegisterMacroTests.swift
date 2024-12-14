@@ -13,11 +13,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class RegisterMacroTests: XCTestCase {
+struct RegisterMacroTests {
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterMacro>
 
   static let macros: [String: Macro.Type] = [

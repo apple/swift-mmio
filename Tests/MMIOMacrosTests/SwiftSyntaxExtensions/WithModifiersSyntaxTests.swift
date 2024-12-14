@@ -11,11 +11,11 @@
 
 #if canImport(MMIOMacros)
 import SwiftSyntax
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class WithModifiersSyntaxTests: XCTestCase {
+struct WithModifiersSyntaxTests {
   @Test func accessLevel() {
     struct Vector {
       var decl: any WithModifiersSyntax

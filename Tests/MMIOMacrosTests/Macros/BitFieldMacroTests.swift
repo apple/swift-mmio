@@ -13,11 +13,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-struct BitFieldMacroTests: XCTestCase {
+struct BitFieldMacroTests {
   struct TestMacro: BitFieldMacro {
     static let accessorMacroSuppressParsingDiagnostics = false
     static let baseName = "Test"

@@ -14,11 +14,11 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class VariableDeclSyntaxTests: XCTestCase {
+struct VariableDeclSyntaxTests {
   @Test func requireBindingSpecifier() {
     struct Vector {
       var decl: VariableDeclSyntax

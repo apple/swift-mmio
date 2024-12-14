@@ -12,16 +12,14 @@
 #if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertParse<Value>(
+func assertParse<Value>(
   expression: ExprSyntax,
   expected: Value,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocationPath
 ) where Value: ExpressibleByExprSyntax, Value: Equatable {
   do {
     let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
@@ -32,26 +30,22 @@ func XCTAssertParse<Value>(
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertParseBitFieldTypeProjection(
+func assertParseBitFieldTypeProjection(
   expression: ExprSyntax,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocationPath
 ) {
   let base = expression.as(MemberAccessExprSyntax.self)!.base!
-  XCTAssertParse(
+  assertParse(
     expression: expression,
     expected: BitFieldTypeProjection(expression: base),
     file: file,
     line: line)
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertNoParse<Value>(
+func assertNoParse<Value>(
   expression: ExprSyntax,
   as _: Value.Type,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocationPath
 ) where Value: ExpressibleByExprSyntax {
   do {
     let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
@@ -62,22 +56,22 @@ func XCTAssertNoParse<Value>(
   }
 }
 
-struct ExpressibleByExprSyntaxTests: XCTestCase {
+struct ExpressibleByExprSyntaxTests {
   @Test func exprSyntax() throws {
     let expression: ExprSyntax = "Bool.self"
-    XCTAssertParse(expression: expression, expected: expression)
+    assertParse(expression: expression, expected: expression)
   }
 
   @Test func int() throws {
-    XCTAssertParse(expression: "0b1_1110_0010_0100_0000", expected: 123456)
-    XCTAssertParse(expression: "0o361_100", expected: 123456)
-    XCTAssertParse(expression: "123456", expected: 123456)
-    XCTAssertParse(expression: "0x0001_e240", expected: 123456)
+    assertParse(expression: "0b1_1110_0010_0100_0000", expected: 123456)
+    assertParse(expression: "0o361_100", expected: 123456)
+    assertParse(expression: "123456", expected: 123456)
+    assertParse(expression: "0x0001_e240", expected: 123456)
 
-    XCTAssertNoParse(expression: "1 + 1", as: Int.self)
+    assertNoParse(expression: "1 + 1", as: Int.self)
     // This could be made to work, but its a slippery slope to becoming an
     // arbitrary expression evaluator, so for now parens are banned.
-    XCTAssertNoParse(expression: "(1234)", as: Int.self)
+    assertNoParse(expression: "(1234)", as: Int.self)
   }
 
   @Test func bitRange() throws {
@@ -86,43 +80,43 @@ struct ExpressibleByExprSyntaxTests: XCTestCase {
       DeclReferenceExprSyntax(
         baseName: .binaryOperator("...")
       ))!
-    XCTAssertParse(expression: unboundedRange, expected: "(-∞, +∞)" as BitRange)
+    assertParse(expression: unboundedRange, expected: "(-∞, +∞)" as BitRange)
     // PartialRangeThrough
-    XCTAssertParse(expression: "...0", expected: "(-∞, 0]" as BitRange)
+    assertParse(expression: "...0", expected: "(-∞, 0]" as BitRange)
     // PartialRangeFrom
-    XCTAssertParse(expression: "0...", expected: "[0, +∞)" as BitRange)
+    assertParse(expression: "0...", expected: "[0, +∞)" as BitRange)
     // ClosedRange
-    XCTAssertParse(expression: "0...1", expected: "[0, 1]" as BitRange)
+    assertParse(expression: "0...1", expected: "[0, 1]" as BitRange)
     // PartialRangeUpTo
-    XCTAssertParse(expression: "..<0", expected: "(-∞, 0)" as BitRange)
+    assertParse(expression: "..<0", expected: "(-∞, 0)" as BitRange)
     // Range
-    XCTAssertParse(expression: "0..<1", expected: "[0, 1)" as BitRange)
+    assertParse(expression: "0..<1", expected: "[0, 1)" as BitRange)
 
-    XCTAssertNoParse(expression: "1...0", as: BitRange.self)
-    XCTAssertNoParse(expression: "1..<0", as: BitRange.self)
-    XCTAssertNoParse(expression: "1..<1", as: BitRange.self)
-    XCTAssertNoParse(expression: "(0)..<1", as: BitRange.self)
-    XCTAssertNoParse(expression: "0..<(1)", as: BitRange.self)
-    XCTAssertNoParse(expression: "(0)..<(1)", as: BitRange.self)
+    assertNoParse(expression: "1...0", as: BitRange.self)
+    assertNoParse(expression: "1..<0", as: BitRange.self)
+    assertNoParse(expression: "1..<1", as: BitRange.self)
+    assertNoParse(expression: "(0)..<1", as: BitRange.self)
+    assertNoParse(expression: "0..<(1)", as: BitRange.self)
+    assertNoParse(expression: "(0)..<(1)", as: BitRange.self)
   }
 
   @Test func bitWidth() throws {
-    XCTAssertParse(expression: "8", expected: BitWidth(value: 8))
-    XCTAssertParse(expression: "16", expected: BitWidth(value: 16))
-    XCTAssertParse(expression: "32", expected: BitWidth(value: 32))
-    XCTAssertParse(expression: "64", expected: BitWidth(value: 64))
+    assertParse(expression: "8", expected: BitWidth(value: 8))
+    assertParse(expression: "16", expected: BitWidth(value: 16))
+    assertParse(expression: "32", expected: BitWidth(value: 32))
+    assertParse(expression: "64", expected: BitWidth(value: 64))
 
-    XCTAssertNoParse(expression: "7", as: BitWidth.self)
+    assertNoParse(expression: "7", as: BitWidth.self)
   }
 
   @Test func bitFieldTypeProjection() throws {
-    XCTAssertParseBitFieldTypeProjection(expression: "Bool.self")
-    XCTAssertParseBitFieldTypeProjection(expression: "Swift.Bool.self")
-    XCTAssertParseBitFieldTypeProjection(expression: "Array<Int>.self")
-    XCTAssertParseBitFieldTypeProjection(expression: "Swift.Array<Int>.self")
+    assertParseBitFieldTypeProjection(expression: "Bool.self")
+    assertParseBitFieldTypeProjection(expression: "Swift.Bool.self")
+    assertParseBitFieldTypeProjection(expression: "Array<Int>.self")
+    assertParseBitFieldTypeProjection(expression: "Swift.Array<Int>.self")
 
-    XCTAssertNoParse(expression: "Bool", as: BitFieldTypeProjection.self)
-    XCTAssertNoParse(expression: "1", as: BitFieldTypeProjection.self)
+    assertNoParse(expression: "Bool", as: BitFieldTypeProjection.self)
+    assertNoParse(expression: "1", as: BitFieldTypeProjection.self)
   }
 }
 #endif

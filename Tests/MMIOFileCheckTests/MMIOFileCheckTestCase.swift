@@ -84,7 +84,7 @@ struct MMIOFileCheckTests: @unchecked Sendable {
           plutil \
             -extract CFBundleIdentifier raw \
             -o - \
-            /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+            ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
           """)
       } catch {
         print("Failed to locate toolchain by plist: \(error)")

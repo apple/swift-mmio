@@ -9,10 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Testing
+
 @testable import SVD
 @testable import SVD2Swift
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 extension SVD2SwiftTests {
   // FIXME: Add scalar, and dimArrayIndex to this example device
   private static let testDimensionElementOutput = SVDDevice(
@@ -73,7 +74,7 @@ extension SVD2SwiftTests {
       ]))
 
   @Test func dimIndex_output() throws {
-    XCTAssertSVD2SwiftOutput(
+    assertSVD2SwiftOutput(
       svdDevice: Self.testDimensionElementOutput,
       options: .init(
         indentation: .space(2),

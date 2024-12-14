@@ -10,9 +10,9 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
-final class LLVMParsingTests: XCTestCase {
+struct LLVMParsingTests {
   @Test func parse_errorOutput() {
     let error = """
       /tests/TestModifyBitSetCoalesced.swift:56:17: error: CHECK-NEXT: expected string not found in input
@@ -77,12 +77,12 @@ final class LLVMParsingTests: XCTestCase {
     var input = error[...]
     let parsed = Parser.llvmDiagnostics.run(&input)
     let actual = parsed ?? []
-    XCTAssertEqual(actual.count, expected.count)
+    #expect(actual.count == expected.count)
     if actual.count == expected.count {
       for (actual, expected) in zip(actual, expected) {
-        XCTAssertEqual(actual, expected)
+        #expect(actual == expected)
       }
     }
-    XCTAssert(input.isEmpty)
+    #expect(input.isEmpty)
   }
 }

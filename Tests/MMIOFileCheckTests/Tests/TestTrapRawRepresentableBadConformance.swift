@@ -23,7 +23,7 @@ enum Test: UInt16, BitFieldProjectable {
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 //@inline(never)
-public @Test func toStorage_tooSmall() {
+public func test_toStorage_tooSmall() {
   // CHECK-LABEL: void @"$s4main23test_toStorage_tooSmallyyF"()
   let value = Test.value0.storage(UInt8.self)
   // CHECK: call void @llvm.trap()
@@ -31,7 +31,7 @@ public @Test func toStorage_tooSmall() {
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 //@inline(never)
-public @Test func fromStorage_tooSmall() {
+public func test_fromStorage_tooSmall() {
   // CHECK-LABEL: void @"$s4main25test_fromStorage_tooSmallyyF"()
   let value = Test(storage: UInt8(0x0))
   // disabled: call void @llvm.trap()
@@ -41,7 +41,7 @@ public @Test func fromStorage_tooSmall() {
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 //@inline(never)
-public @Test func fromStorage_uninhabitedValue() {
+public func test_fromStorage_uninhabitedValue() {
   // CHECK-LABEL: void @"$s4main33test_fromStorage_uninhabitedValueyyF"()
   let value = Test(storage: UInt16(0x2))
   // disabled: call void @llvm.trap()

@@ -13,7 +13,7 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
@@ -36,7 +36,7 @@ extension MMIOArgumentParsingMacro {
   }
 }
 
-final class ParsableMacroTests: XCTestCase {
+struct ParsableMacroTests {
   @Test func noArguments_parse() {
     struct A: MMIOArgumentParsingMacro {}
 
@@ -568,20 +568,19 @@ final class ParsableMacroTests: XCTestCase {
       var foo: [Int]
     }
 
-    XCTAssertEqual(A.signature, "@A")
-    XCTAssertEqual(B.signature, "@B(foo:)")
-    XCTAssertEqual(C.signature, "@C(foo:bar:)")
-    XCTAssertEqual(D.signature, "@D(foo:)")
-    XCTAssertEqual(E.signature, "@E(foo:)")
-    XCTAssertEqual(F.signature, "@F(foo:)")
+    #expect(A.signature == "@A")
+    #expect(B.signature == "@B(foo:)")
+    #expect(C.signature == "@C(foo:bar:)")
+    #expect(D.signature == "@D(foo:)")
+    #expect(E.signature == "@E(foo:)")
+    #expect(F.signature == "@F(foo:)")
 
-    XCTAssertEqual("\(A.attributeWithPlaceholders)", "@A")
-    XCTAssertEqual("\(B.attributeWithPlaceholders)", "@B(foo: <#Int#>)")
-    XCTAssertEqual(
-      "\(C.attributeWithPlaceholders)", "@C(foo: <#Int#>, bar: <#Int#>)")
-    XCTAssertEqual("\(D.attributeWithPlaceholders)", "@D(foo: <#Int#>)")
-    XCTAssertEqual("\(E.attributeWithPlaceholders)", "@E(foo: <#Int#>)")
-    XCTAssertEqual("\(F.attributeWithPlaceholders)", "@F(foo: <#Int#>)")
+    #expect("\(A.attributeWithPlaceholders)" == "@A")
+    #expect("\(B.attributeWithPlaceholders)" == "@B(foo: <#Int#>)")
+    #expect("\(C.attributeWithPlaceholders)" == "@C(foo: <#Int#>, bar: <#Int#>)")
+    #expect("\(D.attributeWithPlaceholders)" == "@D(foo: <#Int#>)")
+    #expect("\(E.attributeWithPlaceholders)" == "@E(foo: <#Int#>)")
+    #expect("\(F.attributeWithPlaceholders)" == "@F(foo: <#Int#>)")
   }
 }
 #endif

@@ -11,17 +11,17 @@
 
 #if canImport(MMIOMacros)
 import SwiftSyntax
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class SyntaxStringInterpolationTests: XCTestCase {
+struct SyntaxStringInterpolationTests {
   @Test func appendInterpolationNodesIntermediateTrivia_none() {
     let expected: DeclSyntax = "struct S {}"
     let decls: [DeclSyntax] = []
     let actual: DeclSyntax =
       "struct S {\(nodes: decls, intermediateTrivia: .newlines(2))}"
-    XCTAssertEqual(expected.description, actual.description)
+    #expect(expected.description == actual.description)
   }
 
   @Test func appendInterpolationNodesIntermediateTrivia_one() {
@@ -36,7 +36,7 @@ final class SyntaxStringInterpolationTests: XCTestCase {
       \(nodes: decls, intermediateTrivia: .newlines(2))
       }
       """
-    XCTAssertEqual(expected.description, actual.description)
+    #expect(expected.description == actual.description)
   }
 
   @Test func appendInterpolationNodesIntermediateTrivia_many() {
@@ -53,7 +53,7 @@ final class SyntaxStringInterpolationTests: XCTestCase {
       \(nodes: decls, intermediateTrivia: .newlines(2))
       }
       """
-    XCTAssertEqual(expected.description, actual.description)
+    #expect(expected.description == actual.description)
   }
 }
 #endif

@@ -13,11 +13,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-struct RegisterBlockAndOffsetMacroTests: XCTestCase {
+struct RegisterBlockAndOffsetMacroTests {
   static let scalarMacros: [String: Macro.Type] = [
     "RegisterBlockType": RegisterBlockMacro.self,
     "RegisterBlock": RegisterBlockScalarMemberMacro.self,

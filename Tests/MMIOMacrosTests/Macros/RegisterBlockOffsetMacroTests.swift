@@ -13,11 +13,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class RegisterBlockOffsetMacroTests: XCTestCase {
+struct RegisterBlockOffsetMacroTests {
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<
     RegisterBlockScalarMemberMacro
   >

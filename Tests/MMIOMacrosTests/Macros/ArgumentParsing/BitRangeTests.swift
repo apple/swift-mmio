@@ -12,34 +12,31 @@
 #if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-struct BitRangeTests: XCTestCase {
+struct BitRangeTests {
   struct Vector {
     var value: BitRange
     var canonicalizedClosedRange: ClosedRange<Int>
     var description: String
-    var file: StaticString
-    var line: UInt
+    var sourceLocation: Testing.SourceLocation
 
     init(
       value: BitRange,
       canonicalizedClosedRange: ClosedRange<Int>,
       description: String,
-      file: StaticString = #file,
-      line: UInt = #line
+      sourceLocation: Testing.SourceLocation = #_sourceLocation
     ) {
       self.value = value
       self.canonicalizedClosedRange = canonicalizedClosedRange
       self.description = description
-      self.file = file
-      self.line = line
+      self.sourceLocation = sourceLocation
     }
   }
 
-  let vectors: [Vector] = [
+  static let vectors: [Vector] = [
     .init(
       value: .init(
         lowerBound: nil,
@@ -98,34 +95,28 @@ struct BitRangeTests: XCTestCase {
       description: "[0, 2]"),
   ]
 
-  @Test func description() {
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.value.description,
-        vector.description,
-        file: vector.file,
-        line: vector.line)
-    }
+  @Test(arguments: Self.vectors)
+  func description(vector: Vector) {
+    #expect(
+      vector.value.description ==
+      vector.description,
+      sourceLocation: vector.sourceLocation)
   }
 
-  @Test func initDescription() {
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.value,
-        BitRange(vector.description),
-        file: vector.file,
-        line: vector.line)
-    }
+  @Test(arguments: Self.vectors)
+  func initDescription(vector: Vector) {
+    #expect(
+      vector.value ==
+      BitRange(vector.description),
+      sourceLocation: vector.sourceLocation)
   }
 
-  @Test func canonicalizedClosedRange() {
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.value.canonicalizedClosedRange,
-        vector.canonicalizedClosedRange,
-        file: vector.file,
-        line: vector.line)
-    }
+  @Test(arguments: Self.vectors)
+  func canonicalizedClosedRange(vector: Vector) {
+    #expect(
+      vector.value.canonicalizedClosedRange ==
+      vector.canonicalizedClosedRange,
+      sourceLocation: vector.sourceLocation)
   }
 }
 #endif

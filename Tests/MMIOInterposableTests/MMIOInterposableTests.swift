@@ -9,11 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Testing
 
 @testable import MMIOInterposable
 
-struct MMIOInterposableTests: XCTestCase {
+struct MMIOInterposableTests {
   @RegisterBlock
   struct Example {
     @RegisterBlock(offset: 0x0)
@@ -43,7 +43,7 @@ struct MMIOInterposableTests: XCTestCase {
   @Test func registerBlock_passesInterposerToChildren() {
     let interposer = MMIOTracingInterposer()
     let example = Example(unsafeAddress: 0x1000, interposer: interposer)
-    XCTAssertTrue(example.interposer === example.regA.interposer)
+    #expect(example.interposer === example.regA.interposer)
   }
 
   @Test func tracingInterposer_producesExpectedTrace() {
@@ -60,7 +60,7 @@ struct MMIOInterposableTests: XCTestCase {
     example.regB.modify { r, w in
       w.rst = false
     }
-    XCTAssertMMIOInterposerTrace(
+    assertMMIOInterposerTrace(
       interposer: interposer,
       trace: [
         .load(of: UInt32(0), from: 0x1000),

@@ -14,7 +14,7 @@ import CryptoKit
 import Foundation
 import MMIOUtilities
 import SVD
-import XCTest
+import Testing
 import System
 
 extension FormatStyle where Self == Duration.UnitsFormatStyle {
@@ -25,7 +25,7 @@ extension FormatStyle where Self == Duration.UnitsFormatStyle {
   }
 }
 
-final class SVDTests: XCTestCase {
+final class SVDTests {
   struct TestError: Error, CustomStringConvertible {
     var description: String
   }
@@ -83,9 +83,8 @@ final class SVDTests: XCTestCase {
       inDirectory: self.testDataDirectoryURL,
       withPathExtension: "svd")
 
-    XCTAssertEqual(
-      svdURLs.count,
-      testDataSVDFilesCount,
+    #expect(
+      svdURLs.count == testDataSVDFilesCount,
       "Failed to locate all expected SVD files")
 
     let time = await ContinuousClock().measure {
@@ -95,9 +94,8 @@ final class SVDTests: XCTestCase {
         taskLimit: 8,
         priority: .high,
         operation: Self.parseSVD)
-      XCTAssertEqual(
-        parsedSVDs,
-        self.testDataPassingSVDFilesCount,
+      #expect(
+        parsedSVDs == self.testDataPassingSVDFilesCount,
         "Failed to parse expected svd files")
     }
     print("Tests completed in \(time.formatted(.elapsedSeconds)).")
@@ -120,7 +118,7 @@ final class SVDTests: XCTestCase {
     do {
       data = try Data(contentsOf: url)
     } catch {
-      XCTFail("Failed to load contents of svd '\(svd)': \(error)")
+      Issue.record("Failed to load contents of svd '\(svd)': \(error)")
       return 0
     }
 
@@ -128,7 +126,7 @@ final class SVDTests: XCTestCase {
     do {
       device = try SVDDevice(data: data)
     } catch {
-      XCTFail("Failed to parse svd '\(svd)': \(error)")
+      Issue.record("Failed to parse svd '\(svd)': \(error)")
       return 0
     }
 
@@ -138,7 +136,7 @@ final class SVDTests: XCTestCase {
       if Self.knownInvalidSVDs.contains(svd) {
         print("Failed to inflate known invalid svd '\(svd)': \(error)")
       } else {
-        XCTFail("Failed to inflate svd '\(svd)': \(error)")
+        Issue.record("Failed to inflate svd '\(svd)': \(error)")
       }
       return 0
     }

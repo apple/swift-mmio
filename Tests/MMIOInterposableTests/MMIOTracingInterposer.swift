@@ -11,7 +11,7 @@
 
 import MMIOInterposable
 import MMIOUtilities
-import XCTest
+import Testing
 
 class MMIOTracingInterposer {
   // This could be made more efficient by mapping to 8 byte blocks.
@@ -29,7 +29,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
   func load<Value>(
     from pointer: UnsafePointer<Value>
   ) -> Value where Value: FixedWidthInteger & UnsignedInteger {
-    XCTAssertMMIOAlignment(pointer: pointer)
+    assertMMIOAlignment(pointer: pointer)
 
     let address = UInt(bitPattern: pointer)
     let size = MemoryLayout<Value>.size
@@ -50,7 +50,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
     _ value: Value,
     to pointer: UnsafeMutablePointer<Value>
   ) where Value: FixedWidthInteger & UnsignedInteger {
-    XCTAssertMMIOAlignment(pointer: pointer)
+    assertMMIOAlignment(pointer: pointer)
 
     let address = UInt(bitPattern: pointer)
     let size = MemoryLayout<Value>.size
@@ -65,39 +65,32 @@ extension MMIOTracingInterposer: MMIOInterposer {
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertMMIOAlignment<Value>(
+func assertMMIOAlignment<Value>(
   pointer: UnsafePointer<Value>,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) where Value: FixedWidthInteger & UnsignedInteger {
   let address = UInt(bitPattern: pointer)
   let alignment = UInt(MemoryLayout<Value>.alignment)
-  if !address.isMultiple(of: alignment) {
-    XCTFail(
-      """
-      Invalid load or store of type '\(Value.self)' from unaligned address \
-      '\(hex: UInt(bitPattern: pointer))'
-      """,
-      file: file,
-      line: line)
-  }
+  #expect(
+    address.isMultiple(of: alignment),
+    """
+    Invalid load or store of type '\(Value.self)' from unaligned address \
+    '\(hex: address)'
+    """,
+    sourceLocation: sourceLocation)
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertMMIOInterposerTrace(
+func assertMMIOInterposerTrace(
   interposer: MMIOTracingInterposer,
   trace: [MMIOTracingInterposerEvent],
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   // Exit early if the actual trace matches the expected trace.
   let actualTrace = interposer.trace
   let expectedTrace = trace
   guard actualTrace != expectedTrace else { return }
 
-  XCTFail(
-    diff(expected: expectedTrace, actual: actualTrace, noun: "trace"),
-    file: file,
-    line: line)
+  Issue.record(
+    Comment(rawValue: diff(expected: expectedTrace, actual: actualTrace, noun: "trace")),
+    sourceLocation: sourceLocation)
 }
