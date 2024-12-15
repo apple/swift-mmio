@@ -1043,7 +1043,7 @@ struct RegisterMacroTests {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bitRangeWithBoundsOutOfValidRegisterRange_emitsDiagnostics() {
+  @Test func bitRangeWithBoundsOutOfValidRegisterRange_emitsDiagnostics() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 0x8)
@@ -1116,22 +1116,24 @@ struct RegisterMacroTests {
         .init(
           message: ErrorDiagnostic.bitFieldOutOfBounds(
             attribute: "@Reserved(bits: 3..<10)",
-            pluralize: false).message,
+            pluralize: false
+          ).message,
           line: 3,
           column: 4,
           highlights: ["Reserved"],
           notes: [
             .init(
-              message: "bit range '3..<10' extends outside register bit range '0..<8'",
+              message:
+                "bit range '3..<10' extends outside register bit range '0..<8'",
               line: 3,
-              column: 19),
-          ]),
+              column: 19)
+          ])
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bitFieldWithOverlappingBitRanges_emitsDiagnostics() {
+  @Test func bitFieldWithOverlappingBitRanges_emitsDiagnostics() {
     assertMacroExpansion(
       """
       @Register(bitWidth: 64)
@@ -1203,22 +1205,26 @@ struct RegisterMacroTests {
       diagnostics: [
         .init(
           message: ErrorDiagnostic.bitFieldOverlappingBitRanges(
-            attribute: "@Reserved(bits: 0..<24, 8..<32, 16..<48, 36..<44)")
-            .message,
+            attribute: "@Reserved(bits: 0..<24, 8..<32, 16..<48, 36..<44)"
+          )
+          .message,
           line: 3,
           column: 4,
           highlights: ["Reserved"],
           notes: [
             .init(
-              message: "bit range '0..<24' overlaps bit ranges '8..<32' and '16..<48' over subrange '8..<24'",
+              message:
+                "bit range '0..<24' overlaps bit ranges '8..<32' and '16..<48' over subrange '8..<24'",
               line: 3,
               column: 19),
             .init(
-              message: "bit range '8..<32' overlaps bit ranges '0..<24' and '16..<48'",
+              message:
+                "bit range '8..<32' overlaps bit ranges '0..<24' and '16..<48'",
               line: 3,
               column: 27),
             .init(
-              message: "bit range '16..<48' overlaps bit ranges '0..<24', '8..<32', and '36..<44' over subranges '16..<32' and '36..<44'",
+              message:
+                "bit range '16..<48' overlaps bit ranges '0..<24', '8..<32', and '36..<44' over subranges '16..<32' and '36..<44'",
               line: 3,
               column: 35),
             .init(
@@ -1226,11 +1232,10 @@ struct RegisterMacroTests {
               line: 3,
               column: 44),
           ]
-        ),
+        )
       ],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
 }
-
 #endif

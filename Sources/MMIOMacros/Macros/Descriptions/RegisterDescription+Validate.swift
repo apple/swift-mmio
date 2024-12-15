@@ -11,8 +11,8 @@
 
 import SwiftDiagnostics
 import SwiftSyntax
-import SwiftSyntaxMacros
 import SwiftSyntaxMacroExpansion
+import SwiftSyntaxMacros
 
 extension RegisterDescription {
   func validate(

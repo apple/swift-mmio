@@ -11,8 +11,8 @@
 
 import SwiftDiagnostics
 import SwiftSyntax
-import SwiftSyntaxMacros
 import SwiftSyntaxMacroExpansion
+import SwiftSyntaxMacros
 
 extension BitFieldDescription {
   func validate(
@@ -36,17 +36,19 @@ extension BitFieldDescription {
       let bitRange = self.bitRanges[index]
       let bitRangeExpression = self.bitRangeExpressions[index]
       if let bound = bitRange.inclusiveLowerBound, !range.contains(bound) {
-        notes.append(.bitFieldOutOfBounds(
-          bitRangeExpression: bitRangeExpression,
-          registerBitRange: range))
+        notes.append(
+          .bitFieldOutOfBounds(
+            bitRangeExpression: bitRangeExpression,
+            registerBitRange: range))
         error = true
         continue
       }
 
       if let bound = bitRange.inclusiveUpperBound, !range.contains(bound) {
-        notes.append(.bitFieldOutOfBounds(
-          bitRangeExpression: bitRangeExpression,
-          registerBitRange: range))
+        notes.append(
+          .bitFieldOutOfBounds(
+            bitRangeExpression: bitRangeExpression,
+            registerBitRange: range))
         error = true
         continue
       }
@@ -121,7 +123,8 @@ extension BitFieldDescription {
       // new (slower) walk to emit proper diagnostics.
       let bitRange = self.bitRanges[index]
       if let previousUpperBound = previousUpperBound,
-         bitRange.canonicalizedLowerBound < previousUpperBound {
+        bitRange.canonicalizedLowerBound < previousUpperBound
+      {
         overlap = true
         break
       }
@@ -178,7 +181,9 @@ extension BitFieldDescription {
       guard candidateIndirectStartIndex < indices.endIndex else { break }
 
       // Iterate through the candidates looking for overlapping ranges.
-      for candidateIndirectIndex in candidateIndirectStartIndex..<indices.endIndex {
+      for candidateIndirectIndex
+        in candidateIndirectStartIndex..<indices.endIndex
+      {
         // Skip comparing a bit range to itself.
         guard targetIndirectIndex != candidateIndirectIndex else { continue }
 
@@ -193,25 +198,31 @@ extension BitFieldDescription {
         // candidate search for the next target should start after the current
         // candidate.
         if let nextTargetRangeLowerBound = nextTargetRangeLowerBound,
-           candidateRange.canonicalizedUpperBound < nextTargetRangeLowerBound {
-          candidateIndirectStartIndex = indices
+          candidateRange.canonicalizedUpperBound < nextTargetRangeLowerBound
+        {
+          candidateIndirectStartIndex =
+            indices
             .index(after: candidateIndirectIndex)
         }
 
         // Exit early if the candidate lower bound is larger than the target
         // upper bound. This is ok because `indices` is sorted, no following
         // candidates will overlap the target.
-        guard let overlappingRange =
-          targetRange.rangeOverlapping(candidateRange) else {
+        guard
+          let overlappingRange =
+            targetRange.rangeOverlapping(candidateRange)
+        else {
           break
         }
 
         // Attempt to merge the overlapping range into the previous overlapping
         // range to form larger continuous overlapping ranges.
         if let previousOverlappingRange = overlappingRanges.last,
-           overlappingRange.lowerBound <= previousOverlappingRange.upperBound {
+          overlappingRange.lowerBound <= previousOverlappingRange.upperBound
+        {
           overlappingRanges.removeLast()
-          overlappingRanges.append(previousOverlappingRange.lowerBound..<overlappingRange.upperBound)
+          overlappingRanges.append(
+            previousOverlappingRange.lowerBound..<overlappingRange.upperBound)
         } else {
           overlappingRanges.append(overlappingRange)
         }
@@ -221,12 +232,14 @@ extension BitFieldDescription {
 
       if !overlappingRanges.isEmpty {
         precondition(!overlappingExpressions.isEmpty)
-        notes.append(.bitFieldOverlappingBitRanges(
-          bitRange: Range(targetRange.canonicalizedClosedRange),
-          bitRangeExpression: targetRangeExpression,
-          overlappingRanges: overlappingRanges,
-          overlappingExpressions: overlappingExpressions
-            .map { "\($0.trimmed)" }))
+        notes.append(
+          .bitFieldOverlappingBitRanges(
+            bitRange: Range(targetRange.canonicalizedClosedRange),
+            bitRangeExpression: targetRangeExpression,
+            overlappingRanges: overlappingRanges,
+            overlappingExpressions:
+              overlappingExpressions
+              .map { "\($0.trimmed)" }))
       }
     }
 
@@ -286,14 +299,16 @@ extension Note {
       \(list: overlappingExpressions, conjunction: "and")
       """
 
-    let fullRange = overlappingRanges.count == 1
+    let fullRange =
+      overlappingRanges.count == 1
       && bitRange == overlappingRanges[0]
     if !fullRange {
       let pluralizeSubranges = overlappingRanges.count != 1
-      message.append(contentsOf: """
-       over subrange\(pluralizeSubranges ? "s" : "") \
-      \(list: overlappingRanges, conjunction: "and")
-      """)
+      message.append(
+        contentsOf: """
+           over subrange\(pluralizeSubranges ? "s" : "") \
+          \(list: overlappingRanges, conjunction: "and")
+          """)
     }
 
     return .init(
