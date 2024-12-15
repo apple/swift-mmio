@@ -16,7 +16,7 @@ struct SVD2SwiftPluginTests {
     Banana.timer1.cr.modify { _, _ in }
   }
 
-  @Test func test() {
+  @Test func validateAddress() {
     #expect(Banana.timer1.cr.unsafeAddress == 0x4001_0100)
   }
 }

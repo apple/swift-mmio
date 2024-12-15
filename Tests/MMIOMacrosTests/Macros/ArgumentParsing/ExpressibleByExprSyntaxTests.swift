@@ -19,40 +19,34 @@ import Testing
 func assertParse<Value>(
   expression: ExprSyntax,
   expected: Value,
-  sourceLocation: SourceLocation = #_sourceLocationPath
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) where Value: ExpressibleByExprSyntax, Value: Equatable {
-  do {
+  #expect(throws: Never.self, sourceLocation: sourceLocation) {
     let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
     let actual = try Value(expression: expression, in: context)
-    XCTAssertEqual(expected, actual, file: file, line: line)
-  } catch {
-    XCTFail("Unexpected error: \(error)", file: file, line: line)
+    #expect(actual == expected, sourceLocation: sourceLocation)
   }
 }
 
 func assertParseBitFieldTypeProjection(
   expression: ExprSyntax,
-  sourceLocation: SourceLocation = #_sourceLocationPath
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) {
   let base = expression.as(MemberAccessExprSyntax.self)!.base!
   assertParse(
     expression: expression,
     expected: BitFieldTypeProjection(expression: base),
-    file: file,
-    line: line)
+    sourceLocation: sourceLocation)
 }
 
 func assertNoParse<Value>(
   expression: ExprSyntax,
   as _: Value.Type,
-  sourceLocation: SourceLocation = #_sourceLocationPath
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) where Value: ExpressibleByExprSyntax {
-  do {
+  #expect(throws: ExpansionError.self, sourceLocation: sourceLocation) {
     let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
-    let actual = try Value(expression: expression, in: context)
-    XCTFail("Expected error, but got: \(actual)", file: file, line: line)
-  } catch {
-    XCTAssert(error is ExpansionError, file: file, line: line)
+    _ = try Value(expression: expression, in: context)
   }
 }
 

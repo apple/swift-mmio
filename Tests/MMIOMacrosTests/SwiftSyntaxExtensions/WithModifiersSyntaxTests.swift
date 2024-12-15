@@ -16,27 +16,8 @@ import Testing
 @testable import MMIOMacros
 
 struct WithModifiersSyntaxTests {
-  @Test func accessLevel() {
-    struct Vector {
-      var decl: any WithModifiersSyntax
-      var accessLevel: DeclModifierSyntax?
-      var file: StaticString
-      var line: UInt
-
-      init(
-        decl: DeclSyntax,
-        accessLevel: DeclModifierSyntax?,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.asProtocol(WithModifiersSyntax.self)!
-        self.accessLevel = accessLevel
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+  struct AccessLevelTestVector: CustomStringConvertible {
+    static let vectors: [Self] = [
       .init(
         decl: "final class C {}",
         accessLevel: nil),
@@ -63,11 +44,19 @@ struct WithModifiersSyntaxTests {
         accessLevel: .init(name: .keyword(.private))),
     ]
 
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.decl.accessLevel?.name.tokenKind,
-        vector.accessLevel?.name.tokenKind)
+    var description: String { "\(self.decl)" }
+    var decl: any WithModifiersSyntax
+    var accessLevel: DeclModifierSyntax?
+
+    init(decl: DeclSyntax, accessLevel: DeclModifierSyntax?) {
+      self.decl = decl.asProtocol(WithModifiersSyntax.self)!
+      self.accessLevel = accessLevel
     }
+  }
+
+  @Test(arguments: AccessLevelTestVector.vectors)
+  func accessLevel(vector: AccessLevelTestVector) {
+    #expect(vector.decl.accessLevel?.name.tokenKind == vector.accessLevel?.name.tokenKind)
   }
 }
 #endif

@@ -19,27 +19,8 @@ import Testing
 @testable import MMIOMacros
 
 struct PatternBindingSyntaxTests {
-  @Test func requireSimpleBindingIdentifier() {
-    struct Vector {
-      var decl: VariableDeclSyntax
-      var identifier: IdentifierPatternSyntax?
-      var file: StaticString
-      var line: UInt
-
-      init(
-        decl: DeclSyntax,
-        identifier: IdentifierPatternSyntax?,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.as(VariableDeclSyntax.self)!
-        self.identifier = identifier
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+  struct RequireSimpleBindingIdentifierTestVector {
+    static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
         identifier: .init(identifier: .identifier("v"))),
@@ -51,50 +32,30 @@ struct PatternBindingSyntaxTests {
         identifier: nil),
     ]
 
-    for vector in vectors {
-      // FIXME: assert diagnostics
-      let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
-      do {
-        let binding = try vector.decl.requireSingleBinding(context)
-        let actual = try binding.requireSimpleBindingIdentifier(context)
-        if let expected = vector.identifier {
-          XCTAssertEqual(
-            actual.description,
-            expected.description,
-            file: vector.file,
-            line: vector.line)
-        } else {
-          XCTFail("unexpected identifier", file: vector.file, line: vector.line)
-        }
-      } catch {
-        if vector.identifier != nil {
-          XCTFail("expected identifier", file: vector.file, line: vector.line)
-        }
-      }
+    var decl: VariableDeclSyntax
+    var identifier: IdentifierPatternSyntax?
+
+    init(
+      decl: DeclSyntax,
+      identifier: IdentifierPatternSyntax?
+    ) {
+      self.decl = decl.as(VariableDeclSyntax.self)!
+      self.identifier = identifier
     }
   }
 
-  @Test func requireSimpleTypeIdentifier() {
-    struct Vector {
-      var decl: VariableDeclSyntax
-      var type: String?
-      var file: StaticString
-      var line: UInt
+  @Test(arguments: RequireSimpleBindingIdentifierTestVector.vectors)
+  func requireSimpleBindingIdentifier(vector: RequireSimpleBindingIdentifierTestVector) {
+    // FIXME: assert diagnostics
+    let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
+    let binding = try? vector.decl.requireSingleBinding(context)
+    let actual = try? binding?.requireSimpleBindingIdentifier(context)
+    let expected = vector.identifier
+    #expect(actual?.description == expected?.description)
+  }
 
-      init(
-        decl: DeclSyntax,
-        type: String?,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.as(VariableDeclSyntax.self)!
-        self.type = type
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+  struct RequireSimpleTypeIdentifierTestVector {
+    static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
         type: "Int"),
@@ -118,50 +79,30 @@ struct PatternBindingSyntaxTests {
         type: nil),
     ]
 
-    for vector in vectors {
-      // FIXME: assert diagnostics
-      let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
-      do {
-        let binding = try vector.decl.requireSingleBinding(context)
-        let actual = try binding.requireSimpleTypeIdentifier(context)
-        if let expected = vector.type {
-          XCTAssertEqual(
-            actual.description,
-            expected.description,
-            file: vector.file,
-            line: vector.line)
-        } else {
-          XCTFail("unexpected type", file: vector.file, line: vector.line)
-        }
-      } catch {
-        if vector.type != nil {
-          XCTFail("expected type", file: vector.file, line: vector.line)
-        }
-      }
+    var decl: VariableDeclSyntax
+    var type: String?
+
+    init(
+      decl: DeclSyntax,
+      type: String?
+    ) {
+      self.decl = decl.as(VariableDeclSyntax.self)!
+      self.type = type
     }
   }
 
-  @Test func requireNoAccessor() {
-    struct Vector {
-      var decl: VariableDeclSyntax
-      var accessor: Bool
-      var file: StaticString
-      var line: UInt
+  @Test(arguments: RequireSimpleTypeIdentifierTestVector.vectors)
+  func requireSimpleTypeIdentifier(vector: RequireSimpleTypeIdentifierTestVector) {
+    // FIXME: assert diagnostics
+    let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
+    let binding = try? vector.decl.requireSingleBinding(context)
+    let actual = try? binding?.requireSimpleTypeIdentifier(context)
+    let expected = vector.type
+    #expect(actual?.description == expected?.description)
+  }
 
-      init(
-        decl: DeclSyntax,
-        accessor: Bool,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.as(VariableDeclSyntax.self)!
-        self.accessor = accessor
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+  struct RequireNoAccessorTestVector {
+    static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
         accessor: false),
@@ -188,24 +129,25 @@ struct PatternBindingSyntaxTests {
         accessor: true),
     ]
 
-    for vector in vectors {
-      // FIXME: assert diagnostics
-      let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
-      do {
-        let binding = try vector.decl.requireSingleBinding(context)
-        try binding.requireNoAccessor(context)
-        if vector.accessor {
-          XCTFail("expected no accessor", file: vector.file, line: vector.line)
-        }
-      } catch {
-        if !vector.accessor {
-          XCTFail(
-            "unexpected no accessor",
-            file: vector.file,
-            line: vector.line)
-        }
-      }
+    var decl: VariableDeclSyntax
+    var accessor: Bool
+
+    init(
+      decl: DeclSyntax,
+      accessor: Bool
+    ) {
+      self.decl = decl.as(VariableDeclSyntax.self)!
+      self.accessor = accessor
     }
+  }
+
+  @Test(arguments: RequireNoAccessorTestVector.vectors)
+  func requireNoAccessor(vector: RequireNoAccessorTestVector) {
+    // FIXME: assert diagnostics
+    let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
+    let binding = try? vector.decl.requireSingleBinding(context)
+    let accessor = (try? binding?.requireNoAccessor(context)) == nil
+    #expect(accessor == vector.accessor)
   }
 }
 #endif
