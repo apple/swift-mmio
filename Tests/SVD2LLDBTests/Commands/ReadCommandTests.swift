@@ -10,13 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
-final class ReadCommandTests: XCTestCase {
-  func test_argumentParsing() {
-    XCTAssertCommand(
+struct ReadCommandTests {
+  @Test func argumentParsing() {
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["--help"],
       success: true,
@@ -35,7 +35,7 @@ final class ReadCommandTests: XCTestCase {
 
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: [],
       success: false,
@@ -46,8 +46,8 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_badKeyPath() {
-    XCTAssertCommand(
+  @Test func badKeyPath() {
+    assertCommand(
       command: ReadCommand.self,
       arguments: [""],
       success: false,
@@ -56,7 +56,7 @@ final class ReadCommandTests: XCTestCase {
         error: Invalid key path “”.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["."],
       success: false,
@@ -66,8 +66,8 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_unknownItem() {
-    XCTAssertCommand(
+  @Test func unknownItem() {
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["ABC"],
       success: false,
@@ -76,7 +76,7 @@ final class ReadCommandTests: XCTestCase {
         error: Unknown item “ABC”.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["ABC", "DEF"],
       success: false,
@@ -88,8 +88,8 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_read_single() {
-    XCTAssertCommand(
+  @Test func read_single() {
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister0"],
       success: true,
@@ -102,7 +102,7 @@ final class ReadCommandTests: XCTestCase {
             TestRegister0: 0x7a7e_cbd9
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister1"],
       success: true,
@@ -115,7 +115,7 @@ final class ReadCommandTests: XCTestCase {
             TestRegister1: 0x7a7e
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister2"],
       success: true,
@@ -127,7 +127,7 @@ final class ReadCommandTests: XCTestCase {
         warning: Skipped registers with side-effects. Use “--force” to read these registers.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister2", "--force"],
       success: true,
@@ -141,8 +141,8 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_read_multiple() {
-    XCTAssertCommand(
+  @Test func read_multiple() {
+    assertCommand(
       command: ReadCommand.self,
       arguments: [
         "TestPeripheral.TestRegister0",
@@ -161,7 +161,7 @@ final class ReadCommandTests: XCTestCase {
             TestRegister1: 0x7a7e
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral"],
       success: true,
@@ -181,7 +181,7 @@ final class ReadCommandTests: XCTestCase {
         warning: Skipped registers with side-effects. Use “--force” to read these registers.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral", "--force"],
       success: true,
@@ -201,7 +201,7 @@ final class ReadCommandTests: XCTestCase {
             TestRegister3: 0x7a7e_cbd9
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: [
         "TestPeripheral",
@@ -225,7 +225,7 @@ final class ReadCommandTests: XCTestCase {
             TestRegister3: 0x7a7e_cbd9
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: [
         "TestPeripheral",
@@ -251,8 +251,8 @@ final class ReadCommandTests: XCTestCase {
         """)
   }
 
-  func test_read_field() {
-    XCTAssertCommand(
+  @Test func read_field() {
+    assertCommand(
       command: ReadCommand.self,
       arguments: ["TestPeripheral.TestRegister0.Field0"],
       success: true,
@@ -266,7 +266,7 @@ final class ReadCommandTests: XCTestCase {
               Field0:      0xc
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: [
         "TestPeripheral.TestRegister0.Field0",
@@ -283,7 +283,7 @@ final class ReadCommandTests: XCTestCase {
               Field0:      0xc
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: ReadCommand.self,
       arguments: [
         "TestPeripheral.TestRegister0.Field0",

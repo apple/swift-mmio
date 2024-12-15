@@ -13,7 +13,7 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
@@ -36,8 +36,8 @@ extension MMIOArgumentParsingMacro {
   }
 }
 
-final class ParsableMacroTests: XCTestCase {
-  func test_noArguments_parse() {
+struct ParsableMacroTests {
+  @Test func noArguments_parse() {
     struct A: MMIOArgumentParsingMacro {}
 
     // Good...
@@ -78,7 +78,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_oneArgument_parse() {
+  @Test func oneArgument_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var bar: Int
@@ -178,7 +178,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_oneArgumentOptional_parse() {
+  @Test func oneArgumentOptional_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var bar: Int?
@@ -261,7 +261,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_twoArgumentOptional_parse() {
+  @Test func twoArgumentOptional_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var foo: Int?
@@ -350,7 +350,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_oneArgumentArray_parse() {
+  @Test func oneArgumentArray_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var bar: [Int]
@@ -462,7 +462,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_complex1_parse() {
+  @Test func complex1_parse() {
     struct A: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
       var foo: Int
@@ -542,7 +542,7 @@ final class ParsableMacroTests: XCTestCase {
       macros: ["A": A.self])
   }
 
-  func test_many_signatures() {
+  @Test func many_signatures() {
     struct A: MMIOArgumentParsingMacro {}
     struct B: MMIOArgumentParsingMacro {
       @Argument(label: "foo")
@@ -568,20 +568,20 @@ final class ParsableMacroTests: XCTestCase {
       var foo: [Int]
     }
 
-    XCTAssertEqual(A.signature, "@A")
-    XCTAssertEqual(B.signature, "@B(foo:)")
-    XCTAssertEqual(C.signature, "@C(foo:bar:)")
-    XCTAssertEqual(D.signature, "@D(foo:)")
-    XCTAssertEqual(E.signature, "@E(foo:)")
-    XCTAssertEqual(F.signature, "@F(foo:)")
+    #expect(A.signature == "@A")
+    #expect(B.signature == "@B(foo:)")
+    #expect(C.signature == "@C(foo:bar:)")
+    #expect(D.signature == "@D(foo:)")
+    #expect(E.signature == "@E(foo:)")
+    #expect(F.signature == "@F(foo:)")
 
-    XCTAssertEqual("\(A.attributeWithPlaceholders)", "@A")
-    XCTAssertEqual("\(B.attributeWithPlaceholders)", "@B(foo: <#Int#>)")
-    XCTAssertEqual(
-      "\(C.attributeWithPlaceholders)", "@C(foo: <#Int#>, bar: <#Int#>)")
-    XCTAssertEqual("\(D.attributeWithPlaceholders)", "@D(foo: <#Int#>)")
-    XCTAssertEqual("\(E.attributeWithPlaceholders)", "@E(foo: <#Int#>)")
-    XCTAssertEqual("\(F.attributeWithPlaceholders)", "@F(foo: <#Int#>)")
+    #expect("\(A.attributeWithPlaceholders)" == "@A")
+    #expect("\(B.attributeWithPlaceholders)" == "@B(foo: <#Int#>)")
+    #expect(
+      "\(C.attributeWithPlaceholders)" == "@C(foo: <#Int#>, bar: <#Int#>)")
+    #expect("\(D.attributeWithPlaceholders)" == "@D(foo: <#Int#>)")
+    #expect("\(E.attributeWithPlaceholders)" == "@E(foo: <#Int#>)")
+    #expect("\(F.attributeWithPlaceholders)" == "@F(foo: <#Int#>)")
   }
 }
 #endif

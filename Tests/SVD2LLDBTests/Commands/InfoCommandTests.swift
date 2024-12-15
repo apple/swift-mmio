@@ -10,13 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
-final class InfoCommandTests: XCTestCase {
-  func test_argumentParsing() {
-    XCTAssertCommand(
+struct InfoCommandTests {
+  @Test func argumentParsing() {
+    assertCommand(
       command: InfoCommand.self,
       arguments: ["--help"],
       success: true,
@@ -35,7 +35,7 @@ final class InfoCommandTests: XCTestCase {
 
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: InfoCommand.self,
       arguments: [],
       success: false,
@@ -46,8 +46,8 @@ final class InfoCommandTests: XCTestCase {
         """)
   }
 
-  func test_info() {
-    XCTAssertCommand(
+  @Test func info() {
+    assertCommand(
       command: InfoCommand.self,
       arguments: [""],
       success: true,
@@ -60,7 +60,7 @@ final class InfoCommandTests: XCTestCase {
           Peripherals:           [TestPeripheral]
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: InfoCommand.self,
       arguments: ["."],
       success: true,
@@ -73,7 +73,7 @@ final class InfoCommandTests: XCTestCase {
           Peripherals:           [TestPeripheral]
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: InfoCommand.self,
       arguments: ["TestPeripheral"],
       success: true,
@@ -85,7 +85,7 @@ final class InfoCommandTests: XCTestCase {
           Registers:   [TestRegister0, TestRegister1, TestRegister2, TestRegister3]
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: InfoCommand.self,
       arguments: ["TestPeripheral.TestRegister0"],
       success: true,
@@ -98,7 +98,7 @@ final class InfoCommandTests: XCTestCase {
           Fields:      [Field0, Field1]
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: InfoCommand.self,
       arguments: ["TestPeripheral.TestRegister0.Field0"],
       success: true,
@@ -108,7 +108,7 @@ final class InfoCommandTests: XCTestCase {
           Bit Range: [4:1]
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: InfoCommand.self,
       arguments: [
         "TestPeripheral.TestRegister2",

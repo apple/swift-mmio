@@ -12,11 +12,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import SVDMacros
 
-final class XMLElementMacroTests: XCTestCase {
+struct XMLElementMacroTests {
   static let macros: [String: Macro.Type] = [
     "XMLAttribute": XMLMarkerMacro.self,
     "XMLElement": XMLElementMacro.self,
@@ -24,7 +24,7 @@ final class XMLElementMacroTests: XCTestCase {
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  func test_extensionMacro_generatesXMLElementInitializableConformance() {
+  @Test func extensionMacro_generatesXMLElementInitializableConformance() {
     assertMacroExpansion(
       """
       @XMLElement

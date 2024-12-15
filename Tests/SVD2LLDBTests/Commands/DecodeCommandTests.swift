@@ -11,13 +11,13 @@
 
 import CLLDB
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
-final class DecodeCommandTests: XCTestCase {
-  func test_argumentParsing() {
-    XCTAssertCommand(
+struct DecodeCommandTests {
+  @Test func argumentParsing() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["--help"],
       success: true,
@@ -41,7 +41,7 @@ final class DecodeCommandTests: XCTestCase {
 
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: [],
       success: false,
@@ -51,7 +51,7 @@ final class DecodeCommandTests: XCTestCase {
         error: Missing expected argument '<key-path>'
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["a", "b", "c"],
       success: false,
@@ -61,7 +61,7 @@ final class DecodeCommandTests: XCTestCase {
         error: Unexpected argument 'c'
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0"],
       success: false,
@@ -72,8 +72,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_badKeyPath() {
-    XCTAssertCommand(
+  @Test func badKeyPath() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: [""],
       success: false,
@@ -83,7 +83,7 @@ final class DecodeCommandTests: XCTestCase {
         error: Invalid key path “”.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["."],
       success: false,
@@ -94,8 +94,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_invalidKeyPath() {
-    XCTAssertCommand(
+  @Test func invalidKeyPath() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral"],
       success: false,
@@ -104,7 +104,7 @@ final class DecodeCommandTests: XCTestCase {
         error: Invalid register key path “TestPeripheral”.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0.Field0"],
       success: false,
@@ -114,8 +114,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_unknownItem() {
-    XCTAssertCommand(
+  @Test func unknownItem() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["ABC"],
       success: false,
@@ -125,8 +125,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeExistingValue() {
-    XCTAssertCommand(
+  @Test func decodeExistingValue() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x0123_4567"],
       success: true,
@@ -138,7 +138,7 @@ final class DecodeCommandTests: XCTestCase {
         [4:1] Field0 0x3
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x1_0123_4567"],
       success: false,
@@ -148,8 +148,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeReadValue() {
-    XCTAssertCommand(
+  @Test func decodeReadValue() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "--read"],
       success: true,
@@ -163,7 +163,7 @@ final class DecodeCommandTests: XCTestCase {
         [4:1] Field0 0xc
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister1", "--read"],
       success: true,
@@ -175,7 +175,7 @@ final class DecodeCommandTests: XCTestCase {
 
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister2", "--read"],
       success: false,
@@ -184,7 +184,7 @@ final class DecodeCommandTests: XCTestCase {
         error: Skipped register with side-effect. Use “--force” to read this register.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister2", "--read", "--force"],
       success: true,
@@ -197,8 +197,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeFormat() {
-    XCTAssertCommand(
+  @Test func decodeFormat() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x0123_4567"],
       success: true,
@@ -210,7 +210,7 @@ final class DecodeCommandTests: XCTestCase {
         [4:1] Field0 0x3
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x0123_4567", "--binary"],
       success: true,
@@ -223,8 +223,8 @@ final class DecodeCommandTests: XCTestCase {
         """)
   }
 
-  func test_decodeVisual() {
-    XCTAssertCommand(
+  @Test func decodeVisual() {
+    assertCommand(
       command: DecodeCommand.self,
       arguments: ["TestPeripheral.TestRegister3", "0x0123_4567", "--visual"],
       success: true,

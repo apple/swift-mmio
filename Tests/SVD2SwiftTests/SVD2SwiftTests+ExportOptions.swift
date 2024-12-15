@@ -9,10 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Testing
+
 @testable import SVD
 @testable import SVD2Swift
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 extension SVD2SwiftTests {
   // This device has ~minimal content used only to validate output options.
   // Other tests should create their own device for targeted test cases.
@@ -45,8 +46,8 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_outputOptions_default() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func outputOptions_default() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .space(2),
@@ -93,8 +94,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_indentationTab() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func outputOptions_indentationTab() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .tab,
@@ -141,8 +142,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_accessLevelPublic() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func outputOptions_accessLevelPublic() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .space(2),
@@ -189,12 +190,12 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_selectedPeripheralsFilter() throws {
+  @Test func outputOptions_selectedPeripheralsFilter() throws {
     var device = Self.testOutputOptionsDevice
     device.peripherals.peripheral.append(
       .init(name: "ExamplePeripheral2", baseAddress: 0x2000))
 
-    XCTAssertSVD2SwiftOutput(
+    assertSVD2SwiftOutput(
       svdDevice: device,
       options: .init(
         indentation: .space(2),
@@ -241,8 +242,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_namespaceUnderDevice() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func outputOptions_namespaceUnderDevice() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .space(2),
@@ -294,8 +295,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_instanceMemberPeripherals() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func outputOptions_instanceMemberPeripherals() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .space(2),
@@ -342,9 +343,9 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws
-  {
-    XCTAssertSVD2SwiftOutput(
+  @Test
+  func outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .space(2),
@@ -396,8 +397,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_outputOptions_overrideDeviceName() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func outputOptions_overrideDeviceName() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(
         indentation: .space(2),

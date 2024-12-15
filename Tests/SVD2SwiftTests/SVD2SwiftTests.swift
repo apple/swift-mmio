@@ -10,18 +10,16 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD
 @testable import SVD2Swift
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertSVD2SwiftOutput(
+func assertSVD2SwiftOutput(
   svdDevice: SVDDevice,
   options: ExportOptions,
   expected: [String: String],
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   var output = Output.inMemory([:])
   do {
@@ -29,18 +27,16 @@ func XCTAssertSVD2SwiftOutput(
     try device.inflate()
     try device.export(with: options, to: &output)
   } catch {
-    XCTFail(
+    Issue.record(
       "export operation failed: \(error)",
-      file: file,
-      line: line)
+      sourceLocation: sourceLocation)
     return
   }
 
   guard case .inMemory(let actual) = output else {
-    XCTFail(
+    Issue.record(
       "\(#function) can only be used with an in memory output writer",
-      file: file,
-      line: line)
+      sourceLocation: sourceLocation)
     return
   }
 
@@ -48,10 +44,13 @@ func XCTAssertSVD2SwiftOutput(
   let actualFiles = actual.keys.sorted()
 
   guard expectedFiles == actualFiles else {
-    XCTFail(
-      diff(expected: expectedFiles, actual: actualFiles, noun: "files"),
-      file: file,
-      line: line)
+    Issue.record(
+      Comment(
+        rawValue: diff(
+          expected: expectedFiles,
+          actual: actualFiles,
+          noun: "files")),
+      sourceLocation: sourceLocation)
     return
   }
 
@@ -63,14 +62,13 @@ func XCTAssertSVD2SwiftOutput(
 
     guard expectedContent != actualContent else { continue }
 
-    XCTFail(
+    Issue.record(
       """
       \(virtualFile): \
       \(diff(expected: expectedContent, actual: actualContent, noun: "content"))
       """,
-      file: file,
-      line: line)
+      sourceLocation: sourceLocation)
   }
 }
 
-final class SVD2SwiftTests: XCTestCase {}
+struct SVD2SwiftTests {}

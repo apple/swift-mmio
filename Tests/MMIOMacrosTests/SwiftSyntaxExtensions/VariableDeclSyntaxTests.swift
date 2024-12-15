@@ -14,90 +14,58 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class VariableDeclSyntaxTests: XCTestCase {
-  func test_requireBindingSpecifier() {
-    struct Vector {
-      var decl: VariableDeclSyntax
-      var bindingSpecifier: Keyword
-      var file: StaticString
-      var line: UInt
-
-      init(
-        decl: DeclSyntax,
-        bindingSpecifier: Keyword,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.as(VariableDeclSyntax.self)!
-        self.bindingSpecifier = bindingSpecifier
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+struct VariableDeclSyntaxTests {
+  struct RequireBindingSpecifierTestVector: CustomStringConvertible {
+    static let vectors: [Self] = [
       .init(decl: "var v: Int", bindingSpecifier: .var),
       .init(decl: "inout i: Int", bindingSpecifier: .inout),
       .init(decl: "let l: Int", bindingSpecifier: .let),
     ]
 
-    for vector in vectors {
-      // FIXME: assert diagnostics
-      let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
-      do {
-        try vector.decl.requireBindingSpecifier(
-          vector.bindingSpecifier, context)
-      } catch {
-        XCTFail(
-          """
-          expected \(vector.bindingSpecifier) binding specifier found \
-          \(vector.decl.bindingSpecifier)
-          """,
-          file: vector.file,
-          line: vector.line)
-      }
+    var description: String { "\(self.decl)" }
+    var decl: VariableDeclSyntax
+    var bindingSpecifier: Keyword
 
-      guard vector.bindingSpecifier != .var else { continue }
-      do {
-        try vector.decl.requireBindingSpecifier(.var, context)
-        XCTFail(
-          """
-          expected \(vector.bindingSpecifier) binding specifier found \
-          \(vector.decl.bindingSpecifier)
-          """,
-          file: vector.file,
-          line: vector.line)
-      } catch {
-        // FIXME: assert diagnostics
-      }
+    init(decl: DeclSyntax, bindingSpecifier: Keyword) {
+      // swift-format-ignore: NeverForceUnwrap
+      self.decl = decl.as(VariableDeclSyntax.self)!
+      self.bindingSpecifier = bindingSpecifier
     }
   }
 
-  func test_requireSingleBinding() {
-    struct Vector {
-      var decl: VariableDeclSyntax
-      var singleBinding: String?
-      var file: StaticString
-      var line: UInt
-
-      init(
-        decl: DeclSyntax,
-        singleBinding: String?,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.as(VariableDeclSyntax.self)!
-        self.singleBinding = singleBinding
-        self.file = file
-        self.line = line
-      }
+  @Test(arguments: RequireBindingSpecifierTestVector.vectors)
+  func requireBindingSpecifier(vector: RequireBindingSpecifierTestVector) {
+    // FIXME: assert diagnostics
+    let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
+    #expect(
+      throws: Never.self,
+      """
+      expected \(vector.bindingSpecifier) binding specifier found \
+      \(vector.decl.bindingSpecifier)
+      """
+    ) {
+      try vector.decl.requireBindingSpecifier(vector.bindingSpecifier, context)
     }
 
-    let vectors: [Vector] = [
+    // FIXME: assert diagnostics
+    guard vector.bindingSpecifier != .var else { return }
+    #expect(
+      throws: ExpansionError.self,
+      """
+      expected \(vector.bindingSpecifier) binding specifier found \
+      \(vector.decl.bindingSpecifier)
+      """
+    ) {
+      try vector.decl.requireBindingSpecifier(.var, context)
+    }
+  }
+
+  struct RequireSingleBindingTestVector: CustomStringConvertible {
+    static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
         singleBinding: "v: Int"),
@@ -115,48 +83,27 @@ final class VariableDeclSyntaxTests: XCTestCase {
         singleBinding: nil),
     ]
 
-    for vector in vectors {
-      let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
-      do {
-        let actual = try vector.decl.requireSingleBinding(context)
-        if let expected = vector.singleBinding {
-          XCTAssertEqual(
-            actual.description,
-            expected,
-            file: vector.file,
-            line: vector.line)
-        } else {
-          XCTFail("unexpected binding", file: vector.file, line: vector.line)
-        }
-      } catch {
-        if vector.singleBinding != nil {
-          XCTFail("expected binding", file: vector.file, line: vector.line)
-        }
-      }
+    var description: String { "\(self.decl)" }
+    var decl: VariableDeclSyntax
+    var singleBinding: String?
+
+    init(decl: DeclSyntax, singleBinding: String?) {
+      // swift-format-ignore: NeverForceUnwrap
+      self.decl = decl.as(VariableDeclSyntax.self)!
+      self.singleBinding = singleBinding
     }
   }
 
-  func test_isComputedProperty() {
-    struct Vector {
-      var decl: VariableDeclSyntax
-      var isComputedProperty: Bool
-      var file: StaticString
-      var line: UInt
+  @Test(arguments: RequireSingleBindingTestVector.vectors)
+  func requireSingleBinding(vector: RequireSingleBindingTestVector) {
+    let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
+    let actual = try? vector.decl.requireSingleBinding(context)
+    let expected = vector.singleBinding
+    #expect(actual?.description == expected)
+  }
 
-      init(
-        decl: DeclSyntax,
-        isComputedProperty: Bool,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.as(VariableDeclSyntax.self)!
-        self.isComputedProperty = isComputedProperty
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+  struct IsComputedPropertyTestVector: CustomStringConvertible {
+    static let vectors: [Self] = [
       .init(decl: "var v: Int", isComputedProperty: false),
       .init(decl: "inout v: Int", isComputedProperty: false),
       .init(decl: "let v: Int", isComputedProperty: false),
@@ -180,13 +127,20 @@ final class VariableDeclSyntaxTests: XCTestCase {
       .init(decl: "var v: Void { _modify {} }", isComputedProperty: true),
     ]
 
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.decl.isComputedProperty,
-        vector.isComputedProperty,
-        file: vector.file,
-        line: vector.line)
+    var description: String { "\(self.decl)" }
+    var decl: VariableDeclSyntax
+    var isComputedProperty: Bool
+
+    init(decl: DeclSyntax, isComputedProperty: Bool) {
+      // swift-format-ignore: NeverForceUnwrap
+      self.decl = decl.as(VariableDeclSyntax.self)!
+      self.isComputedProperty = isComputedProperty
     }
+  }
+
+  @Test(arguments: IsComputedPropertyTestVector.vectors)
+  func isComputedProperty(vector: IsComputedPropertyTestVector) {
+    #expect(vector.decl.isComputedProperty == vector.isComputedProperty)
   }
 }
 #endif

@@ -10,22 +10,23 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
+import Testing
 import XCTest
 
 @testable import MMIO
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertExtract<Storage>(
+// Work around a swiftpm bug that causes a crash without a single XCTest.
+final class Foo: XCTestCase {}
+
+func assertExtract<Storage>(
   bitRanges: Range<Int>...,
   from storage: Storage,
   equals expected: Storage,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) where Storage: FixedWidthInteger {
   let actual = storage[bits: bitRanges]
-  XCTAssertEqual(
-    actual,
-    expected,
+  #expect(
+    actual == expected,
     """
     Extracting value \
     from '\(hex: storage)' \
@@ -35,24 +36,20 @@ func XCTAssertExtract<Storage>(
     resulted in '\(hex: actual)', \
     but expected '\(hex: expected)'
     """,
-    file: file,
-    line: line)
+    sourceLocation: sourceLocation)
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertInsert<Storage>(
+func assertInsert<Storage>(
   value: Storage,
   bitRanges: Range<Int>...,
   into storage: Storage,
   equals expected: Storage,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) where Storage: FixedWidthInteger {
   var actual = storage
   actual[bits: bitRanges] = value
-  XCTAssertEqual(
-    actual,
-    expected,
+  #expect(
+    actual == expected,
     """
     Inserting '\(hex: value)' \
     into '\(hex: storage)' \
@@ -62,128 +59,125 @@ func XCTAssertInsert<Storage>(
     resulted in '\(hex: actual)', \
     but expected to get '\(hex: expected)'
     """,
-    file: file,
-    line: line)
+    sourceLocation: sourceLocation)
 }
 
-final class BitFieldTests: XCTestCase {
-  func test_bitRangeWithinBounds() {
+struct BitFieldTests {
+  @Test func bitRangeWithinBounds() {
     // In bounds
-    XCTAssertTrue(UInt8.bitRangeWithinBounds(bits: 0..<8))  // full width
-    XCTAssertTrue(UInt8.bitRangeWithinBounds(bits: 0..<1))  // prefix
-    XCTAssertTrue(UInt8.bitRangeWithinBounds(bits: 7..<8))  // suffix
-    XCTAssertTrue(UInt8.bitRangeWithinBounds(bits: 4..<6))  // middle
+    #expect(UInt8.bitRangeWithinBounds(bits: 0..<8))  // full width
+    #expect(UInt8.bitRangeWithinBounds(bits: 0..<1))  // prefix
+    #expect(UInt8.bitRangeWithinBounds(bits: 7..<8))  // suffix
+    #expect(UInt8.bitRangeWithinBounds(bits: 4..<6))  // middle
 
-    XCTAssertTrue(UInt32.bitRangeWithinBounds(bits: 0..<32))  // full width
-    XCTAssertTrue(UInt32.bitRangeWithinBounds(bits: 0..<10))  // prefix
-    XCTAssertTrue(UInt32.bitRangeWithinBounds(bits: 30..<32))  // suffix
-    XCTAssertTrue(UInt32.bitRangeWithinBounds(bits: 13..<23))  // middle
+    #expect(UInt32.bitRangeWithinBounds(bits: 0..<32))  // full width
+    #expect(UInt32.bitRangeWithinBounds(bits: 0..<10))  // prefix
+    #expect(UInt32.bitRangeWithinBounds(bits: 30..<32))  // suffix
+    #expect(UInt32.bitRangeWithinBounds(bits: 13..<23))  // middle
 
     // Out of bounds
-    XCTAssertFalse(UInt8.bitRangeWithinBounds(bits: -1..<2))  // partial lower
-    XCTAssertFalse(UInt8.bitRangeWithinBounds(bits: -2..<(-1)))  // fully lower
-    XCTAssertFalse(UInt8.bitRangeWithinBounds(bits: 7..<12))  // partial upper
-    XCTAssertFalse(UInt8.bitRangeWithinBounds(bits: 9..<12))  // fully upper
-    XCTAssertFalse(UInt8.bitRangeWithinBounds(bits: -2..<12))  // both side
+    #expect(!UInt8.bitRangeWithinBounds(bits: -1..<2))  // partial lower
+    #expect(!UInt8.bitRangeWithinBounds(bits: -2..<(-1)))  // fully lower
+    #expect(!UInt8.bitRangeWithinBounds(bits: 7..<12))  // partial upper
+    #expect(!UInt8.bitRangeWithinBounds(bits: 9..<12))  // fully upper
+    #expect(!UInt8.bitRangeWithinBounds(bits: -2..<12))  // both side
 
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -1..<2))  // partial lower
-    // fully lower
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -2..<(-1)))
-    // partial upper
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: 30..<36))
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: 33..<36))  // fully upper
-    XCTAssertFalse(UInt32.bitRangeWithinBounds(bits: -2..<36))  // both side
+    #expect(!UInt32.bitRangeWithinBounds(bits: -1..<2))  // partial lower
+    #expect(!UInt32.bitRangeWithinBounds(bits: -2..<(-1)))  // fully lower
+    #expect(!UInt32.bitRangeWithinBounds(bits: 30..<36))  // partial upper
+    #expect(!UInt32.bitRangeWithinBounds(bits: 33..<36))  // fully upper
+    #expect(!UInt32.bitRangeWithinBounds(bits: -2..<36))  // both side
   }
 
-  func test_bitRangeCoalesced() {
+  @Test func bitRangeCoalesced() {
     // Coalesced
-    XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [0..<1, 2..<5, 7..<8]))
+    #expect(UInt8.bitRangesCoalesced(bits: [0..<1, 2..<5, 7..<8]))
     // Not sorted
-    XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [2..<3, 0..<1]))
+    #expect(UInt8.bitRangesCoalesced(bits: [2..<3, 0..<1]))
     // FIXME: this should only be valid if in reverse order 1..<2, 0..<1
-    XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [0..<1, 1..<2]))  // Touching
+    #expect(UInt8.bitRangesCoalesced(bits: [0..<1, 1..<2]))  // Touching
     // v Good. ^ Bad.
-    XCTAssertTrue(UInt8.bitRangesCoalesced(bits: [1..<2, 0..<1]))  // Touching
+    #expect(UInt8.bitRangesCoalesced(bits: [1..<2, 0..<1]))  // Touching
 
     // Not coalesced
-    XCTAssertFalse(UInt8.bitRangesCoalesced(bits: [0..<1, 0..<2]))
+    #expect(!UInt8.bitRangesCoalesced(bits: [0..<1, 0..<2]))
   }
 
-  func test_bitRangeExtract() {
-    XCTAssertExtract(
+  @Test func bitRangeExtract() {
+    assertExtract(
       bitRanges: 0..<1,
       from: UInt32(0xff00_ff00),
       equals: 0b0)
 
-    XCTAssertExtract(
+    assertExtract(
       bitRanges: 8..<9,
       from: UInt32(0xff00_ff00),
       equals: 0b1)
 
-    XCTAssertExtract(
+    assertExtract(
       bitRanges: 8..<16,
       from: UInt32(0xff00_ff00),
       equals: 0xff)
 
-    XCTAssertExtract(
+    assertExtract(
       bitRanges: 12..<20,
       from: UInt32(0xff00_ff00),
       equals: 0x0f)
 
-    XCTAssertExtract(
+    assertExtract(
       bitRanges: 0..<1, 8..<9,
       from: UInt32(0xff00_ff00),
       equals: 0b10)
 
-    XCTAssertExtract(
+    assertExtract(
       bitRanges: 0..<1, 8..<9, 12..<20, 23..<25,
       from: UInt32(0xff00_ff00),
       equals: 0b10_00001111_1_0)
 
     // Bit range order _matters_.
-    XCTAssertExtract(
+    assertExtract(
       bitRanges: 8..<9, 0..<1, 23..<25, 12..<20,
       from: UInt32(0xff00_ff00),
       equals: 0b00001111_10_0_1)
   }
 
-  func test_bitRangeInsert() {
+  @Test func bitRangeInsert() {
     // Set 0 -> 0
-    XCTAssertInsert(
+    assertInsert(
       value: 0b0,
       bitRanges: 0..<1,
       into: UInt32(0xff00_ff00),
       equals: 0xff00_ff00)
 
     // Set 1 -> 0
-    XCTAssertInsert(
+    assertInsert(
       value: 0b0,
       bitRanges: 8..<9,
       into: UInt32(0xff00_ff00),
       equals: 0xff00_fe00)
 
     // Set 0 -> 1
-    XCTAssertInsert(
+    assertInsert(
       value: 0b1,
       bitRanges: 0..<1,
       into: UInt32(0xff00_ff01),
       equals: 0xff00_ff01)
 
     // Set 1 -> 1
-    XCTAssertInsert(
+    assertInsert(
       value: 0b1,
       bitRanges: 8..<9,
       into: UInt32(0xff00_ff00),
       equals: 0xff00_ff00)
 
-    XCTAssertInsert(
+    assertInsert(
       value: 0b10_00001111_1_0,
       bitRanges: 0..<1, 8..<9, 12..<20, 23..<25,
       into: UInt32(0xfe8f_0e01),
       equals: 0xff00_ff00)
 
     // Bit range order _matters_.
-    XCTAssertInsert(
+    assertInsert(
       value: 0b00001111_10_0_1,
       bitRanges: 8..<9, 0..<1, 23..<25, 12..<20,
       into: UInt32(0xfe8f_0e01),

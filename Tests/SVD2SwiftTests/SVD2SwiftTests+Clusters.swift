@@ -9,10 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Testing
+
 @testable import SVD
 @testable import SVD2Swift
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 extension SVD2SwiftTests {
   private static let testClusterOutputDevice = SVDDevice(
     name: "ExampleDevice",
@@ -70,8 +71,8 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_cluster_output() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func cluster_output() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testClusterOutputDevice,
       options: .init(
         indentation: .space(2),

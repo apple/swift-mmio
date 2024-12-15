@@ -13,11 +13,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class RegisterBlockMacroTests: XCTestCase {
+struct RegisterBlockMacroTests {
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBlockMacro>
 
   static let macros: [String: Macro.Type] = [
@@ -25,7 +25,7 @@ final class RegisterBlockMacroTests: XCTestCase {
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  func test_decl_onlyStruct() {
+  @Test func decl_onlyStruct() {
     assertMacroExpansion(
       """
       @RegisterBlock actor A {}
@@ -58,7 +58,7 @@ final class RegisterBlockMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_decl_onlyStruct_broken() {
+  @Test func decl_onlyStruct_broken() {
     assertMacroExpansion(
       """
       @RegisterBlock var v: Int
@@ -72,7 +72,7 @@ final class RegisterBlockMacroTests: XCTestCase {
       macros: Self.macros)
   }
 
-  func test_members_storedVarDeclsAreAnnotated() {
+  @Test func members_storedVarDeclsAreAnnotated() {
     assertMacroExpansion(
       """
       @RegisterBlock
@@ -137,7 +137,7 @@ final class RegisterBlockMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_members_nonStoredVarDeclsAreOk() {
+  @Test func members_nonStoredVarDeclsAreOk() {
     assertMacroExpansion(
       """
       @RegisterBlock

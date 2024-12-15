@@ -10,13 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
-final class LoadCommandTests: XCTestCase {
-  func test_argumentParsing() {
-    XCTAssertCommand(
+struct LoadCommandTests {
+  @Test func argumentParsing() {
+    assertCommand(
       command: LoadCommand.self,
       arguments: ["--help"],
       success: true,

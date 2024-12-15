@@ -9,10 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Testing
+
 @testable import SVD
 @testable import SVD2Swift
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 extension SVD2SwiftTests {
   private static let testBitWidthsDevice = SVDDevice(
     name: "ExampleDevice",
@@ -57,8 +58,8 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_field_bitWidths() throws {
-    XCTAssertSVD2SwiftOutput(
+  @Test func field_bitWidths() throws {
+    assertSVD2SwiftOutput(
       svdDevice: Self.testBitWidthsDevice,
       options: .init(
         indentation: .space(2),

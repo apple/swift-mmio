@@ -10,13 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
-final class WriteCommandTests: XCTestCase {
-  func test_argumentParsing() {
-    XCTAssertCommand(
+struct WriteCommandTests {
+  @Test func argumentParsing() {
+    assertCommand(
       command: WriteCommand.self,
       arguments: ["--help"],
       success: true,
@@ -37,8 +37,8 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_badKeyPath() {
-    XCTAssertCommand(
+  @Test func badKeyPath() {
+    assertCommand(
       command: WriteCommand.self,
       // FIXME: remove "--force"
       arguments: ["", "0", "--force"],
@@ -49,7 +49,7 @@ final class WriteCommandTests: XCTestCase {
         error: Invalid key path “”.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: WriteCommand.self,
       // FIXME: remove "--force"
       arguments: [".", "0", "--force"],
@@ -61,8 +61,8 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_invalidKeyPath() {
-    XCTAssertCommand(
+  @Test func invalidKeyPath() {
+    assertCommand(
       command: WriteCommand.self,
       // FIXME: remove "--force"
       arguments: ["TestPeripheral", "0", "--force"],
@@ -72,7 +72,7 @@ final class WriteCommandTests: XCTestCase {
         error: Invalid register key path “TestPeripheral”.
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: WriteCommand.self,
       // FIXME: remove "--force"
       arguments: ["TestPeripheral.TestRegister0.Field0", "0", "--force"],
@@ -83,8 +83,8 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_unknownItem() {
-    XCTAssertCommand(
+  @Test func unknownItem() {
+    assertCommand(
       command: WriteCommand.self,
       arguments: ["ABC", "0", "--force"],
       success: false,
@@ -94,8 +94,8 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_write_register() {
-    XCTAssertCommand(
+  @Test func write_register() {
+    assertCommand(
       command: WriteCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "19088743", "--force"],
       success: true,
@@ -106,7 +106,7 @@ final class WriteCommandTests: XCTestCase {
         Wrote: 0x0123_4567
         """)
 
-    XCTAssertCommand(
+    assertCommand(
       command: WriteCommand.self,
       arguments: ["TestPeripheral.TestRegister0", "0x1_0123_4567", "--force"],
       success: false,
@@ -116,7 +116,7 @@ final class WriteCommandTests: XCTestCase {
         """)
   }
 
-  func test_write_field() {
+  @Test func write_field() {
     // TODO: implement and test
   }
 }

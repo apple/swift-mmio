@@ -14,35 +14,13 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class WithAttributesSyntaxTests: XCTestCase {
-  func test_requireMacro() throws {
-    struct Vector {
-      var decl: any WithAttributesSyntax
-      var macros: [any (ParsableMacro.Type)]
-      var match: MatchingAttributeAndMacro?
-      var file: StaticString
-      var line: UInt
-
-      init(
-        decl: DeclSyntax,
-        macros: [any (ParsableMacro.Type)],
-        match: MatchingAttributeAndMacro?,
-        file: StaticString = #file,
-        line: UInt = #line
-      ) {
-        self.decl = decl.asProtocol(WithAttributesSyntax.self)!
-        self.macros = macros
-        self.match = match
-        self.file = file
-        self.line = line
-      }
-    }
-
-    let vectors: [Vector] = [
+struct WithAttributesSyntaxTests {
+  struct RequireMacroTestVector: CustomStringConvertible {
+    static let vectors: [Self] = [
       .init(
         decl: "var v: Bool",
         macros: [Macro0.self, Macro1.self],
@@ -92,31 +70,33 @@ final class WithAttributesSyntaxTests: XCTestCase {
         match: .init(attribute: "@Macro0", macroType: Macro0.self)),
     ]
 
-    for vector in vectors {
-      // FIXME: assert diagnostics
-      let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
-      do {
-        let actual = try vector.decl.requireMacro(vector.macros, context)
-        if let expected = vector.match {
-          XCTAssertEqual(
-            actual.attribute.trimmed.description,
-            expected.attribute.trimmed.description,
-            file: vector.file,
-            line: vector.line)
-          XCTAssertEqual(
-            actual.macroType.signature,
-            expected.macroType.signature,
-            file: vector.file,
-            line: vector.line)
-        } else {
-          XCTFail("expected no match", file: vector.file, line: vector.line)
-        }
-      } catch {
-        if vector.match != nil {
-          XCTFail("expected match", file: vector.file, line: vector.line)
-        }
-      }
+    var description: String { "\(self.decl)" }
+    var decl: any WithAttributesSyntax
+    var macros: [any (ParsableMacro.Type)]
+    var match: MatchingAttributeAndMacro?
+
+    init(
+      decl: DeclSyntax,
+      macros: [any (ParsableMacro.Type)],
+      match: MatchingAttributeAndMacro?
+    ) {
+      // swift-format-ignore: NeverForceUnwrap
+      self.decl = decl.asProtocol(WithAttributesSyntax.self)!
+      self.macros = macros
+      self.match = match
     }
+  }
+
+  @Test(arguments: RequireMacroTestVector.vectors)
+  func requireMacro(vector: RequireMacroTestVector) throws {
+    // FIXME: assert diagnostics
+    let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
+    let actual = try? vector.decl.requireMacro(vector.macros, context)
+    let expected = vector.match
+    #expect(
+      actual?.attribute.trimmed.description
+        == expected?.attribute.trimmed.description)
+    #expect(actual?.macroType.signature == expected?.macroType.signature)
   }
 }
 #endif

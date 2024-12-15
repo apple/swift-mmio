@@ -13,7 +13,6 @@
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
-import XCTest
 
 @testable import MMIOMacros
 

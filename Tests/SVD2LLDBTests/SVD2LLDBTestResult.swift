@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
@@ -81,20 +81,19 @@ extension SVD2LLDBTestResult: SVD2LLDBResult {
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertSVD2LLDBResult(
+func assertSVD2LLDBResult(
   result: SVD2LLDBTestResult,
   output: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   // Exit early if the actual output matches the expected output.
   let actualOutput = result.description
   let expectedOutput = output
   guard actualOutput != expectedOutput else { return }
 
-  XCTFail(
-    diff(expected: expectedOutput, actual: actualOutput, noun: "result"),
-    file: file,
-    line: line)
+  Issue.record(
+    Comment(
+      rawValue: diff(
+        expected: expectedOutput, actual: actualOutput, noun: "result")),
+    sourceLocation: sourceLocation)
 }

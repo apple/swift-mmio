@@ -13,11 +13,11 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class BitFieldMacroTests: XCTestCase {
+struct BitFieldMacroTests {
   struct TestMacro: BitFieldMacro {
     static let accessorMacroSuppressParsingDiagnostics = false
     static let baseName = "Test"
@@ -54,7 +54,7 @@ final class BitFieldMacroTests: XCTestCase {
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  func test_decl_onlyVar() {
+  @Test func decl_onlyVar() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) struct S {}
@@ -71,7 +71,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_binding_onlyVar() {
+  @Test func binding_onlyVar() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) inout a: Int
@@ -103,7 +103,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_binding_noMultiple() {
+  @Test func binding_noMultiple() {
     let message = "accessor macro can only be applied to a single variable"
     assertMacroExpansion(
       """
@@ -122,7 +122,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingIdentifier_noImplicit() {
+  @Test func bindingIdentifier_noImplicit() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var _: Int
@@ -141,7 +141,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingIdentifier_noTuple() {
+  @Test func bindingIdentifier_noTuple() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var (a, b): Int
@@ -160,7 +160,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noOmitted() {
+  @Test func bindingType_noOmitted() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var v
@@ -182,7 +182,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noImplicit() {
+  @Test func bindingType_noImplicit() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var v: _
@@ -205,7 +205,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noOptional() {
+  @Test func bindingType_noOptional() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: Int?
@@ -224,7 +224,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noArray() {
+  @Test func bindingType_noArray() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: [Int]
@@ -243,7 +243,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_noTuple() {
+  @Test func bindingType_noTuple() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: (Int, Int)
@@ -262,7 +262,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_genericOK() {
+  @Test func bindingType_genericOK() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: Reg<T>
@@ -278,7 +278,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingType_nestedOK() {
+  @Test func bindingType_nestedOK() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: Swift.Int
@@ -294,7 +294,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_bindingAccessor_omitted() {
+  @Test func bindingAccessor_omitted() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: Int {}
@@ -316,7 +316,7 @@ final class BitFieldMacroTests: XCTestCase {
       indentationWidth: Self.indentationWidth)
   }
 
-  func test_expansion() {
+  @Test func expansion() {
     assertMacroExpansion(
       """
       @Test(bits: 0..<1) var a: Int

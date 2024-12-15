@@ -10,11 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
-final class DiffTests: XCTestCase {
-  func test_diffFormat() {
-    XCTAssertEqual(
+struct DiffTests {
+  @Test func diffFormat() {
+    #expect(
       diff(
         expected: """
           m[0x0000_0000_0000_0010] <- 0xa5
@@ -24,12 +24,11 @@ final class DiffTests: XCTestCase {
           m[0x0000_0000_0000_0020] -> 0x5a
           m[0x0000_0000_0000_0030] -> 0xa6
           """,
-        noun: "trace"),
-      """
-      Actual trace (+) differed from expected trace (-):
-      -m[0x0000_0000_0000_0010] <- 0xa5
-       m[0x0000_0000_0000_0020] -> 0x5a
-      +m[0x0000_0000_0000_0030] -> 0xa6
-      """)
+        noun: "trace") == """
+          Actual trace (+) differed from expected trace (-):
+          -m[0x0000_0000_0000_0010] <- 0xa5
+           m[0x0000_0000_0000_0020] -> 0x5a
+          +m[0x0000_0000_0000_0030] -> 0xa6
+          """)
   }
 }

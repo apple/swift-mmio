@@ -10,49 +10,45 @@
 //===----------------------------------------------------------------------===//
 
 import MMIOUtilities
-import XCTest
+import Testing
 
 @testable import SVD2LLDB
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-func XCTAssertCommand<Command: SVD2LLDBCommand>(
+func assertCommand<Command: SVD2LLDBCommand>(
   command _: Command.Type = Command.self,
   arguments: [String],
   success: Bool,
   debugger expectedDebugger: String,
   result expectedResult: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   let context = SVD2LLDB(device: device)
   var debugger = SVD2LLDBTestDebugger()
   var result = SVD2LLDBTestResult()
-  XCTAssertEqual(
+  #expect(
     Command.run(
       arguments: arguments,
       debugger: &debugger,
       result: &result,
-      context: context),
-    success,
-    file: file,
-    line: line)
+      context: context) == success,
+    sourceLocation: sourceLocation)
 
   let actualDebugger = debugger.description
   if actualDebugger != expectedDebugger {
-    XCTFail(
-      diff(
-        expected: expectedDebugger,
-        actual: actualDebugger,
-        noun: "debugger IO"),
-      file: file,
-      line: line)
+    Issue.record(
+      Comment(
+        rawValue: diff(
+          expected: expectedDebugger, actual: actualDebugger,
+          noun: "debugger IO")),
+      sourceLocation: sourceLocation)
   }
 
   let actualResult = result.description
   if actualResult != expectedResult {
-    XCTFail(
-      diff(expected: expectedResult, actual: actualResult, noun: "result"),
-      file: file,
-      line: line)
+    Issue.record(
+      Comment(
+        rawValue: diff(
+          expected: expectedResult, actual: actualResult, noun: "result")),
+      sourceLocation: sourceLocation)
   }
 }

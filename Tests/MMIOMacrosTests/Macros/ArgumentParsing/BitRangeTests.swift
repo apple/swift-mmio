@@ -12,120 +12,90 @@
 #if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
-import XCTest
+import Testing
 
 @testable import MMIOMacros
 
-final class BitRangeTests: XCTestCase {
-  struct Vector {
+struct BitRangeTests {
+  struct BitRangeTestVector: CustomStringConvertible {
+    static let vectors: [Self] = [
+      .init(
+        value: .init(
+          lowerBound: nil,
+          upperBound: nil),
+        canonicalizedClosedRange: (.min)...(.max),
+        description: "(-∞, +∞)"),
+
+      .init(
+        value: .init(
+          lowerBound: .init(value: 0, inclusive: false),
+          upperBound: nil),
+        canonicalizedClosedRange: 1...(.max),
+        description: "(0, +∞)"),
+      .init(
+        value: .init(
+          lowerBound: .init(value: 0, inclusive: true),
+          upperBound: nil),
+        canonicalizedClosedRange: 0...(.max),
+        description: "[0, +∞)"),
+      .init(
+        value: .init(
+          lowerBound: nil,
+          upperBound: .init(value: 2, inclusive: false)),
+        canonicalizedClosedRange: (.min)...1,
+        description: "(-∞, 2)"),
+      .init(
+        value: .init(
+          lowerBound: nil,
+          upperBound: .init(value: 2, inclusive: true)),
+        canonicalizedClosedRange: (.min)...2,
+        description: "(-∞, 2]"),
+
+      .init(
+        value: .init(
+          lowerBound: .init(value: 0, inclusive: false),
+          upperBound: .init(value: 2, inclusive: false)),
+        canonicalizedClosedRange: 1...1,
+        description: "(0, 2)"),
+      .init(
+        value: .init(
+          lowerBound: .init(value: 0, inclusive: false),
+          upperBound: .init(value: 2, inclusive: true)),
+        canonicalizedClosedRange: 1...2,
+        description: "(0, 2]"),
+      .init(
+        value: .init(
+          lowerBound: .init(value: 0, inclusive: true),
+          upperBound: .init(value: 2, inclusive: false)),
+        canonicalizedClosedRange: 0...1,
+        description: "[0, 2)"),
+      .init(
+        value: .init(
+          lowerBound: .init(value: 0, inclusive: true),
+          upperBound: .init(value: 2, inclusive: true)),
+        canonicalizedClosedRange: 0...2,
+        description: "[0, 2]"),
+    ]
+
     var value: BitRange
     var canonicalizedClosedRange: ClosedRange<Int>
     var description: String
-    var file: StaticString
-    var line: UInt
-
-    init(
-      value: BitRange,
-      canonicalizedClosedRange: ClosedRange<Int>,
-      description: String,
-      file: StaticString = #file,
-      line: UInt = #line
-    ) {
-      self.value = value
-      self.canonicalizedClosedRange = canonicalizedClosedRange
-      self.description = description
-      self.file = file
-      self.line = line
-    }
   }
 
-  let vectors: [Vector] = [
-    .init(
-      value: .init(
-        lowerBound: nil,
-        upperBound: nil),
-      canonicalizedClosedRange: (.min)...(.max),
-      description: "(-∞, +∞)"),
-
-    .init(
-      value: .init(
-        lowerBound: .init(value: 0, inclusive: false),
-        upperBound: nil),
-      canonicalizedClosedRange: 1...(.max),
-      description: "(0, +∞)"),
-    .init(
-      value: .init(
-        lowerBound: .init(value: 0, inclusive: true),
-        upperBound: nil),
-      canonicalizedClosedRange: 0...(.max),
-      description: "[0, +∞)"),
-    .init(
-      value: .init(
-        lowerBound: nil,
-        upperBound: .init(value: 2, inclusive: false)),
-      canonicalizedClosedRange: (.min)...1,
-      description: "(-∞, 2)"),
-    .init(
-      value: .init(
-        lowerBound: nil,
-        upperBound: .init(value: 2, inclusive: true)),
-      canonicalizedClosedRange: (.min)...2,
-      description: "(-∞, 2]"),
-
-    .init(
-      value: .init(
-        lowerBound: .init(value: 0, inclusive: false),
-        upperBound: .init(value: 2, inclusive: false)),
-      canonicalizedClosedRange: 1...1,
-      description: "(0, 2)"),
-    .init(
-      value: .init(
-        lowerBound: .init(value: 0, inclusive: false),
-        upperBound: .init(value: 2, inclusive: true)),
-      canonicalizedClosedRange: 1...2,
-      description: "(0, 2]"),
-    .init(
-      value: .init(
-        lowerBound: .init(value: 0, inclusive: true),
-        upperBound: .init(value: 2, inclusive: false)),
-      canonicalizedClosedRange: 0...1,
-      description: "[0, 2)"),
-    .init(
-      value: .init(
-        lowerBound: .init(value: 0, inclusive: true),
-        upperBound: .init(value: 2, inclusive: true)),
-      canonicalizedClosedRange: 0...2,
-      description: "[0, 2]"),
-  ]
-
-  func test_description() {
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.value.description,
-        vector.description,
-        file: vector.file,
-        line: vector.line)
-    }
+  @Test(arguments: BitRangeTestVector.vectors)
+  func description(vector: BitRangeTestVector) {
+    #expect(vector.value.description == vector.description)
   }
 
-  func test_initDescription() {
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.value,
-        BitRange(vector.description),
-        file: vector.file,
-        line: vector.line)
-    }
+  @Test(arguments: BitRangeTestVector.vectors)
+  func initDescription(vector: BitRangeTestVector) {
+    #expect(vector.value == BitRange(vector.description))
   }
 
-  func test_canonicalizedClosedRange() {
-    for vector in vectors {
-      XCTAssertEqual(
-        vector.value.canonicalizedClosedRange,
-        vector.canonicalizedClosedRange,
-        file: vector.file,
-        line: vector.line)
-    }
+  @Test(arguments: BitRangeTestVector.vectors)
+  func canonicalizedClosedRange(vector: BitRangeTestVector) {
+    #expect(
+      vector.value.canonicalizedClosedRange == vector.canonicalizedClosedRange)
   }
 }
 #endif

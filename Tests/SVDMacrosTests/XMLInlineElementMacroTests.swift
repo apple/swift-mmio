@@ -12,17 +12,17 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 @testable import SVDMacros
 
-final class XMLInlineElementMacroTests: XCTestCase {
+struct XMLInlineElementMacroTests {
   static let macros: [String: Macro.Type] = [
     "XMLInlineElement": XMLMarkerMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  func test_peerMacro_generatesNoPeers() {
+  @Test func peerMacro_generatesNoPeers() {
     assertMacroExpansion(
       """
       struct S {

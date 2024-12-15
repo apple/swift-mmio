@@ -9,9 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-// FIXME: switch over to swift-testing
-// XCTest is really painful for dynamic test lists
-
 import Dispatch
 import Foundation
 import MMIOUtilities
@@ -87,7 +84,7 @@ struct MMIOFileCheckTests: @unchecked Sendable {
           plutil \
             -extract CFBundleIdentifier raw \
             -o - \
-            /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+            ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
           """)
       } catch {
         print("Failed to locate toolchain by plist: \(error)")
