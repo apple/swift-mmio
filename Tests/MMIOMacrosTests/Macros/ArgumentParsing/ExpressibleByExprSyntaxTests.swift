@@ -16,41 +16,6 @@ import Testing
 
 @testable import MMIOMacros
 
-func assertParse<Value>(
-  expression: ExprSyntax,
-  expected: Value,
-  sourceLocation: Testing.SourceLocation = #_sourceLocation
-) where Value: ExpressibleByExprSyntax, Value: Equatable {
-  #expect(throws: Never.self, sourceLocation: sourceLocation) {
-    let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
-    let actual = try Value(expression: expression, in: context)
-    #expect(actual == expected, sourceLocation: sourceLocation)
-  }
-}
-
-func assertParseBitFieldTypeProjection(
-  expression: ExprSyntax,
-  sourceLocation: Testing.SourceLocation = #_sourceLocation
-) {
-  // swift-format-ignore: NeverForceUnwrap
-  let base = expression.as(MemberAccessExprSyntax.self)!.base!
-  assertParse(
-    expression: expression,
-    expected: BitFieldTypeProjection(expression: base),
-    sourceLocation: sourceLocation)
-}
-
-func assertNoParse<Value>(
-  expression: ExprSyntax,
-  as _: Value.Type,
-  sourceLocation: Testing.SourceLocation = #_sourceLocation
-) where Value: ExpressibleByExprSyntax {
-  #expect(throws: ExpansionError.self, sourceLocation: sourceLocation) {
-    let context = MacroContext.makeSuppressingDiagnostics(Macro0.self)
-    _ = try Value(expression: expression, in: context)
-  }
-}
-
 struct ExpressibleByExprSyntaxTests {
   @Test func exprSyntax() throws {
     let expression: ExprSyntax = "Bool.self"

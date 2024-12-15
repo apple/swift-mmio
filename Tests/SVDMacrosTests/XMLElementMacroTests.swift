@@ -11,7 +11,6 @@
 
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
 import Testing
 
 @testable import SVDMacros
