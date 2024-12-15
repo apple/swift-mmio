@@ -11,21 +11,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    container: swiftlang/swift:nightly-main
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Dependencies
-        run: apt-get -qq update && apt-get -qq -y install make
-      - name: Lint
-        run: make lint
+  soundness:
+    name: Soundness
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
+    with:
+      api_breakage_check_enabled: false  # this repo isn't API stable yet
+      docs_check_enabled: false  # too slow
+      format_check_container_image: swiftlang/swift:nightly-main
+      license_header_check_enabled: false  # feature: https://github.com/swiftlang/github-workflows/issues/78
+      license_header_check_project_name: "Swift.org"  # bug: https://github.com/swiftlang/github-workflows/issues/76
 
   test:
     name: Swift (${{ matrix.swift.version }}) / Ubuntu (${{ matrix.os.version }})
     runs-on: ubuntu-latest
-    needs: lint
     strategy:
       fail-fast: false
       matrix:
