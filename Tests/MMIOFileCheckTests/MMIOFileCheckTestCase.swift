@@ -15,59 +15,48 @@
 import Dispatch
 import Foundation
 import MMIOUtilities
-import XCTest
+import Testing
 
-final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
-  func test() throws {
-    let selfFileURL = URL(fileURLWithPath: #filePath)
-    let selfDirectoryURL =
-      selfFileURL
-      .deletingLastPathComponent()
-    let packageDirectoryURL =
-      selfDirectoryURL
-      .deletingLastPathComponent()
-      .deletingLastPathComponent()
-    let testsDirectoryURL =
-      selfDirectoryURL
-      .appendingPathComponent("Tests")
+struct MMIOFileCheckTests: @unchecked Sendable {
+  struct Configuration {
+    var hasLLVMFileCheck: Bool
+    var toolchainID: String
+    var packageDirectory: URL
+    var buildOutputs: URL
 
-    // Get a list of the test files from disk.
-    print("Finding Tests...")
-    let testFileURLs = FileManager.default.files(
-      inDirectory: testsDirectoryURL,
-      withPathExtension: "swift")
-
-    // Run test setup step.
-    print("Running Test Setup...")
-    let start = DispatchTime.now()
-    let (hasLLVMFileCheck, toolchainID, buildOutputsURL) = try Self.prerun(
-      packageDirectoryURL: packageDirectoryURL)
-    let end = DispatchTime.now()
-
-    // `DispatchTime.distance(to:)` is unavailable on linux.
-    let duration = end.uptimeNanoseconds - start.uptimeNanoseconds
-    print("Setup took \(duration) nanoseconds")
-
-    print("Running Tests...")
-    DispatchQueue.concurrentPerform(iterations: testFileURLs.count) { index in
-      let testFileURL = testFileURLs[index]
-      let diagnostics = Self.run(
-        testFileURL: testFileURL,
-        hasLLVMFileCheck: hasLLVMFileCheck,
-        toolchainID: toolchainID,
-        packageDirectoryURL: packageDirectoryURL,
-        buildOutputsURL: buildOutputsURL)
-      for diagnostic in diagnostics {
-        self.record(diagnostic: diagnostic)
-      }
+    var buildModulesDirectory: URL {
+      self.buildOutputs
+        .appendingPathComponent("Modules")
     }
 
-    print("Finished running \(testFileURLs.count) tests")
+    var buildMMIOMacrosFile: URL {
+      self.buildOutputs
+        .appendingPathComponent("MMIOMacros-tool")
+    }
+
+    var mmioVolatileDirectory: URL {
+      self.packageDirectory
+        .appendingPathComponent("Sources")
+        .appendingPathComponent("MMIOVolatile")
+    }
   }
 
-  static func prerun(
-    packageDirectoryURL: URL
-  ) throws -> (Bool, String, URL) {
+  static let _configuration = Result { try Self.configure() }
+  static var configuration: Configuration {
+    get throws { try self._configuration.get() }
+  }
+
+  /// The test files in this target's "Tests" subdirectory.
+  static let testFiles: [URL] = {
+    let testsDirectory = URL(fileURLWithPath: #filePath)
+      .deletingLastPathComponent()
+      .appendingPathComponent("Tests")
+    return FileManager.default.files(
+      inDirectory: testsDirectory,
+      withPathExtension: "swift")
+  }()
+
+  static func configure() throws -> Configuration {
     let environment = ProcessInfo.processInfo.environment
 
     let ci: Bool
@@ -80,8 +69,9 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
 
     print("Determining Swift Toolchain...")
     let toolchainID: String
-
-    if let toolchain = environment["TOOLCHAINS"] {
+    if true {
+      toolchainID = "org.swift.62202412101a"
+    } else if let toolchain = environment["TOOLCHAINS"] {
       print("TOOLCHAINS set.")
       toolchainID = toolchain
     } else if ci {
@@ -103,36 +93,35 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
         print("Failed to locate toolchain by plist: \(error)")
         toolchainID = ""
       }
-      #else
-      toolchainID = ""
       #endif
     }
     print("Using TOOLCHAINS=\(toolchainID)")
 
     let hasLLVMFileCheck: Bool
-    do {
-      print("Locating FileCheck...")
-      _ = try sh("which FileCheck")
-      hasLLVMFileCheck = environment["SWIFT_MMIO_USE_SIMPLE_FILECHECK"] == nil
-    } catch {
-      print("Failed to locate FileCheck...")
+    if environment["SWIFT_MMIO_USE_SIMPLE_FILECHECK"] != nil {
+      print("Using Simple FileCheck (forced)")
+      hasLLVMFileCheck = false
+    } else if case .success = Result(catching: { try sh("which FileCheck") }) {
+      print("Using LLVM FileCheck")
+      hasLLVMFileCheck = true
+    } else {
+      print("Using Simple FileCheck (no llvm)")
       hasLLVMFileCheck = false
     }
 
-    if hasLLVMFileCheck {
-      print("Using LLVM FileCheck")
-    } else {
-      print("Using Simple FileCheck")
-    }
+    let packageDirectory = URL(fileURLWithPath: #filePath)
+      .deletingLastPathComponent()
+      .deletingLastPathComponent()
+      .deletingLastPathComponent()
 
     print("Determining Dependency Paths...")
-    let buildOutputsURL = URL(
+    let buildOutputs = URL(
       fileURLWithPath: try sh(
         """
         TOOLCHAINS=\(toolchainID) swift build \
           --ignore-lock \
           --configuration release \
-          --package-path \(packageDirectoryURL.path) \
+          --package-path \(packageDirectory.path) \
           --show-bin-path
         """))
 
@@ -143,106 +132,60 @@ final class MMIOFileCheckTests: XCTestCase, @unchecked Sendable {
       TOOLCHAINS=\(toolchainID) swift build \
         --ignore-lock \
         --configuration release \
-        --package-path \(packageDirectoryURL.path) \
-        --verbose
+        --package-path \(packageDirectory.path)
       """, collectStandardOutput: false)
     #endif
 
-    return (hasLLVMFileCheck, toolchainID, buildOutputsURL)
+    return Configuration(
+      hasLLVMFileCheck: hasLLVMFileCheck,
+      toolchainID: toolchainID,
+      packageDirectory: packageDirectory,
+      buildOutputs: buildOutputs)
   }
 
-  static func run(
-    testFileURL: URL,
-    hasLLVMFileCheck: Bool,
-    toolchainID: String,
-    packageDirectoryURL: URL,
-    buildOutputsURL: URL
-  ) -> [LLVMDiagnostic] {
-    do {
-      print("Running: \(testFileURL.lastPathComponent)")
+  @Test(arguments: Self.testFiles)
+  func fileCheck(testFile: URL) throws {
+    let configuration = try Self.configuration
 
-      let testOutputFileURL =
-        buildOutputsURL
-        .appendingPathComponent(testFileURL.lastPathComponent)
-        .appendingPathExtension("ll")
-      let buildModulesDirectoryURL =
-        buildOutputsURL
-        .appendingPathComponent("Modules")
-      let buildMMIOMacrosFileURL =
-        buildOutputsURL
-        .appendingPathComponent("MMIOMacros-tool")
-      let mmioVolatileDirectoryURL =
-        packageDirectoryURL
-        .appendingPathComponent("Sources")
-        .appendingPathComponent("MMIOVolatile")
+    let testOutputFile = configuration.buildOutputs
+      .appendingPathComponent(testFile.lastPathComponent)
+      .appendingPathExtension("ll")
 
-      _ = try sh(
+    let compileSuccess = LLVMDiagnostic.parsingShellOutput(
+      """
+      TOOLCHAINS=\(configuration.toolchainID) swiftc \
+        -emit-ir \(testFile.path) \
+        -o \(testOutputFile.path) \
+        -O -wmo \
+        -I \(configuration.buildModulesDirectory.path) \
+        -I \(configuration.mmioVolatileDirectory.path) \
+        -load-plugin-executable \(configuration.buildMMIOMacrosFile.path)#MMIOMacros \
+        -parse-as-library \
+        -diagnostic-style llvm
+      """)
+    guard compileSuccess else { return }
+
+    let fileCheckSuccess: Bool
+    if configuration.hasLLVMFileCheck {
+      fileCheckSuccess = LLVMDiagnostic.parsingShellOutput(
         """
-        TOOLCHAINS=\(toolchainID) swiftc \
-          -emit-ir \(testFileURL.path) \
-          -o \(testOutputFileURL.path) \
-          -O -wmo \
-          -I \(buildModulesDirectoryURL.path) \
-          -I \(mmioVolatileDirectoryURL.path) \
-          -load-plugin-executable \(buildMMIOMacrosFileURL.path)#MMIOMacros \
-          -parse-as-library \
-          -diagnostic-style llvm \
-          -v \
-          -Rmodule-loading
+        FileCheck \
+          \(testFile.path) \
+          --input-file \(testOutputFile.path) \
+          --dump-input never
         """)
-
-      if hasLLVMFileCheck {
-        _ = try sh(
-          """
-          FileCheck \
-            \(testFileURL.path) \
-            --input-file \(testOutputFileURL.path) \
-            --dump-input never
-          """)
-      } else {
-        let fileCheck = SimpleFileCheck(
-          inputFileURL: testFileURL,
-          outputFileURL: testOutputFileURL)
-        let diagnostics = fileCheck.run()
-        guard diagnostics.isEmpty else {
-          return diagnostics
-        }
+    } else {
+      let fileCheck = SimpleFileCheck(
+        inputFile: testFile,
+        outputFile: testOutputFile)
+      let diagnostics = fileCheck.run()
+      for diagnostic in diagnostics {
+        diagnostic.recordAsIssue()
       }
-
-    } catch let error as ShellCommandError {
-      // Parse the errors.
-      var message = error.error[...]
-      let diagnostics = Parser.llvmDiagnostics.run(&message)
-      guard let diagnostics = diagnostics else {
-        XCTFail("Test failed: \(error)")
-        return []
-      }
-      if !message.isEmpty {
-        XCTFail("Failed to parse all error diagnostics, remaining: \(message)")
-      }
-      return diagnostics
-    } catch {
-      fatalError("Unexpected error: \(error)")
+      fileCheckSuccess = diagnostics.isEmpty
     }
 
-    return []
-  }
-}
-
-extension XCTestCase {
-  func record(diagnostic: LLVMDiagnostic) {
-    #if os(Linux)
-    XCTFail("Test failed with error: \(diagnostic)")
-    #else
-    let issue = XCTIssue(
-      type: .assertionFailure,  // FIXME: this emits notes as errors
-      compactDescription: diagnostic.message,
-      sourceCodeContext: .init(
-        location: .init(
-          filePath: diagnostic.file,
-          lineNumber: diagnostic.line)))
-    self.record(issue)
-    #endif
+    guard fileCheckSuccess else { return }
   }
 }
 
@@ -261,5 +204,41 @@ extension FileManager {
       .compactMap { $0 as? URL }
       .filter { $0.pathExtension == pathExtension }
       .sorted { $0.path < $1.path }
+  }
+}
+
+extension LLVMDiagnostic {
+  static func parsingShellOutput(_ command: String) -> Bool {
+    do throws(ShellCommandError) {
+      _ = try sh(command)
+    } catch let shellCommandError {
+      // Parse the errors.
+      var message = shellCommandError.error[...]
+      let diagnostics = Parser.llvmDiagnostics.run(&message)
+      guard let diagnostics = diagnostics else {
+        Issue.record(shellCommandError)
+        return false
+      }
+      if !message.isEmpty {
+        Issue.record(
+          "Failed to parse all error diagnostics, remaining: \(message)")
+      }
+      for diagnostic in diagnostics {
+        diagnostic.recordAsIssue()
+      }
+      return false
+    }
+    return true
+  }
+
+  func recordAsIssue() {
+    // FIXME: this emits notes as errors
+    Issue.record(
+      Comment(rawValue: self.message),
+      sourceLocation: .init(
+        fileID: self.file,
+        filePath: self.file,
+        line: self.line,
+        column: self.column))
   }
 }

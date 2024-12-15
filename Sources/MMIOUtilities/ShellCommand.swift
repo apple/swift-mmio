@@ -53,7 +53,7 @@ public func sh(
   _ command: String,
   collectStandardOutput: Bool = true,
   collectStandardError: Bool = true
-) throws -> String {
+) throws(ShellCommandError) -> String {
   let process = Process()
   process.executableURL = URL(fileURLWithPath: "/bin/sh")
   process.arguments = ["-c", "export PATH=$PATH:~/bin; \(command)"]

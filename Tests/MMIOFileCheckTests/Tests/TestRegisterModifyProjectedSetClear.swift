@@ -55,7 +55,7 @@ public func main8() {
   }
   // CHECK: %0 = load volatile i8
   // CHECK-NEXT: %1 = and i8 %0, 126
-  // CHECK-NEXT: %2 = or i8 %1, -128
+  // CHECK-NEXT: %2 = or disjoint i8 %1, -128
   // CHECK-NEXT: store volatile i8 %2
 }
 
@@ -67,7 +67,7 @@ public func main16() {
   }
   // CHECK: %0 = load volatile i16
   // CHECK-NEXT: %1 = and i16 %0, 32766
-  // CHECK-NEXT: %2 = or i16 %1, -32768
+  // CHECK-NEXT: %2 = or disjoint i16 %1, -32768
   // CHECK-NEXT: store volatile i16 %2
 }
 
@@ -79,7 +79,7 @@ public func main32() {
   }
   // CHECK: %0 = load volatile i32
   // CHECK-NEXT: %1 = and i32 %0, 2147483646
-  // CHECK-NEXT: %2 = or i32 %1, -2147483648
+  // CHECK-NEXT: %2 = or disjoint i32 %1, -2147483648
   // CHECK-NEXT: store volatile i32 %2
 }
 
@@ -91,6 +91,6 @@ public func main64() {
   }
   // CHECK: %0 = load volatile i64
   // CHECK-NEXT: %1 = and i64 %0, 9223372036854775806
-  // CHECK-NEXT: %2 = or i64 %1, -9223372036854775808
+  // CHECK-NEXT: %2 = or disjoint i64 %1, -9223372036854775808
   // CHECK-NEXT: store volatile i64 %2
 }
