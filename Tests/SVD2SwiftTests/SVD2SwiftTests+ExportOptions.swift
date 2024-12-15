@@ -343,8 +343,8 @@ extension SVD2SwiftTests {
       ])
   }
 
-  @Test func outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws
-  {
+  @Test
+  func outputOptions_namespaceUnderDeviceInstanceMemberPeripherals() throws {
     assertSVD2SwiftOutput(
       svdDevice: Self.testOutputOptionsDevice,
       options: .init(

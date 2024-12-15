@@ -80,18 +80,7 @@ struct BitRangeTests {
     var value: BitRange
     var canonicalizedClosedRange: ClosedRange<Int>
     var description: String
-
-    init(
-      value: BitRange,
-      canonicalizedClosedRange: ClosedRange<Int>,
-      description: String
-    ) {
-      self.value = value
-      self.canonicalizedClosedRange = canonicalizedClosedRange
-      self.description = description
-    }
   }
-
 
   @Test(arguments: BitRangeTestVector.vectors)
   func description(vector: BitRangeTestVector) {
@@ -105,7 +94,8 @@ struct BitRangeTests {
 
   @Test(arguments: BitRangeTestVector.vectors)
   func canonicalizedClosedRange(vector: BitRangeTestVector) {
-    #expect(vector.value.canonicalizedClosedRange == vector.canonicalizedClosedRange)
+    #expect(
+      vector.value.canonicalizedClosedRange == vector.canonicalizedClosedRange)
   }
 }
 #endif

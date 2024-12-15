@@ -36,14 +36,19 @@ func assertCommand<Command: SVD2LLDBCommand>(
   let actualDebugger = debugger.description
   if actualDebugger != expectedDebugger {
     Issue.record(
-      Comment(rawValue: diff(expected: expectedDebugger, actual: actualDebugger, noun: "debugger IO")),
+      Comment(
+        rawValue: diff(
+          expected: expectedDebugger, actual: actualDebugger,
+          noun: "debugger IO")),
       sourceLocation: sourceLocation)
   }
 
   let actualResult = result.description
   if actualResult != expectedResult {
     Issue.record(
-      Comment(rawValue: diff(expected: expectedResult, actual: actualResult, noun: "result")),
+      Comment(
+        rawValue: diff(
+          expected: expectedResult, actual: actualResult, noun: "result")),
       sourceLocation: sourceLocation)
   }
 }

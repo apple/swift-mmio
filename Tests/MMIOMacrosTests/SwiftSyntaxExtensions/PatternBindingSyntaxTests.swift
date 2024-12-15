@@ -19,7 +19,7 @@ import Testing
 @testable import MMIOMacros
 
 struct PatternBindingSyntaxTests {
-  struct RequireSimpleBindingIdentifierTestVector {
+  struct RequireSimpleBindingIdentifierTestVector: CustomStringConvertible {
     static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
@@ -32,6 +32,7 @@ struct PatternBindingSyntaxTests {
         identifier: nil),
     ]
 
+    var description: String { "\(self.decl)" }
     var decl: VariableDeclSyntax
     var identifier: IdentifierPatternSyntax?
 
@@ -39,13 +40,16 @@ struct PatternBindingSyntaxTests {
       decl: DeclSyntax,
       identifier: IdentifierPatternSyntax?
     ) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.as(VariableDeclSyntax.self)!
       self.identifier = identifier
     }
   }
 
   @Test(arguments: RequireSimpleBindingIdentifierTestVector.vectors)
-  func requireSimpleBindingIdentifier(vector: RequireSimpleBindingIdentifierTestVector) {
+  func requireSimpleBindingIdentifier(
+    vector: RequireSimpleBindingIdentifierTestVector
+  ) {
     // FIXME: assert diagnostics
     let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
     let binding = try? vector.decl.requireSingleBinding(context)
@@ -54,7 +58,7 @@ struct PatternBindingSyntaxTests {
     #expect(actual?.description == expected?.description)
   }
 
-  struct RequireSimpleTypeIdentifierTestVector {
+  struct RequireSimpleTypeIdentifierTestVector: CustomStringConvertible {
     static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
@@ -79,6 +83,7 @@ struct PatternBindingSyntaxTests {
         type: nil),
     ]
 
+    var description: String { "\(self.decl)" }
     var decl: VariableDeclSyntax
     var type: String?
 
@@ -86,13 +91,16 @@ struct PatternBindingSyntaxTests {
       decl: DeclSyntax,
       type: String?
     ) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.as(VariableDeclSyntax.self)!
       self.type = type
     }
   }
 
   @Test(arguments: RequireSimpleTypeIdentifierTestVector.vectors)
-  func requireSimpleTypeIdentifier(vector: RequireSimpleTypeIdentifierTestVector) {
+  func requireSimpleTypeIdentifier(
+    vector: RequireSimpleTypeIdentifierTestVector
+  ) {
     // FIXME: assert diagnostics
     let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
     let binding = try? vector.decl.requireSingleBinding(context)
@@ -101,7 +109,7 @@ struct PatternBindingSyntaxTests {
     #expect(actual?.description == expected?.description)
   }
 
-  struct RequireNoAccessorTestVector {
+  struct RequireNoAccessorTestVector: CustomStringConvertible {
     static let vectors: [Self] = [
       .init(
         decl: "var v: Int",
@@ -129,6 +137,7 @@ struct PatternBindingSyntaxTests {
         accessor: true),
     ]
 
+    var description: String { "\(self.decl)" }
     var decl: VariableDeclSyntax
     var accessor: Bool
 
@@ -136,6 +145,7 @@ struct PatternBindingSyntaxTests {
       decl: DeclSyntax,
       accessor: Bool
     ) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.as(VariableDeclSyntax.self)!
       self.accessor = accessor
     }

@@ -21,6 +21,7 @@ struct SVDTestData {
 
 // These constants will need to be updated if the external resources change.
 extension SVDTestData {
+  // swift-format-ignore: NeverForceUnwrap
   /// The URL of the remote test data.
   static let testDataRemoteURL = URL(
     string: """
@@ -69,17 +70,18 @@ extension SVDTestData {
 }
 
 extension SVDTestData {
-
   static func prepare(downloadingIfNeeded: Bool) async throws -> Self {
     let fm = FileManager.default
     let us = URLSession.shared
 
     do {
+      print("Attempting to hash file at '\(Self.testDataZipFile.path)")
       let sha512 = try fm.hashOfFile(
         at: Self.testDataZipFile,
         using: SHA512.self)
+      print("Validating hash of file at '\(Self.testDataZipFile.path)")
       try #require(
-        sha512.equals(self.testDataZipFileSHA512),
+        String(sha512) == self.testDataZipFileSHA512,
         """
         Test data at '\(Self.testDataZipFile.path)' does not match \
         expected checksum, please remove file and re-run: expected 'SHA512 \
@@ -88,26 +90,32 @@ extension SVDTestData {
     } catch Errno.noSuchFileOrDirectory where downloadingIfNeeded {
       print("Downloading test data from '\(Self.testDataRemoteURL)'")
       let downloadURL = try await us.download(from: Self.testDataRemoteURL).0
-      print("Hashing downloaded item at '\(downloadURL.path)'")
+      print("Hashing downloaded file at '\(downloadURL.path)'")
       let sha512 = try fm.hashOfFile(at: downloadURL, using: SHA512.self)
+      print("Validating hash of file at '\(Self.testDataDirectory.path)")
       try #require(
-        sha512.equals(self.testDataZipFileSHA512),
+        String(sha512) == self.testDataZipFileSHA512,
         """
         Downloaded test data at '\(downloadURL.path)' does not match \
         expected checksum, please validate data: expected 'SHA512 digest: \
         \(self.testDataZipFileSHA512)' but found '\(sha512)'.
         """)
-      print("Moving item from '\(downloadURL.path)' to '\(self.testDataZipFile.path)'")
+      print(
+        """
+        Moving file from '\(downloadURL.path)' to '\(self.testDataZipFile.path)'
+        """)
       try fm.moveItem(at: downloadURL, to: self.testDataZipFile)
     }
 
     do {
+      print("Attempting to hash files at '\(Self.testDataDirectory.path)")
       let sha512 = try fm.hashOfFiles(
         inDirectory: Self.testDataDirectory,
         withPathExtension: "svd",
         using: SHA512.self)
+      print("Validating hash of files at '\(Self.testDataDirectory.path)")
       try #require(
-        sha512.equals(self.testDataSVDFilesSHA512),
+        String(sha512) == self.testDataSVDFilesSHA512,
         """
         Test data at '\(Self.testDataDirectory.path)' does not match \
         the expected checksum, please remove directory and re-run: \
@@ -122,13 +130,14 @@ extension SVDTestData {
           -d \(Self.testDataDirectory.path) \
           \(Self.testDataZipFile.path)
         """)
-      print("Hashing extracted item at '\(Self.testDataDirectory.path)'")
+      print("Hashing extracted files at '\(Self.testDataDirectory.path)'")
       let sha512 = try fm.hashOfFiles(
         inDirectory: Self.testDataDirectory,
         withPathExtension: "svd",
         using: SHA512.self)
+      print("Validating hash of files at '\(Self.testDataDirectory.path)")
       try #require(
-        sha512.equals(self.testDataSVDFilesSHA512),
+        String(sha512) == self.testDataSVDFilesSHA512,
         """
         Extracted test data at '\(Self.testDataDirectory.path)' does \
         not match the expected checksum, please validate data: Expected \
@@ -142,6 +151,7 @@ extension SVDTestData {
       inDirectory: Self.testDataDirectory,
       withPathExtension: "svd")
 
+    print("Validating all SVD files found")
     try #require(
       testSVDs.count == Self.testDataSVDFilesCount,
       "Failed to locate all expected SVD files")

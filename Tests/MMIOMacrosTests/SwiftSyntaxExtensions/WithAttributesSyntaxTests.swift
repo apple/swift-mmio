@@ -80,6 +80,7 @@ struct WithAttributesSyntaxTests {
       macros: [any (ParsableMacro.Type)],
       match: MatchingAttributeAndMacro?
     ) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.asProtocol(WithAttributesSyntax.self)!
       self.macros = macros
       self.match = match
@@ -92,7 +93,9 @@ struct WithAttributesSyntaxTests {
     let context = MacroContext(Macro0.self, BasicMacroExpansionContext())
     let actual = try? vector.decl.requireMacro(vector.macros, context)
     let expected = vector.match
-    #expect(actual?.attribute.trimmed.description == expected?.attribute.trimmed.description)
+    #expect(
+      actual?.attribute.trimmed.description
+        == expected?.attribute.trimmed.description)
     #expect(actual?.macroType.signature == expected?.macroType.signature)
   }
 }

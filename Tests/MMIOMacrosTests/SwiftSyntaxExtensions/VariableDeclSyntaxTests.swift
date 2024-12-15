@@ -31,6 +31,7 @@ struct VariableDeclSyntaxTests {
     var bindingSpecifier: Keyword
 
     init(decl: DeclSyntax, bindingSpecifier: Keyword) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.as(VariableDeclSyntax.self)!
       self.bindingSpecifier = bindingSpecifier
     }
@@ -87,6 +88,7 @@ struct VariableDeclSyntaxTests {
     var singleBinding: String?
 
     init(decl: DeclSyntax, singleBinding: String?) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.as(VariableDeclSyntax.self)!
       self.singleBinding = singleBinding
     }
@@ -130,6 +132,7 @@ struct VariableDeclSyntaxTests {
     var isComputedProperty: Bool
 
     init(decl: DeclSyntax, isComputedProperty: Bool) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.as(VariableDeclSyntax.self)!
       self.isComputedProperty = isComputedProperty
     }

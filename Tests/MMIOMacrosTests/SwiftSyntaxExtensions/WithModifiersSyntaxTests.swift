@@ -49,6 +49,7 @@ struct WithModifiersSyntaxTests {
     var accessLevel: DeclModifierSyntax?
 
     init(decl: DeclSyntax, accessLevel: DeclModifierSyntax?) {
+      // swift-format-ignore: NeverForceUnwrap
       self.decl = decl.asProtocol(WithModifiersSyntax.self)!
       self.accessLevel = accessLevel
     }
@@ -56,7 +57,9 @@ struct WithModifiersSyntaxTests {
 
   @Test(arguments: AccessLevelTestVector.vectors)
   func accessLevel(vector: AccessLevelTestVector) {
-    #expect(vector.decl.accessLevel?.name.tokenKind == vector.accessLevel?.name.tokenKind)
+    #expect(
+      vector.decl.accessLevel?.name.tokenKind
+        == vector.accessLevel?.name.tokenKind)
   }
 }
 #endif

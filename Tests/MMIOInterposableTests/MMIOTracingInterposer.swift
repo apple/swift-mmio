@@ -91,6 +91,8 @@ func assertMMIOInterposerTrace(
   guard actualTrace != expectedTrace else { return }
 
   Issue.record(
-    Comment(rawValue: diff(expected: expectedTrace, actual: actualTrace, noun: "trace")),
+    Comment(
+      rawValue: diff(
+        expected: expectedTrace, actual: actualTrace, noun: "trace")),
     sourceLocation: sourceLocation)
 }

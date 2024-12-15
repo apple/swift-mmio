@@ -577,7 +577,8 @@ struct ParsableMacroTests {
 
     #expect("\(A.attributeWithPlaceholders)" == "@A")
     #expect("\(B.attributeWithPlaceholders)" == "@B(foo: <#Int#>)")
-    #expect("\(C.attributeWithPlaceholders)" == "@C(foo: <#Int#>, bar: <#Int#>)")
+    #expect(
+      "\(C.attributeWithPlaceholders)" == "@C(foo: <#Int#>, bar: <#Int#>)")
     #expect("\(D.attributeWithPlaceholders)" == "@D(foo: <#Int#>)")
     #expect("\(E.attributeWithPlaceholders)" == "@E(foo: <#Int#>)")
     #expect("\(F.attributeWithPlaceholders)" == "@F(foo: <#Int#>)")

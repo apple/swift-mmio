@@ -32,6 +32,7 @@ func assertParseBitFieldTypeProjection(
   expression: ExprSyntax,
   sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) {
+  // swift-format-ignore: NeverForceUnwrap
   let base = expression.as(MemberAccessExprSyntax.self)!.base!
   assertParse(
     expression: expression,

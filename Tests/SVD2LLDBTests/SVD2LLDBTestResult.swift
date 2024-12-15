@@ -92,6 +92,8 @@ func assertSVD2LLDBResult(
   guard actualOutput != expectedOutput else { return }
 
   Issue.record(
-    Comment(rawValue: diff(expected: expectedOutput, actual: actualOutput, noun: "result")),
+    Comment(
+      rawValue: diff(
+        expected: expectedOutput, actual: actualOutput, noun: "result")),
     sourceLocation: sourceLocation)
 }

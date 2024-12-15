@@ -34,7 +34,7 @@ func assertParse<Output>(
       input.isEmpty,
       "Failed to fully consume input, remaining: '\(input)'",
       sourceLocation: sourceLocation)
-  } catch { }
+  } catch {}
 }
 
 func assertNoParse<Output>(
