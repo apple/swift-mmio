@@ -11,12 +11,12 @@
 
 import MMIOUtilities
 import Testing
+import XCTest
 
 @testable import MMIO
 
 // Work around a swiftpm bug that causes a crash without a single XCTest.
-import XCTest
-final class Foo: XCTestCase { }
+final class Foo: XCTestCase {}
 
 func assertExtract<Storage>(
   bitRanges: Range<Int>...,
