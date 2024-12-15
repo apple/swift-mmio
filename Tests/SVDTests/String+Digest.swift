@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(CryptoKit)
 import CryptoKit
 
 extension String {
@@ -41,3 +42,4 @@ extension String {
     }
   }
 }
+#endif

@@ -9,13 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(macOS)
-import CryptoKit
+#if canImport(System) && canImport(CryptoKit)
 import Foundation
-import MMIOUtilities
 import SVD
 import Testing
-import System
 
 struct SVDTests {
   static let testData = Task {

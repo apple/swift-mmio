@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(System) && canImport(CryptoKit)
 import CryptoKit
 import Foundation
 import MMIOUtilities
@@ -159,3 +160,4 @@ extension SVDTestData {
     return Self(testSVDs: testSVDs)
   }
 }
+#endif

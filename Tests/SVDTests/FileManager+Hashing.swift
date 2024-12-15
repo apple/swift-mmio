@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(System) && canImport(CryptoKit)
 import CryptoKit
 import Foundation
 import System
@@ -71,3 +72,4 @@ extension FileManager {
     return hash.finalize()
   }
 }
+#endif
