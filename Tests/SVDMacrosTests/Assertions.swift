@@ -11,8 +11,8 @@
 
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
-import SwiftSyntaxMacrosGenericTestSupport
 import SwiftSyntaxMacros
+import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 
 // Shim "assertMacroExpansion" to use swift-testing

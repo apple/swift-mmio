@@ -56,4 +56,3 @@ func assertInsert<Storage>(
     """,
     sourceLocation: sourceLocation)
 }
-

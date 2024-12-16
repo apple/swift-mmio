@@ -85,7 +85,8 @@ let package = Package(
         "MMIOUtilities",
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-        .product(name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
+        .product(
+          name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
       ]),
 
     .target(name: "MMIOUtilities"),
@@ -149,7 +150,8 @@ let package = Package(
         "SVDMacros",
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-        .product(name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
+        .product(
+          name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
       ]),
   ],
   cxxLanguageStandard: .cxx11)
