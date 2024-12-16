@@ -80,20 +80,3 @@ extension SVD2LLDBTestResult: SVD2LLDBResult {
     self.error.append(string)
   }
 }
-
-func assertSVD2LLDBResult(
-  result: SVD2LLDBTestResult,
-  output: String,
-  sourceLocation: SourceLocation = #_sourceLocation
-) {
-  // Exit early if the actual output matches the expected output.
-  let actualOutput = result.description
-  let expectedOutput = output
-  guard actualOutput != expectedOutput else { return }
-
-  Issue.record(
-    Comment(
-      rawValue: diff(
-        expected: expectedOutput, actual: actualOutput, noun: "result")),
-    sourceLocation: sourceLocation)
-}

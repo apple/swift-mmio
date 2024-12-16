@@ -11,56 +11,8 @@
 
 import MMIOUtilities
 import Testing
-import XCTest
 
 @testable import MMIO
-
-// Work around a swiftpm bug that causes a crash without a single XCTest.
-final class Foo: XCTestCase {}
-
-func assertExtract<Storage>(
-  bitRanges: Range<Int>...,
-  from storage: Storage,
-  equals expected: Storage,
-  sourceLocation: SourceLocation = #_sourceLocation
-) where Storage: FixedWidthInteger {
-  let actual = storage[bits: bitRanges]
-  #expect(
-    actual == expected,
-    """
-    Extracting value \
-    from '\(hex: storage)' \
-    at bit ranges \(bitRanges
-      .map { "\($0.lowerBound)..<\($0.upperBound)" }
-      .joined(separator: ", "))] \
-    resulted in '\(hex: actual)', \
-    but expected '\(hex: expected)'
-    """,
-    sourceLocation: sourceLocation)
-}
-
-func assertInsert<Storage>(
-  value: Storage,
-  bitRanges: Range<Int>...,
-  into storage: Storage,
-  equals expected: Storage,
-  sourceLocation: SourceLocation = #_sourceLocation
-) where Storage: FixedWidthInteger {
-  var actual = storage
-  actual[bits: bitRanges] = value
-  #expect(
-    actual == expected,
-    """
-    Inserting '\(hex: value)' \
-    into '\(hex: storage)' \
-    at bit ranges [\(bitRanges
-      .map { "\($0.lowerBound)..<\($0.upperBound)" }
-      .joined(separator: ", "))] \
-    resulted in '\(hex: actual)', \
-    but expected to get '\(hex: expected)'
-    """,
-    sourceLocation: sourceLocation)
-}
 
 struct BitFieldTests {
   @Test func bitRangeWithinBounds() {
