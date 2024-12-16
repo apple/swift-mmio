@@ -1069,6 +1069,7 @@ struct RegisterMacroTests {
 
           enum V: ContiguousBitField {
             typealias Storage = UInt8
+            typealias Projection = Never
             static let bitRange = 3 ..< 8
           }
 
@@ -1084,10 +1085,10 @@ struct RegisterMacroTests {
             }
             var v: UInt8 {
               @inlinable @inline(__always) get {
-                V.extract(from: self.storage)
+                V.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                V.insert(newValue, into: &self.storage)
+                V.insertBits(newValue, into: &self.storage)
               }
             }
           }
@@ -1159,6 +1160,7 @@ struct RegisterMacroTests {
 
           enum Field: DiscontiguousBitField {
             typealias Storage = UInt64
+            typealias Projection = Never
             static let bitRanges = [0 ..< 24, 8 ..< 32, 16 ..< 48, 36 ..< 44]
           }
 
@@ -1174,10 +1176,10 @@ struct RegisterMacroTests {
             }
             var field: UInt64 {
               @inlinable @inline(__always) get {
-                Field.extract(from: self.storage)
+                Field.extractBits(from: self.storage)
               }
               @inlinable @inline(__always) set {
-                Field.insert(newValue, into: &self.storage)
+                Field.insertBits(newValue, into: &self.storage)
               }
             }
           }
