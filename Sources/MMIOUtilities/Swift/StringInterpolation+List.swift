@@ -10,26 +10,62 @@
 //===----------------------------------------------------------------------===//
 
 extension String.StringInterpolation {
-  public mutating func appendInterpolation<C>(
-    list collection: C
-  ) where C: Collection {
-    for (index, element) in collection.enumerated() {
-      appendLiteral("'\(element)'")
-      if index == collection.count - 2 {
-        appendLiteral(", or ")
-      } else if index < collection.count - 1 {
-        appendLiteral(", ")
+  public mutating func appendInterpolation(
+    list collection: some Collection,
+    separator: String = ",",
+    conjunction: String = "or"
+  ) {
+    let count = collection.count
+    switch count {
+    case 0:
+      break
+
+    case 1:
+      let element = collection[collection.startIndex]
+      self.appendInterpolation(quoted: element)
+
+    case 2:
+      var index = collection.startIndex
+      var element = collection[index]
+      self.appendInterpolation(quoted: element)
+      self.appendInterpolation(" ")
+      self.appendInterpolation(conjunction)
+      self.appendInterpolation(" ")
+      collection.formIndex(after: &index)
+      element = collection[index]
+      self.appendInterpolation(quoted: element)
+
+    default:
+      for (index, element) in collection.enumerated() {
+        self.appendInterpolation(quoted: element)
+        if index < count - 2 {
+          self.appendInterpolation(separator)
+          self.appendInterpolation(" ")
+        } else if index < count - 1 {
+          self.appendInterpolation(separator)
+          self.appendInterpolation(" ")
+          self.appendInterpolation(conjunction)
+          self.appendInterpolation(" ")
+        }
       }
     }
+  }
+
+  public mutating func appendInterpolation<Value>(
+    quoted value: Value
+  ) {
+    self.appendInterpolation("'")
+    self.appendInterpolation("\(value)")
+    self.appendInterpolation("'")
   }
 
   public mutating func appendInterpolation<C>(
     cycle collection: C
   ) where C: Collection {
     for (index, element) in collection.enumerated() {
-      appendLiteral("'\(element)'")
+      self.appendInterpolation(quoted: "\(element)")
       if index < collection.count - 1 {
-        appendLiteral(" -> ")
+        self.appendInterpolation(" -> ")
       }
     }
   }
