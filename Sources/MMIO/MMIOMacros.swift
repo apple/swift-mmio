@@ -9,6 +9,22 @@
 //
 //===----------------------------------------------------------------------===//
 
+// Deprecated RegisterBank macros
+@available(*, deprecated, renamed: "RegisterBlock()")
+@attached(member, names: named(unsafeAddress), named(init), named(interposer))
+public macro RegisterBank() =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
+
+@available(*, deprecated, renamed: "RegisterBlock(offset:)")
+@attached(accessor)
+public macro RegisterBank(offset: Int) =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBlockScalarMemberMacro")
+
+@available(*, deprecated, renamed: "RegisterBlock(offset:stride:count:)")
+@attached(accessor)
+public macro RegisterBank(offset: Int, stride: Int, count: Int) =
+  #externalMacro(module: "MMIOMacros", type: "RegisterBlockArrayMemberMacro")
+
 // RegisterBlock macros
 @attached(member, names: named(unsafeAddress), named(init), named(interposer))
 @attached(extension, conformances: RegisterProtocol)
