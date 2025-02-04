@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Dispatch
 import Foundation
 import MMIOUtilities
 import Testing

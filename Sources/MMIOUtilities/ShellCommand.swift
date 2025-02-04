@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Dispatch
 import Foundation
 
 extension Data {
@@ -58,17 +57,12 @@ public func sh(
   process.executableURL = URL(fileURLWithPath: "/bin/sh")
   process.arguments = ["-c", "export PATH=$PATH:~/bin; \(command)"]
 
-  // drain standard output and error into in-memory data.
-  let drainQueue = DispatchQueue(label: "sh-drain-queue")
-
   let outputData = Mutex(Data())
   let outputPipe = Pipe()
   if collectStandardOutput {
     process.standardOutput = outputPipe
     outputPipe.fileHandleForReading.readabilityHandler = { handler in
-      drainQueue.async {
-        outputData.withLock { $0.append(handler.availableData) }
-      }
+      outputData.withLock { $0.append(handler.availableData) }
     }
   }
 
@@ -77,9 +71,7 @@ public func sh(
   if collectStandardError {
     process.standardError = errorPipe
     errorPipe.fileHandleForReading.readabilityHandler = { handler in
-      drainQueue.async {
-        errorData.withLock { $0.append(handler.availableData) }
-      }
+      errorData.withLock { $0.append(handler.availableData) }
     }
   }
 
@@ -90,9 +82,6 @@ public func sh(
 
   outputPipe.fileHandleForReading.readabilityHandler = nil
   errorPipe.fileHandleForReading.readabilityHandler = nil
-
-  // Wait for all queue items to complete before checking the process exit code.
-  drainQueue.sync {}
 
   guard process.terminationStatus == 0 else {
     throw ShellCommandError(
