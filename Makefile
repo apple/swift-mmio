@@ -31,14 +31,12 @@ format:
 build:
 	@echo "building..."
 	@swift build \
-		--very-verbose \
 		--configuration $(CONFIGURATION) \
 		--explicit-target-dependency-import-check error
 
 test: build
 	@echo "testing..."
 	@swift test \
-		--very-verbose \
 		--configuration $(CONFIGURATION) \
 		--parallel \
 		--explicit-target-dependency-import-check error

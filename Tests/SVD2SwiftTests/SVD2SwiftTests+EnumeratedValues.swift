@@ -9,10 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Testing
+
 @testable import SVD
 @testable import SVD2Swift
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 extension SVD2SwiftTests {
   private static let testEnumeratedValuesBasicDevice = SVDDevice(
     name: "ExampleDevice",
@@ -100,7 +101,7 @@ extension SVD2SwiftTests {
             ]))
       ]))
 
-  func test_enumeratedValues_basic() throws {
+  @Test func enumeratedValues_basic() throws {
     assertSVD2SwiftOutput(
       svdDevice: Self.testEnumeratedValuesBasicDevice,
       expected: [
@@ -157,7 +158,7 @@ extension SVD2SwiftTests {
       ])
   }
 
-  func test_enumeratedValues_advanced() throws {
+  @Test func enumeratedValues_advanced() throws {
     assertSVD2SwiftOutput(
       svdDevice: Self.testEnumeratedValuesAdvancedDevice,
       expected: [
