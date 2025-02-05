@@ -21,10 +21,6 @@ public struct SVDEnumerationCaseDataValue {
   public var value: SVDEnumerationCaseDataValueValue
 }
 
-extension SVDEnumerationCaseDataValue {
-  public func bitPatterns() -> [UInt64] { [] }
-}
-
 extension SVDEnumerationCaseDataValue: Decodable {}
 
 extension SVDEnumerationCaseDataValue: Encodable {}
