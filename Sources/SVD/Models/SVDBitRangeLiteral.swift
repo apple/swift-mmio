@@ -16,7 +16,7 @@ import MMIOUtilities
 import FoundationXML
 #endif
 
-/// A string in the format: "[<msb>:<lsb>]"
+/// A string in the format `[<msb>:<lsb>]`.
 public struct SVDBitRangeLiteral {
   public var lsb: UInt64
   public var msb: UInt64

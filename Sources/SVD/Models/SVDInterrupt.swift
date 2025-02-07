@@ -15,8 +15,10 @@ import Foundation
 import FoundationXML
 #endif
 
-/// A peripheral can have multiple interrupts. This entry allows the debugger to
-/// show interrupt names instead of interrupt numbers.
+/// A peripheral can have multiple interrupts.
+///
+/// This entry allows the debugger to show interrupt names instead of interrupt
+/// numbers.
 @XMLElement
 public struct SVDInterrupt {
   /// The string represents the interrupt name.

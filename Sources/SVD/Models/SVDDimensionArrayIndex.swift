@@ -16,16 +16,19 @@ import FoundationXML
 #endif
 
 /// This information is used for generating an enum in the device header file.
+///
 /// The debugger may use this information to display the identifier string as
 /// well as the description. Just like symbolic constants making source code
 /// more readable, the system view in the debugger becomes more instructive.
 @XMLElement
 public struct SVDDimensionArrayIndex {
-  /// Specify the base name of enumerations. Overwrites the hierarchical
-  /// enumeration type in the device header file. User is responsible for
-  /// uniqueness across description. The header-file generator uses the name
-  /// of a peripheral or cluster as the base name for enumeration types. If
-  /// `<headerEnumName>` element is specified, then this string is used.
+  /// Specify the base name of enumerations.
+  ///
+  /// Overwrites the hierarchical enumeration type in the device header file.
+  /// User is responsible for uniqueness across description. The header-file
+  /// generator uses the name of a peripheral or cluster as the base name for
+  /// enumeration types. If `<headerEnumName>` element is specified, then this
+  /// string is used.
   public var headerEnumName: String?
   /// Specify the values contained in the enumeration.
   public var enumeratedValue: [SVDEnumerationCase]

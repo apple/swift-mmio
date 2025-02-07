@@ -18,8 +18,9 @@ import FoundationXML
 /// An enumeratedValue defines a map between an unsigned integer and a string.
 @XMLElement
 public struct SVDEnumerationCase {
-  /// String describing the semantics of the value. Can be displayed instead
-  /// of the value.
+  /// String describing the semantics of the value.
+  ///
+  /// Can be displayed instead of the value.
   public var name: String?
   /// Extended string describing the value.
   public var description: String?
