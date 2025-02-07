@@ -205,7 +205,7 @@ extension BitRange: LosslessStringConvertible {
   init?(_ description: String) {
     var input = description[...]
 
-    if let _ = Parser("(-∞").run(&input) {
+    if Parser("(-∞").run(&input) != nil {
       self.lowerBound = nil
     } else {
       let parser =
@@ -222,9 +222,9 @@ extension BitRange: LosslessStringConvertible {
       self.lowerBound = .init(value: value.1, inclusive: value.0)
     }
 
-    guard let _ = Parser(", ").run(&input) else { return nil }
+    guard Parser(", ").run(&input) != nil else { return nil }
 
-    if let _ = Parser("+∞)").run(&input) {
+    if Parser("+∞)").run(&input) != nil {
       self.upperBound = nil
     } else {
       let parser =
