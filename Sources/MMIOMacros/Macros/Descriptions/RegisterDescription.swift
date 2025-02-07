@@ -22,7 +22,7 @@ struct RegisterDescription {
 
 extension RegisterDescription {
   func declarations() -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
+    var declarations: [DeclSyntax] = []
     // Create a private init and a Never instance property to prevent users from
     // instancing the layout type directly.
     declarations.append("private init() { fatalError() }")
@@ -54,7 +54,7 @@ extension RegisterDescription {
 
 extension RegisterDescription {
   func rawTypeDeclarations() -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
+    var declarations: [DeclSyntax] = []
     // Create variable declaration for each bitfield.
     let bitFieldDeclarations: [DeclSyntax] = self
       .bitFields
@@ -104,7 +104,7 @@ extension RegisterDescription {
   }
 
   func readWriteTypeDeclarations() -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
+    var declarations: [DeclSyntax] = []
     // Alias Read to ReadWrite.
     declarations.append("\(self.accessLevel)typealias Read = ReadWrite")
     // Alias Write to ReadWrite.
@@ -135,7 +135,7 @@ extension RegisterDescription {
   }
 
   func readTypeDeclarations() -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
+    var declarations: [DeclSyntax] = []
 
     // Create variable declaration for each readable bitfield.
     let bitFieldDeclarations: [DeclSyntax] = self
@@ -156,7 +156,7 @@ extension RegisterDescription {
   }
 
   func writeTypeDeclarations() -> [DeclSyntax] {
-    var declarations = [DeclSyntax]()
+    var declarations: [DeclSyntax] = []
 
     // Create accessor declarations for each writable bitfield.
     let bitFieldDeclarations: [DeclSyntax] = self

@@ -29,7 +29,7 @@ extension BitFieldDescription {
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) {
     let range = 0..<self.bitWidth
-    var notes = [Note]()
+    var notes: [Note] = []
 
     var error = false
     for index in self.bitRanges.indices {
@@ -136,7 +136,7 @@ extension BitFieldDescription {
 
     // Perform a worst case O(n^2) walk to find the overlap for each bit range,
     // collecting them into notes.
-    var notes = [Note]()
+    var notes: [Note] = []
     var candidateIndirectStartIndex = indices.startIndex
     for targetIndirectIndex in indices.indices {
       // Get the target pair index: **bitRange -> *bitRange
@@ -147,8 +147,8 @@ extension BitFieldDescription {
 
       // Keep track of the overlapping bit subranges and source expressions for
       // the target bit range.
-      var overlappingRanges = [Range<Int>]()
-      var overlappingExpressions = [ExprSyntax]()
+      var overlappingRanges: [Range<Int>] = []
+      var overlappingExpressions: [ExprSyntax] = []
 
       // Determine the index where the candidate overlap search should start
       // from. We do this by getting the bounds of the next target range and

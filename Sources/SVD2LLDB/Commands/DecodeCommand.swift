@@ -285,7 +285,7 @@ extension DecodeCommand {
     var longestBitRangePrefix = 0
     var longestNamePrefix = 0
     var longestValuePrefix = 0
-    var rows = [FieldRow]()
+    var rows: [FieldRow] = []
     for field in fields {
 
       let range = field.bitRange.range

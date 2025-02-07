@@ -23,6 +23,7 @@
   "respectsExistingLineBreaks" : true,
   "rules" : {
     "AllPublicDeclarationsHaveDocumentation" : false,
+    "AlwaysUseLiteralForEmptyCollectionInit" : true,
     "AlwaysUseLowerCamelCase" : true,
     "AmbiguousTrailingClosureOverload" : false,
     "BeginDocumentationCommentWithOneLineSummary" : true,

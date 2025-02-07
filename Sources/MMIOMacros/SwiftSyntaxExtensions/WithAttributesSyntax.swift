@@ -29,7 +29,7 @@ extension WithAttributesSyntax {
       $0[$1.baseName] = $1
     }
 
-    var matches = [MatchingAttributeAndMacro]()
+    var matches: [MatchingAttributeAndMacro] = []
     for attribute in self.attributes {
       // Ignore `#if` conditional attributes
       guard case .attribute(let attribute) = attribute else { continue }

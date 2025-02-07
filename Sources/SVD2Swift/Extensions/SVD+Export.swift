@@ -203,11 +203,11 @@ extension SVDDevice: SVDExportable {
   func outputPeripherals(
     options: ExportOptions
   ) throws -> [SVDPeripheral] {
-    var outputPeripherals = [SVDPeripheral]()
+    var outputPeripherals: [SVDPeripheral] = []
     if options.selectedPeripherals.isEmpty {
       outputPeripherals = self.peripherals.peripheral
     } else {
-      var peripheralsByName = [String: SVDPeripheral]()
+      var peripheralsByName: [String: SVDPeripheral] = [:]
       for peripheral in self.peripherals.peripheral {
         peripheralsByName[peripheral.name] = peripheral
       }
@@ -280,7 +280,7 @@ extension SVDPeripheral: SVDExportable {
     options: ExportOptions,
     context: ExportContext
   ) -> [any SVDExportable] {
-    var exports = [any SVDExportable]()
+    var exports: [any SVDExportable] = []
     if let derivedFrom = self.derivedFrom {
       // FIXME: Handle only exporting B where B deriveFrom A
       outputWriter.insert(
@@ -391,7 +391,7 @@ extension SVDCluster: SVDExportable {
     options: ExportOptions,
     context: ExportContext
   ) -> [any SVDExportable] {
-    var exports = [any SVDExportable]()
+    var exports: [any SVDExportable] = []
 
     if let derivedFrom = self.derivedFrom {
       outputWriter.insert(
@@ -483,7 +483,7 @@ extension SVDRegister: SVDExportable {
       return []
     }
 
-    var exports = [any SVDExportable]()
+    var exports: [any SVDExportable] = []
 
     let scope = """
       \(comment: context.swiftDescription)
