@@ -192,7 +192,7 @@ extension Parser {
       while true {
         let remaining = input
         guard
-          let _ = separator.run(&input),
+          separator.run(&input) != nil,
           let match = self.run(&input)
         else {
           input = remaining

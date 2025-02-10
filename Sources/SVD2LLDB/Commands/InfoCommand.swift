@@ -84,7 +84,7 @@ struct InfoCommand: SVD2LLDBCommand {
     // DFS through the SVD tree using the prefix tree as a needle to trim the
     // search space.
     var queue = [context]
-    var info = [Info]()
+    var info: [Info] = []
     while let context = queue.last {
       queue.removeLast()
 

@@ -51,7 +51,7 @@ extension RegisterMacro: MMIOMemberMacro {
     // Walk all the members of the struct.
     var error = false
     var isSymmetric = true
-    var bitFields = [BitFieldDescription]()
+    var bitFields: [BitFieldDescription] = []
     for member in structDecl.memberBlock.members {
       guard
         // Ignore non-variable declarations.

@@ -9,11 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// Specify the security privilege to access an address region. This information
-/// is relevant for the programmer as well as the debugger when no universal
-/// access permissions have been granted. If no specific information is
-/// provided, an address region is accessible in any mode. The following values
-/// can be used to protect accesses by the programmer or debugger:
+/// Specify the security privilege to access an address region.
+///
+/// This information is relevant for the programmer as well as the debugger when
+/// no universal access permissions have been granted. If no specific
+/// information is provided, an address region is accessible in any mode.
 public enum SVDProtection: String {
   /// Secure permission required for access.
   case secure = "s"

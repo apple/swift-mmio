@@ -16,6 +16,7 @@ import FoundationXML
 #endif
 
 /// Cluster describes a sequence of neighboring registers within a peripheral.
+///
 /// A `<cluster>` specifies the addressOffset relative to the baseAddress of the
 /// grouping element. All `<register>` elements within a `<cluster>` specify
 /// their addressOffset relative to the cluster base address
@@ -30,8 +31,9 @@ import FoundationXML
 /// `<dim>` element.
 @XMLElement
 public struct SVDCluster {
-  /// Specify the cluster name from which to inherit data. Elements specified
-  /// subsequently override inherited values.
+  /// Specify the cluster name from which to inherit data.
+  ///
+  /// Elements specified subsequently override inherited values.
   ///
   /// Always use the full qualifying path, which must start with the
   /// peripheral `<name>`, when deriving from another scope. (for example, in
@@ -49,25 +51,30 @@ public struct SVDCluster {
   /// identify each element in the array.
   @XMLInlineElement
   public var dimensionElement: SVDDimensionElement?
-  /// String to identify the cluster. Cluster names are required to be unique
-  /// within the scope of a peripheral. A list of cluster names can be build
-  /// using the placeholder `%s`. Use the placeholder `[%s]` at the end of the
-  /// identifier to generate arrays in the header file. The placeholder `[%s]`
-  /// cannot be used together with `<dimIndex>`.
+  /// String to identify the cluster.
+  ///
+  /// Cluster names are required to be unique within the scope of a peripheral.
+  /// A list of cluster names can be build using the placeholder `%s`. Use the
+  /// placeholder `[%s]` at the end of the identifier to generate arrays in the
+  /// header file. The placeholder `[%s]` cannot be used together with
+  /// `<dimIndex>`.
   public var name: String
   /// String describing the details of the register cluster.
   public var description: String
   /// Specify the name of the original cluster if this cluster provides an
   /// alternative description.
   public var alternateCluster: String?
-  /// Specify the struct type name created in the device header file. If not
-  /// specified, then the name of the cluster is used.
+  /// Specify the struct type name created in the device header file.
+  ///
+  /// If not specified, then the name of the cluster is used.
   public var headerStructName: String?
   /// Cluster address relative to the `<baseAddress>` of the peripheral.
   public var addressOffset: UInt64
   /// Elements specify the default values for register size, access permission
-  /// and reset value. These default values are inherited to all fields
-  /// contained in this cluster.
+  /// and reset value.
+  ///
+  /// These default values are inherited to all fields contained in this
+  /// cluster.
   @XMLInlineElement
   public var registerProperties: SVDRegisterProperties = .init()
   /// Define the sequence of register clusters.

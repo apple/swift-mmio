@@ -25,7 +25,7 @@ extension Array where Element: SVDDerivable {
 
   mutating func deriveElements() throws {
     // Create a map to look up peripherals by name.
-    var refByName = [String: UnsafeRef<Element>]()
+    var refByName: [String: UnsafeRef<Element>] = [:]
     for ref in self.mutableReferences {
       // FIXME: Error if duplicate name
       refByName[self[ref].name] = ref

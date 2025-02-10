@@ -16,8 +16,10 @@ import FoundationXML
 #endif
 
 /// The concept of enumerated values creates a map between unsigned integers and
-/// an identifier string. In addition, a description string can be associated
-/// with each entry in the map.
+/// an identifier string.
+///
+/// In addition, a description string can be associated with each entry in the
+/// map.
 ///
 /// **Example**
 /// - 0 `<->` disabled -> "The clock source clk0 is turned off."
@@ -32,8 +34,9 @@ import FoundationXML
 /// description can provide reference manual level details within the debugger.
 @XMLElement
 public struct SVDEnumeration {
-  /// Makes a copy from a previously defined enumeratedValues section. No
-  /// modifications are allowed. An enumeratedValues entry is referenced by
+  /// Makes a copy from a previously defined enumeratedValues section.
+  ///
+  /// No modifications are allowed. An enumeratedValues entry is referenced by
   /// its name. If the name is not unique throughout the description, it needs
   /// to be further qualified by specifying the associated field, register,
   /// and peripheral as required.
@@ -46,9 +49,10 @@ public struct SVDEnumeration {
   public var derivedFrom: String?
   /// Identifier for the whole enumeration section.
   public var name: String?
-  /// Identifier for the enumeration section. Overwrites the hierarchical
-  /// enumeration type in the device header file. User is responsible for
-  /// uniqueness across description.
+  /// Identifier for the enumeration section.
+  ///
+  /// Overwrites the hierarchical enumeration type in the device header file.
+  /// User is responsible for uniqueness across description.
   public var headerEnumName: String?
   /// This allows specifying two different enumerated values depending
   /// whether it is to be used for a read or a write access.

@@ -17,8 +17,10 @@ import FoundationXML
 
 // FIXME: This should be an enum or have a reference to an example SVD file
 /// All registers of a peripheral are enclosed between the `<registers>` opening
-/// and closing tags. Clusters define a set of registers. You can either use the
-/// `<cluster>` or the `<register>` element.
+/// and closing tags.
+///
+/// Clusters define a set of registers. You can either use the `<cluster>` or
+/// the `<register>` element.
 @XMLElement
 public struct SVDRegisters {
   /// Define the sequence of register clusters.

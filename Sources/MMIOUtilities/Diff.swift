@@ -30,8 +30,8 @@ public func diff<Element>(
   // Use `CollectionDifference` on supported platforms to get `diff`-like
   // line-based output.
   let difference = actual.difference(from: expected)
-  var insertions = [Int: Element]()
-  var removals = [Int: Element]()
+  var insertions: [Int: Element] = [:]
+  var removals: [Int: Element] = [:]
   for change in difference {
     switch change {
     case .insert(let offset, let element, _):

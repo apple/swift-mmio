@@ -13,6 +13,8 @@ import CLLDB
 import MMIOUtilities
 
 extension lldb.SBDebugger: SVD2LLDBDebugger {
+  static let lldbEIOError: UInt32 = 5
+
   mutating func read(
     address: UInt64,
     bits: some FixedWidthInteger
@@ -25,7 +27,7 @@ extension lldb.SBDebugger: SVD2LLDBDebugger {
     var process = target.GetProcess()
     let count = process.ReadMemory(address, &value, Int(bytes), &error)
     if count != bytes {
-      error.SetError(5 /* EIO */, lldb.eErrorTypePOSIX)
+      error.SetError(Self.lldbEIOError, lldb.eErrorTypePOSIX)
       throw error
     }
     if error.IsValid() {
@@ -47,7 +49,7 @@ extension lldb.SBDebugger: SVD2LLDBDebugger {
     var process = target.GetProcess()
     let count = process.WriteMemory(address, &value, Int(bytes), &error)
     if count != bytes {
-      error.SetError(5 /* EIO */, lldb.eErrorTypePOSIX)
+      error.SetError(Self.lldbEIOError, lldb.eErrorTypePOSIX)
       throw error
     }
     if error.IsValid() {

@@ -54,7 +54,7 @@ extension SVDDevice: SVDItem {
     registerProperties: SVDRegisterProperties,
     address: UInt64
   ) -> [(String, String)] {
-    var info = [(String, String)]()
+    var info: [(String, String)] = []
     if let vendor { info.append(("Vendor", "\(vendor)")) }
     if let vendorID { info.append(("Vendor ID", "\(vendorID)")) }
     if let series { info.append(("Series", "\(series)")) }
@@ -85,7 +85,7 @@ extension SVDPeripheral: SVDItem {
     registerProperties: SVDRegisterProperties,
     address: UInt64
   ) -> [(String, String)] {
-    var info = [(String, String)]()
+    var info: [(String, String)] = []
     if let version { info.append(("Version", "\(version)")) }
     if let description { info.append(("Description", "\(description)")) }
     info.append(("Address", "\(hex: address)"))
@@ -124,7 +124,7 @@ extension SVDCluster: SVDItem {
     registerProperties: SVDRegisterProperties,
     address: UInt64
   ) -> [(String, String)] {
-    var info = [(String, String)]()
+    var info: [(String, String)] = []
     info.append(("Description", "\(description)"))
     info.append(("Address", "\(hex: address)"))
     if let cluster = self.cluster {
@@ -152,7 +152,7 @@ extension SVDRegister: SVDItem {
     registerProperties: SVDRegisterProperties,
     address: UInt64
   ) -> [(String, String)] {
-    var info = [(String, String)]()
+    var info: [(String, String)] = []
     if let description { info.append(("Description", "\(description)")) }
     info.append(("Address", "\(hex: address)"))
     if let size = registerProperties.size {
@@ -197,7 +197,7 @@ extension SVDField: SVDItem {
     registerProperties: SVDRegisterProperties,
     address: UInt64
   ) -> [(String, String)] {
-    var info = [(String, String)]()
+    var info: [(String, String)] = []
     if let description { info.append(("Description", "\(description)")) }
     let range = self.bitRange.range
     info.append(("Bit Range", "[\(range.upperBound - 1):\(range.lowerBound)]"))

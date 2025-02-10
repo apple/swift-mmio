@@ -23,11 +23,13 @@ public struct SVDDimensionElement {
   /// members in the address map.
   public var dimIncrement: UInt64
   // FIXME: this should be `DimIndexType?`
-  /// Do not define on peripheral level. By default, `<dimIndex>` is an
-  /// integer value starting at 0.
+  /// Do not define on peripheral level.
+  ///
+  /// By default, `<dimIndex>` is an integer value starting at 0.
   public var dimIndex: String?
-  /// Specify the name of the C-type structure. If not defined, then the entry
-  /// of the `<name>` element is used.
+  /// Specify the name of the C-type structure.
+  ///
+  /// If not defined, then the entry of the `<name>` element is used.
   public var dimName: String?
   /// Grouping element to create enumerations in the header file.
   public var dimArrayIndex: SVDDimensionArrayIndex?

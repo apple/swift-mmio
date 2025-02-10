@@ -21,10 +21,11 @@ import FoundationXML
 public struct SVDSAURegions {
   /// Specify whether the Secure Attribution Units are enabled.
   public var enabled: Bool?
-  /// Set the protection mode for disabled regions. When the complete SAU is
-  /// disabled, the whole memory is treated either "s"=secure or
-  /// "n"=non-secure. This value is inherited by the `<region>` element. Refer
-  /// to element protection for details and predefined values.
+  /// Set the protection mode for disabled regions.
+  ///
+  /// When the complete SAU is disabled, the whole memory is treated either
+  /// "s"=secure or "n"=non-secure. This value is inherited by the `<region>`
+  /// element. Refer to element protection for details and predefined values.
   public var protectionWhenDisabled: SVDAccess?
   /// Group to configure SAU regions.
   public var region: [SVDSAURegion]

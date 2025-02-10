@@ -15,13 +15,16 @@ import Foundation
 import FoundationXML
 #endif
 
-/// Define the regions of the Secure Attribution Unit (SAU). The protection
-/// level is inherited from the attribute `<protectionWhenDisabled>` of the
-/// enclosing element sauRegionsConfig.
+/// Define the regions of the Secure Attribution Unit (SAU).
+///
+/// The protection level is inherited from the attribute
+/// `<protectionWhenDisabled>` of the enclosing element sauRegionsConfig.
 @XMLElement
 public struct SVDSAURegion {
-  /// Specify whether the Secure Attribution Units are enabled. The following
-  /// values can be used: true and false, or 1 and 0. Default value is true.
+  /// Specify whether the Secure Attribution Units are enabled.
+  ///
+  /// The following values can be used: true and false, or 1 and 0. Default
+  /// value is true.
   @XMLAttribute
   public var enabled: Bool?
   /// Identify the region with a name.

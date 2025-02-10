@@ -16,7 +16,7 @@ import MMIOUtilities
 import FoundationXML
 #endif
 
-/// literal format: [+]?(((0x|0X)[0-9a-fA-F]+)|([0-9]+)|((#|0b)[01xX]+))
+/// literal format: `[+]?(((0x|0X)[0-9a-fA-F]+)|([0-9]+)|((#|0b)[01xX]+))`.
 public struct SVDEnumerationCaseDataValueValue {
   public var value: UInt64
   public var mask: UInt64

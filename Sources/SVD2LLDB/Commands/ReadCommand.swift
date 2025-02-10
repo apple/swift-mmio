@@ -158,7 +158,7 @@ struct ReadCommand: SVD2LLDBCommand {
         // `source` for user supplied arguments so we can later report user
         // requested key paths that didn't match anything in the SVD tree.
 
-        var childPrefixTrees = [PrefixTree<String>?]()
+        var childPrefixTrees: [PrefixTree<String>?] = []
         if let prefixTree = context.prefixTree {
           // do filtering, must find match in tree to add node.
           let childPrefixTree = prefixTree.children

@@ -26,8 +26,9 @@ import FoundationXML
 /// intuitive to read.
 @XMLElement
 public struct SVDField {
-  /// Specify the field name from which to inherit data. Elements specified
-  /// subsequently override inherited values.
+  /// Specify the field name from which to inherit data.
+  ///
+  /// Elements specified subsequently override inherited values.
   ///
   /// Always use the full qualifying path, which must start with the
   /// peripheral `<name>`, when deriving from another scope. (for example, in
@@ -46,23 +47,28 @@ public struct SVDField {
   /// identify each element in the array.
   @XMLInlineElement
   public var dimensionElement: SVDDimensionElement?
-  /// Name string used to identify the field. Field names must be unique
-  /// within a register.
+  /// Name string used to identify the field.
+  ///
+  /// Field names must be unique within a register.
   public var name: String
   /// String describing the details of the register.
   public var description: String?
   /// Specification of the bit position of the field within the register.
   @XMLInlineElement
   public var bitRange: SVDBitRange
-  /// Predefined strings set the access type. The element can be omitted if
-  /// access rights get inherited from parent elements.
+  /// Predefined strings set the access type.
+  ///
+  /// The element can be omitted if access rights get inherited from parent
+  /// elements.
   public var access: SVDAccess?
-  /// Describe the manipulation of data written to a field. If not specified,
-  /// the value written to the field is the value stored in the field.
+  /// Describe the manipulation of data written to a field.
+  ///
+  /// If not specified, the value written to the field is the value stored in
+  /// the field.
   public var modifiedWriteValues: SVDModifiedWriteValues?
   /// Three mutually exclusive options exist to set write-constraints.
   public var writeConstraint: SVDWriteConstraint?
-  /// If set, it specifies the side effect following a read operation. If not
+  /// If set, it specifies the side effect following a read operation; if not
   /// set, the field is not modified after a read.
   ///
   /// Debuggers are not expected to read this field location unless explicitly
