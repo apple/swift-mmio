@@ -72,6 +72,7 @@ public struct ReservedMacro: BitFieldMacro {
   var bitRanges: [BitRange]
   var bitRangeExpressions: [ExprSyntax] { self.$bitRanges }
 
+  @Argument(label: "as")
   var projectedType: BitFieldTypeProjection?
 
   mutating func update(
@@ -82,6 +83,8 @@ public struct ReservedMacro: BitFieldMacro {
     switch label {
     case "bits":
       try self._bitRanges.update(from: expression, in: context)
+    case "as":
+      try self._projectedType.update(from: expression, in: context)
     default:
       fatalError()
     }
