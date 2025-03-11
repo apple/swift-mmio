@@ -106,7 +106,7 @@ struct RegisterMacroTests {
           column: 3,
           highlights: ["var v1: Int"],
           fixIts: [
-            .init(message: "Insert '@Reserved(bits:)' macro"),
+            .init(message: "Insert '@Reserved(bits:as:)' macro"),
             .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
             .init(message: "Insert '@ReadOnly(bits:as:)' macro"),
             .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
@@ -119,7 +119,7 @@ struct RegisterMacroTests {
           column: 3,
           highlights: ["@OtherAttribute var v2: Int"],
           fixIts: [
-            .init(message: "Insert '@Reserved(bits:)' macro"),
+            .init(message: "Insert '@Reserved(bits:as:)' macro"),
             .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
             .init(message: "Insert '@ReadOnly(bits:as:)' macro"),
             .init(message: "Insert '@WriteOnly(bits:as:)' macro"),
@@ -132,7 +132,7 @@ struct RegisterMacroTests {
           column: 3,
           highlights: ["var v3: Int { willSet {} }"],
           fixIts: [
-            .init(message: "Insert '@Reserved(bits:)' macro"),
+            .init(message: "Insert '@Reserved(bits:as:)' macro"),
             .init(message: "Insert '@ReadWrite(bits:as:)' macro"),
             .init(message: "Insert '@ReadOnly(bits:as:)' macro"),
             .init(message: "Insert '@WriteOnly(bits:as:)' macro"),

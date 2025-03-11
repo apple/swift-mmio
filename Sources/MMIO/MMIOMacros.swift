@@ -46,18 +46,20 @@ public macro RegisterBlock(offset: Int, stride: Int, count: Int) =
 public macro Register(bitWidth: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterMacro")
 
-// Note: Since the 'Reserved' macro shares an implementation with the other
-// bitfield macros, it can also handle the `as:` parameter found on their
-// external macro declarations. However, this parameter will never be used by
-// expansion for reserved bitfields, so it is omitted to avoid programmer use.
 @attached(accessor)
-public macro Reserved<Range>(bits: Range...) =
+public macro Reserved<Range, Value>(
+  bits: Range..., as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
-where Range: RangeExpression, Range.Bound: BinaryInteger
+where
+  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
 
 @attached(accessor)
-public macro Reserved(bits: UnboundedRange) =
+public macro Reserved<Value>(
+  bits: UnboundedRange, as: Value.Type = Never.self
+) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
+where Value: BitFieldProjectable
 
 @attached(accessor)
 public macro ReadWrite<Range, Value>(
