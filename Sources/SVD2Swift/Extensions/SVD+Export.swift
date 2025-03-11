@@ -536,16 +536,21 @@ extension SVDField: SVDExportable {
     self.description?.coalescingConsecutiveSpaces() ?? swiftTypeName
   }
 
+  func enumeration() -> SVDEnumeration? {
+    // FIXME: support derivedFrom
+    guard let enumeration = self.enumeratedValues else { return nil }
+    guard !enumeration.enumeratedValue.isEmpty else { return nil }
+    // FIXME: support read / insert only projections
+    guard enumeration.usage ?? .readWrite == .readWrite else { return nil }
+    return enumeration
+  }
+
   func childTypes() -> [any SVDExportable] {
-    if let enumeration = self.enumeratedValues {
-      let usage = enumeration.usage ?? .readWrite
-      // FIXME: support read / insert only projections
-      // FIXME: support derivedFrom
-      if usage == .readWrite {
-        return [enumeration]
-      }
+    if let enumeration = self.enumeration() {
+      return [enumeration]
+    } else {
+      return []
     }
-    return []
   }
 
   func exportType(
@@ -574,18 +579,8 @@ extension SVDField: SVDExportable {
       case nil: "Reserved"
       }
 
-    var enumeration: SVDEnumeration?
-    if let enumeratedValues = self.enumeratedValues {
-      let usage = enumeratedValues.usage ?? .readWrite
-      // FIXME: support read / insert only projections
-      // FIXME: support derivedFrom
-      if usage == .readWrite {
-        enumeration = enumeratedValues
-      }
-    }
-
     func _projection() -> String {
-      guard let enumeration = enumeration else { return "" }
+      guard let enumeration = self.enumeration() else { return "" }
       let name = enumeration.swiftTypeName(
         context: context.asParentContext().childContext(for: enumeration))
       return ", as: \(name).self"
