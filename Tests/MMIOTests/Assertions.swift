@@ -23,15 +23,16 @@ func assertExtract<Storage>(
   let actual = storage[bits: bitRanges]
   #expect(
     actual == expected,
-    """
-    Extracting value \
-    from '\(hex: storage)' \
-    at bit ranges \(bitRanges
-      .map { "\($0.lowerBound)..<\($0.upperBound)" }
-      .joined(separator: ", "))] \
-    resulted in '\(hex: actual)', \
-    but expected '\(hex: expected)'
-    """,
+    Comment(
+      rawValue: """
+        Extracting value \
+        from '\(hex: storage)' \
+        at bit ranges \(bitRanges
+          .map { "\($0.lowerBound)..<\($0.upperBound)" }
+          .joined(separator: ", "))] \
+        resulted in '\(hex: actual)', \
+        but expected '\(hex: expected)'
+        """),
     sourceLocation: sourceLocation)
 }
 
@@ -46,14 +47,15 @@ func assertInsert<Storage>(
   actual[bits: bitRanges] = value
   #expect(
     actual == expected,
-    """
-    Inserting '\(hex: value)' \
-    into '\(hex: storage)' \
-    at bit ranges [\(bitRanges
-      .map { "\($0.lowerBound)..<\($0.upperBound)" }
-      .joined(separator: ", "))] \
-    resulted in '\(hex: actual)', \
-    but expected to get '\(hex: expected)'
-    """,
+    Comment(
+      rawValue: """
+        Inserting '\(hex: value)' \
+        into '\(hex: storage)' \
+        at bit ranges [\(bitRanges
+          .map { "\($0.lowerBound)..<\($0.upperBound)" }
+          .joined(separator: ", "))] \
+        resulted in '\(hex: actual)', \
+        but expected to get '\(hex: expected)'
+        """),
     sourceLocation: sourceLocation)
 }
