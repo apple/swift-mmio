@@ -20,10 +20,11 @@ func assertMMIOAlignment<Value>(
   let alignment = UInt(MemoryLayout<Value>.alignment)
   #expect(
     address.isMultiple(of: alignment),
-    """
-    Invalid load or store of type '\(Value.self)' from unaligned address \
-    '\(hex: address)'
-    """,
+    Comment(
+      rawValue: """
+        Invalid load or store of type '\(Value.self)' from unaligned address \
+        '\(hex: address)'
+        """),
     sourceLocation: sourceLocation)
 }
 
