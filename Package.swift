@@ -43,7 +43,8 @@ let package = Package(
     // MMIO
     .target(
       name: "MMIO",
-      dependencies: ["MMIOMacros", "MMIOVolatile"]),
+      dependencies: ["MMIOMacros"],
+      swiftSettings: [.enableExperimentalFeature("Volatile")]),
     .testTarget(
       name: "MMIOTests",
       dependencies: ["MMIO", "MMIOUtilities"]),
@@ -54,8 +55,11 @@ let package = Package(
     // enabled.
     .target(
       name: "MMIOInterposable",
-      dependencies: ["MMIOMacros", "MMIOVolatile"],
-      swiftSettings: [.define("FEATURE_INTERPOSABLE")]),
+      dependencies: ["MMIOMacros"],
+      swiftSettings: [
+        .define("FEATURE_INTERPOSABLE"),
+        .enableExperimentalFeature("Volatile"),
+      ]),
     .testTarget(
       name: "MMIOInterposableTests",
       dependencies: ["MMIOInterposable", "MMIOUtilities"],
@@ -101,8 +105,6 @@ let package = Package(
     .testTarget(
       name: "MMIOUtilitiesTests",
       dependencies: ["MMIOUtilities"]),
-
-    .systemLibrary(name: "MMIOVolatile"),
 
     // SVD
     .target(
