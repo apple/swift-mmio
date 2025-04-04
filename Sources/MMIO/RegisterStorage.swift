@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOVolatile
+import _Volatile
 
 /// A type that represents the storage of a register value type.
 ///
@@ -23,11 +23,23 @@ public protocol _RegisterStorage {
   static func store(_ value: Self, to pointer: UnsafeMutablePointer<Self>)
 }
 
+extension VolatileMappedRegister {
+  @inlinable @inline(__always)
+  public init(_ pointer: UnsafePointer<Pointee>) {
+    self.init(unsafeBitPattern: UInt(bitPattern: pointer))
+  }
+
+  @inlinable @inline(__always)
+  public init(_ pointer: UnsafeMutablePointer<Pointee>) {
+    self.init(unsafeBitPattern: UInt(bitPattern: pointer))
+  }
+}
+
 extension UInt8: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint8_t(pointer)
+    VolatileMappedRegister(pointer).load()
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
@@ -36,7 +48,7 @@ extension UInt8: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint8_t(pointer, value)
+    VolatileMappedRegister(pointer).store(value)
   }
 }
 
@@ -44,7 +56,7 @@ extension UInt16: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint16_t(pointer)
+    VolatileMappedRegister(pointer).load()
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
@@ -53,7 +65,7 @@ extension UInt16: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint16_t(pointer, value)
+    VolatileMappedRegister(pointer).store(value)
   }
 }
 
@@ -61,7 +73,7 @@ extension UInt32: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint32_t(pointer)
+    VolatileMappedRegister(pointer).load()
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
@@ -70,7 +82,7 @@ extension UInt32: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint32_t(pointer, value)
+    VolatileMappedRegister(pointer).store(value)
   }
 }
 
@@ -79,7 +91,7 @@ extension UInt64: _RegisterStorage {
   /// Loads an instance of `self` from the address pointed to by pointer.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint64_t(pointer)
+    VolatileMappedRegister(pointer).load()
   }
 
   /// Stores an instance of `self` to the address pointed to by pointer.
@@ -88,7 +100,7 @@ extension UInt64: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint64_t(pointer, value)
+    VolatileMappedRegister(pointer).store(value)
   }
 }
 #endif
