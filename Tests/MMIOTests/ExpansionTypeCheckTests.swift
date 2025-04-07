@@ -80,6 +80,21 @@ struct OtherRangeTypes2 {
   var closed: Closed
 }
 
+@Register(bitWidth: 32)
+public struct RegisterWithValues {
+  public struct FieldValues: BitFieldProjectable, RawRepresentable {
+    public static let bitWidth = 2
+    public var rawValue: UInt8
+    @inlinable @inline(__always)
+    public init(rawValue: Self.RawValue) {
+      self.rawValue = rawValue
+    }
+  }
+
+  @ReadWrite(bits: ..<2, as: FieldValues.self)
+  var reg: Field
+}
+
 @RegisterBlock
 public struct Block {
   @RegisterBlock(offset: 0x4)
