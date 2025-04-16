@@ -1003,7 +1003,7 @@ struct RegisterMacroTests {
 
           public struct Read: RegisterValueRead {
             public typealias Value = S
-            var storage: UInt8
+            public var storage: UInt8
             public init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1016,7 +1016,7 @@ struct RegisterMacroTests {
 
           public struct Write: RegisterValueWrite {
             public typealias Value = S
-            var storage: UInt8
+            public var storage: UInt8
             public init(_ value: Raw) {
               self.storage = value.storage
             }

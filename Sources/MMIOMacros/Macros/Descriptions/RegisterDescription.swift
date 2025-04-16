@@ -121,7 +121,7 @@ extension RegisterDescription {
       \(self.accessLevel)\
       struct ReadWrite: RegisterValueRead, RegisterValueWrite {
         \(self.accessLevel)typealias Value = \(self.name)
-        var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: ReadWrite) {
           self.storage = value.storage
         }
@@ -147,7 +147,7 @@ extension RegisterDescription {
       """
       \(self.accessLevel)struct Read: RegisterValueRead {
         \(self.accessLevel)typealias Value = \(self.name)
-        var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: Raw) { self.storage = value.storage }
         \(nodes: bitFieldDeclarations)
       }
@@ -168,7 +168,7 @@ extension RegisterDescription {
       """
       \(self.accessLevel)struct Write: RegisterValueWrite {
         \(self.accessLevel)typealias Value = \(self.name)
-        var storage: UInt\(raw: self.bitWidth)
+        \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
         \(self.accessLevel)init(_ value: Raw) {
           self.storage = value.storage
         }
