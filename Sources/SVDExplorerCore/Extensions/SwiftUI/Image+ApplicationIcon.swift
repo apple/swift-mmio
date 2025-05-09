@@ -13,6 +13,7 @@ import AppKit
 import SwiftUI
 
 extension Image {
+  @MainActor
   static var applicationIcon: Image {
     Image(nsImage: NSApp.applicationIconImage)
   }

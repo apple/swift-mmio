@@ -184,7 +184,7 @@ struct DecoderBitViewFramePreferenceKey: PreferenceKey {
   }
   typealias Value = [Key: Anchor<CGRect>]
 
-  static var defaultValue: Value = [:]
+  static nonisolated(unsafe) var defaultValue: Value = [:]
 
   static func reduce(value: inout Value, nextValue: () -> Value) {
     value.merge(nextValue(), uniquingKeysWith: { $1 })

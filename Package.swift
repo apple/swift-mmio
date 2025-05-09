@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS("15.0"),
+    .macOS(.v15),
     .iOS(.v13),
     .tvOS(.v13),
     .watchOS(.v6),
