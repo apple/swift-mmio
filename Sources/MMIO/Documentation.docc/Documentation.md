@@ -1,56 +1,64 @@
 # ``MMIO``
 
-Define and operate on memory mapped IO.
+Interact with memory-mapped I/O registers in embedded systems using type-safe, ergonomic, and efficient Swift code.
 
 ## Overview
 
-Swift MMIO makes it easy to define registers directly in Swift source code and manipulate them in a safe and ergonomic manner.
+Memory-Mapped I/O (MMIO) is a fundamental technique that enables software to control and monitor hardware components in embedded systems and other low-level environments. It involves mapping a peripheral's control, status, and data registers into the CPU's memory address space. This allows software to interact with hardware by simply reading from or writing to specific memory addresses.
 
-> Note: Documentation under construction...
+Swift MMIO provides a robust, macro-driven framework to define these hardware interfaces safely in Swift, bringing strong type safety, clarity, and modern language features to low-level hardware programming.
 
-## Example Usage
+With Swift MMIO, you can:
+- **Define Complex Register Layouts:** Declaratively describe hardware interfaces using ``MMIO/RegisterBlock()`` and ``MMIO/Register(bitWidth:)``. See <doc:Defining-Registers> and <doc:Register-Layouts>.
+- **Specify Bit Fields Precisely:** Define individual bit fields, their positions, widths, and access permissions using macros like ``MMIO/ReadWrite(bits:as:)``. See <doc:Bit-Fields>.
+- **Leverage Type Projections:** Work with bit fields as meaningful Swift types (like `Bool` or custom enums and structs) via ``MMIO/BitFieldProjectable``. See <doc:Type-Projections>.
+- **Ensure Correct Memory Semantics:** All register accesses automatically use `volatile` memory semantics. See <doc:Volatile-Access>.
+- **Handle Complex Hardware Structures:** Model arrays of registers or register blocks (``MMIO/RegisterArray``) and discontiguous bit fields. See <doc:Register-Arrays> and <doc:Discontiguous-Bit-Fields>.
+- **Facilitate Unit Testing:** Use an optional interposer mechanism (``MMIO/MMIOInterposer``) to mock hardware for off-target testing. See <doc:Testing-With-Interposers>.
 
-```swift
-@RegisterBlock
-struct Control {
-  @RegisterBlock(offset: 0x0)
-  var cr1: Register<CR1>
-  @RegisterBlock(offset: 0x4)
-  var cr2: Register<CR2>
+@Metadata {
+    @CallToAction(purpose: "primary", label: "View on GitHub", url: "https://github.com/apple/swift-mmio")
 }
 
-@Register(bitWidth: 32)
-struct CR1 {
-  @ReadWrite(bits: 12..<13, as: Bool.self)
-  var en: EN
-}
+### FIXME: overview of sections in catalog
 
-let control = Control(unsafeAddress: 0x1000)
-control.cr1.modify { $0.en = true }
-```
+> talk about the overall structure "Register Block -> Register -> Bit Field"
+>
+> talk about "Registers" and "Hierarchies" suggest using SVD2Swift instead of manually defining them.
 
-## Using MMIO in your project
+FIXME: find a new home for this:
 
-`MMIO` supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:
+### Automating Definitions with SVD2Swift
 
-```swift
-.package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
-```
+Before manually defining registers, especially for complex microcontrollers, it's highly recommended to use the `SVD2Swift` tool provided with Swift MMIO. CMSIS-SVD files are XML-based descriptions of a microcontroller's memory map and peripherals, often supplied by hardware vendors or maintained by the community.
 
-> Important: See [source stability](https://github.com/apple/swift-mmio#source-stability) for details on major version "0".
+`SVD2Swift` parses these files and automatically generates the corresponding Swift MMIO struct definitions. Using `SVD2Swift` offers significant advantages:
+- **Reduce Errors:** Manual transcription of register addresses, bit field offsets, and widths from datasheets is tedious and error-prone. `SVD2Swift` automates this, leading to more accurate definitions.
+- **Save Time:** For peripherals with many registers and bit fields, `SVD2Swift` can generate the necessary Swift code in seconds, a task that might take hours or days to do manually.
+- **Leverage Vetted Sources:** Since SVD files are often vendor-provided or community-vetted, the generated code is based on a more reliable source of truth than manual interpretation alone.
 
-Second, add the `MMIO` library to your target's dependencies:
+While understanding the manual definition process described below is valuable, `SVD2Swift` should be your primary approach for generating register maps whenever SVD files are available for your target hardware. See [SVD2Swift](https://swiftpackageindex.com/apple/swift-mmio/main/documentation/svd2swift) for details.
 
-```swift
-.target(
-  name: "DeviceRegisters",
-  dependencies: [
-    .product(name: "MMIO", package: "swift-mmio")
-  ]),
-```
 
-Finally, `import MMIO` in your Swift source code.
+## Topics
 
-## Contributions
+### Essentials
 
-Contributions and feedback are welcome! Please refer to the [Contribution Guidelines](https://github.com/apple/swift-mmio#contributing-to-swift-mmio) for more information.
+- <doc:Installation>
+- <doc:Bit-Fields>
+- <doc:Registers>
+- <doc:Register-Blocks>
+
+### Core Concepts
+
+- <doc:Understanding-MMIO>
+- <doc:Volatile-Access>
+
+### Advanced Topics
+
+- <doc:Type-Projections>
+- <doc:Testing-With-Interposers>
+- <doc:Safety-Considerations>
+
+- ``MMIO/BitFieldProjectable``
+- ``MMIO/MMIOInterposer``
