@@ -34,9 +34,6 @@
 /// - ``count``
 /// - ``interposer`` (Conditional)
 ///
-/// ### Related Concepts
-/// - <doc:Register-Arrays> (For defining and using register arrays)
-///
 /// - Parameter Value: The type of the elements in the array. This can be:
 ///   - A `struct` conforming to ``RegisterValue`` (typically defined with the
 ///     ``MMIO/Register(bitWidth:)`` macro), if the array consists of individual registers.

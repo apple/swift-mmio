@@ -50,7 +50,7 @@ public macro RegisterBank(offset: Int, stride: Int, count: Int) =
 /// elements.
 ///
 /// For a comprehensive guide on defining peripheral layouts, see
-/// <doc:Register-Layouts>.
+/// <doc:Register-Blocks>.
 @attached(member, names: named(unsafeAddress), named(init), named(interposer))
 @attached(extension, conformances: RegisterProtocol)
 public macro RegisterBlock() =
@@ -105,9 +105,7 @@ public macro RegisterBlock(offset: Int, stride: Int, count: Int) =
 ///   32, or 64). This value must accurately reflect the size of the actual
 ///   hardware register.
 ///
-/// For detailed usage examples and explanations, refer to
-/// <doc:Register-Layouts> for structuring registers and
-/// <doc:Bit-Fields> for defining their contents.
+/// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(member, names: arbitrary)
 @attached(memberAttribute)
 @attached(extension, conformances: RegisterValue)
@@ -123,14 +121,13 @@ public macro Register(bitWidth: Int) =
 ///
 /// - Parameters:
 ///   - bits: A `RangeExpression` (e.g., `0..<4`) or a comma-separated list
-///     of range expressions (for <doc:Discontiguous-Bit-Fields>)
+///     of range expressions
 ///     specifying the bit range(s) occupied by these reserved bits. Use `...`
 ///     to indicate that the reserved field spans the entire register width.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` for
 ///     <doc:Type-Projections>. This is typically not used for
 ///     reserved fields, defaulting to `Never`.
 ///
-/// - SeeAlso: <doc:Bit-Fields>.
 @attached(accessor)
 public macro Reserved<Range, Value>(
   bits: Range..., as: Value.Type = Never.self
@@ -153,15 +150,13 @@ where Value: BitFieldProjectable
 ///
 /// - Parameters:
 ///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
-///     or a comma-separated list of such expressions to define a
-///     <doc:Discontiguous-Bit-Fields>. Use `...` if the field spans the entire
-///     register.
-///   - as: An optional type conforming to ``BitFieldProjectable`` to
-///     enable <doc:Type-Projections>. For example, can use `Bool`.self for
-///     single-bit flags, or a custom enumeration for multi-bit fields
-///     representing specific states.
+///     or a comma-separated list of range expressions. Use `...` if the field
+///     spans the entire register.
+///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
+///     can use `Bool`.self for single-bit flags, or a custom enumeration for
+///     multi-bit fields representing specific states.
 ///
-/// For more information, see <doc:Bit-Fields>.
+/// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
 public macro ReadWrite<Range, Value>(
   bits: Range..., as: Value.Type = Never.self
@@ -185,14 +180,14 @@ where Value: BitFieldProjectable
 /// effect or is an error, depending on the hardware.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4`) or a comma-separated list
-///     of such expressions (for <doc:Discontiguous-Bit-Fields>) specifying the
-///     bit range(s). Use `...` if the field spans the entire
-///     register.
-///   - as: An optional type conforming to ``BitFieldProjectable`` for
-///     <doc:Type-Projections>.
+///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
+///     or a comma-separated list of range expressions. Use `...` if the field
+///     spans the entire register.
+///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
+///     can use `Bool`.self for single-bit flags, or a custom enumeration for
+///     multi-bit fields representing specific states.
 ///
-/// - SeeAlso: <doc:Bit-Fields>.
+/// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
 public macro ReadOnly<Range, Value>(
   bits: Range..., as: Value.Type = Never.self
@@ -216,13 +211,14 @@ where Value: BitFieldProjectable
 /// specific hardware side effects, as defined by the hardware documentation.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4`) or a comma-separated list
-///     of such expressions (for <doc:Discontiguous-Bit-Fields>) specifying the
-///     bit range(s). Use `...` if the field spans the entire register.
-///   - as: An optional type conforming to ``BitFieldProjectable`` for
-///     <doc:Type-Projections>.
+///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
+///     or a comma-separated list of range expressions. Use `...` if the field
+///     spans the entire register.
+///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
+///     can use `Bool`.self for single-bit flags, or a custom enumeration for
+///     multi-bit fields representing specific states.
 ///
-/// - SeeAlso: <doc:Bit-Fields>.
+/// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
 public macro WriteOnly<Range, Value>(
   bits: Range..., as: Value.Type = Never.self

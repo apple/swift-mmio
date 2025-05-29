@@ -3,7 +3,7 @@
 @Metadata {
   @CallToAction(
     url: "https://github.com/apple/swift-mmio",
-    purpose: "link",
+    purpose: link,
     label: "View on Github")
 }
 
@@ -16,10 +16,15 @@ Memory-Mapped I/O (MMIO) is a fundamental technique that enables software to con
 Swift MMIO provides a robust, macro-driven framework to define these hardware interfaces safely in Swift, bringing strong type safety, clarity, and modern language features to low-level hardware programming.
 
 With Swift MMIO, you can:
+
 - **Define Complex Register Layouts:** Declaratively describe hardware interfaces using ``MMIO/Register(bitWidth:)`` and ``MMIO/RegisterBlock()``. See <doc:Registers> and <doc:Register-Blocks>.
-- **Specify Bit Fields Precisely:** Define individual bit fields, their positions, widths, and access permissions using macros like ``MMIO/ReadWrite(bits:as:)``. See <doc:Registers>.
+
+- **Specify Bit Fields Precisely:** Define individual bit fields, their positions, widths, and access permissions using macros like ``MMIO/ReadWrite(bits:as:)-(Range,_)``. See <doc:Registers>.
+
 - **Leverage Type Projections:** Work with bit fields as meaningful Swift types (like `Bool` or custom enums and structs) via ``MMIO/BitFieldProjectable``. See <doc:Registers>.
+
 - **Ensure Correct Memory Semantics:** All register accesses automatically use `volatile` memory semantics. See <doc:Volatile-Access>.
+
 - **Facilitate Unit Testing:** Use an optional interposer mechanism (``MMIO/MMIOInterposer``) to mock hardware for off-target testing. See <doc:Testing-With-Interposers>.
 
 ### Documentation Structure
