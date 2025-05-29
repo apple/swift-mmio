@@ -1,166 +1,262 @@
 # Testing with Interposers
 
-Verify register interaction logic without actual hardware using interposers.
+Test your hardware interaction code without physical devices using interposers.
 
 ## Overview
 
-> FIXME: make this more succinct v, just a little wordy
+Testing code that interacts with hardware registers presents unique challenges. Traditional testing approaches often require:
 
-Testing software that directly interacts with hardware registers can be challenging. Traditionally, it often requires:
+- Physical access to the target hardware
+- Specialized debugging equipment
+- Complex setup procedures to create specific hardware states
 
-> FIXME: choose 1/2 and no bulleted list
+These requirements make unit testing hardware-dependent code slow, expensive, and difficult to automate. Yet verifying that your code correctly interacts with hardware registers is crucial for reliable embedded systems.
 
-- The specific target hardware.
-- A debugger connection or other means to observe and manipulate hardware state.
-- Potentially complex setup procedures to bring the hardware into specific states for testing various scenarios.
+Swift MMIO addresses this challenge with **interposers**. An interposer intercepts memory operations that would normally target hardware registers. Instead of accessing physical memory, operations on ``MMIO/Register`` instances are redirected to methods on your custom interposer object. This redirection allows you to:
 
-This can make unit testing slow, expensive, and difficult to automate, especially for driver logic and peripheral control routines. Ideally, you want to verify the *logic* of how registers are accessed—what values are written, in what sequence, and based on what inputs—independently of the physical hardware.
+- Test register interaction logic without actual hardware
+- Verify sequences of register reads and writes
+- Simulate specific hardware states and responses
+- Automate tests that would otherwise require physical devices
 
-Swift MMIO addresses this with an **interposer** mechanism.
+> Important: The interposer mechanism is a compile-time feature, active only when the `MMIO` package is built with the `-DFEATURE_INTERPOSABLE` flag. This flag adds runtime overhead and is strictly for debug/test builds. The `MMIOInterposable` target in `swift-mmio` is pre-configured with this flag.
 
-> FIXME: join these two: ^ v
+### Creating an Interposer
 
-An interposer is an object that can "intercept" or "interpose" on memory load and store operations that would normally target MMIO registers. Instead of accessing physical memory, operations on ``MMIO/Register`` instances can be redirected to methods on a custom interposer object.
+To create an interposer, define a class that conforms to the ``MMIO/MMIOInterposer`` protocol. This protocol requires you to implement two methods:
 
-> Important: The interposer mechanism is a compile-time feature, active only if the `MMIO` package is built with `-DFEATURE_INTERPOSABLE`. This flag adds runtime overhead and is strictly for debug/test builds. The `MMIOInterposable` target in `swift-mmio` is pre-configured with this flag.
+- `load(from:)`: Called when code reads from a register
+- `store(_:to:)`: Called when code writes to a register
 
-## The MMIOInterposer protocol
+Start by creating a basic interposer that simulates memory by storing values in a dictionary. This interposer:
+1. Maps memory addresses to values
+2. Returns stored values when registers are read
+3. Updates stored values when registers are written
 
-> FIXME: this section has no value over the next.
-
-Create an interposer by defining a class conforming to ``MMIO/MMIOInterposer``:
+First, define the class structure and storage:
 
 ```swift
 import MMIOInterposable // Use this target for interposer-enabled builds
 
-#if FEATURE_INTERPOSABLE
-public protocol MMIOInterposer: AnyObject {
-    func load<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
-        from pointer: UnsafePointer<Value>
-    ) -> Value
-
-    func store<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
-        _ value: Value, to pointer: UnsafeMutablePointer<Value>
-    )
+class BasicInterposer: MMIOInterposer {
+    // Simulated memory storage - maps addresses to values
+    private var memory: [UInt: UInt64] = [:]
+    
+    // Protocol methods will be implemented next
 }
-#endif
 ```
 
-Implement `load(from:)` to simulate hardware reads and `store(_:to:)` to simulate hardware writes, potentially recording accesses or updating a test-specific memory model.
+Next, implement the `load` method. This method is called whenever code reads from a register. It:
+1. Converts the memory pointer to a numeric address
+2. Looks up the value stored at that address in the simulated memory
+3. Converts the value to the expected register width and returns it
 
-## Using an Interposer
+```swift
+class BasicInterposer: MMIOInterposer {
+    // ...
 
-When `FEATURE_INTERPOSABLE` is active, ``MMIO/RegisterBlock()`` and ``MMIO/Register`` initializers accept an optional `interposer` argument. An interposer passed to a `RegisterBlock` propagates to its nested members.
+    func load<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
+        from pointer: UnsafePointer<Value>
+    ) -> Value {
+        let address = UInt(bitPattern: pointer)
+        let value = memory[address, default: 0]
+        return Value(value)
+    }
+}
+```
 
-### 1. Define Registers
+Then, implement the `store` method. This method is called whenever code writes to a register. It:
+1. Converts the memory pointer to a numeric address
+2. Converts the value to the simulated memory type (UInt64)
+3. Stores the value in the simulated memory at the specified address
 
-Define your peripherals and registers as usual.
+```swift
+class BasicInterposer: MMIOInterposer {
+    // ...
+    
+    func store<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
+        _ value: Value, to pointer: UnsafeMutablePointer<Value>
+    ) {
+        let address = UInt(bitPattern: pointer)
+        memory[address] = UInt64(value)
+    }
+}
+```
+
+This basic interposer provides the minimum functionality needed to simulate memory-mapped registers. When code reads from an address, the interposer returns the corresponding value from the dictionary. When code writes to an address, the interposer updates the dictionary.
+
+> Important: This implementation has limitations and is not production quality. It only supports 64-bit aligned load/store operations and doesn't handle unaligned accesses.
+
+### Tracing Register Accesses
+
+For testing purposes, you often need to record register accesses for later verification. Let's create an example interposer that extends the basic implementation with tracing capabilities.
+
+This example tracing implementation:
+1. Stores a record of all register accesses (reads and writes)
+2. Captures the address, value, and type of each access
+3. Maintains simulated memory like the basic interposer
+4. Allows test code to verify the sequence of operations
+
+First, define a structure to represent a traced memory access event:
 
 ```swift
 import MMIOInterposable
 
-@RegisterBlock
-struct MyPeripheral {
-    @RegisterBlock(offset: 0x00)
-    var control: Register<Control>
-    // ... other registers ...
-}
-
-@Register(bitWidth: 32)
-struct Control {
-    @ReadWrite(bits: 0..<1, as: Bool.self)
-    var enable: ENABLE
-    @ReadWrite(bits: 1..<5)
-    var mode: MODE
-    // ... other fields ...
-}
-```
-
-### 2. Create a Custom Interposer
-
-Implement ``MMIO/MMIOInterposer``. The following `TracingInterposer` records accesses.
-
-> Note: The following interposer is a simplified example for demonstration only. It internally "simulates" memory as `UInt64` and is not a production-ready.
-
-```swift
-// Ensure this code is compiled only for interposable builds
-#if FEATURE_INTERPOSABLE
-// Represents a traced MMIO event
-struct MMIOTraceEvent: Equatable {
+struct MMIOTraceEvent {
     enum AccessType: String { case load, store }
     let type: AccessType
     let address: UInt
-    let value: UInt64 // Example uses UInt64 for simulated memory
+    let value: UInt64
 }
+```
 
+Each `MMIOTraceEvent` captures:
+- The type of access (load/read or store/write)
+- The memory address being accessed
+- The value that was read or written
+
+Next, create the tracing interposer class:
+
+```swift
 class TracingInterposer: MMIOInterposer {
+    // Record of all register accesses
     var trace: [MMIOTraceEvent] = []
-    private var simulatedMemory: [UInt: UInt64] = [:] // Address -> Value
+    
+    // Simulated memory storage
+    private var simulatedMemory: [UInt: UInt64] = [:]
+}
+```
 
-    func load<ValueType: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
-        from pointer: UnsafePointer<ValueType>
-    ) -> ValueType {
+Now, implement the `load` method to record read operations. This method performs the same operations as the basic interposer, but also records each read in the trace:
+
+```swift
+class TracingInterposer: MMIOInterposer {
+    // ...
+    
+    func load<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
+        from pointer: UnsafePointer<Value>
+    ) -> Value {
         let address = UInt(bitPattern: pointer)
         let value = simulatedMemory[address, default: 0]
+        
+        // Record this read operation in the trace
         trace.append(MMIOTraceEvent(type: .load, address: address, value: value))
-        return ValueType(value) // Convert back to expected register width
+        
+        return Value(value)
     }
+}
+```
 
-    func store<ValueType: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
-        _ value: ValueType,
-        to pointer: UnsafeMutablePointer<ValueType>
+Finally, implement the `store` method to record write operations. This method also performs the same operations as the basic interposer, but records each write in the trace:
+
+```swift
+class TracingInterposer: MMIOInterposer {
+    // ...
+    
+    func store<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
+        _ value: Value, to pointer: UnsafeMutablePointer<Value>
     ) {
         let address = UInt(bitPattern: pointer)
-        let storedValue = UInt64(value) // Store as common type for simulation
+        let storedValue = UInt64(value)
+        
+        // Update simulated memory
         simulatedMemory[address] = storedValue
+        
+        // Record this write operation in the trace
         trace.append(MMIOTraceEvent(type: .store, address: address, value: storedValue))
     }
 }
-#endif // FEATURE_INTERPOSABLE
 ```
 
-### 3. Instantiate and Use in Tests
+This tracing interposer records each memory operation in a `trace` array, which you can examine to verify that your code interacts with registers in the expected sequence.
 
-In your test code (also compiled with `FEATURE_INTERPOSABLE`), instantiate your peripheral with the interposer. This example test verifies a sequence of register modifications.
+### Testing with Interposers
+
+When the `FEATURE_INTERPOSABLE` flag is active, both ``MMIO/Register`` and ``MMIO/RegisterBlock()`` initializers accept an optional `interposer` parameter. When you provide an interposer, all memory operations on that register or register block are redirected to the interposer instead of accessing physical memory.
+
+> Note: When you pass an interposer to a register block, it automatically propagates to all contained registers and subblocks.
+
+The real power of interposers is in verifying register access patterns. Using the `TracingInterposer` implementation created above, you can verify that your code:
+
+- Reads from and writes to the correct registers
+- Sets the correct bit patterns
+- Performs operations in the correct sequence
+
+Here's a simple example that demonstrates how to test hardware interaction code using the `TracingInterposer`.
+
+First, define a control register:
 
 ```swift
-#if FEATURE_INTERPOSABLE
+import MMIOInterposable
 import Testing
 
-struct MyPeripheralTests {
-  @Test func testMyPeripheralLogic() throws { // Using Swift Testing
-    let myInterposer = TracingInterposer()
-    let myAddress: UInt = 0x40010000 // Base address of the peripheral
-
-    // Initialize the device with the interposer
-    let myDevice = MyPeripheral(
-        unsafeAddress: myAddress,
-        interposer: myInterposer)
-
-    // Perform operations on the device
-    // 1. Modify 'enable' field.
-    //   - Expected: load from 0x40010000 (simulated as 0), store 0b1.
-    myDevice.control.modify { $0.enable = true }
-
-    // 2. Modify 'mode' field, 'enable' remains true.
-    //   - Expected: load from 0x40010000 (simulated as 0b1),
-    //     store 0b111 (mode=3, enable=true).
-    myDevice.control.modify { $0.mode = 3 }
-
-    // Define the expected sequence of trace events
-    let expectedTrace = [
-      // Initial read for first modify
-      MMIOTraceEvent(type: .load,  address: myAddress + 0x00, value: 0b0),
-      // Write enable=true (0b1)
-      MMIOTraceEvent(type: .store, address: myAddress + 0x00, value: 0b1),
-      // Read for second modify (enable is 0b1)
-      MMIOTraceEvent(type: .load,  address: myAddress + 0x00, value: 0b1),
-      // Write mode=3 (0b0011 -> shifted to 0b0110), enable=true (0b1) -> 0b0111
-      MMIOTraceEvent(type: .store, address: myAddress + 0x00, value: 0b111),
-    ]
-    // Assert that the recorded trace matches the expected trace
-    #expect(myInterposer.trace == expectedTrace)
-  }
+@Register(bitWidth: 32)
+struct ControlRegister {
+    @ReadWrite(bits: 0..<1, as: Bool.self)
+    var enable: ENABLE
+    
+    @ReadWrite(bits: 1..<3)
+    var mode: MODE
+    
+    @ReadWrite(bits: 3..<8)
+    var prescaler: PRESCALER
 }
-#endif
 ```
+
+Now, create a function that updates the register based on its current state:
+
+```swift
+func updateControlRegister(_ control: Register<ControlRegister>, newMode: UInt8) {
+    control.modify { value in
+        if !value.enable {
+            value.enable = true
+            value.mode = newMode
+            value.prescaler = 4
+        } else {
+            value.mode = newMode
+        }
+    }
+}
+```
+
+Finally, write a test that verifies the function works correctly. The test:
+
+1. Creates a tracing interposer to record all register accesses
+2. Creates a control register with the interposer at address `0x40000000`
+3. Calls the `updateControlRegister` function with mode value 2
+4. Verifies the sequence of register accesses:
+   - First, the function should read the current register value (0 by default)
+   - Then, it should write the updated value with (binary 00100001 = decimal 33):
+     - enable=true
+     - mode=2
+     - prescaler=4 
+
+```swift
+struct ControlRegisterTests {
+    @Test func testUpdateWhenDisabled() throws {
+        let interposer = TracingInterposer() // 1
+        
+        let control = ControlRegister(unsafeAddress: 0x40000000, interposer: interposer) // 2
+        
+        updateControlRegister(control, newMode: 2) // 3
+        
+        let expectedTrace = [
+            MMIOTraceEvent(type: .load, address: 0x40000000, value: 0), // 4
+            MMIOTraceEvent(type: .store, address: 0x40000000, value: 33) // 4
+        ]
+        
+        #expect(interposer.trace == expectedTrace) // 4
+    }
+}
+```
+
+## Topics
+
+### Interposer Protocol
+
+- ``MMIO/MMIOInterposer``
+
+### Register Initialization with Interposers
+
+- ``MMIO/Register/init(unsafeAddress:interposer:)``
+- ``MMIO/RegisterBlock/init(unsafeAddress:interposer:)``
