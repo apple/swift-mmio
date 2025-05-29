@@ -10,7 +10,7 @@ Registers are the fundamental building blocks for controlling peripherals like t
 
 Swift MMIO provides a declarative approach to defining and interacting with these registers. Instead of manual bit manipulation, you use Swift macros to create type-safe and readable hardware interfaces.
 
-> Note: While registers are typically grouped into larger structures called register blocks, this article focuses on defining and understanding individual registers.
+> Note: While registers are typically grouped into larger structures called register blocks, this article focuses on defining and understanding individual registers. For information on register blocks, see <doc:Register-Blocks>.
 
 ### Defining Registers
 
@@ -45,9 +45,11 @@ if readValue.storage != 0 {
 }
 ```
 
-This performs a side-effectful read on the actual hardware. Since our register definition doesn't have any bit fields yet, all you can access is the `.storage` property, which contains the raw bit pattern read from hardware. The type of `storage` is a `UIntX` that matches the bit width specified in the `@Register` macro—in this case, `UInt32` for our 32-bit register.
+This performs a read with side effects on the actual hardware. Since our register definition doesn't have any bit fields yet, all you can access is the `.storage` property, which contains the raw bit pattern read from hardware. The type of `storage` is an unsigned integer that matches the bit width specified in the `@Register` macro—in this case, `UInt32` for our 32-bit register.
 
-Without prior knowledge of what the bits mean, you can't do much with this raw value except treat it as a whole. You can also write a value back to the register:
+Without prior knowledge of what the bits mean, you can't do much with this raw value except treat it as a whole.
+
+The next example shows how you can write a value back to the register:
 
 ```swift
 // Create a raw value to write
@@ -55,7 +57,7 @@ let writeValue = DeviceStatus.Write(0b1)
 status.write(writeValue)
 ```
 
-Swift MMIO provides a more convenient closure-based API for writing to registers. This approach creates a zeroed write view and lets you modify it within a closure before writing it to the hardware:
+Swift MMIO provides a more convenient closure-based API for writing to registers. This API creates a zeroed write view and lets you modify it within a closure before it writes it to the hardware:
 
 ```swift
 status.write { writeValue in
@@ -63,7 +65,7 @@ status.write { writeValue in
 }
 ```
 
-A common pattern is to read the current value, modify it, and write it back. This is useful when you want to change only certain bits while preserving others:
+A common pattern is to read the current value, modify it, and write it back. This is useful to change some bits while preserving others:
 
 ```swift
 var value = status.read()
@@ -71,7 +73,7 @@ value.storage += 1
 status.write(value)
 ```
 
-This pattern is so common that Swift MMIO provides a dedicated `modify` method. The method reads the current value from hardware, passes it to your closure for modification, and then writes the modified value back to hardware:
+This pattern is so common that Swift MMIO provides a dedicated `modify` method. The method reads the current value from hardware, passes it to your closure for modification, then writes the modified value back to hardware:
 
 ```swift
 status.modify { value in
@@ -79,11 +81,11 @@ status.modify { value in
 }
 ```
 
-While working with bare registers is possible, defining bit fields makes your code much more expressive and safer, as we'll see next.
+While working with bare registers is possible, defining bit fields makes your code much more expressive and safer, as you'll see next.
 
 ### Adding Bit Fields
 
-Most hardware registers aren't just simple storage units—they contain multiple functional segments called **bit fields**. Each bit field represents a specific feature or setting within the register. For example, a single 32-bit control register might contain an enable bit, a mode selection field, and status flags, all packed together to efficiently use the available bits.
+Most hardware registers aren't just simple storage units — they contain multiple functional segments called **bit fields**. Each bit field represents a specific feature or setting within the register. For example, a single 32-bit control register might contain an enable bit, a mode selection field, and status flags, all packed together to efficiently use the available bits.
 
 Let's enhance our `DeviceStatus` register by adding a bit field. According to our hypothetical device's datasheet, bit 1 controls whether interrupts are enabled:
 
@@ -97,7 +99,7 @@ struct DeviceStatus {
 }
 ```
 
-Here, we've defined a single bit field named `interruptEnable` that occupies bit 1 of our register. The `@ReadWrite` macro indicates that this bit can be both read from and written to. The `bits: 1..<2` parameter specifies that this field uses only bit 1.
+Here, the example defines a single bit field named `interruptEnable` that occupies bit 1 of the register. The `@ReadWrite` macro indicates that this bit can be both read from and written. The `bits: 1..<2` parameter specifies that this field uses only bit 1.
 
 The type `INTERRUPT_ENABLE` is automatically generated by the Swift MMIO macro system. It contains metadata about the bit field, including its position and width. You don't need to define this type yourself.
 
@@ -120,7 +122,7 @@ if value.raw.interruptEnable == 1 {
 
 Notice how you access the bit field through the `.raw` property. This gives you access to the raw integer value of the field (0 or 1 in this case).
 
-> Note: The type of `value.raw.interruptEnable` matches the type of `value.storage`—in this case, `UInt32` for our 32-bit register. This consistency makes it easier to work with the raw values when required.
+> Note: The type of `value.raw.interruptEnable` matches the type of `value.storage` — in this case, `UInt32` for our 32-bit register. This consistency makes it easier to work with the raw values when required.
 
 For example, you could use the modify operation and the `.raw.interruptEnable` field to easily enable interrupts on the device while preserving all other bits:
 
@@ -131,7 +133,7 @@ status.modify { value in
 }
 ```
 
-The raw field accessors like `raw.interruptEnable` are bounds-checked at runtime. If you attempt to write a value that's too large for the field (for example, writing 2 to a 1-bit field), Swift will trap with a runtime error. This prevents accidentally modifying other bits in the register and helps catch potential bugs early.
+The raw field accessors like `raw.interruptEnable` are bounds-checked at runtime. If you attempt to write a value that's too large for the field (for example, writing 2 to a 1-bit field), Swift traps with a runtime error. This prevents accidentally modifying other bits in the register and helps catch potential bugs early.
 
 For advanced users who need to perform C-style bit manipulation (though this is generally not recommended), Swift MMIO provides access to the bit masks and offsets as properties available on the generated field type, `INTERRUPT_ENABLE` in this example:
 
@@ -145,11 +147,11 @@ if enabled == 1 {
 }
 ```
 
-> Important: Unlike the `.raw` accessors, this manual bit manipulation approach is not bounds-checked and is therefore less safe. It's provided primarily for compatibility with existing code or for specific optimization requirements where the safety checks might be too costly.
+> Important: Unlike the `.raw` accessors, this manual bit manipulation approach is not bounds-checked and therefore less safe. It's provided primarily for compatibility with existing code or for specific optimization requirements where the safety checks might be too costly.
 
 ### Adding more fields
 
-Let's create a more complete register definition with multiple functional fields:
+The following example creates a more complete register definition with multiple functional fields:
 
 ```swift
 import MMIO
@@ -167,7 +169,7 @@ struct DeviceStatus {
 }
 ```
 
-We've added a 1-bit `powerEnabled` field at bit 0 and a 4-bit `deviceMode` field at bits 4-7. Now you can interact with all three functional fields:
+The example added a 1-bit `powerEnabled` field at bit 0 and a 4-bit `deviceMode` field at bits 4-7. Now you can interact with all three functional fields:
 
 ```swift
 // Update status fields
@@ -236,9 +238,9 @@ status.write { value in
 }
 ```
 
-Swift MMIO provides built-in support for projecting bit fields to `Bool` and fixed-width integer types like `UInt8`, `Int16`, etc. For more complex bit fields, you can define custom types that conform to ``MMIO/BitFieldProjectable``. For detailed instructions on creating custom projections, see <doc:Type-Projections>.
+Swift MMIO provides built-in support for projecting bit fields to `Bool` and fixed-width integer types like `UInt8`, `Int16`, and so on. For more complex bit fields, you can define custom types that conform to ``MMIO/BitFieldProjectable``. For detailed instructions on creating custom projections, see <doc:Type-Projections>.
 
-For multi-bit fields like our `deviceMode`, you can use a custom enum that gives meaningful names to the different possible values. Let's define a `DeviceMode` enum for our 2-bit mode field:
+For multi-bit fields like our `deviceMode`, use a custom enum that gives meaningful names to the different possible values. For example, you can define a `DeviceMode` enum for a 2-bit mode field:
 
 ```swift
 import MMIO
@@ -297,7 +299,7 @@ status.modify { value in
 }
 ```
 
-This makes your code much more expressive and less error-prone. Instead of remembering that `0b10` means "normal mode," you can use the descriptive enum case `.normal`.
+This makes your code more expressive and less error-prone. Instead of remembering that `0b10` means "normal mode," you can use the descriptive enum case `.normal`.
 
 > Note: Even when you add a type projection, the `.raw` API remains available if you need direct access to the underlying bits. However, the typed API should be preferred for most use cases as it provides better type safety and readability.
 
@@ -309,13 +311,13 @@ Hardware registers often have fields with different access permissions. Some bit
 
 Registers can be categorized based on their field access patterns:
 
-- **Symmetric registers** contain only `@ReadWrite` and `@Reserved` fields. All functional fields can be both read from and written to, making the API for reading and writing consistent.
+- **Symmetric registers** contain only `@ReadWrite` and `@Reserved` fields. You can read and write to all functional fields, making the API for reading and writing consistent.
 
-- **Asymmetric registers** contain `@ReadOnly` and/or `@WriteOnly` fields alongside other types. Different fields are available on different views (Read vs. Write), leading to a more complex API.
+- **Asymmetric registers** contain `@ReadOnly` and/or `@WriteOnly` fields alongside other types. Different fields are available on different views (Read vs. Write), that leads to a more complex API.
 
-When you call `status.read()`, Swift MMIO returns a `DeviceStatus.Read` view of the register. Similarly, when you call `status.write()`, you're working with a `DeviceStatus.Write` view. For symmetric registers, these views are identical—Swift MMIO uses type aliases to make `Read = ReadWrite` and `Write = ReadWrite`. This is why in our earlier examples, you could access all fields on both read and write views.
+When you call `status.read()`, Swift MMIO returns a `DeviceStatus.Read` view of the register. Similarly, when you call `status.write()`, you're working with a `DeviceStatus.Write` view. For symmetric registers, these views are identical — Swift MMIO uses type aliases to make `Read = ReadWrite` and `Write = ReadWrite`. This is why, in our earlier examples, you could access all fields on both read and write views.
 
-Let's expand our `DeviceStatus` register to include fields with different access permissions:
+The following example expands the `DeviceStatus` register to include fields with different access permissions:
 
 ```swift
 import MMIO
@@ -342,14 +344,14 @@ struct DeviceStatus {
 }
 ```
 
-Our `DeviceStatus` register now contains a mix of field types:
-- `powerEnabled` and `interruptEnable` are configuration bits that can be both read and written
+The `DeviceStatus` register now contains a mix of field types:
+- `powerEnabled` and `interruptEnable` are configuration bits that you can be both read and write.
 - `busy` is a status bit that can only be read (the hardware sets this bit)
 - `reset` is a command bit that can only be written (writing `true` triggers a reset)
 - `deviceMode` is a configuration field that can be both read and written
 - `_reserved` marks the remaining bits as reserved
 
-This makes `DeviceStatus` an asymmetric register, and different fields are available on different views.
+This makes `DeviceStatus` an asymmetric register, with different fields available on different views.
 
 #### Field Availability on Different Views
 
@@ -379,7 +381,7 @@ status.write { writeValue in
 
 #### Two-Parameter Form of `modify`
 
-For symmetric registers, you can use the single-parameter form of `modify`:
+For symmetric registers, use the single-parameter form of `modify`:
 
 ```swift
 status.modify { value in
@@ -388,7 +390,7 @@ status.modify { value in
 }
 ```
 
-For asymmetric registers, you need to use the two-parameter version of `modify` that provides both the current read value and a write value to modify:
+For asymmetric registers, use the two-parameter version of `modify` that provides both the current read value and a write value to modify:
 
 ```swift
 status.modify { readValue, writeValue in
@@ -418,7 +420,7 @@ Some register fields have special hardware behaviors that aren't directly captur
 The following examples illustrate some common patterns, but this is not a comprehensive list:
 
 **Write-1-to-clear flags:**
-These are bits that are cleared by writing a 1 to them, while writing 0 has no effect. They're often used for interrupt flags:
+These are bits that you clear by writing a 1 to them, while writing 0 has no effect. They're often used for interrupt flags:
 
 ```swift
 @Register(bitWidth: 32)
@@ -473,7 +475,7 @@ LEDControl(unsafeAddress: 0x40000010).write { writeValue in
 }
 ```
 
-These special behaviors are handled in your application code based on the hardware's requirements.
+You must handle these special behaviors in your application code based on the hardware's requirements.
 
 ### Discontiguous Bitfields
 
@@ -499,7 +501,7 @@ The order of ranges is important:
 - The first range (2..<4) provides the least significant bits
 - The second range (6..<8) provides the more significant bits
 
-When reading this field, Swift MMIO combines the bits from both ranges into a single logical value:
+When you read this field, Swift MMIO combines the bits from both ranges into a single logical value:
 
 ```swift
 let status = DeviceStatus(unsafeAddress: 0x40000000)
