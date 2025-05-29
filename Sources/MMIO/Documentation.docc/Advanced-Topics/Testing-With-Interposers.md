@@ -249,14 +249,3 @@ struct ControlRegisterTests {
     }
 }
 ```
-
-## Topics
-
-### Interposer Protocol
-
-- ``MMIO/MMIOInterposer``
-
-### Register Initialization with Interposers
-
-- ``MMIO/Register/init(unsafeAddress:interposer:)``
-- ``MMIO/RegisterBlock/init(unsafeAddress:interposer:)``

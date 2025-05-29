@@ -45,7 +45,7 @@ public protocol MMIOInterposer: AnyObject {
   /// Intercepts a register read (load) operation.
   ///
   /// This method is called by ``Register/read()`` or during the read phase of
-  /// ``Register/modify(_:)`` when an interposer is active for that ``Register``
+  /// ``MMIO/Register/modify(_:)`` when an interposer is active for that ``MMIO/Register``
   /// instance.
   ///
   /// Your implementation should simulate the hardware read. This might involve:
@@ -65,8 +65,8 @@ public protocol MMIOInterposer: AnyObject {
 
   /// Intercepts a register write (store) operation.
   ///
-  /// This method is called by ``Register/write(_:)`` or during the write phase of
-  /// ``Register/modify(_:)`` when an interposer is active for that ``Register``
+  /// This method is called by ``MMIO/Register/write(_:)`` or during the write phase of
+  /// ``MMIO/Register/modify(_:)`` when an interposer is active for that ``MMIO/Register``
   /// instance.
   ///
   /// Your implementation should simulate the hardware write. This could involve:

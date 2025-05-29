@@ -51,7 +51,11 @@ Swift, designed as a high-level, safe language, does not expose a direct `volati
 
 The Swift MMIO package includes a minimal C module (named `MMIOVolatile`). This module provides simple C functions dedicated to performing volatile loads and stores for various fixed-width integer types (e.g., `mmio_volatile_load_uint32_t`, `mmio_volatile_store_uint32_t`). These C functions use the C language's `volatile` keyword to guarantee the necessary memory semantics.
 
-When you use methods like ``MMIO/Register/read()``, ``MMIO/Register/write(_:)``, or ``MMIO/Register/modify(_:)-(Value.Write)->(T)`` provided by Swift MMIO, these methods internally call the appropriate C functions from `MMIOVolatile` for each hardware access.
+``MMIO/Register/modify(_:)-((Value.Write) -> T)``
+``MMIO/Register/modify(_:)-85pov``
+``MMIO/Register/modify(_:)-8y9zn``
+
+When you use methods like ``MMIO/Register/read()``, ``MMIO/Register/write(_:)->()``, or ``MMIO/Register/modify(_:)-(Value.Write)->(T)`` provided by Swift MMIO, these methods internally call the appropriate C functions from `MMIOVolatile` for each hardware access.
 
 It's particularly important to understand how this applies to the `modify { ... }` operation. The `modify` method performs one volatile read of the register before the closure is executed, and one volatile write of the (potentially modified) value after the closure completes. Operations on the `Write` view *inside* the closure are applied to an in-memory copy of the register's state and do not individually trigger volatile hardware accesses. This design ensures that the entire read-modify-write sequence for the register update is performed as a single set of carefully controlled volatile operations. This approach inherently avoids certain common pitfalls where multiple, unintended read-modify-write sequences might occur, a topic explored further in <doc:Safety-Considerations>.
 
