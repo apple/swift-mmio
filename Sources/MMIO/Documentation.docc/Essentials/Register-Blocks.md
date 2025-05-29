@@ -19,14 +19,14 @@ The annotated `@RegisterBlock` type serves as a container for:
 
 ### Defining a simple register block
 
-Let's explore how to define a register block by modeling a UART (Universal Asynchronous Receiver/Transmitter) peripheral — a common communication interface found in many embedded systems.
+The following example explores how to define a register block by modeling a UART (Universal Asynchronous Receiver/Transmitter) peripheral — a common communication interface found in many embedded systems.
 
 A typical UART peripheral contains several registers that control its operation:
 - A data register for sending and receiving bytes.
 - A status register that indicates conditions like "transmit buffer empty" or "receive buffer full".
 - Control registers for configuring parameters like baud rate and communication settings.
 
-Before you can define the complete UART peripheral structure, first define the layout of each individual register, using the ``MMIO/Register(bitWidth:)`` macro. For this example, assume you've already defined these registers:
+Before you define the complete UART peripheral structure, first define the layout of each individual register, using the ``MMIO/Register(bitWidth:)`` macro. For this example, assume you've already defined these registers:
 
 ```swift
 import MMIO
@@ -79,7 +79,7 @@ Each property's type is `Register<T>`, where `T` is the register struct you defi
 
 ### Using a register block
 
-Now that you've defined your `UARTPeripheral` register block, let's explore how to use it to interact with the actual hardware.
+Now that you've defined your `UARTPeripheral` register block, explore how to use it to interact with the actual hardware.
 
 The `@RegisterBlock` macro provides two important capabilities:
 - It generates an `unsafeAddress` property to store the base memory address of the peripheral.
@@ -113,7 +113,7 @@ When you access a property like `uart.data` or `uart.status`, Swift MMIO automat
 
 Hardware peripherals often group related registers together. Swift MMIO supports this organization through nested register blocks, allowing you to create hierarchical structures that match your hardware's design.
 
-Let's enhance our UART example by grouping the control-related registers into their own block:
+Let's enhance the UART example by grouping the control-related registers into their own block:
 
 ```swift
 import MMIO
@@ -162,7 +162,7 @@ let baudRate = uart.controlBlock.baudRate
 
 Many hardware peripherals contain repeated register structures. For example, a GPIO peripheral typically has identical configuration registers for each pin, or a timer might have multiple identical channels. Swift MMIO provides the ``MMIO/RegisterArray`` type to efficiently model these repeated structures.
 
-Let's enhance our UART example by adding support for multiple communication channels, where each channel has its own set of configuration registers:
+Let's enhance the UART example by adding support for multiple communication channels, where each channel has its own set of configuration registers:
 
 ```swift
 import MMIO
@@ -200,7 +200,7 @@ struct UARTPeripheral {
 }
 ```
 
-The `channels` property has type ``MMIO/RegisterArray``, which is a type provided by Swift MMIO. Like Swift's standard arrays, you access elements using integer subscripts:
+The `channels` property has the type ``MMIO/RegisterArray``, provided by Swift MMIO. Like Swift's standard arrays, you access elements using integer subscripts:
 
 ```swift
 // Create a UART instance at base address 0x40010000
@@ -213,7 +213,7 @@ let channel2 = uart.channels[2]
 When you access an array element, Swift MMIO automatically calculates its memory address:
 - `uart.channels[2]` points to address `0x40010000 + 0x20 + (2 * 0x04) = 0x40010028`
 
-> Important: Swift MMIO performs bounds checking on array accesses. Attempting to access `uart.channels[4]` would trigger a runtime trap since we defined the array with `count: 4` (valid indices are 0-3).
+> Important: Swift MMIO performs bounds checking on array accesses. Attempting to access `uart.channels[4]` would trigger a runtime trap since the example defined the array with `count: 4` (valid indices are 0-3).
 
 Register arrays can contain either individual registers (as shown above) or entire register blocks, allowing you to model complex repeated structures like DMA channels, each with multiple registers.
 
