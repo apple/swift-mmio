@@ -29,10 +29,10 @@ import MMIOVolatile
 /// ``RegisterValueRaw``, forming a critical part of Swift MMIO's safety
 /// mechanism for hardware interaction.
 ///
-/// > Warning: This is an internal protocol. Do not attempt to conform new types
+/// - Warning: This is an internal protocol. Do not attempt to conform new types
 ///   to `_RegisterStorage`.
 ///
-/// - SeeAlso: <doc:Volatile-Access>.
+/// See <doc:Volatile-Access>, for more background.
 public protocol _RegisterStorage {
   /// Performs a volatile load of an instance of `Self` from the memory address
   /// pointed to by `pointer`.
@@ -42,6 +42,7 @@ public protocol _RegisterStorage {
   ///
   /// - Parameter pointer: An `UnsafePointer` to the memory location (register
   ///   address) from which to read.
+  ///
   /// - Returns: The value read from the memory location.
   static func load(from pointer: UnsafePointer<Self>) -> Self
 

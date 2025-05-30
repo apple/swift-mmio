@@ -26,7 +26,7 @@ While Swift MMIO introduces significant safety improvements, certain aspects rem
 Swift MMIO offers several safety layers:
 
 1.  **Type Safety:**
-    <doc:Type-Projections> (via ``MMIO/BitFieldProjectable``) allow bit fields to be represented by strong Swift types, preventing out-of-range/meaningless integer assignments.
+    Type projections (via ``MMIO/BitFieldProjectable``) allow bit fields to be represented by strong Swift types, preventing out-of-range/meaningless integer assignments.
 
 2.  **Compile-Time Boundary Checking for Fields:**
     Bit field definitions are checked at compile-time to be within their parent ``MMIO/Register(bitWidth:)``'s `bitWidth`.

@@ -238,7 +238,7 @@ status.write { value in
 }
 ```
 
-Swift MMIO provides built-in support for projecting bit fields to `Bool` and fixed-width integer types like `UInt8`, `Int16`, and so on. For more complex bit fields, you can define custom types that conform to ``MMIO/BitFieldProjectable``. For detailed instructions on creating custom projections, see <doc:Type-Projections>.
+Swift MMIO provides built-in support for projecting bit fields to `Bool` and fixed-width integer types like `UInt8`, `Int16`, and so on. For more complex bit fields, you can define custom types that conform to ``MMIO/BitFieldProjectable``. For detailed instructions on creating custom projections, see <doc:Custom-BitFieldProjectable>.
 
 For multi-bit fields like our `deviceMode`, use a custom enum that gives meaningful names to the different possible values. For example, you can define a `DeviceMode` enum for a 2-bit mode field:
 

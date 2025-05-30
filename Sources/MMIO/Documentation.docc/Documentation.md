@@ -41,7 +41,7 @@ Swift MMIO documentation is organized into three main sections:
    - <doc:Volatile-Access> explains why specialized memory access is needed for hardware registers.
 
 3. **Advanced Topics**: More sophisticated features for complex scenarios.
-   - <doc:Type-Projections> demonstrates how to map bit fields to meaningful Swift types.
+   - <doc:Custom-BitFieldProjectable> demonstrates how to map bit fields to meaningful Swift types.
    - <doc:Testing-With-Interposers> shows how to test hardware interaction code without physical devices.
    - <doc:Safety-Considerations> outlines Swift MMIO's safety guarantees and developer responsibilities.
 
@@ -71,7 +71,7 @@ While understanding the manual definition process is valuable, `SVD2Swift` shoul
 
 ### Advanced Topics
 
-- <doc:Type-Projections>
+- <doc:Custom-BitFieldProjectable>
 - <doc:Testing-With-Interposers>
 - <doc:Safety-Considerations>
 

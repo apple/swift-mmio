@@ -1,4 +1,4 @@
-# Creating Custom BitFieldProjectable Types
+# Creating BitFieldProjectable Types
 
 Define projections to map hardware bit fields to meaningful Swift types.
 

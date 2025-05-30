@@ -20,7 +20,8 @@
 /// The conforming type must define how it converts to and from the underlying
 /// raw integer `Storage` of the bit field.
 ///
-/// For detailed guidance on using type projections, see <doc:Type-Projections>.
+/// For detailed guidance on using type projections,
+/// see <doc:Custom-BitFieldProjectable>.
 public protocol BitFieldProjectable {
   /// The number of bits this projected type occupies within the register field.
   ///

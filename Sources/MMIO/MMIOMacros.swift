@@ -112,7 +112,7 @@ public macro RegisterBlock(offset: Int, stride: Int, count: Int) =
 public macro Register(bitWidth: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterMacro")
 
-/// Defines reserved bit(s) within a hardware register.
+/// Defines reserved bit field within a hardware register.
 ///
 /// Reserved bits are parts of a register that are typically unused, have
 /// hardware-defined behavior, or are set aside for future use by the hardware
@@ -120,14 +120,14 @@ public macro Register(bitWidth: Int) =
 /// explicitly instructed by the hardware documentation.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4`) or a comma-separated list
-///     of range expressions
-///     specifying the bit range(s) occupied by these reserved bits. Use `...`
-///     to indicate that the reserved field spans the entire register width.
-///   - as: An optional type conforming to ``BitFieldProjectable`` for
-///     <doc:Type-Projections>. This is typically not used for
-///     reserved fields, defaulting to `Never`.
+///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
+///     or a comma-separated list of range expressions. Use `...` if the field
+///     spans the entire register.
+///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
+///     can use `Bool`.self for single-bit flags, or a custom enumeration for
+///     multi-bit fields representing specific states.
 ///
+/// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
 public macro Reserved<Range, Value>(
   bits: Range..., as: Value.Type = Never.self

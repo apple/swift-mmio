@@ -52,7 +52,7 @@ For example, a 32-bit Timer Control Register (`TIMER_CTRL`) might be structured:
 - term **`OVF_FLAG` (Bit 8)**: Read-only flag set by hardware on overflow, cleared by writing `1` to `OVF_CLR`.
 - term **`OVF_CLR` (Bit 9)**: Write-only; writing `1` clears `OVF_FLAG`. Reading often returns an undefined value.
 
-Swift MMIO uses macros like ``MMIO/ReadWrite(bits:as:)``, ``MMIO/ReadOnly(bits:as:)``, ``MMIO/WriteOnly(bits:as:)``, and ``MMIO/Reserved(bits:as:)`` within a ``MMIO/Register`` struct to define these fields, enabling symbolic, type-safe manipulation and <doc:Type-Projections>.
+Swift MMIO uses macros like ``MMIO/ReadWrite(bits:as:)``, ``MMIO/ReadOnly(bits:as:)``, ``MMIO/WriteOnly(bits:as:)``, and ``MMIO/Reserved(bits:as:)`` within a ``MMIO/Register`` struct to define these fields, enabling symbolic, type-safe manipulation.
 
 Understanding the register map and bit fields for your microcontroller is crucial. Tools like `SVD2Swift` (part of Swift MMIO) can automate generating Swift MMIO definitions from CMSIS-SVD files.
 
