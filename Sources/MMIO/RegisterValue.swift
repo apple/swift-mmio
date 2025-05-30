@@ -167,7 +167,7 @@ extension RegisterValueRead {
 /// ## Overview
 /// Assigning values to these properties stages the changes. The actual write to
 /// the hardware register occurs when this `Write` view is passed to
-/// ``Register/write(_:)`` or used within the closure of ``Register/modify(_:)-7p198``.
+/// ``Register/write(_:)`` or used within the closure of ``Register/modify(_:)``.
 ///
 /// A `Write` view can be initialized from a `Raw` view (to start with a specific
 /// bit pattern) or from a `Read` view (essential for read-modify-write operations,
@@ -212,7 +212,7 @@ extension RegisterValueWrite {
   ///
   /// - Warning: Reading from `raw` on a `Write` view provides the currently
   ///   staged raw value, which may not reflect the current state of the actual
-  ///   hardware register until a ``Register/write(_:)`` or ``Register/modify(_:)-7p198``
+  ///   hardware register until a ``Register/write(_:)`` or ``Register/modify(_:)``
   ///   operation is completed.
   @inlinable @inline(__always)
   public var raw: Value.Raw {

@@ -51,7 +51,7 @@
 /// - ``write(_:)->()``
 /// - ``write(_:)->_``
 /// - ``modify(_:)-((Value.Read,Value.Write)->(T))``
-/// - ``modify(_:)-7p198``
+/// - ``modify(_:)``
 ///
 /// ### Unsafe Properties
 ///

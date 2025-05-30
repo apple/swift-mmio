@@ -1,165 +1,270 @@
-# Using Type Projections for Bit Fields
+# Creating Custom BitFieldProjectable Types
 
-Improve type safety and clarity by mapping bit field values to meaningful Swift types.
+Define projections to map hardware bit fields to meaningful Swift types.
 
 ## Overview
 
-Bit fields in hardware registers fundamentally represent segments of integers. However, directly manipulating these raw integer values (accessed via the `.raw` property on a register's `Read` or `Write` view) can be error-prone and can obscure the intended meaning of the code. For instance, a single bit might represent an on/off state, which is more naturally expressed as a `Bool` in Swift. Similarly, a 2-bit field might represent one of four specific operational modes, ideally represented by an `enum`.
+When working with memory-mapped hardware registers, you're fundamentally manipulating raw bits. However, these bits often represent meaningful concepts: a single bit might indicate an enabled/disabled state, a 2-bit field might represent one of four operating modes, or a multi-bit field might encode a complex configuration.
 
-Swift MMIO's **type projection** allows associating a more expressive Swift type with a bit field using the `as: SomeType.Type` parameter in bit field macros (e.g., ``MMIO/ReadWrite(bits:as:)``). `SomeType` must conform to ``MMIO/BitFieldProjectable``.
+Swift MMIO provides **type projections** through the ``MMIO/BitFieldProjectable`` protocol, allowing you to map raw bit patterns to semantically meaningful Swift types. While Swift MMIO includes built-in projections for common types like `Bool` and integer types, creating your own custom projections offers several key benefits:
 
-## The `BitFieldProjectable` Protocol
+- **Improved type safety**: Replace magic numbers with strongly-typed values
+- **Better code readability**: Express hardware states with meaningful names
+- **Compile-time validation**: Catch errors at compile time rather than runtime
+- **Domain-specific abstractions**: Model hardware concepts using appropriate Swift types
 
-A type conforming to ``MMIO/BitFieldProjectable`` defines conversions between its representation and the bit field's raw integer value (masked and shifted).
+This article guides you through creating custom types that conform to ``MMIO/BitFieldProjectable``, enabling you to represent hardware bit fields in a way that's both safer and more expressive.
 
-Conformance requires:
-- **`static var bitWidth: Int`**: The number of bits the projected type occupies. This **must** match the physical bit field's width.
-- **`init<Storage: FixedWidthInteger & UnsignedInteger>(storage: Storage)`**: Creates an instance from an unsigned integer read from the bit field.
-  - The `storage` value is **guaranteed by Swift MMIO to be masked** to `Self.bitWidth`.
-  - If the type cannot represent all valid bit patterns within `Self.bitWidth` (e.g., an enum with `bitWidth = 2` defining cases for `0b00`, `0b01` but not `0b10`, `0b11`), this initializer must handle unrepresented patterns (e.g., trap, default/error case).
-- **`func storage<Storage: FixedWidthInteger & UnsignedInteger>(_: Storage.Type) -> Storage`**: Converts an instance back to an unsigned integer for writing to the bit field.
-  - The returned value **must only use bits up to `Self.bitWidth`**. Values `(1 << Self.bitWidth)` or greater will cause a runtime trap when written.
+## Understanding the BitFieldProjectable Protocol
 
-Swift MMIO provides ``MMIO/BitFieldProjectable`` conformance for `Bool` and standard `FixedWidthInteger` types (e.g., `UInt8`, `Int8`). For signed types, conformance handles two's complement interpretation within the specified `bitWidth`.
-
-## Projecting to `Bool`
-
-A common use case for type projection is representing single-bit flags or settings as `Bool` values.
+The ``MMIO/BitFieldProjectable`` protocol defines the contract between your custom type and a bit field macro. To create a custom projection, your type must implement three key requirements:
 
 ```swift
-import MMIO
+public protocol BitFieldProjectable {
+    static var bitWidth: Int { get }
 
-@Register(bitWidth: 32)
-struct StatusRegister {
-    @ReadOnly(bits: 0..<1, as: Bool.self)
-    var isReady: IS_READY
+    init<Storage>(storage: Storage)
+    where Storage: FixedWidthInteger & UnsignedInteger
 
-    @ReadWrite(bits: 1..<2, as: Bool.self)
-    var enableFeature: ENABLE_FEATURE
-}
-
-let statusReg = Register<StatusRegister>(unsafeAddress: 0x40001000)
-
-// Reading a Bool-projected field:
-if statusReg.read().isReady {
-    print("Device is ready.")
-}
-
-// Modifying a Bool-projected field:
-statusReg.modify { view in
-    view.enableFeature = true
+    func storage<Storage>(_: Storage.Type) -> Storage
+    where Storage: FixedWidthInteger & UnsignedInteger
 }
 ```
-Without `as: Bool.self`, fields would be accessed via `.raw` (e.g., `statusReg.read().raw.isReady`), yielding a raw integer (0 or 1).
 
-## Projecting to Custom Enumerations
+Let's examine each requirement in detail:
 
-For bit fields representing a set of distinct, named states, `RawRepresentable` enumerations are highly effective.
+#### Static bitWidth Property
+
+```swift
+static var bitWidth: Int { get }
+```
+
+This property defines how many bits your type occupies in the hardware register. This value must **exactly match** the width of the physical bit field as defined in your register macro (e.g., `bits: 4..<6` is 2 bits wide).
+
+A mismatch between your type's `bitWidth` and the actual bit field width will cause a runtime trap when accessing the register. This is a safety feature that ensures your type accurately represents the hardware's capabilities.
+
+#### Storage Initializer
+
+```swift
+init<Storage>(storage: Storage) where Storage: FixedWidthInteger & UnsignedInteger
+```
+
+This initializer creates an instance of your type from a raw integer value read from the hardware. When Swift MMIO reads a register, it:
+
+1. Reads the entire register value
+2. Extracts the relevant bits for your field (masking and shifting)
+3. Passes this extracted value to your initializer
+
+Your initializer must handle all possible bit patterns within `Self.bitWidth`. If your type cannot represent all possible bit patterns (e.g., an enum with fewer cases than possible bit combinations), you must decide how to handle invalid patterns.
+
+#### Storage Conversion Method
+
+```swift
+func storage<Storage>(_: Storage.Type) -> Storage where Storage: FixedWidthInteger & UnsignedInteger
+```
+
+This method converts your type back to a raw integer value for writing to the hardware. When Swift MMIO writes to a register containing your projected field, it:
+
+1. Calls this method to get the raw bits
+2. Places these bits at the correct position in the register value
+3. Writes the complete register value to hardware
+
+The returned value must only use bits up to `Self.bitWidth` or will cause a runtime trap when written. The method should accurately represent your type's state in the bit pattern expected by the hardware
+
+### Creating an Enum Projection
+
+Enumerations are ideal for bit fields that represent a fixed set of distinct states or modes. Let's create a custom enum to represent a device's power mode, which is stored in a 2-bit field:
 
 ```swift
 import MMIO
 
-enum ADCMode: UInt8, BitFieldProjectable {
-    // This enum is a 2-bit field.
+enum PowerMode: UInt8, BitFieldProjectable {
+    // This is a 2-bit field
     static let bitWidth: Int = 2
 
-    case singleConversion     = 0b00
-    case continuousConversion = 0b01
-    case scanChannelsOnce     = 0b10
-    case scanChannelsCont     = 0b11
-    // A custom `init(storage:)` would be needed if hardware could produce
-    // a 2-bit pattern not covered here and a trap is not desired.
-}
-
-@Register(bitWidth: 32)
-struct ADCControl {
-    // Bits 4-5 represent the ADC mode, projected to ADCMode.    
-    @ReadWrite(bits: 4..<6, as: ADCMode.self)
-    var conversionMode: CONVERSION_MODE
-}
-
-let adcCtrl = Register<ADCControl>(unsafeAddress: 0x40002000)
-
-// Set the ADC mode using the enum:
-adcCtrl.modify { view in
-    view.conversionMode = .continuousConversion
-}
-
-// Read the ADC mode:
-let currentMode = adcCtrl.read().conversionMode
-switch currentMode {
-case .singleConversion:
-    print("ADC in single conversion mode.")
-case .continuousConversion:
-    print("ADC in continuous conversion mode.")
-default:
-    print("ADC in another mode: \(currentMode.rawValue)")
+    case off = 0b00
+    case low = 0b01
+    case normal = 0b10
+    case high = 0b11
 }
 ```
 
-**Simplified Conformance for `RawRepresentable` Types:**
-If your custom type (like an `enum`) conforms to `RawRepresentable` and its `RawValue` is a `FixedWidthInteger & UnsignedInteger`, Swift MMIO provides a default implementation for `init(storage:)` and `storage(_:)` requirements of ``MMIO/BitFieldProjectable``. You only need to explicitly provide `static var bitWidth`.
-- The default `init(storage:)` will trap if the `storage` value (already masked by MMIO to `Self.bitWidth`) does not correspond to a valid `rawValue` of the enum.
-- The default `storage(_:)` will use the enum case's `rawValue`.
+This enum defines four possible power modes, each mapped to a specific 2-bit pattern. The `BitFieldProjectable` conformance comes from:
 
-## Projecting to Custom Structs
+1. Explicitly defining `static let bitWidth = 2` to match our 2-bit field
+2. Conforming to `RawRepresentable` (via `UInt8`)
+3. Leveraging Swift MMIO's default implementations for `RawRepresentable` types
 
-A custom `struct` can be used for more complex bit field representations.
+For `RawRepresentable` types, Swift MMIO provides default implementations of the required initializer and storage method:
+
+- The default `init(storage:)` will attempt to create an enum case from the raw value, trapping if no matching case exists
+- The default `storage(_:)` will use the enum case's `rawValue`
+
+Now let's use this enum in a register definition:
 
 ```swift
-import MMIO
-
-// A 3-bit field where bits 0-1 are 'value' and bit 2 is 'valid'.
-struct FieldWithOptions: BitFieldProjectable {
-    static let bitWidth: Int = 3
-
-    var value: UInt8
-    var isValid: Bool
-
-    init(value: UInt8, isValid: Bool) {
-      precondition(value < 4, "Value must be 2 bits (0-3).")
-      self.value = value
-      self.isValid = isValid
-    }
-
-    init<Storage: FixedWidthInteger & UnsignedInteger>(storage: Storage) {
-        // 'storage' is pre-masked by MMIO to Self.bitWidth.
-        precondition(Storage.bitWidth >= Self.bitWidth)
-        self.value = UInt8(storage & 0b011) // Extract bits 0-1
-        self.isValid = (storage & 0b100) != 0 // Extract bit 2
-    }
-
-    func storage<Storage: FixedWidthInteger & UnsignedInteger>(_: Storage.Type) -> Storage {
-        let valueBits = self.value & 0b011
-        let validBit = self.isValid ? 0b100 : 0b000
-        return Storage(validBit | valueBits)
-    }
+@Register(bitWidth: 32)
+struct PowerControl {
+    @ReadWrite(bits: 0..<2, as: PowerMode.self)
+    var mode: MODE
 }
 
-@Register(bitWidth: 16)
-struct ConfigurationRegister {
-    // Field is 3 bits wide, matching FieldWithOptions.bitWidth
-    @ReadWrite(bits: 5..<8, as: FieldWithOptions.self)
-    var settingAlpha: SETTING_ALPHA
+// Create a register instance
+let powerCtrl = Register<PowerControl>(unsafeAddress: 0x40001000)
+
+// Read the current power mode
+let currentMode = powerCtrl.read().mode
+switch currentMode {
+case .off:
+    print("Device is powered off")
+case .low:
+    print("Device is in low power mode")
+case .normal:
+    print("Device is in normal power mode")
+case .high:
+    print("Device is in high performance mode")
 }
 
-// Example usage:
-let configReg = Register<ConfigurationRegister>(unsafeAddress: 0x40003000)
-configReg.modify {
-    $0.settingAlpha = FieldWithOptions(value: 0b10, isValid: true)
+// Set the power mode
+powerCtrl.write { view in
+    view.mode = .normal
 }
-let currentSetting = configReg.read().settingAlpha
-print("""
-    Setting Alpha:
-      value=\(currentSetting.value)
-      isValid=\(currentSetting.isValid)
-    """)
 ```
 
-### Important Considerations for Type Projections:
+### Advanced Projection Techniques
 
-- **Bit Width Match is Critical:** The `static var bitWidth` in your ``MMIO/BitFieldProjectable`` type **must** exactly match the width of the physical bit field in the register macro (e.g., `bits: 4..<6` is 2 bits wide). Mismatches cause a runtime trap on access. This indicates a bug in your register or field definition.
+Sometimes hardware registers have more complex requirements than simple one-to-one mappings. You might encounter situations where:
 
-- **Valid Raw Values and Enum Cases:**
-    - **Enum `init(storage:)`:** For enums using default `RawRepresentable` conformance, the initializer traps if a hardware `storage` value (masked by MMIO to `Self.bitWidth`) isn't a valid `rawValue`. For hardware patterns not covered by enum cases, provide a custom `init(storage:)` or project to a `struct` that models these states.
-    - **Enum `rawValue` Size:** Ensure all enum `rawValue`s fit within `BitFieldProjectable.bitWidth`. A `rawValue` requiring more bits than `Self.bitWidth` is an error. Its `storage` conversion will exceed `(1 << Self.bitWidth)`, causing a runtime trap on write.
+- Only certain bit patterns are valid, with others being reserved or undefined
+- Some bits in a field are "don't care" bits that don't affect functionality
+- You need to represent a logical grouping of related values
+
+Let's explore a practical example that handles these scenarios. Imagine we have a fan controller with a 2-bit field that represents the fan speed:
+
+- `0bx0` is off (where x is a "don't care" bit)
+- `0b01` is low speed
+- `0b11` is high speed
+
+This is a common pattern in hardware where not all possible bit combinations are valid or meaningful.
+
+First, we'll define a custom type that implements both `BitFieldProjectable` and `RawRepresentable`:
+
+```swift
+struct FanSpeed: BitFieldProjectable, RawRepresentable {
+    static let bitWidth = 2
+
+    var rawValue: UInt8
+
+    init(rawValue: UInt8) {
+        self.rawValue = rawValue
+    }
+}
+```
+
+This establishes our basic structure - a 2-bit field represented by a `UInt8` raw value. Now, let's add a way to handle pattern matching for "don't care" bits. We'll create a `Pattern` structure that can represent a value and a mask:
+
+```swift
+struct FanSpeed: BitFieldProjectable, RawRepresentable {
+    // ...
+
+    struct Pattern {
+        var rawValue: UInt8
+        var mask: UInt8
+    }
+
+    static func ~= (pattern: Pattern, value: Self) -> Bool {
+        (value.rawValue & pattern.mask) == pattern.rawValue
+    }
+}
+```
+
+The custom `~=` operator enables pattern matching that considers only the bits specified by the mask. This is perfect for "don't care" scenarios where only certain bits matter for a particular state.
+
+Now, let's define our named values and patterns:
+
+```swift
+struct FanSpeed: BitFieldProjectable, RawRepresentable {
+    // ...
+
+    // Specific values
+    static let low = Self(rawValue: 0b01)
+    static let high = Self(rawValue: 0b11)
+
+    // Pattern with don't-care bit
+    static let off = Pattern(rawValue: 0b00, mask: 0b01)
+}
+```
+
+Here we've defined two specific named values (`0b01` for low speed and `0b11` for high speed) and a pattern for "off" where only the least significant bit matters (mask `0b01`). This means both `0b00` and `0b10` are considered "off" states.
+
+Finally, let's add a factory method that creates values matching our "off" pattern:
+
+```swift
+struct FanSpeed: BitFieldProjectable, RawRepresentable {
+    // ... 
+
+    static func off(rawValue: UInt8 = 0b00) -> Self {
+        let value = Self(rawValue: rawValue)
+        precondition(off ~= value, "Invalid bits set in rawValue")
+        return value
+    }
+}
+```
+
+This factory method creates values that match our "off" pattern, with validation to ensure the critical bits are set correctly.
+
+Let's see how we can use this type in practice:
+
+```swift
+@Register(bitWidth: 32)
+struct FanControl {
+    @ReadWrite(bits: 4..<6, as: FanSpeed.self)
+    var speed: SPEED
+}
+
+let fanControl = Register<FanControl>(unsafeAddress: 0x40003000)
+
+// Reading the register and checking the fan speed
+let currentSpeed = fanControl.read().speed
+
+// Pattern matching with specific values
+switch currentSpeed {
+case .off:
+    print("Fan is off")
+case .low:
+    print("Fan is running at low speed")
+case .high:
+    print("Fan is running at high speed")
+default:
+    print("Unexpected fan speed value: \(currentSpeed.rawValue)")
+}
+
+// Writing a specific value
+fanControl.modify { view in
+    view.speed = .low
+}
+
+// Writing a pattern-based value
+fanControl.modify { view in
+    // Using the alternate "off" pattern
+    view.speed = .off(rawValue: 0b10)
+}
+```
+
+This approach gives us tremendous flexibility. We can represent specific named values for common states, while also handling bit patterns with "don't care" bits. The custom pattern matching allows us to check if a value matches a particular pattern, ignoring bits that don't affect functionality.
+
+The real power of this technique becomes apparent when working with hardware that has complex bit field semantics. For example, many hardware peripherals use bit patterns where:
+- Some bits are reserved and must be zero
+- Some bits are "don't care" bits that can be either 0 or 1
+- Some combinations of bits are invalid or represent special modes
+
+With a custom `BitFieldProjectable` type, you can model these relationships explicitly, making your code both safer and more expressive.
+
+## Topics
+
+### Bit Field Projection
+
+- ``MMIO/BitFieldProjectable``
+- ``MMIO/ReadWrite(bits:as:)``
+- ``MMIO/ReadOnly(bits:as:)``
+- ``MMIO/WriteOnly(bits:as:)``
