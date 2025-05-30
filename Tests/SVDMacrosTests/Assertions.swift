@@ -15,6 +15,8 @@ import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 
+typealias SendableMacro = Macro & Sendable
+
 // Shim "assertMacroExpansion" to use swift-testing
 typealias NoteSpec = SwiftSyntaxMacrosGenericTestSupport.NoteSpec
 typealias FixItSpec = SwiftSyntaxMacrosGenericTestSupport.FixItSpec

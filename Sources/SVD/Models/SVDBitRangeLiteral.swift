@@ -41,9 +41,9 @@ extension SVDBitRangeLiteral: LosslessStringConvertible {
     let parser =
       Parser
       .skip("[")
-      .take(.swiftInteger(UInt64.self))
+      .take(SwiftIntegerParser2<UInt64>.parser())
       .skip(":")
-      .take(.swiftInteger(UInt64.self))
+      .take(SwiftIntegerParser2<UInt64>.parser())
       .skip("]")
     guard
       let (msb, lsb) = parser.run(&description),

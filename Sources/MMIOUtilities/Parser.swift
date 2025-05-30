@@ -16,66 +16,15 @@
 // by Brandon Williams and Stephen Celis which served as a great basis to
 // understand performant and ergonomic parsing.
 
+
+
+
+
 public struct Parser<Input, Output>: Sendable {
   public let run: @Sendable (inout Input) -> Output?
 
   public init(run: @escaping @Sendable (inout Input) -> Output?) {
     self.run = run
-  }
-}
-
-// MARK: - Prefixes
-extension Parser: ExpressibleByUnicodeScalarLiteral
-where Input == Substring, Output == Void {
-  public typealias UnicodeScalarLiteralType = StringLiteralType
-}
-
-extension Parser: ExpressibleByExtendedGraphemeClusterLiteral
-where Input == Substring, Output == Void {
-  public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-}
-
-extension Parser: ExpressibleByStringLiteral
-where Input == Substring, Output == Void {
-  public typealias StringLiteralType = String
-
-  public init(stringLiteral value: String) {
-    self = .dropPrefix(value[...])
-  }
-}
-
-extension Parser
-where
-  Input: Collection,
-  Input.SubSequence == Input,
-  Input.Element: Equatable,
-  Input.SubSequence: Sendable,
-  Output == Void
-{
-  public static func dropPrefix(_ prefix: Input.SubSequence) -> Self {
-    Self { input in
-      guard input.starts(with: prefix) else { return nil }
-      input.removeFirst(prefix.count)
-      return ()
-    }
-  }
-}
-
-extension Parser
-where
-  Input: Collection,
-  Input.SubSequence == Input,
-  Input.Element: Equatable,
-  Input.Element: Sendable,
-  Output == Input
-{
-  public static func prefix(upTo element: Input.Element) -> Self {
-    Self { input in
-      let endIndex = input.firstIndex(of: element) ?? input.endIndex
-      let match = input[..<endIndex]
-      input = input[endIndex...]
-      return match
-    }
   }
 }
 
@@ -201,6 +150,61 @@ extension Parser {
         matches.append(match)
       }
       return matches
+    }
+  }
+}
+
+// MARK: - Prefixes
+extension Parser: ExpressibleByUnicodeScalarLiteral
+where Input == Substring, Output == Void {
+  public typealias UnicodeScalarLiteralType = StringLiteralType
+}
+
+extension Parser: ExpressibleByExtendedGraphemeClusterLiteral
+where Input == Substring, Output == Void {
+  public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
+}
+
+extension Parser: ExpressibleByStringLiteral
+where Input == Substring, Output == Void {
+  public typealias StringLiteralType = String
+
+  public init(stringLiteral value: String) {
+    self = .dropPrefix(value[...])
+  }
+}
+
+extension Parser
+where
+  Input: Collection,
+  Input.SubSequence == Input,
+  Input.Element: Equatable,
+  Input.SubSequence: Sendable,
+  Output == Void
+{
+  public static func dropPrefix(_ prefix: Input.SubSequence) -> Self {
+    Self { input in
+      guard input.starts(with: prefix) else { return nil }
+      input.removeFirst(prefix.count)
+      return ()
+    }
+  }
+}
+
+extension Parser
+where
+  Input: Collection,
+  Input.SubSequence == Input,
+  Input.Element: Equatable,
+  Input.Element: Sendable,
+  Output == Input
+{
+  public static func prefix(upTo element: Input.Element) -> Self {
+    Self { input in
+      let endIndex = input.firstIndex(of: element) ?? input.endIndex
+      let match = input[..<endIndex]
+      input = input[endIndex...]
+      return match
     }
   }
 }

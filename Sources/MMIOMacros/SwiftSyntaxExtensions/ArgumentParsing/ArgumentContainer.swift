@@ -12,12 +12,12 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-struct ParsedArgument<Value> {
+struct ParsedArgument<Value>: Sendable where Value: Sendable {
   var value: Value
   var expression: ExprSyntax
 }
 
-protocol ArgumentContainer {
+protocol ArgumentContainer: Sendable {
   associatedtype Value: ExpressibleByExprSyntax
   associatedtype WrappedValue
   associatedtype WrappedExpression
@@ -32,7 +32,7 @@ protocol ArgumentContainer {
   ) throws
 }
 
-struct ExactlyOne<Value> where Value: ExpressibleByExprSyntax {
+struct ExactlyOne<Value> where Value: ExpressibleByExprSyntax, Value: Sendable {
   var parsed: ParsedArgument<Value>
 }
 
@@ -58,7 +58,7 @@ extension ExactlyOne: ArgumentContainer {
   }
 }
 
-struct ZeroOrOne<Value> where Value: ExpressibleByExprSyntax {
+struct ZeroOrOne<Value> where Value: ExpressibleByExprSyntax, Value: Sendable {
   var parsed: ParsedArgument<Value>?
 }
 
@@ -84,7 +84,7 @@ extension ZeroOrOne: ArgumentContainer {
   }
 }
 
-struct OneOrMore<Value> where Value: ExpressibleByExprSyntax {
+struct OneOrMore<Value> where Value: ExpressibleByExprSyntax, Value: Sendable {
   var parsed: [ParsedArgument<Value>]
 }
 

@@ -19,7 +19,7 @@ import Testing
 struct RegisterBlockMacroTests {
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterBlockMacro>
 
-  static let macros: [String: Macro.Type] = [
+  static let macros: [String: SendableMacro.Type] = [
     "RegisterBlock": RegisterBlockMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
