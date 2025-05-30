@@ -37,15 +37,15 @@ public protocol BitFieldProjectable {
   /// This initializer is called when a register is read, and the raw value of
   /// the bit field needs to be converted into this `BitFieldProjectable` type.
   ///
-  /// - Parameter storage: The raw unsigned integer value extracted from the
-  ///   bit field. The calling context (bit field accessors) ensures this value
-  ///   is already masked and shifted, effectively truncating it to
-  ///   `Self.bitWidth`.
-  ///
   /// - Precondition: The provided `storage` value (when interpreted as
   ///   `Self.bitWidth` bits) must be representable by this type. For example,
   ///   if this type is an enum, the `storage` value must correspond to a valid
   ///   `RawValue`.
+  ///
+  /// - Parameter storage: The raw unsigned integer value extracted from the
+  ///   bit field. The calling context (bit field accessors) ensures this value
+  ///   is already masked and shifted, effectively truncating it to
+  ///   `Self.bitWidth`.
   @inlinable @inline(__always)
   init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger
@@ -57,14 +57,15 @@ public protocol BitFieldProjectable {
   /// raw integer value will be placed into the appropriate bits of the
   /// register.
   ///
-  /// - Parameter type: The target `Storage` type, which must be a `FixedWidthInteger`
-  ///   and `UnsignedInteger`. This type parameter indicates the required integer
-  ///   type for the bit field's segment in the hardware register.
+  /// - Parameter type: The target `Storage` type, which must be a
+  ///   `FixedWidthInteger` and `UnsignedInteger`. This type parameter indicates
+  ///   the required integer type for the bit field's segment in the hardware
+  ///   register.
   ///
   /// - Returns: The raw unsigned integer representation of this instance, suitable
   ///   for writing to the bit field. This value should fit within `Self.bitWidth`.
   @inlinable @inline(__always)
-  func storage<Storage>(_: Storage.Type) -> Storage
+  func storage<Storage>(_ type: Storage.Type) -> Storage
   where Storage: FixedWidthInteger & UnsignedInteger
 }
 

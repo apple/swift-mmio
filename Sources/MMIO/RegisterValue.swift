@@ -78,13 +78,13 @@ public protocol RegisterValueRaw {
 
   /// Initializes a `Raw` view from a typed `Read` view of the register.
   ///
-  /// - Parameter value: The `Read` view to convert from.
-  init(_ value: Value.Read)
+  /// - Parameter read: The `Read` view to convert from.
+  init(_ read: Value.Read)
 
   /// Initializes a `Raw` view from a typed `Write` view of the register.
   ///
-  /// - Parameter value: The `Write` view to convert from.
-  init(_ value: Value.Write)
+  /// - Parameter write: The `Write` view to convert from.
+  init(_ write: Value.Write)
 }
 
 /// A protocol for the typed, read-only view of a register.
@@ -98,8 +98,8 @@ public protocol RegisterValueRead {
 
   /// Initializes a `Read` view from a `Raw` view of the register.
   ///
-  /// - Parameter value: The `Raw` view containing the register data.
-  init(_ value: Value.Raw)
+  /// - Parameter raw: The `Raw` view containing the register data.
+  init(_ raw: Value.Raw)
 }
 
 extension RegisterValueRead {
@@ -134,12 +134,12 @@ public protocol RegisterValueWrite {
 
   /// Initializes a `Write` view from a `Raw` view of the register.
   ///
-  /// - Parameter value: The `Raw` view to convert from.
-  init(_ value: Value.Raw)
+  /// - Parameter raw: The `Raw` view to convert from.
+  init(_ raw: Value.Raw)
 
   /// Initializes a `Write` view from a `Read` view of the same register.
   ///
-  /// - Parameter value: The `Read` view to convert from.
+  /// - Parameter read: The `Read` view to convert from.
   init(_ read: Value.Read)
 }
 

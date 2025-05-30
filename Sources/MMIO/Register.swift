@@ -38,6 +38,11 @@
 /// correct interaction with hardware. See <doc:Volatile-Access> for more
 /// details.
 ///
+///
+/// - Parameter Value: A `struct`, typically defined using the
+///   ``MMIO/Register(bitWidth:)`` macro, that describes the bit-level layout of
+///   the hardware register.
+///
 /// ## Topics
 ///
 /// ### Initializing a Register
@@ -57,15 +62,11 @@
 ///
 /// - ``unsafeAddress``
 /// - ``interposer``
-///
-/// - Parameter Value: A `struct`, typically defined using the 
-///   ``MMIO/Register(bitWidth:)`` macro, that describes the bit-level layout of 
-///   the hardware register.
 public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   /// The absolute memory address of this register.
   ///
   /// This address is the target for all load and store operations performed by
-  /// this `Register` instance. It must correctly point to the intended hardware 
+  /// this `Register` instance. It must correctly point to the intended hardware
   /// register as specified in the device's memory map or datasheet.
   ///
   /// ```swift
@@ -88,11 +89,11 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   /// allows for simulating hardware behavior, tracing register accesses, or
   /// providing fixed return values during unit tests.
   ///
-  /// If this property is `nil` (the default for non-test builds or when not 
-  /// specified), memory accesses performed by this `Register` instance interact 
+  /// If this property is `nil` (the default for non-test builds or when not
+  /// specified), memory accesses performed by this `Register` instance interact
   /// directly with hardware memory at `unsafeAddress`.
   ///
-  /// > Note: This property is only available if the `MMIO` package is compiled
+  /// - Note: This property is only available if the `MMIO` package is compiled
   ///   with the `FEATURE_INTERPOSABLE` Swift flag.
   public var interposer: (any MMIOInterposer)?
   #endif
@@ -118,14 +119,14 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   /// Initializes a register instance targeting a specific memory address,
   /// optionally with an interposer.
   ///
+  /// - Precondition: `unsafeAddress` must be aligned to the natural alignment
+  ///   of the register's underlying storage type.
+  ///   alignment is for
+  ///
   /// - Parameters:
   ///   - unsafeAddress: The absolute memory address of the hardware register.
   ///   - interposer: An optional ``MMIOInterposer`` to route memory
   ///     accesses through, primarily used for testing purposes.
-  ///
-  /// - Precondition: `unsafeAddress` must be aligned to the natural alignment
-  ///   of the register's underlying storage type.
-  ///   alignment is for
   @inlinable @inline(__always)
   public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
     Self.preconditionAligned(unsafeAddress: unsafeAddress)
@@ -135,12 +136,12 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   #else
   /// Initializes a register instance targeting a specific memory address.
   ///
-  /// - Parameter unsafeAddress: The absolute memory address of the hardware
-  ///   register.
-  ///
   /// - Precondition: `unsafeAddress` must be aligned to the natural alignment
   ///   of the register's underlying storage type.
   ///   alignment is for
+  ///
+  /// - Parameter unsafeAddress: The absolute memory address of the hardware
+  ///   register.
   @inlinable @inline(__always)
   public init(unsafeAddress: UInt) {
     Self.preconditionAligned(unsafeAddress: unsafeAddress)
@@ -179,7 +180,7 @@ extension Register {
   /// correct interaction with hardware. See <doc:Volatile-Access> to learn
   /// more.
   ///
-  /// - Returns: A `Value.Read` instance representing the current state of the 
+  /// - Returns: A `Value.Read` instance representing the current state of the
   ///   register.
   @inlinable @inline(__always)
   public func read() -> Value.Read {
@@ -237,13 +238,13 @@ extension Register {
     #endif
   }
 
-  /// Constructs a `Value.Write` view within a closure and writes its contents to 
+  /// Constructs a `Value.Write` view within a closure and writes its contents to
   /// the register.
   ///
   /// This is a convenience method for preparing and writing a new value to the
   /// register in a single operation. The `Value.Write` view passed to the `body`
   /// closure is initialized with all bits set to zero. You configure this view
-  /// within the closure, and its final state is then written to the hardware 
+  /// within the closure, and its final state is then written to the hardware
   /// register.
   ///
   /// ```swift
@@ -288,12 +289,12 @@ extension Register {
   /// statusRegister.modify { currentValue, newValue in
   ///     // currentValue is the state read from hardware
   ///     // newValue is initialized from currentValue and can be modified
-  ///     
+  ///
   ///     if currentValue.statusFlag {
   ///         // Respond to the current status
   ///         newValue.controlSetting = .optionA
   ///     }
-  ///     
+  ///
   ///     // Update other fields
   ///     newValue.anotherField = .updatedValue
   /// }
@@ -358,7 +359,7 @@ extension Register where Value.Read == Value.Write {
   /// }
   /// ```
   ///
-  /// This method reads the register, provides an `inout` view (which serves as 
+  /// This method reads the register, provides an `inout` view (which serves as
   /// both the read and write context) to the `body` closure for modification,
   /// and then writes the (potentially) modified view back to the hardware
   /// register.

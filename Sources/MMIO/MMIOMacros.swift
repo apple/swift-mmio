@@ -63,11 +63,7 @@ public macro RegisterBlock() =
 /// sub-units within a larger peripheral definition.
 ///
 /// - Parameter offset: The byte offset of this register or register block,
-///   calculated from the base address of the enclosing
-///   ``MMIO/RegisterBlock()``.
-///
-/// For defining arrays of registers or register blocks, use
-/// ``MMIO/RegisterBlock(offset:stride:count:)``.
+///   relative to the base address of the enclosing register block.
 @attached(accessor)
 public macro RegisterBlock(offset: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterBlockScalarMemberMacro")
@@ -80,8 +76,8 @@ public macro RegisterBlock(offset: Int) =
 /// annotated property should be of type ``MMIO/RegisterArray``.
 ///
 /// - Parameters:
-///   - offset: The byte offset of the first element in the array,
-///     relative to the base address of the enclosing ``MMIO/RegisterBlock()``.
+///   - offset: The byte offset of the first element in the array, relative to
+///     the base address of the enclosing register block.
 ///   - stride: The byte distance from the start of one element in the
 ///     array to the start of the next. This is often the size of the element
 ///     type but can be larger if there's padding between elements in the
@@ -92,6 +88,7 @@ public macro RegisterBlock(offset: Int, stride: Int, count: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterBlockArrayMemberMacro")
 
 // MARK: - Register macros
+
 /// Defines the bit-level layout of an individual hardware register.
 ///
 /// Attach this macro to a `struct`. The struct contains properties

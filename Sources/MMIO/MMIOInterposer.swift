@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 /// A protocol for types that can intercept memory-mapped I/O (MMIO) register operations.
 ///
 /// `MMIOInterposer` instances are primarily used for unit testing code that
@@ -85,4 +84,3 @@ public protocol MMIOInterposer: AnyObject {
     to pointer: UnsafeMutablePointer<Value>
   ) where Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage
 }
-

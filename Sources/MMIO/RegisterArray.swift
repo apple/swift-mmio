@@ -11,12 +11,21 @@
 
 /// A type representing an array of memory-mapped registers or register blocks.
 ///
-/// `RegisterArray` provides a structured and convenient way to define and access
-/// repetitive hardware elements, such as a series of identical DMA channels,
-/// GPIO port configuration registers, or communication mailboxes. Elements within
-/// the array are accessed using a standard integer subscript. Each access
-/// automatically calculates the correct memory address for the specific element
-/// based on the array's base address, the element index, and the defined stride.
+/// `RegisterArray` provides a structured and convenient way to define and
+/// access repetitive hardware elements, such as a series of identical DMA
+/// channels, GPIO port configuration registers, or communication mailboxes.
+/// Elements within the array are accessed using a standard integer subscript.
+/// Each access automatically calculates the correct memory address for the
+/// specific element based on the array's base address, the element index, and
+/// the defined stride.
+///
+/// - Parameter Value: The type of the elements in the array. This can be:
+///   - A `struct` conforming to ``RegisterValue`` (typically defined with the
+///     ``MMIO/Register(bitWidth:)`` macro), if the array consists of individual
+///     registers.
+///   - A `struct` conforming to ``RegisterProtocol`` (typically defined with
+///     the ``RegisterBlock()`` macro), if the array consists of groups of
+///     registers (register blocks).
 ///
 /// ## Topics
 ///
@@ -32,52 +41,47 @@
 /// - ``unsafeAddress``
 /// - ``stride``
 /// - ``count``
-/// - ``interposer`` (Conditional)
-///
-/// - Parameter Value: The type of the elements in the array. This can be:
-///   - A `struct` conforming to ``RegisterValue`` (typically defined with the
-///     ``MMIO/Register(bitWidth:)`` macro), if the array consists of individual registers.
-///   - A `struct` conforming to ``RegisterProtocol`` (typically defined with the
-///     ``RegisterBlock()`` macro), if the array consists of groups of registers (register blocks).
+/// - ``interposer``
 public struct RegisterArray<Value> {
   /// The base memory address of the first element in this array.
   public var unsafeAddress: UInt
-  /// The byte distance between the start of one element and the start of the next.
+
+  /// The byte distance between the start of one element and the start of the
+  /// next.
   public var stride: UInt
+
   /// The total number of elements in this array.
   public var count: UInt
 
   #if FEATURE_INTERPOSABLE
-  /// An optional interposer instance, propagated to elements accessed through this array.
+  /// An optional interposer instance, propagated to elements accessed through
+  /// this array.
   ///
-  /// When an interposer is set, accesses to array elements are routed through
-  /// this interposer, facilitating testing without actual hardware. This property
-  /// is only available if the `MMIO` package is compiled with the
-  /// `FEATURE_INTERPOSABLE` flag.
-  ///
-  /// - SeeAlso: ``MMIOInterposer``, <doc:Testing-With-Interposers>.
+  /// - Note: This property is only available if the `MMIO` package is compiled
+  ///   with the `FEATURE_INTERPOSABLE` Swift flag.
   public var interposer: (any MMIOInterposer)?
   #endif
 
   #if FEATURE_INTERPOSABLE
   /// Initializes a new register array with an optional interposer.
   ///
-  /// - Parameters:
-  ///   - unsafeAddress: The absolute memory address of the first element
-  ///     in the array.
-  ///   - stride: The number of bytes from the start of one element to
-  ///     the start of the next (the step between elements).
-  ///   - count: The total number of elements in the array.
-  ///   - interposer: An optional ``MMIOInterposer`` for intercepting
-  ///     memory accesses, primarily for testing.
-  ///
   /// - Precondition:
-  ///   - `unsafeAddress` must point to the beginning of a valid hardware register array
-  ///     as per the device's memory map.
-  ///   - `stride` must accurately reflect the hardware layout (e.g., if registers are
-  ///     4 bytes each and contiguous, stride is 4; if they are 4 bytes each but
-  ///     located every 16 bytes, stride is 16).
-  ///   - `count` must not exceed the actual number of hardware elements in the array.
+  ///   - `unsafeAddress` must point to the beginning of a valid hardware
+  ///     register array as per the device's memory map.
+  ///   - `stride` must accurately reflect the hardware layout. For example, if
+  ///     registers are 4 bytes each and contiguous, stride is 4; if they are 4
+  ///     bytes each but located every 16 bytes, stride is 16.
+  ///   - `count` must not exceed the actual number of hardware elements in the
+  ///     array.
+  ///
+  /// - Parameters:
+  ///   - unsafeAddress: The absolute memory address of the first element in the
+  ///     array.
+  ///   - stride: The number of bytes from the start of one element to the start
+  ///     of the next (the step between elements).
+  ///   - count: The total number of elements in the array.
+  ///   - interposer: An optional ``MMIO/MMIOInterposer`` for intercepting
+  ///     memory accesses, primarily for testing.
   @inlinable @inline(__always)
   public init(
     unsafeAddress: UInt,
@@ -93,18 +97,21 @@ public struct RegisterArray<Value> {
   #else
   /// Initializes a new register array.
   ///
-  /// - Parameters:
-  ///   - unsafeAddress: The absolute memory address of the first element
-  ///     in the array.
-  ///   - stride: The number of bytes from the start of one element to
-  ///     the start of the next (the step between elements).
-  ///   - count: The total number of elements in the array.
-  ///
   /// - Precondition:
-  ///   - `unsafeAddress` must point to the beginning of a valid hardware register array
-  ///     as per the device's memory map.
-  ///   - `stride` must accurately reflect the hardware layout.
-  ///   - `count` must not exceed the actual number of hardware elements in the array.
+  ///   - `unsafeAddress` must point to the beginning of a valid hardware
+  ///     register array as per the device's memory map.
+  ///   - `stride` must accurately reflect the hardware layout. For example, if
+  ///     registers are 4 bytes each and contiguous, stride is 4; if they are 4
+  ///     bytes each but located every 16 bytes, stride is 16.
+  ///   - `count` must not exceed the actual number of hardware elements in the
+  ///     array.
+  ///
+  /// - Parameters:
+  ///   - unsafeAddress: The absolute memory address of the first element in the
+  ///     array.
+  ///   - stride: The number of bytes from the start of one element to the start
+  ///     of the next (the step between elements).
+  ///   - count: The total number of elements in the array.
   @inlinable @inline(__always)
   public init(
     unsafeAddress: UInt,
@@ -119,16 +126,18 @@ public struct RegisterArray<Value> {
 }
 
 extension RegisterArray where Value: RegisterValue {
-  /// Accesses the individual register at the specified `index` within the array.
+  /// Accesses the register at the specified `index` within the array.
+  ///
+  /// - Precondition: `index` must be a valid index within the bounds
+  ///   `0..<self.count`. Accessing an out-of-bounds index triggers a runtime
+  ///   trap.
   ///
   /// - Parameter index: A zero-based integer index indicating the position of
   ///   the desired register in the array.
+  ///
   /// - Returns: A ``MMIO/Register`` instance configured to access the hardware
   ///   register at the calculated address:
   ///   `self.unsafeAddress + (UInt(index) * self.stride)`.
-  ///
-  /// - Precondition: `index` must be a valid index within the bounds `0..<self.count`.
-  ///   Accessing an out-of-bounds index triggers a runtime error (trap).
   @inlinable @inline(__always)
   public subscript<Index>(
     _ index: Index
@@ -157,14 +166,16 @@ extension RegisterArray where Value: RegisterValue {
 extension RegisterArray where Value: RegisterProtocol {
   /// Accesses the register block at the specified `index` within the array.
   ///
+  /// - Precondition: `index` must be a valid index within the bounds
+  ///   `0..<self.count`. Accessing an out-of-bounds index triggers a runtime
+  ///   trap.
+  ///
   /// - Parameter index: A zero-based integer index indicating the position of
   ///   the desired register block in the array.
+  ///
   /// - Returns: An instance of `Value` (the register block type) configured to
   ///   access the hardware block at the calculated address:
   ///   `self.unsafeAddress + (UInt(index) * self.stride)`.
-  ///
-  /// - Precondition: `index` must be a valid index within the bounds `0..<self.count`.
-  ///   Accessing an out-of-bounds index triggers a runtime error (trap).
   @inlinable @inline(__always)
   public subscript<Index>(
     _ index: Index

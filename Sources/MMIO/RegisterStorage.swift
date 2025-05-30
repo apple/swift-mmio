@@ -52,9 +52,10 @@ public protocol _RegisterStorage {
   /// This operation guarantees that the write is not optimized away by the
   /// compiler and directly modifies the hardware memory location.
   ///
-  /// - Parameter value: The value to write to the memory location.
-  /// - Parameter pointer: An `UnsafePointer` to the memory location (register
-  ///   address) to write to.
+  /// - Parameters:
+  ///   - value: The value to write to the memory location.
+  ///   - pointer: An `UnsafePointer` to the memory location (register address)
+  ///     to write to.
   static func store(_ value: Self, to pointer: UnsafeMutablePointer<Self>)
 }
 
