@@ -35,9 +35,6 @@ let package = Package(
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
       from: "600.0.1"),
-    .package(
-      url: "https://github.com/swiftlang/swift-docc-plugin",
-      from: "1.1.0"),
   ],
   targets: [
     // MMIO
