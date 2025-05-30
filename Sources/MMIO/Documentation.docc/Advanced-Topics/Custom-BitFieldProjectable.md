@@ -33,7 +33,7 @@ public protocol BitFieldProjectable {
 
 Let's examine each requirement in detail:
 
-#### Static bitWidth Property
+#### Bit width
 
 ```swift
 static var bitWidth: Int { get }
@@ -43,7 +43,7 @@ This property defines how many bits your type occupies in the hardware register.
 
 A mismatch between your type's `bitWidth` and the actual bit field width will cause a runtime trap when accessing the register. This is a safety feature that ensures your type accurately represents the hardware's capabilities.
 
-#### Storage Initializer
+#### Converting from storage
 
 ```swift
 init<Storage>(storage: Storage) where Storage: FixedWidthInteger & UnsignedInteger
@@ -57,7 +57,7 @@ This initializer creates an instance of your type from a raw integer value read 
 
 Your initializer must handle all possible bit patterns within `Self.bitWidth`. If your type cannot represent all possible bit patterns (e.g., an enum with fewer cases than possible bit combinations), you must decide how to handle invalid patterns.
 
-#### Storage Conversion Method
+#### Converting to storage
 
 ```swift
 func storage<Storage>(_: Storage.Type) -> Storage where Storage: FixedWidthInteger & UnsignedInteger
@@ -71,7 +71,7 @@ This method converts your type back to a raw integer value for writing to the ha
 
 The returned value must only use bits up to `Self.bitWidth` or will cause a runtime trap when written. The method should accurately represent your type's state in the bit pattern expected by the hardware
 
-### Creating an Enum Projection
+### Projecting an enum
 
 Enumerations are ideal for bit fields that represent a fixed set of distinct states or modes. Let's create a custom enum to represent a device's power mode, which is stored in a 2-bit field:
 
@@ -131,7 +131,7 @@ powerCtrl.write { view in
 }
 ```
 
-### Advanced Projection Techniques
+### Advanced projections
 
 Sometimes hardware registers have more complex requirements than simple one-to-one mappings. You might encounter situations where:
 
@@ -259,12 +259,3 @@ The real power of this technique becomes apparent when working with hardware tha
 - Some combinations of bits are invalid or represent special modes
 
 With a custom `BitFieldProjectable` type, you can model these relationships explicitly, making your code both safer and more expressive.
-
-## Topics
-
-### Bit Field Projection
-
-- ``MMIO/BitFieldProjectable``
-- ``MMIO/ReadWrite(bits:as:)``
-- ``MMIO/ReadOnly(bits:as:)``
-- ``MMIO/WriteOnly(bits:as:)``
