@@ -38,3 +38,5 @@ extension LLVMDiagnostic: CustomStringConvertible {
 }
 
 extension LLVMDiagnostic: Equatable {}
+
+extension LLVMDiagnostic: Sendable {}

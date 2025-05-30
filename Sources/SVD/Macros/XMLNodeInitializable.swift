@@ -64,13 +64,73 @@ extension Bool: XMLNodeInitializable {
 extension UInt64: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
-    var description = stringValue[...]
-    let parser = Parser<Substring, Self>.scaledNonNegativeInteger()
-    guard
-      let value = parser.run(&description),
-      description.isEmpty
+    let parser = SVDScaledNonNegativeIntegerParser<Self>()
+    guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }
-
     self = value
+  }
+}
+
+private struct ParserAndBase {
+  var parser: any ParserProtocol<UInt8>
+  var base: Int
+}
+
+private struct SVDScaledNonNegativeIntegerParser<Output>: ParserProtocol
+where Output: FixedWidthInteger {
+  func parse(_ input: inout Input) -> Output? {
+    let original = input
+
+    if input.first == UInt8(ascii: "+") {
+      input.removeFirst()
+    }
+
+    let oneOf = OneOfParser<ParserAndBase>(
+      ("#", .init(parser: BinaryDigitParser(), base: 2)),
+      ("0x", .init(parser: HexadecimalDigitParser(), base: 16)),
+      ("0X", .init(parser: HexadecimalDigitParser(), base: 16)),
+    )
+
+    let parserAndBase =
+      oneOf.parse(&input)
+      ?? .init(parser: DecimalDigitParser(), base: 10)
+
+    var value = Output(0)
+    var digitsConsumed = false
+    loop: while !input.isEmpty {
+      guard let digit = parserAndBase.parser.parse(&input) else { break loop }
+      guard
+        value.incrementalParseAppend(
+          digit: Output(digit),
+          base: Output(parserAndBase.base))
+      else {
+        input = original
+        return nil
+      }
+
+      digitsConsumed = true
+    }
+
+    guard digitsConsumed else {
+      input = original
+      return nil
+    }
+
+    let scaleParser = OneOfParser<Output>(
+      ("k", 1_000),
+      ("K", 1_000),
+      ("m", 1_000_000),
+      ("M", 1_000_000),
+      ("g", 1_000_000_000),
+      ("G", 1_000_000_000),
+      ("t", 1_000_000_000_000),
+      ("T", 1_000_000_000_000),
+    )
+
+    if let scale = scaleParser.parse(&input) {
+      value *= scale
+    }
+
+    return value
   }
 }

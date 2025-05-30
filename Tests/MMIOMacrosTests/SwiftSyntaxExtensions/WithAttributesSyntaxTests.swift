@@ -18,7 +18,7 @@ import Testing
 @testable import MMIOMacros
 
 struct WithAttributesSyntaxTests {
-  struct RequireMacroTestVector: CustomStringConvertible {
+  struct RequireMacroTestVector: CustomStringConvertible, Sendable {
     static let vectors: [Self] = [
       .init(
         decl: "var v: Bool",
@@ -71,7 +71,7 @@ struct WithAttributesSyntaxTests {
 
     var description: String { "\(self.decl)" }
     var decl: any WithAttributesSyntax
-    var macros: [any (ParsableMacro.Type)]
+    var macros: [any ParsableMacro.Type]
     var match: MatchingAttributeAndMacro?
 
     init(

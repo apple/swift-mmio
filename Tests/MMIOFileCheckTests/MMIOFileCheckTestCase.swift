@@ -167,16 +167,18 @@ extension LLVMDiagnostic {
       _ = try sh(command)
     } catch let shellCommandError {
       // Parse the errors.
-      var message = shellCommandError.error[...]
-      let diagnostics = Parser.llvmDiagnostics.run(&message)
+      var message = shellCommandError.error.utf8[...]
+      let diagnostics = LLVMDiagnosticsParser().parse(&message)
       guard let diagnostics = diagnostics else {
         Issue.record(shellCommandError)
         return false
       }
+      // Include extra error if diagnostic parsing failed.
       if !message.isEmpty {
         Issue.record(
           "Failed to parse all error diagnostics, remaining: \(message)")
       }
+      // Emit parsed diagnostics.
       for diagnostic in diagnostics {
         diagnostic.recordAsIssue()
       }

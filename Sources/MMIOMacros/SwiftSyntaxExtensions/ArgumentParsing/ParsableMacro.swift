@@ -16,7 +16,7 @@ import SwiftSyntaxMacros
 typealias SignatureCache = [AnyHashable: (String, AttributeListSyntax.Element)]
 private let signatureCache = Mutex<SignatureCache>([:])
 
-protocol ParsableMacro {
+protocol ParsableMacro: Sendable {
   static var baseName: String { get }
   init()
   // FIXME: Maybe replace by grabbing a runtime function using @_silgen_name

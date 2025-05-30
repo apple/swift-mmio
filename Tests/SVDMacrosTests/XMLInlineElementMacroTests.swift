@@ -16,7 +16,7 @@ import Testing
 @testable import SVDMacros
 
 struct XMLInlineElementMacroTests {
-  static let macros: [String: Macro.Type] = [
+  static let macros: [String: SendableMacro.Type] = [
     "XMLInlineElement": XMLMarkerMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)

@@ -19,7 +19,7 @@ import Testing
 struct RegisterMacroTests {
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterMacro>
 
-  static let macros: [String: Macro.Type] = [
+  static let macros: [String: SendableMacro.Type] = [
     "Register": RegisterMacro.self,
     "Reserved": ReservedMacro.self,
     "ReadWrite": ReadWriteMacro.self,

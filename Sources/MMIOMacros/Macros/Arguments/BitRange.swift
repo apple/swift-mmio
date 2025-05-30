@@ -203,49 +203,69 @@ extension BitRange: ExpressibleByStringLiteral {
 
 extension BitRange: LosslessStringConvertible {
   init?(_ description: String) {
-    var input = description[...]
-
-    if Parser("(-∞").run(&input) != nil {
-      self.lowerBound = nil
-    } else {
-      let parser =
-        Parser
-        .take(
-          .oneOf([
-            Parser("(").map { false },
-            Parser("[").map { true },
-          ])
-        )
-        .take(.swiftInteger(Int.self))
-
-      guard let value = parser.run(&input) else { return nil }
-      self.lowerBound = .init(value: value.1, inclusive: value.0)
-    }
-
-    guard Parser(", ").run(&input) != nil else { return nil }
-
-    if Parser("+∞)").run(&input) != nil {
-      self.upperBound = nil
-    } else {
-      let parser =
-        Parser
-        .take(.swiftInteger(Int.self))
-        .take(
-          .oneOf([
-            Parser(")").map { false },
-            Parser("]").map { true },
-          ]))
-
-      guard let value = parser.run(&input) else { return nil }
-      self.upperBound = .init(value: value.0, inclusive: value.1)
-    }
-
-    guard input.isEmpty else { return nil }
+    guard let value = BitRangeParser().parseAll(description)
+    else { return nil }
+    self = value
   }
 }
 
 extension ErrorDiagnostic {
   static func expectedRangeLiteral() -> Self {
     .init("'\(Macro.signature)' requires expression to be a range literal")
+  }
+}
+
+private struct BitRangeParser: ParserProtocol {
+  typealias Output = BitRange
+
+  func parse(_ input: inout Input) -> Output? {
+    let original = input
+
+    let lowerBound: BitRangeBound?
+    if DropParser("(-∞").parse(&input) != nil {
+      lowerBound = nil
+    } else {
+      let inclusiveParser = OneOfParser<Bool>(
+        ("(", false),
+        ("[", true),
+      )
+
+      guard
+        let inclusive = inclusiveParser.parse(&input),
+        let value = SwiftIntegerParser<Int>().parse(&input)
+      else {
+        input = original
+        return nil
+      }
+
+      lowerBound = .init(value: value, inclusive: inclusive)
+    }
+
+    guard DropParser(", ").parse(&input) != nil else {
+      input = original
+      return nil
+    }
+
+    let upperBound: BitRangeBound?
+    if DropParser("+∞)").parse(&input) != nil {
+      upperBound = nil
+    } else {
+      let inclusiveParser = OneOfParser<Bool>(
+        (")", false),
+        ("]", true),
+      )
+
+      guard
+        let value = SwiftIntegerParser<Int>().parse(&input),
+        let inclusive = inclusiveParser.parse(&input)
+      else {
+        input = original
+        return nil
+      }
+
+      upperBound = .init(value: value, inclusive: inclusive)
+    }
+
+    return BitRange(lowerBound: lowerBound, upperBound: upperBound)
   }
 }
