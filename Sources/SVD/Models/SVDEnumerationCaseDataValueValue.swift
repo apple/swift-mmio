@@ -56,7 +56,7 @@ extension SVDEnumerationCaseDataValueValue: Sendable {}
 extension SVDEnumerationCaseDataValueValue: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
-    let parser = SVDEnumerationCaseDataValueValueParser2<UInt64>.self
+    let parser = Parser2.svdEnumerationCaseDataValueValue(UInt64.self)
     guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }
     self.value = value.0

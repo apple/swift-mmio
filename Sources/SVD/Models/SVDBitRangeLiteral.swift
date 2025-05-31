@@ -37,24 +37,8 @@ extension SVDBitRangeLiteral: Hashable {}
 
 extension SVDBitRangeLiteral: LosslessStringConvertible {
   public init?(_ description: String) {
-    enum Open: ParsablePrefix {
-      static let prefix = "[".utf8[...]
-    }
-    enum Separator: ParsablePrefix {
-      static let prefix = ":".utf8[...]
-    }
-    enum Close: ParsablePrefix {
-      static let prefix = "]".utf8[...]
-    }
-
-    let parser2 = BaseParser2<String.UTF8View.SubSequence>
-      .skip(PrefixParser2<Open>.self)
-      .take(SwiftIntegerParser2<UInt64>.self)
-      .skip(PrefixParser2<Separator>.self)
-      .take(SwiftIntegerParser2<UInt64>.self)
-      .skip(PrefixParser2<Close>.self)
-
-    guard let (msb, lsb) = parser2.parseAll(description) else { return nil }
+    guard let (msb, lsb) = Parser2.svdBitRangeLiteral().parseAll(description)
+    else { return nil }
     self.lsb = lsb
     self.msb = msb
   }

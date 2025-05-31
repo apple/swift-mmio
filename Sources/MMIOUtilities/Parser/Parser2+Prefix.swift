@@ -1,36 +1,43 @@
+//===----------------------------------------------------------*- swift -*-===//
 //
-//  File.swift
-//  swift-mmio
+// This source file is part of the Swift MMIO open source project
 //
-//  Created by Rauhul Varma on 5/30/25.
+// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
 //
+// See https://swift.org/LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-
-public protocol ParsablePrefix {
-  static var prefix: String.UTF8View.SubSequence { get }
+extension Parser2 {
+  public static func prefix(
+    _ prefix: String
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, Void> {
+    PrefixParser2(prefix: prefix.utf8[...])
+  }
 }
 
-public struct PrefixParser2<Prefix>: Parser2 where Prefix: ParsablePrefix {
-  public typealias Input = String.UTF8View.SubSequence
-  public typealias Output = Void
+fileprivate struct PrefixParser2: ParserProtocol {
+  typealias Input = String.UTF8View.SubSequence
+  typealias Output = Void
 
-  public static func parse(_ input: inout Input) -> Output? {
-    guard input.starts(with: Prefix.prefix) else { return nil }
-    input.removeFirst(Prefix.prefix.count)
+  var prefix: Input
+
+  func parse(_ input: inout Input) -> Output? {
+    guard input.starts(with: self.prefix) else { return nil }
+    input.removeFirst(self.prefix.count)
     return ()
   }
 }
 
-public protocol ParsablePrefixUpTo {
-  static var character: String.UTF8View.SubSequence.Element { get }
-}
-
-public struct PrefixUpToParser2<Prefix>: Parser2 where Prefix: ParsablePrefixUpTo {
+public struct PrefixUpToParser2<Prefix>: ParserProtocol {
   public typealias Input = String.UTF8View.SubSequence
   public typealias Output = String.UTF8View.SubSequence
 
-  public static func parse(_ input: inout Input) -> Output? {
-    let endIndex = input.firstIndex(of: Prefix.character) ?? input.endIndex
+  var prefix: Input
+
+  public func parse(_ input: inout Input) -> Output? {
+    let endIndex = input.firstIndex(of: self.prefix.first!) ?? input.endIndex
     let match = input[..<endIndex]
     input = input[endIndex...]
     return match

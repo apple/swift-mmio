@@ -62,24 +62,8 @@ extension SVDCPURevision: LosslessStringConvertible {
       return
     }
 
-    enum R: ParsablePrefix {
-      static let prefix = "r".utf8[...]
-    }
-
-    enum P: ParsablePrefix {
-      static let prefix = "p".utf8[...]
-    }
-
-    var description = description.utf8[...]
-    let parser =
-      Parser
-      .skip(PrefixParser2<R>.parser())
-      .take(SwiftIntegerParser2<UInt64>.parser())
-      .skip(PrefixParser2<P>.parser())
-      .take(SwiftIntegerParser2<UInt64>.parser())
     guard
-      let (revision, patch) = parser.run(&description),
-      description.isEmpty
+      let (revision, patch) = Parser2.svdCPURevision().parseAll(description)
     else { return nil }
 
     self.revision = revision

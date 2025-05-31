@@ -1,18 +1,31 @@
+//===----------------------------------------------------------*- swift -*-===//
 //
-//  SwiftIntegerParser2.swift
-//  swift-mmio
+// This source file is part of the Swift MMIO open source project
 //
-//  Created by Rauhul Varma on 5/30/25.
+// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
 //
+// See https://swift.org/LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-public struct SwiftIntegerParser2<Output>: Parser2
+extension Parser2 {
+  public static func swiftInteger<Integer>(
+    _: Integer.Type
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, Integer>
+  where Integer: FixedWidthInteger {
+    SwiftIntegerParser2<Integer>()
+  }
+}
+
+fileprivate struct SwiftIntegerParser2<Output>: ParserProtocol
 where Output: FixedWidthInteger {
-  public typealias Input = String.UTF8View.SubSequence
+  typealias Input = String.UTF8View.SubSequence
 
-  public static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     let original = input
 
-    var positive = true
+    let positive: Bool
     switch input.first {
     case UInt8(ascii: "-"):
       positive = false
@@ -21,26 +34,26 @@ where Output: FixedWidthInteger {
       positive = true
       input.removeFirst()
     default:
-      break
+      positive = true
     }
 
-    let digitParser2: any Parser2<Input, UInt8>.Type
+    let digitParser2: any ParserProtocol<Input, UInt8>
     let base: Output
     switch input.prefix(2) {
     case "0b".utf8[...]:
-      digitParser2 = BinaryDigitParser2.self
+      digitParser2 = Parser2.binaryDigit()
       base = 2
       input.removeFirst(2)
     case "0o".utf8[...]:
-      digitParser2 = OctalDigitParser2.self
+      digitParser2 = Parser2.octalDigit()
       base = 8
       input.removeFirst(2)
     case "0x".utf8[...]:
-      digitParser2 = HexadecimalDigitParser2.self
+      digitParser2 = Parser2.hexadecimalDigit()
       base = 16
       input.removeFirst(2)
     default:
-      digitParser2 = DecimalDigitParser2.self
+      digitParser2 = Parser2.decimalDigit()
       base = 10
     }
 

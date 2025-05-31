@@ -64,7 +64,7 @@ extension Bool: XMLNodeInitializable {
 extension UInt64: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
-    let parser = SVDScaledNonNegativeIntegerParser2<Self>.self
+    let parser = Parser2.svdScaledNonNegativeInteger(Self.self)
     guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }
     self = value

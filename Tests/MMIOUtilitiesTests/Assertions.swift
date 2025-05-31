@@ -50,13 +50,13 @@ func assertNoParse<Output>(
 }
 
 func assertParse2<Parser, Output>(
-  _ parser: Parser.Type,
+  _ parser: Parser,
   _ input: String,
   _ expected: Output,
   sourceLocation: SourceLocation = #_sourceLocation
-) where Parser: Parser2<String.UTF8View.SubSequence, Output>, Parser.Output: Equatable {
+) where Parser: ParserProtocol<String.UTF8View.SubSequence, Output>, Parser.Output: Equatable {
   var input = input.utf8[...]
-  let parsed = Parser.parse(&input)
+  let parsed = parser.parse(&input)
 
   do {
     let parsed = try #require(
@@ -75,13 +75,13 @@ func assertParse2<Parser, Output>(
 }
 
 func assertNoParse2<Parser, Output>(
-  _ parser: Parser.Type,
+  _ parser: Parser,
   _ input: String,
   sourceLocation: SourceLocation = #_sourceLocation
-) where Parser: Parser2<String.UTF8View.SubSequence, Output>, Parser.Output: Equatable {
+) where Parser: ParserProtocol<String.UTF8View.SubSequence, Output>, Parser.Output: Equatable {
   var input = input.utf8[...]
   let original = input
-  let parsed = Parser.parse(&input)
+  let parsed = parser.parse(&input)
   #expect(parsed == nil, sourceLocation: sourceLocation)
   #expect(input == original, sourceLocation: sourceLocation)
 }

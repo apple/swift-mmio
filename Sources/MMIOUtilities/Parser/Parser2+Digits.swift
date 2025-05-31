@@ -1,12 +1,46 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+//===----------------------------------------------------------*- swift -*-===//
+//
+// This source file is part of the Swift MMIO open source project
+//
+// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-struct BinaryOrAnyDigitParser2: Parser2 {
+extension Parser2 {
+  public static func binaryOrAnyDigit(
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, (UInt8, UInt8)> {
+    BinaryOrAnyDigitParser2()
+  }
+
+  public static func binaryDigit(
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, UInt8> {
+    BinaryDigitParser2()
+  }
+
+  public static func octalDigit(
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, UInt8> {
+    OctalDigitParser2()
+  }
+
+  public static func decimalDigit(
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, UInt8> {
+    DecimalDigitParser2()
+  }
+
+  public static func hexadecimalDigit(
+  ) -> some ParserProtocol<String.UTF8View.SubSequence, UInt8> {
+    HexadecimalDigitParser2()
+  }
+}
+
+struct BinaryOrAnyDigitParser2: ParserProtocol {
   typealias Input = String.UTF8View.SubSequence
-  // (Value, Mask)
-  typealias Output = (UInt8, UInt8)
+  typealias Output = (UInt8, UInt8) // (Value, Mask)
 
-  static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     guard let ascii = input.first else { return nil }
     switch ascii {
     case UInt8(ascii: "0"), UInt8(ascii: "1"):
@@ -21,11 +55,11 @@ struct BinaryOrAnyDigitParser2: Parser2 {
   }
 }
 
-struct BinaryDigitParser2: Parser2 {
+struct BinaryDigitParser2: ParserProtocol {
   typealias Input = String.UTF8View.SubSequence
   typealias Output = UInt8
 
-  static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     guard let ascii = input.first else { return nil }
     switch ascii {
     case UInt8(ascii: "0"), UInt8(ascii: "1"):
@@ -37,11 +71,11 @@ struct BinaryDigitParser2: Parser2 {
   }
 }
 
-struct OctalDigitParser2: Parser2 {
+struct OctalDigitParser2: ParserProtocol {
   typealias Input = String.UTF8View.SubSequence
   typealias Output = UInt8
 
-  static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     guard let ascii = input.first else { return nil }
     switch ascii {
     case UInt8(ascii: "0")..<UInt8(ascii: "8"):
@@ -53,11 +87,11 @@ struct OctalDigitParser2: Parser2 {
   }
 }
 
-struct DecimalDigitParser2: Parser2 {
+struct DecimalDigitParser2: ParserProtocol {
   typealias Input = String.UTF8View.SubSequence
   typealias Output = UInt8
 
-  static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     guard let ascii = input.first else { return nil }
     switch ascii {
     case UInt8(ascii: "0")...UInt8(ascii: "9"):
@@ -69,11 +103,11 @@ struct DecimalDigitParser2: Parser2 {
   }
 }
 
-struct HexadecimalDigitParser2: Parser2 {
+struct HexadecimalDigitParser2: ParserProtocol {
   typealias Input = String.UTF8View.SubSequence
   typealias Output = UInt8
 
-  static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     guard let ascii = input.first else { return nil }
     switch ascii {
     case UInt8(ascii: "0")...UInt8(ascii: "9"):

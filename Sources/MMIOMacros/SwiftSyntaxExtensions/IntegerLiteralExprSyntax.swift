@@ -14,6 +14,6 @@ import SwiftSyntax
 
 extension IntegerLiteralExprSyntax {
   var value: Int? {
-    SwiftIntegerParser2<Int>.parseAll(self.literal.text)
+    Parser2.swiftInteger(Int.self).parseAll(self.literal.text)
   }
 }

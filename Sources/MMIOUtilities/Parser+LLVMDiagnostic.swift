@@ -10,11 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 
-fileprivate enum NewLine: ParsablePrefix, ParsablePrefixUpTo {
-  static let prefix = "\n".utf8[...]
-  static let character = UInt8(ascii: "\n")
-}
-
 extension Parser where Input == String.UTF8View.SubSequence, Output == LLVMDiagnostic {
   static var llvmDiagnostic: Self {
     fatalError()

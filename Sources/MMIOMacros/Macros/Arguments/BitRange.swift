@@ -203,7 +203,8 @@ extension BitRange: ExpressibleByStringLiteral {
 
 extension BitRange: LosslessStringConvertible {
   init?(_ description: String) {
-    guard let value = BitRangeParser2.parseAll(description) else { return nil }
+    guard let value = BitRangeParser2().parseAll(description)
+    else { return nil }
     self = value
   }
 }
@@ -214,25 +215,20 @@ extension ErrorDiagnostic {
   }
 }
 
-struct BitRangeParser2: Parser2 {
+struct BitRangeParser2: ParserProtocol {
   typealias Input = String.UTF8View.SubSequence
   typealias Output = BitRange
 
-  static func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Input) -> Output? {
     let original = input
 
-    enum NegativeInfinity: ParsablePrefix {
-      static let prefix = "(-∞".utf8[...]
-    }
-    enum Separator: ParsablePrefix {
+
+    enum Separator {
       static let prefix = ", ".utf8[...]
-    }
-    enum PositiveInfinity: ParsablePrefix {
-      static let prefix = "".utf8[...]
     }
 
     let lowerBound: BitRangeBound?
-    if PrefixParser2<NegativeInfinity>.parse(&input) != nil {
+    if Parser2.prefix("(-∞").parse(&input) != nil {
       lowerBound = nil
     } else {
       let inclusive: Bool
@@ -248,7 +244,7 @@ struct BitRangeParser2: Parser2 {
         return nil
       }
 
-      guard let value = SwiftIntegerParser2<Int>.parse(&input) else {
+      guard let value = Parser2.swiftInteger(Int.self).parse(&input) else {
         input = original
         return nil
       }
@@ -256,16 +252,16 @@ struct BitRangeParser2: Parser2 {
       lowerBound = .init(value: value, inclusive: inclusive)
     }
 
-    guard PrefixParser2<Separator>.parse(&input) != nil else {
+    guard Parser2.prefix(", ").parse(&input) != nil else {
       input = original
       return nil
     }
 
     let upperBound: BitRangeBound?
-    if PrefixParser2<PositiveInfinity>.parse(&input) != nil {
+    if Parser2.prefix("+∞)").parse(&input) != nil {
       upperBound = nil
     } else {
-      guard let value = SwiftIntegerParser2<Int>.parse(&input) else {
+      guard let value = Parser2.swiftInteger(Int.self).parse(&input) else {
         input = original
         return nil
       }
