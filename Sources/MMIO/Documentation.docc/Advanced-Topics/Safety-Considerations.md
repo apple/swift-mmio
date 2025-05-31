@@ -6,9 +6,7 @@ Understand Swift MMIO's guarantees and developer responsibilities.
 
 Swift MMIO improves the safety and ergonomics of memory-mapped I/O operations compared to traditional low-level programming in languages like C. However, direct hardware interaction inherently involves aspects that require careful attention from you. This article discusses the safety model and performance characteristics of Swift MMIO.
 
-## Safety
-
-### Developer Responsibilities (Unsafe Aspects)
+### Developer responsibilities
 
 While Swift MMIO introduces significant safety improvements, certain aspects remain inherently unsafe due to the nature of direct hardware interaction. You are responsible for:
 
@@ -21,7 +19,7 @@ While Swift MMIO introduces significant safety improvements, certain aspects rem
 3.  **Understanding Hardware Side Effects:**
     MMIO register access can have side effects (e.g., read-to-clear flags, initiating time-consuming operations, state-dependent access permissions, timing requirements). Ignoring these can lead to missed events, incorrect state transitions, or hardware errors. Consult datasheets for side effects and manage them in your logic (e.g., polling, interrupt handlers, delays). Swift MMIO ensures volatile memory access but not the logical consequences of that access.
 
-### Safety Provided by Swift MMIO
+### Library responsibilities
 
 Swift MMIO offers several safety layers:
 

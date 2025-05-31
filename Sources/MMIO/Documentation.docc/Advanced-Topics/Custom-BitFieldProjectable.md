@@ -15,7 +15,7 @@ Swift MMIO provides **type projections** through the ``MMIO/BitFieldProjectable`
 
 This article guides you through creating custom types that conform to ``MMIO/BitFieldProjectable``, enabling you to represent hardware bit fields in a way that's both safer and more expressive.
 
-## Understanding the BitFieldProjectable Protocol
+### Understanding the BitFieldProjectable protocol
 
 The ``MMIO/BitFieldProjectable`` protocol defines the contract between your custom type and a bit field macro. To create a custom projection, your type must implement three key requirements:
 

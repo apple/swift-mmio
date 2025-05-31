@@ -2,11 +2,11 @@
 
 Use the SVD2LLDB plugin in a debug session.
 
-## Prerequisites
+### Prerequisites
 
 Before using the SVD2LLDB plugin you must first build it, see <doc:BuildingSVD2LLDB> for details.
  
-## Load SVD2LLDB in LLDB
+### Load SVD2LLDB in LLDB
 
 You can manually load the SVD2LLDB plugin into your LLDB session using the `plugin load` command in the LLDB console:
 

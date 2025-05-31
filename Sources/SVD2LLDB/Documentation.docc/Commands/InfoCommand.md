@@ -6,7 +6,7 @@ Retrieve information about hardware items.
 
 The `svd info` command prints detailed information about one or more hardware items defined in an SVD file. This includes attributes such as addresses, sizes, access permissions, and other relevant details.
 
-## Syntax
+### Syntax
 
 ```console
 USAGE: svd info <key-path> ...
@@ -19,7 +19,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-## Examples
+### Examples
 
 1. Print information about a specific register:
 

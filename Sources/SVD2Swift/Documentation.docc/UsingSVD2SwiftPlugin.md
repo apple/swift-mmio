@@ -6,9 +6,9 @@ Generate Swift register interfaces from SVD files during of your SwiftPM build.
 
 The `SVD2SwiftPlugin` integrates `svd2swift` into the SwiftPM build process, allowing you to exclude generated source code into your repository.
 
-## Get Started
+### Get Started
 
-### Setup Package.swift
+#### Setup Package.swift
 
 First, add the Swift MMIO repository to your Package's dependencies:
 
@@ -31,7 +31,7 @@ Second, add the `MMIO` library to your target's dependencies and the `SVD2SwiftP
   ]),
 ```
 
-### Add prerequisite files
+#### Add prerequisite files
 
 Next, `SVD2SwiftPlugin` requires two accompanying files in order to generate code.
 
@@ -49,7 +49,7 @@ Project
     ╰╴svd2swift.json
 ```
 
-### Configure the plugin
+#### Configure the plugin
 
 Last, we need to tell `SVD2SwiftPlugin` how to generate code using the `svd2swift.json` file. Each option of the `SVD2SwiftPlugin` plugin corresponds to a command line flag of `svd2swift`.
 

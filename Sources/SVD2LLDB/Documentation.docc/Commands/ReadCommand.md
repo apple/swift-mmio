@@ -6,7 +6,7 @@ Read the value of registers.
 
 The `svd read` command allows you to read registers by name. It supports reading individual registers as well as dumping all registers within a peripheral or cluster. The command skips reading registers with side-effects by default to avoid unintentional modifications, and includes an optional flag to force reading, ignoring side-effects.
 
-## Syntax
+### Syntax
 
 ```console
 USAGE: svd read <key-path> ... [--force]
@@ -20,7 +20,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-## Examples
+### Examples
 
 1. Read and print the values of multiple registers, simply provide their paths as arguments:
 

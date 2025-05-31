@@ -1,5 +1,7 @@
 # Type Mapping
 
+A mapping between Swift types and their corresponding types in the CMSIS SVD XML schema.
+
 | Swift Type                      | CMSIS SVD XML Schema Type  |
 | ------------------------------- | -------------------------- |
 | ``SVDAccess``                   | `accessType`               |
@@ -37,11 +39,11 @@
 | ``SVDSAUAccess``                | `sauAccessType`            |
 | ``SVDSAURegion``                | `region`                   |
 | ``SVDSAURegions``               | `sauRegionsConfig`         |
-| ``Swift.UInt64``                | `scaledNonNegativeInteger` |
+| `Swift.UInt64`                  | `scaledNonNegativeInteger` |
 | `Swift.String`                  | `stringType`               |
 | ``SVDWriteConstraint``          | `writeConstraintType`      |
-| ``Swift.Bool``                  | `xs:boolean`               |
+| `Swift.Bool`                    | `xs:boolean`               |
 | `Swift.String`                  | `xs:decimal`               |
-| ``Swift.UInt64``                | `xs:integer`               |
+| `Swift.UInt64`                  | `xs:integer`               |
 | `Swift.String`                  | `xs:Name`                  |
 | `Swift.String`                  | `xs:string`                |

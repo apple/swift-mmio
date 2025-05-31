@@ -6,7 +6,7 @@ Decode a register value into fields.
 
 The `svd decode` command allows you to decode the raw value of a register into fields in a human-readable format.
 
-## Syntax
+### Syntax
 
 ```
 USAGE: svd decode <key-path> [<value>] [--binary] [--read] [--force] [--visual]
@@ -24,7 +24,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-## Example
+### Example
 
 1. Decode the specified value `0x0123_4567` for register `TIMER0.CR` without reading from the device with a visual diagram:
 
