@@ -34,9 +34,12 @@ jobs:
       swift_flags: --configuration release
       swift_nightly_flags: --configuration release
       # minimum Swift version is 6.1
-      macos_exclude_xcode_versions: '["16.0", "16.1", "16.2"]'
-      linux_exclude_swift_versions: '["5.9", "5.10", "6.0"]'
-      windows_exclude_swift_versions: '["5.9", "5.10", "6.0"]'
+      macos_exclude_xcode_versions: >-
+        ["16.0", "16.1", "16.2"]
+      linux_exclude_swift_versions: >-
+        ["5.9", "5.10", "6.0"]
+      windows_exclude_swift_versions: >-
+        ["5.9", "5.10", "6.0"]
 
   soundness:
     name: Soundness
