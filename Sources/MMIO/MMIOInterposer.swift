@@ -9,33 +9,41 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if FEATURE_INTERPOSABLE
-/// An object which can modify the behavior of register reads and writes for the
-/// purpose of unit testing.
+/// A protocol for intercepting memory-mapped I/O operations.
 ///
-/// MMIOInterposers must provide methods for registers to load and store values.
-/// However, conforming types may perform arbitrary logic within these methods.
-/// For example, an interposer may adjust the address before performing a load
-/// or store, it may load or store from a custom side allocation, or even simply
-/// track load and store counts and discard the actual values.
+/// `MMIOInterposer` enables testing of MMIO-based code without physical
+/// hardware by intercepting register reads and writes. When provided to a
+/// ``MMIO/Register`` it redirects memory operations to the interposer's
+/// methods.
+///
+/// - Note: Only available when compiled with the `FEATURE_INTERPOSABLE` flag.
+///
+/// For usage details, see <doc:Testing-With-Interposers>.
 public protocol MMIOInterposer: AnyObject {
-  /// An interposition function to modify the behavior of a register read.
+  /// Intercepts a register read operation.
   ///
-  /// - Parameter pointer: The original address the load was performed against.
+  /// Called when a register with this interposer is read via
+  /// ``MMIO/Register/read()`` or during the read phase of
+  /// ``MMIO/Register/modify(_:)``.
   ///
-  /// - Returns: A `Value` from the address referenced by `pointer`.
+  /// - Parameter pointer: A pointer to the register's memory address.
+  ///
+  /// - Returns: The value to simulate reading from hardware.
   func load<Value>(
     from pointer: UnsafePointer<Value>
   ) -> Value where Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage
 
-  /// An interposition function to modify the behavior of a register write.
+  /// Intercepts a register write operation.
+  ///
+  /// Called when a value is written to a register with this interposer via
+  /// ``MMIO/Register/write(_:)`` or during the write phase of
+  /// ``MMIO/Register/modify(_:)``.
   ///
   /// - Parameters:
-  ///   - value: A `Value` to be stored in the address referenced by `pointer`.
-  ///   - pointer: The original address the store was performed against.
+  ///   - value: The value being written.
+  ///   - pointer: A pointer to the register's memory address.
   func store<Value>(
     _ value: Value,
     to pointer: UnsafeMutablePointer<Value>
   ) where Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage
 }
-#endif

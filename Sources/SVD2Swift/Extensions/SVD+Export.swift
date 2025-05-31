@@ -714,7 +714,7 @@ extension SVDEnumeration: SVDExportable {
               outputWriter.insert(
                 """
                 let value = Self(rawValue: rawValue)
-                precondition(\(swiftName) ~= \(value), "Invalid bits set in rawValue")
+                precondition(\(swiftName) ~= value, "Invalid bits set in rawValue")
                 return value
                 """)
             }

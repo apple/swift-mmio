@@ -226,7 +226,7 @@ extension SVD2SwiftTests {
             /// An example with dont-care bits
             static func ExampleDontCareBits(_ rawValue: UInt8 = ExampleDontCareBits.value) -> Self {
               let value = Self(rawValue: rawValue)
-              precondition(ExampleDontCareBits ~= 28, "Invalid bits set in rawValue")
+              precondition(ExampleDontCareBits ~= value, "Invalid bits set in rawValue")
               return value
             }
 
