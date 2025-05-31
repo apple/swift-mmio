@@ -209,7 +209,7 @@ extension LLVMDiagnostic {
       _ = try sh(command)
     } catch let shellCommandError {
       // Parse the errors.
-      var message = shellCommandError.error[...]
+      var message = shellCommandError.error.utf8[...]
       let diagnostics = Parser.llvmDiagnostics.run(&message)
       guard let diagnostics = diagnostics else {
         Issue.record(shellCommandError)

@@ -129,9 +129,9 @@ struct DecodeCommand: SVD2LLDBCommand {
   ) throws -> UInt64 {
     if let userValue = self.value {
       // Parse the value into a UInt64, if provided.
-      let valueParser = Parser.swiftInteger(UInt64.self)
-      var valueRaw = userValue[...]
-      guard let value = valueParser.run(&valueRaw) else {
+      let valueParser = SwiftIntegerParser2<UInt64>.self
+      var valueRaw = userValue.utf8[...]
+      guard let value = valueParser.parse(&valueRaw) else {
         throw ValidationError("Invalid value “\(userValue)”.")
       }
       // Error if the user provided value exceeds the size of the register.

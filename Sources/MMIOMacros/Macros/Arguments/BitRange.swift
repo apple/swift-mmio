@@ -203,49 +203,89 @@ extension BitRange: ExpressibleByStringLiteral {
 
 extension BitRange: LosslessStringConvertible {
   init?(_ description: String) {
-    var input = description[...]
-
-    if Parser("(-∞").run(&input) != nil {
-      self.lowerBound = nil
-    } else {
-      let parser =
-        Parser
-        .take(
-          .oneOf([
-            Parser("(").map { false },
-            Parser("[").map { true },
-          ])
-        )
-        .take(.swiftInteger(Int.self))
-
-      guard let value = parser.run(&input) else { return nil }
-      self.lowerBound = .init(value: value.1, inclusive: value.0)
-    }
-
-    guard Parser(", ").run(&input) != nil else { return nil }
-
-    if Parser("+∞)").run(&input) != nil {
-      self.upperBound = nil
-    } else {
-      let parser =
-        Parser
-        .take(.swiftInteger(Int.self))
-        .take(
-          .oneOf([
-            Parser(")").map { false },
-            Parser("]").map { true },
-          ]))
-
-      guard let value = parser.run(&input) else { return nil }
-      self.upperBound = .init(value: value.0, inclusive: value.1)
-    }
-
-    guard input.isEmpty else { return nil }
+    guard let value = BitRangeParser2.parseAll(description) else { return nil }
+    self = value
   }
 }
 
 extension ErrorDiagnostic {
   static func expectedRangeLiteral() -> Self {
     .init("'\(Macro.signature)' requires expression to be a range literal")
+  }
+}
+
+struct BitRangeParser2: Parser2 {
+  typealias Input = String.UTF8View.SubSequence
+  typealias Output = BitRange
+
+  static func parse(_ input: inout Input) -> Output? {
+    let original = input
+
+    enum NegativeInfinity: ParsablePrefix {
+      static let prefix = "(-∞".utf8[...]
+    }
+    enum Separator: ParsablePrefix {
+      static let prefix = ", ".utf8[...]
+    }
+    enum PositiveInfinity: ParsablePrefix {
+      static let prefix = "".utf8[...]
+    }
+
+    let lowerBound: BitRangeBound?
+    if PrefixParser2<NegativeInfinity>.parse(&input) != nil {
+      lowerBound = nil
+    } else {
+      let inclusive: Bool
+      switch input.first {
+      case UInt8(ascii: "("):
+        inclusive = false
+        input.removeFirst()
+      case UInt8(ascii: "["):
+        inclusive = true
+        input.removeFirst()
+      default:
+        input = original
+        return nil
+      }
+
+      guard let value = SwiftIntegerParser2<Int>.parse(&input) else {
+        input = original
+        return nil
+      }
+
+      lowerBound = .init(value: value, inclusive: inclusive)
+    }
+
+    guard PrefixParser2<Separator>.parse(&input) != nil else {
+      input = original
+      return nil
+    }
+
+    let upperBound: BitRangeBound?
+    if PrefixParser2<PositiveInfinity>.parse(&input) != nil {
+      upperBound = nil
+    } else {
+      guard let value = SwiftIntegerParser2<Int>.parse(&input) else {
+        input = original
+        return nil
+      }
+
+      let inclusive: Bool
+      switch input.first {
+      case UInt8(ascii: ")"):
+        inclusive = false
+        input.removeFirst()
+      case UInt8(ascii: "]"):
+        inclusive = true
+        input.removeFirst()
+      default:
+        input = original
+        return nil
+      }
+
+      upperBound = .init(value: value, inclusive: inclusive)
+    }
+
+    return BitRange(lowerBound: lowerBound, upperBound: upperBound)
   }
 }

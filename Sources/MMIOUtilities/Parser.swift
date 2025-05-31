@@ -156,21 +156,21 @@ extension Parser {
 
 // MARK: - Prefixes
 extension Parser: ExpressibleByUnicodeScalarLiteral
-where Input == Substring, Output == Void {
+where Input == String.UTF8View.SubSequence, Output == Void {
   public typealias UnicodeScalarLiteralType = StringLiteralType
 }
 
 extension Parser: ExpressibleByExtendedGraphemeClusterLiteral
-where Input == Substring, Output == Void {
+where Input == String.UTF8View.SubSequence, Output == Void {
   public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
 }
 
 extension Parser: ExpressibleByStringLiteral
-where Input == Substring, Output == Void {
+where Input == String.UTF8View.SubSequence, Output == Void {
   public typealias StringLiteralType = String
 
   public init(stringLiteral value: String) {
-    self = .dropPrefix(value[...])
+    self = .dropPrefix(value.utf8[...])
   }
 }
 

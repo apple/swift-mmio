@@ -19,14 +19,14 @@ let package = Package(
 
     // SVD
     .library(name: "SVD", targets: ["SVD"]),
-    .library(name: "SVD2LLDB", type: .dynamic, targets: ["SVD2LLDB"]),
-    .executable(
-      // FIXME: rdar://112530586
-      // XPM skips build plugin if product and target names are not identical.
-      // Rename this product to "svd2swift" when Xcode bug is resolved.
-      name: "SVD2Swift",
-      targets: ["SVD2Swift"]),
-    .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
+//    .library(name: "SVD2LLDB", type: .dynamic, targets: ["SVD2LLDB"]),
+//    .executable(
+//      // FIXME: rdar://112530586
+//      // XPM skips build plugin if product and target names are not identical.
+//      // Rename this product to "svd2swift" when Xcode bug is resolved.
+//      name: "SVD2Swift",
+//      targets: ["SVD2Swift"]),
+//    .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
   ],
   dependencies: [
     .package(
@@ -104,39 +104,39 @@ let package = Package(
       name: "SVDTests",
       dependencies: ["MMIOUtilities", "SVD"]),
 
-    .target(name: "CLLDB"),
-    .target(
-      name: "SVD2LLDB",
-      dependencies: [
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        "CLLDB",
-        "SVD",
-      ],
-      swiftSettings: [.interoperabilityMode(.Cxx)]),
-    .testTarget(
-      name: "SVD2LLDBTests",
-      dependencies: ["SVD2LLDB"],
-      swiftSettings: [.interoperabilityMode(.Cxx)]),
-
-    .executableTarget(
-      name: "SVD2Swift",
-      dependencies: [
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        "SVD",
-      ]),
-    .testTarget(
-      name: "SVD2SwiftTests",
-      dependencies: ["SVD", "SVD2Swift"]),
-
-    .plugin(
-      name: "SVD2SwiftPlugin",
-      capability: .buildTool,
-      dependencies: ["SVD2Swift"]),
-    .testTarget(
-      name: "SVD2SwiftPluginTests",
-      dependencies: ["MMIO"],
-      plugins: ["SVD2SwiftPlugin"]),
-
+//    .target(name: "CLLDB"),
+//    .target(
+//      name: "SVD2LLDB",
+//      dependencies: [
+//        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+//        "CLLDB",
+//        "SVD",
+//      ],
+//      swiftSettings: [.interoperabilityMode(.Cxx)]),
+//    .testTarget(
+//      name: "SVD2LLDBTests",
+//      dependencies: ["SVD2LLDB"],
+//      swiftSettings: [.interoperabilityMode(.Cxx)]),
+//
+//    .executableTarget(
+//      name: "SVD2Swift",
+//      dependencies: [
+//        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+//        "SVD",
+//      ]),
+//    .testTarget(
+//      name: "SVD2SwiftTests",
+//      dependencies: ["SVD", "SVD2Swift"]),
+//
+//    .plugin(
+//      name: "SVD2SwiftPlugin",
+//      capability: .buildTool,
+//      dependencies: ["SVD2Swift"]),
+//    .testTarget(
+//      name: "SVD2SwiftPluginTests",
+//      dependencies: ["MMIO"],
+//      plugins: ["SVD2SwiftPlugin"]),
+//
     .macro(
       name: "SVDMacros",
       dependencies: [
@@ -144,15 +144,15 @@ let package = Package(
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
       ]),
-    .testTarget(
-      name: "SVDMacrosTests",
-      dependencies: [
-        "SVDMacros",
-        .product(name: "SwiftSyntax", package: "swift-syntax"),
-        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-        .product(
-          name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
-      ]),
+//    .testTarget(
+//      name: "SVDMacrosTests",
+//      dependencies: [
+//        "SVDMacros",
+//        .product(name: "SwiftSyntax", package: "swift-syntax"),
+//        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+//        .product(
+//          name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
+//      ]),
   ],
   cxxLanguageStandard: .cxx11)
 

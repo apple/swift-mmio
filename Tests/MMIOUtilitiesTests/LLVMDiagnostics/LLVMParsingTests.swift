@@ -74,7 +74,7 @@ struct LLVMParsingTests {
         message: "cannot find 'resister' in scope"),
     ]
 
-    var input = error[...]
+    var input = error.utf8[...]
     let parsed = Parser.llvmDiagnostics.run(&input)
     let actual = parsed ?? []
     #expect(actual.count == expected.count)
