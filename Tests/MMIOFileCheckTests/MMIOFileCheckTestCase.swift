@@ -14,9 +14,9 @@ import MMIOUtilities
 import Testing
 
 #if DEBUG
-fileprivate let release = false
+private let release = false
 #else
-fileprivate let release = true
+private let release = true
 #endif
 
 struct MMIOFileCheckTests: Sendable {

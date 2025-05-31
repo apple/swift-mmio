@@ -64,7 +64,7 @@ let package = Package(
       dependencies: [
         // This is conceptually a build-time only dependency.
         "MMIO",
-        "MMIOUtilities"
+        "MMIOUtilities",
       ],
       exclude: ["Tests"]),
 
