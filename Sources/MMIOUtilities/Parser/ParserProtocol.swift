@@ -12,7 +12,7 @@
 // Inspired by a couple of Swift community parser combinator libraries, like
 // swift-parsing, SwiftParsec, and others.
 
-public protocol ParserProtocol<Output>: Sendable {
+public protocol ParserProtocol<Output> {
   typealias Input = String.UTF8View.SubSequence
   associatedtype Output
 
