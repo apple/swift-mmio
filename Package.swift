@@ -179,7 +179,7 @@ func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
 for target in package.targets {
   guard ![.system, .plugin].contains(target.type) else { continue }
 
-  target.swiftSettings = [
+  target.swiftSettings = target.swiftSettings ?? [] + [
     // Swift 6.0 - SE-335: Introduce existential any
     .enableUpcomingFeature("ExistentialAny"),
     // Swift 6.0 - SE-409: Access-level modifiers on import declarations

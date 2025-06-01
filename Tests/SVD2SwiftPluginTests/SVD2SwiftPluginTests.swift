@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import Testing
+import MMIO
 
 struct SVD2SwiftPluginTests {
   func neverActuallyRun() {

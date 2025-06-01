@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
+
 // FIXME: Revisit with lazy request-based inflation
 extension SVDDevice {
   package mutating func inflate() throws {

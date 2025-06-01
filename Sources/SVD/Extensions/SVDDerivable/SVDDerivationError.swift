@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
+
 enum SVDDerivationError: Error {
   case derivationFromUnknownNode(String, String, String, [String])
   case cyclicDerivation(String, [String])

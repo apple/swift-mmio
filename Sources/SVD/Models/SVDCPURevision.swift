@@ -27,7 +27,7 @@ extension SVDCPURevision: CustomStringConvertible {
 }
 
 extension SVDCPURevision: Decodable {
-  public init(from decoder: Decoder) throws {
+  public init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
     let description = try container.decode(String.self)
     guard let instance = Self(description) else {
@@ -42,7 +42,7 @@ extension SVDCPURevision: Decodable {
 }
 
 extension SVDCPURevision: Encodable {
-  public func encode(to encoder: Encoder) throws {
+  public func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(self.description)
   }

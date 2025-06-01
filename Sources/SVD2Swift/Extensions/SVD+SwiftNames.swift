@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import SVD
+import Foundation
 
 extension String {
   func coalescingConsecutiveSpaces() -> Self {

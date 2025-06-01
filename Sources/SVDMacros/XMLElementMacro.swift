@@ -11,6 +11,7 @@
 
 import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftSyntaxBuilder
 
 enum XMLElementMacro: ExtensionMacro {
   static func expansion(
