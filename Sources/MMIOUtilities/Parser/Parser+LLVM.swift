@@ -46,28 +46,8 @@ struct LLVMDiagnosticKindParser: ParserProtocol {
 struct LLVMDiagnosticParser: ParserProtocol {
   typealias Output = LLVMDiagnostic
 
-//  static let parser: some ParserProtocol<LLVMDiagnostic> = BaseParser()
-//    .take(CollectUpToParser(":")).skip(DropParser(":"))  // file
-//    .take(LLVMDiagnosticIntegerParser()).skip(DropParser(":"))  // line
-//    .take(LLVMDiagnosticIntegerParser()).skip(DropParser(": "))  // column
-//    .take(LLVMDiagnosticKindParser()).skip(DropParser(": "))  // kind
-//    .take(CollectUpToParser("\n")).skip(DropParser("\n"))  // message
-//    .skip(CollectUpToParser("\n")).skip(DropParser("\n"))  // source line
-//    .skip(CollectUpToParser("\n"))  // highlight line
-//    .map { file, line, column, kind, message -> LLVMDiagnostic? in
-//      guard let file = String(file), let message = String(message) else {
-//        return nil
-//      }
-//      return LLVMDiagnostic(
-//        file: file,
-//        line: line,
-//        column: column,
-//        kind: kind,
-//        message: message)
-//    }
-
   func parse(_ input: inout Input) -> Output? {
-    // FIXME: make this an instance member and remove `ParserProtocol :Sendable`
+    // FIXME: make this an instance member
     // When this is an instance member then the compiler asserts with:
     // ```cxx
     // isLoadableOrOpaque(LV->getType()) && \
