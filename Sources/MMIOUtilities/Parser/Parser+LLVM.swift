@@ -46,7 +46,11 @@ struct LLVMDiagnosticKindParser: ParserProtocol {
 struct LLVMDiagnosticParser: ParserProtocol {
   typealias Output = LLVMDiagnostic
 
-  var parser: some ParserProtocol<Output> = BaseParser()
+  // FIXME: make this an instance member and remove `ParserProtocol :Sendable`
+  // When this is an instance member then the compiler asserts with:
+  // (isLoadableOrOpaque(LV->getType()) && !LV->getType().isTrivial(getFunction()))
+  // function createLoadBorrow at SILBuilder.h:838.
+  static let parser: some ParserProtocol<LLVMDiagnostic> = BaseParser()
     .take(CollectUpToParser(":")).skip(DropParser(":"))  // file
     .take(LLVMDiagnosticIntegerParser()).skip(DropParser(":"))  // line
     .take(LLVMDiagnosticIntegerParser()).skip(DropParser(": "))  // column
@@ -54,20 +58,20 @@ struct LLVMDiagnosticParser: ParserProtocol {
     .take(CollectUpToParser("\n")).skip(DropParser("\n"))  // message
     .skip(CollectUpToParser("\n")).skip(DropParser("\n"))  // source line
     .skip(CollectUpToParser("\n"))  // highlight line
-    .map {
-      guard let file = String($0.0), let message = String($0.4) else {
+    .map { file, line, column, kind, message -> LLVMDiagnostic? in
+      guard let file = String(file), let message = String(message) else {
         return nil
       }
       return LLVMDiagnostic(
         file: file,
-        line: $0.1,
-        column: $0.2,
-        kind: $0.3,
+        line: line,
+        column: column,
+        kind: kind,
         message: message)
     }
 
   func parse(_ input: inout Input) -> Output? {
-    self.parser.parse(&input)
+    Self.parser.parse(&input)
   }
 }
 

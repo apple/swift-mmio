@@ -21,7 +21,7 @@ struct BaseParser: ParserProtocol {
 
 extension ParserProtocol {
   public func map<NewOutput>(
-    _ mapping: sending @escaping (Output) -> NewOutput?
+    _ mapping: @Sendable @escaping (Output) -> NewOutput?
   ) -> some ParserProtocol<NewOutput> {
     MappingParser(parser: self, mapping: mapping)
   }
@@ -30,7 +30,7 @@ extension ParserProtocol {
 private struct MappingParser<Parser, Output>: ParserProtocol
 where Parser: ParserProtocol {
   var parser: Parser
-  var mapping: (Parser.Output) -> Output?
+  var mapping: @Sendable (Parser.Output) -> Output?
 
   func parse(_ input: inout Input) -> Output? {
     let original = input
@@ -177,7 +177,8 @@ where Parser0: ParserProtocol, Parser1: ParserProtocol {
 
 // MARK: - Choice
 
-public struct OneOfParser<Output>: ParserProtocol {
+public struct OneOfParser<Output>: ParserProtocol
+where Output: Sendable {
   var matches: [(match: String, output: Output)]
 
   public init(_ matches: (match: String, output: Output)...) {
