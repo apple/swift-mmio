@@ -37,19 +37,8 @@ extension SVDBitRangeLiteral: Hashable {}
 
 extension SVDBitRangeLiteral: LosslessStringConvertible {
   public init?(_ description: String) {
-    var description = description[...]
-    let parser =
-      Parser
-      .skip("[")
-      .take(.swiftInteger(UInt64.self))
-      .skip(":")
-      .take(.swiftInteger(UInt64.self))
-      .skip("]")
-    guard
-      let (msb, lsb) = parser.run(&description),
-      description.isEmpty
+    guard let (msb, lsb) = SVDBitRangeLiteralParser().parseAll(description)
     else { return nil }
-
     self.lsb = lsb
     self.msb = msb
   }
@@ -58,3 +47,17 @@ extension SVDBitRangeLiteral: LosslessStringConvertible {
 extension SVDBitRangeLiteral: Sendable {}
 
 extension SVDBitRangeLiteral: XMLNodeInitializable {}
+
+private struct SVDBitRangeLiteralParser: ParserProtocol {
+  typealias Output = (UInt64, UInt64)
+
+  var parser: some ParserProtocol<Output> = DropParser("[")
+    .take(SwiftIntegerParser<UInt64>())
+    .skip(DropParser(":"))
+    .take(SwiftIntegerParser<UInt64>())
+    .skip(DropParser("]"))
+
+  func parse(_ input: inout Input) -> Output? {
+    self.parser.parse(&input)
+  }
+}

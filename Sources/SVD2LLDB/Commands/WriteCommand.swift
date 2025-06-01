@@ -118,9 +118,8 @@ struct WriteCommand: SVD2LLDBCommand {
   ) throws -> UInt64 {
     // Parse the value into a UInt64.
     let userValue = self.value
-    let valueParser = Parser.swiftInteger(UInt64.self)
-    var valueRaw = userValue[...]
-    guard let value = valueParser.run(&valueRaw) else {
+    var valueRaw = userValue.utf8[...]
+    guard let value = SwiftIntegerParser<UInt64>().parse(&valueRaw) else {
       throw ValidationError("Invalid value “\(userValue)”.")
     }
     // Error if the user provided value exceeds the size of the register.

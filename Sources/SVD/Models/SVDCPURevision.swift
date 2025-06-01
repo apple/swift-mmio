@@ -62,16 +62,8 @@ extension SVDCPURevision: LosslessStringConvertible {
       return
     }
 
-    var description = description[...]
-    let parser =
-      Parser
-      .skip("r")
-      .take(.swiftInteger(UInt64.self))
-      .skip("p")
-      .take(.swiftInteger(UInt64.self))
     guard
-      let (revision, patch) = parser.run(&description),
-      description.isEmpty
+      let (revision, patch) = SVDCPURevisionParser().parseAll(description)
     else { return nil }
 
     self.revision = revision
@@ -82,3 +74,16 @@ extension SVDCPURevision: LosslessStringConvertible {
 extension SVDCPURevision: Sendable {}
 
 extension SVDCPURevision: XMLNodeInitializable {}
+
+private struct SVDCPURevisionParser: ParserProtocol {
+  typealias Output = (UInt64, UInt64)
+
+  var parser: some ParserProtocol<Output> = DropParser("r")
+    .take(SwiftIntegerParser<UInt64>())
+    .skip(DropParser("p"))
+    .take(SwiftIntegerParser<UInt64>())
+
+  func parse(_ input: inout Input) -> Output? {
+    parser.parse(&input)
+  }
+}

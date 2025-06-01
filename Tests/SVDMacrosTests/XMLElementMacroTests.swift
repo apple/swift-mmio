@@ -16,7 +16,7 @@ import Testing
 @testable import SVDMacros
 
 struct XMLElementMacroTests {
-  static let macros: [String: Macro.Type] = [
+  static let macros: [String: SendableMacro.Type] = [
     "XMLAttribute": XMLMarkerMacro.self,
     "XMLElement": XMLElementMacro.self,
     "XMLInlineElement": XMLMarkerMacro.self,

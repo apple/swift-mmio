@@ -18,3 +18,5 @@ public enum LLVMDiagnosticKind: String {
 extension LLVMDiagnosticKind: CaseIterable {}
 
 extension LLVMDiagnosticKind: Equatable {}
+
+extension LLVMDiagnosticKind: Sendable {}

@@ -18,6 +18,8 @@ import Testing
 
 @testable import MMIOMacros
 
+typealias SendableMacro = Macro & Sendable
+
 func assertParse<Value>(
   expression: ExprSyntax,
   expected: Value,

@@ -21,7 +21,7 @@ struct RegisterBlockOffsetMacroTests {
     RegisterBlockScalarMemberMacro
   >
 
-  static let macros: [String: Macro.Type] = [
+  static let macros: [String: SendableMacro.Type] = [
     "RegisterBlock": RegisterBlockScalarMemberMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)

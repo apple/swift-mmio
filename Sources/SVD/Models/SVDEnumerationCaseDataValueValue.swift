@@ -56,15 +56,77 @@ extension SVDEnumerationCaseDataValueValue: Sendable {}
 extension SVDEnumerationCaseDataValueValue: XMLNodeInitializable {
   init(_ node: XMLNode) throws {
     let stringValue = try String(node)
-    var description = stringValue[...]
-    let parser = Parser<Substring, (UInt64, UInt64)>
-      .enumeratedValueDataType(UInt64.self)
-    guard
-      let value = parser.run(&description),
-      description.isEmpty
+    let parser = SVDEnumerationCaseDataValueValueParser<UInt64>()
+    guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }
-
     self.value = value.0
     self.mask = value.1
+  }
+}
+
+private enum EnumerationParserAndBase {
+  case binary(any ParserProtocol<(UInt8, UInt8)>)
+  case other(any ParserProtocol<UInt8>)
+}
+
+private struct SVDEnumerationCaseDataValueValueParser<Integer>: ParserProtocol
+where Integer: FixedWidthInteger {
+  typealias Output = (Integer, Integer)
+
+  func parse(_ input: inout Input) -> Output? {
+    let original = input
+
+    if input.first == UInt8(ascii: "+") {
+      input.removeFirst()
+    }
+
+    let oneOf = OneOfParser<(EnumerationParserAndBase, Int)>(
+      ("#", (.binary(BinaryOrAnyDigitParser()), 2)),
+      ("0b", (.binary(BinaryOrAnyDigitParser()), 2)),
+      ("0x", (.other(HexadecimalDigitParser()), 16)),
+      ("0X", (.other(HexadecimalDigitParser()), 16)),
+    )
+
+    let parserAndBase =
+      oneOf.parse(&input)
+      ?? (.other(DecimalDigitParser()), 10)
+
+    var value = Integer(0)
+    var mask = Integer(0) &- 1
+    var digitsConsumed = false
+    loop: while !input.isEmpty {
+      let digitValue: Integer
+
+      switch parserAndBase.0 {
+      case .binary(let parser):
+        guard let digit = parser.parse(&input) else { break loop }
+        digitValue = Integer(digit.0)
+        mask = mask << 1 | Integer(digit.1)
+
+      case .other(let parser):
+        guard let digit = parser.parse(&input) else { break loop }
+        digitValue = Integer(digit)
+      }
+
+      // Add the digit to the parsed value.
+      guard
+        value.incrementalParseAppend(
+          digit: digitValue,
+          base: Integer(parserAndBase.1))
+      else {
+        // Exit early on overflow.
+        input = original
+        return nil
+      }
+
+      digitsConsumed = true
+    }
+
+    guard digitsConsumed else {
+      input = original
+      return nil
+    }
+
+    return (value, mask)
   }
 }
