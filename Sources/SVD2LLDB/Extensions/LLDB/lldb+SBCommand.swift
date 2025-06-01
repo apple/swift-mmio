@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import CLLDB
 import ArgumentParser
+import CLLDB
 
 extension Array where Element == String {
   init(_ arguments: lldb.SBCommandRawArguments?) {

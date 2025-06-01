@@ -10,8 +10,8 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
-import SVD
 import Foundation
+import SVD
 
 protocol SVD2LLDBCommand: ParsableCommand {
   static var autoRepeat: String { get }

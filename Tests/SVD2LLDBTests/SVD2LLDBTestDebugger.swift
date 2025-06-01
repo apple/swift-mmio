@@ -9,8 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-@testable import SVD2LLDB
 import MMIOUtilities
+
+@testable import SVD2LLDB
 
 struct SVD2LLDBTestDebugger {
   var rng: SVD2LLDBTestPRNG
