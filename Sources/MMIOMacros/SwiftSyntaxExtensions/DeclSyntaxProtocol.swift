@@ -147,7 +147,7 @@ extension DeclSyntaxProtocol {
     if let decl = self.as(Other.self) { return decl }
 
     let node: any SyntaxProtocol =
-      (self as? DiagnosableDeclSyntaxProtocol)?.introducerKeyword ?? self
+      (self as? any DiagnosableDeclSyntaxProtocol)?.introducerKeyword ?? self
 
     throw context.error(
       at: node,
@@ -156,7 +156,9 @@ extension DeclSyntaxProtocol {
 }
 
 extension ErrorDiagnostic {
-  static func expectedDecl(_ decl: DiagnosableDeclSyntaxProtocol.Type) -> Self {
+  static func expectedDecl(_ decl: any DiagnosableDeclSyntaxProtocol.Type)
+    -> Self
+  {
     .init(
       """
       '\(Macro.signature)' can only be applied to \(decl.declTypeName) \

@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOVolatile
+public import MMIOVolatile
 
 /// A protocol identifying types suitable for underlying register storage and
 /// capable of performing volatile memory operations.

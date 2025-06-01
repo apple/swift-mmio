@@ -11,6 +11,7 @@
 
 #if canImport(MMIOMacros)
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import Testing
 
 @testable import MMIOMacros
@@ -50,7 +51,7 @@ struct WithModifiersSyntaxTests {
 
     init(decl: DeclSyntax, accessLevel: DeclModifierSyntax?) {
       // swift-format-ignore: NeverForceUnwrap
-      self.decl = decl.asProtocol(WithModifiersSyntax.self)!
+      self.decl = decl.asProtocol((any WithModifiersSyntax).self)!
       self.accessLevel = accessLevel
     }
   }

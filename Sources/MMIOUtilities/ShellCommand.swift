@@ -25,8 +25,8 @@ extension Data {
 public struct ShellCommandError: Swift.Error {
   public var command: String
   public var exitCode: Int32
-  public var outputData: Data
-  public var errorData: Data
+  var outputData: Data
+  var errorData: Data
 
   public var output: String { self.outputData.asUTF8String() }
   public var error: String { self.errorData.asUTF8String() }
@@ -42,10 +42,6 @@ extension ShellCommandError: CustomStringConvertible {
     }
     return description
   }
-}
-
-extension ShellCommandError: LocalizedError {
-  public var errorDescription: String? { self.description }
 }
 
 public func sh(

@@ -11,6 +11,7 @@
 
 import MMIOUtilities
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 typealias SignatureCache = [AnyHashable: (String, AttributeListSyntax.Element)]

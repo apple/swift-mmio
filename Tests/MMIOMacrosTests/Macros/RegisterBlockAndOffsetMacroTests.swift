@@ -17,12 +17,12 @@ import Testing
 @testable import MMIOMacros
 
 struct RegisterBlockAndOffsetMacroTests {
-  static let scalarMacros: [String: SendableMacro.Type] = [
+  static let scalarMacros: [String: any SendableMacro.Type] = [
     "RegisterBlockType": RegisterBlockMacro.self,
     "RegisterBlock": RegisterBlockScalarMemberMacro.self,
   ]
 
-  static let arrayMacros: [String: SendableMacro.Type] = [
+  static let arrayMacros: [String: any SendableMacro.Type] = [
     "RegisterBlockType": RegisterBlockMacro.self,
     "RegisterBlock": RegisterBlockArrayMemberMacro.self,
   ]
