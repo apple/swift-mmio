@@ -11,6 +11,7 @@
 
 #if canImport(CryptoKit)
 import CryptoKit
+import Foundation
 
 extension String {
   init<D: Digest>(_ digest: D) {

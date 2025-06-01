@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 struct RegisterDescription {

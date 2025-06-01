@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftSyntax
+import SwiftSyntaxBuilder
 
 struct BitFieldDescription {
   var attribute: AttributeSyntax

@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+import Foundation
 import SVD
 
 protocol SVD2LLDBCommand: ParsableCommand {

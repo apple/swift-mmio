@@ -51,7 +51,7 @@ extension ExportContext {
     self.registerProperties = .none
   }
 
-  func childContext(for exportable: SVDExportable) -> Self {
+  func childContext(for exportable: any SVDExportable) -> Self {
     let swiftTypeName = exportable.swiftTypeName(context: self)
     let swiftDescription = exportable.swiftDescription(
       swiftTypeName: swiftTypeName)

@@ -13,7 +13,7 @@ import MMIO
 
 // Sample register from an STM32F746
 @Register(bitWidth: 32)
-public struct OTG_HPRT {
+struct OTG_HPRT {
   @ReadWrite(bits: 0..<1)
   var pcsts: PCSTS
   @ReadWrite(bits: 1..<2)
@@ -81,12 +81,12 @@ struct OtherRangeTypes2 {
 }
 
 @Register(bitWidth: 32)
-public struct RegisterWithValues {
-  public struct FieldValues: BitFieldProjectable, RawRepresentable {
-    public static let bitWidth = 2
-    public var rawValue: UInt8
+struct RegisterWithValues {
+  struct FieldValues: BitFieldProjectable, RawRepresentable {
+    static let bitWidth = 2
+    var rawValue: UInt8
     @inlinable @inline(__always)
-    public init(rawValue: Self.RawValue) {
+    init(rawValue: Self.RawValue) {
       self.rawValue = rawValue
     }
   }
@@ -96,7 +96,7 @@ public struct RegisterWithValues {
 }
 
 @RegisterBlock
-public struct Block {
+struct Block {
   @RegisterBlock(offset: 0x4)
   var otgHprt: Register<OTG_HPRT>
   @RegisterBlock(offset: 0x8, stride: 0x10, count: 100)
@@ -105,7 +105,7 @@ public struct Block {
 
 @RegisterBank
 @available(*, deprecated)
-public struct Bank {
+struct Bank {
   @RegisterBank(offset: 0x4)
   var otgHprt: Register<OTG_HPRT>
   @RegisterBank(offset: 0x8, stride: 0x10, count: 100)

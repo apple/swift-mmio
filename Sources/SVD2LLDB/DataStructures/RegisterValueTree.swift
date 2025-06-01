@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
+
 final class ValueTree {
   enum Value {
     case data(UInt64, UInt64)
@@ -50,7 +52,7 @@ extension ValueTree: CustomStringConvertible {
     }
     description.append("\n")
     for child in self.children {
-      description.append(child._description(prefix: prefix.appending("  ")))
+      description.append(child._description(prefix: prefix + "  "))
     }
     return description
   }

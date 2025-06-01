@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import ArgumentParser
 import CLLDB
 
 extension Array where Element == String {

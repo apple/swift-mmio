@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import ArgumentParser
+
 struct NoSVDLoadedError {}
 
 extension NoSVDLoadedError: CustomStringConvertible {

@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import MMIOUtilities
 
 extension Data {
   func asUTF8String() -> String {
@@ -22,18 +23,18 @@ extension Data {
   }
 }
 
-public struct ShellCommandError: Swift.Error {
-  public var command: String
-  public var exitCode: Int32
-  public var outputData: Data
-  public var errorData: Data
+struct ShellCommandError: Swift.Error {
+  var command: String
+  var exitCode: Int32
+  var outputData: Data
+  var errorData: Data
 
-  public var output: String { self.outputData.asUTF8String() }
-  public var error: String { self.errorData.asUTF8String() }
+  var output: String { self.outputData.asUTF8String() }
+  var error: String { self.errorData.asUTF8String() }
 }
 
 extension ShellCommandError: CustomStringConvertible {
-  public var description: String {
+  var description: String {
     var description =
       "Command '\(self.command)' exited with code '\(self.exitCode)'"
     let error = self.error
@@ -44,11 +45,7 @@ extension ShellCommandError: CustomStringConvertible {
   }
 }
 
-extension ShellCommandError: LocalizedError {
-  public var errorDescription: String? { self.description }
-}
-
-public func sh(
+func sh(
   _ command: String,
   collectStandardOutput: Bool = true,
   collectStandardError: Bool = true

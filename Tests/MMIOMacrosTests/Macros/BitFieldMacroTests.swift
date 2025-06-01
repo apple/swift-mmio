@@ -11,7 +11,9 @@
 
 #if canImport(MMIOMacros)
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 
 @testable import MMIOMacros
@@ -49,7 +51,7 @@ struct BitFieldMacroTests {
 
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<TestMacro>
 
-  static let macros: [String: SendableMacro.Type] = [
+  static let macros: [String: any SendableMacro.Type] = [
     "Test": TestMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)

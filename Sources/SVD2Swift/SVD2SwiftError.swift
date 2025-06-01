@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
+
 enum SVD2SwiftError: Error {
   case unknownPeripheral(String, [String])
 }

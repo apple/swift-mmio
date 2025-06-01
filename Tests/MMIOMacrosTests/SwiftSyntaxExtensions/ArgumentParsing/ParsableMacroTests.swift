@@ -11,7 +11,9 @@
 
 #if canImport(MMIOMacros)
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 
 @testable import MMIOMacros

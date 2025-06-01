@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIO
 import Testing
 
 struct SVD2SwiftPluginTests {

@@ -12,6 +12,7 @@
 #if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 
 @testable import MMIOMacros
@@ -21,7 +22,7 @@ struct RegisterBlockOffsetMacroTests {
     RegisterBlockScalarMemberMacro
   >
 
-  static let macros: [String: SendableMacro.Type] = [
+  static let macros: [String: any SendableMacro.Type] = [
     "RegisterBlock": RegisterBlockScalarMemberMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)

@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
+
 @testable import SVD2LLDB
 
 struct SVD2LLDBTestDebugger {

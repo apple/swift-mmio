@@ -11,6 +11,7 @@
 
 #if canImport(MMIOMacros)
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
 import Testing
@@ -80,7 +81,7 @@ struct WithAttributesSyntaxTests {
       match: MatchingAttributeAndMacro?
     ) {
       // swift-format-ignore: NeverForceUnwrap
-      self.decl = decl.asProtocol(WithAttributesSyntax.self)!
+      self.decl = decl.asProtocol((any WithAttributesSyntax).self)!
       self.macros = macros
       self.match = match
     }

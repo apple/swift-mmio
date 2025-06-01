@@ -12,6 +12,7 @@
 #if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 
 @testable import MMIOMacros
@@ -19,7 +20,7 @@ import Testing
 struct RegisterMacroTests {
   typealias ErrorDiagnostic = MMIOMacros.ErrorDiagnostic<RegisterMacro>
 
-  static let macros: [String: SendableMacro.Type] = [
+  static let macros: [String: any SendableMacro.Type] = [
     "Register": RegisterMacro.self,
     "Reserved": ReservedMacro.self,
     "ReadWrite": ReadWriteMacro.self,

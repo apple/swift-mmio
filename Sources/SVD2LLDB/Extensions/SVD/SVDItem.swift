@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import SVD
 
 protocol SVDItem {
