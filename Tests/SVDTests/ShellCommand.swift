@@ -1,0 +1,1 @@
+../MMIOFileCheckTests/ShellCommand.swift

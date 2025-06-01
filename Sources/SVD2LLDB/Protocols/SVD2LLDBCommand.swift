@@ -11,6 +11,7 @@
 
 import ArgumentParser
 import SVD
+import Foundation
 
 protocol SVD2LLDBCommand: ParsableCommand {
   static var autoRepeat: String { get }

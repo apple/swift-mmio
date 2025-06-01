@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-extension StringProtocol {
-  func matches(_ other: some StringProtocol) -> Bool {
-    self.localizedCaseInsensitiveCompare(other) == .orderedSame
-  }
-}
+//extension StringProtocol {
+//  func matches(_ other: some StringProtocol) -> Bool {
+//    self.localizedCaseInsensitiveCompare(other) == .orderedSame
+//  }
+//}

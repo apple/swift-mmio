@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import SVD
+import MMIOUtilities
 
 protocol SVDItem {
   var addressOffset: UInt64 { get }
