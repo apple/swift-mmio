@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 @testable import SVD2LLDB
+import MMIOUtilities
 
 struct SVD2LLDBTestDebugger {
   var rng: SVD2LLDBTestPRNG

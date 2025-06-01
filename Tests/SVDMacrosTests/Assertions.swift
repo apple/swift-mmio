@@ -26,7 +26,7 @@ func assertMacroExpansion(
   _ originalSource: String,
   expandedSource expectedExpandedSource: String,
   diagnostics: [DiagnosticSpec] = [],
-  macros: [String: Macro.Type],
+  macros: [String: any Macro.Type],
   applyFixIts: [String]? = nil,
   fixedSource expectedFixedSource: String? = nil,
   testModuleName: String = "TestModule",

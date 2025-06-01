@@ -161,7 +161,7 @@ struct ReadCommand: SVD2LLDBCommand {
         var childPrefixTrees: [PrefixTree<String>?] = []
         if let prefixTree = context.prefixTree {
           // do filtering, must find match in tree to add node.
-          let childPrefixTree = prefixTree.children
+          let childPrefixTree = (prefixTree.children as [PrefixTree<String>])
             .first { $0.element.matches(childItem.name) }
           if let childPrefixTree = childPrefixTree {
             childPrefixTrees.append(childPrefixTree)

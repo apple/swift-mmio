@@ -9,8 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-//extension StringProtocol {
-//  func matches(_ other: some StringProtocol) -> Bool {
-//    self.localizedCaseInsensitiveCompare(other) == .orderedSame
-//  }
-//}
+import Foundation
+
+extension StringProtocol {
+  func matches(_ other: some StringProtocol) -> Bool {
+    self.localizedCaseInsensitiveCompare(other) == .orderedSame
+  }
+}
