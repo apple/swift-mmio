@@ -1,0 +1,5 @@
+.editorconfig
+Makefile
+Package.swift
+Package.resolved
+*.svd
