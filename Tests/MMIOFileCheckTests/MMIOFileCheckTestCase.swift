@@ -13,10 +13,15 @@ import Foundation
 import MMIOUtilities
 import Testing
 
-struct MMIOFileCheckTests: @unchecked Sendable {
+#if DEBUG
+private let release = false
+#else
+private let release = true
+#endif
+
+struct MMIOFileCheckTests: Sendable {
   struct Configuration {
     var hasLLVMFileCheck: Bool
-    var toolchainID: String
     var packageDirectory: URL
     var buildOutputs: URL
 
@@ -55,43 +60,8 @@ struct MMIOFileCheckTests: @unchecked Sendable {
   static func configure() throws -> Configuration {
     let environment = ProcessInfo.processInfo.environment
 
-    let ci: Bool
-    if environment["CI"] != nil {
-      print("Running in CI...")
-      ci = true
-    } else {
-      ci = false
-    }
-
-    print("Determining Swift Toolchain...")
-    let toolchainID: String
-    if true {
-      toolchainID = "org.swift.62202412101a"
-    } else if let toolchain = environment["TOOLCHAINS"] {
-      print("TOOLCHAINS set.")
-      toolchainID = toolchain
-    } else if ci {
-      print("Running in CI. Leaving TOOLCHAINS empty.")
-      toolchainID = ""
-    } else {
-      print("TOOLCHAINS not set.")
-      #if os(macOS)
-      print("Searching for swift-latest toolchain")
-      do {
-        toolchainID = try sh(
-          """
-          plutil \
-            -extract CFBundleIdentifier raw \
-            -o - \
-            ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-          """)
-      } catch {
-        print("Failed to locate toolchain by plist: \(error)")
-        toolchainID = ""
-      }
-      #endif
-    }
-    print("Using TOOLCHAINS=\(toolchainID)")
+    let ci = environment["CI"] != nil
+    if ci { print("Running in CI...") }
 
     let hasLLVMFileCheck: Bool
     if environment["SWIFT_MMIO_USE_SIMPLE_FILECHECK"] != nil {
@@ -114,32 +84,20 @@ struct MMIOFileCheckTests: @unchecked Sendable {
     let buildOutputs = URL(
       fileURLWithPath: try sh(
         """
-        TOOLCHAINS=\(toolchainID) swift build \
+        swift build \
           --ignore-lock \
           --configuration release \
           --package-path \(packageDirectory.path) \
           --show-bin-path
         """))
 
-    #if DEBUG
-    print("Building MMIO...")
-    _ = try sh(
-      """
-      TOOLCHAINS=\(toolchainID) swift build \
-        --ignore-lock \
-        --configuration release \
-        --package-path \(packageDirectory.path)
-      """, collectStandardOutput: false)
-    #endif
-
     return Configuration(
       hasLLVMFileCheck: hasLLVMFileCheck,
-      toolchainID: toolchainID,
       packageDirectory: packageDirectory,
       buildOutputs: buildOutputs)
   }
 
-  @Test(arguments: Self.testFiles)
+  @Test(.enabled(if: release), arguments: Self.testFiles)
   func fileCheck(testFile: URL) throws {
     let configuration = try Self.configuration
 
@@ -149,7 +107,7 @@ struct MMIOFileCheckTests: @unchecked Sendable {
 
     let compileSuccess = LLVMDiagnostic.parsingShellOutput(
       """
-      TOOLCHAINS=\(configuration.toolchainID) swiftc \
+      swiftc \
         -emit-ir \(testFile.path) \
         -o \(testOutputFile.path) \
         -O -wmo \

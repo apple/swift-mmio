@@ -58,9 +58,14 @@ let package = Package(
       dependencies: ["MMIOInterposable", "MMIOUtilities"],
       swiftSettings: [.define("FEATURE_INTERPOSABLE")]),
 
+    // Only runs in release.
     .testTarget(
       name: "MMIOFileCheckTests",
-      dependencies: ["MMIOUtilities"],
+      dependencies: [
+        // This is conceptually a build-time only dependency.
+        "MMIO",
+        "MMIOUtilities",
+      ],
       exclude: ["Tests"]),
 
     .macro(
