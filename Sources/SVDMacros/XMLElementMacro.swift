@@ -10,8 +10,8 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftSyntax
-import SwiftSyntaxMacros
 import SwiftSyntaxBuilder
+import SwiftSyntaxMacros
 
 enum XMLElementMacro: ExtensionMacro {
   static func expansion(

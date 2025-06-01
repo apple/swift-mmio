@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SVD
 import Foundation
+import SVD
 
 extension String {
   func coalescingConsecutiveSpaces() -> Self {

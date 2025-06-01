@@ -179,16 +179,16 @@ func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
 for target in package.targets {
   guard ![.system, .plugin].contains(target.type) else { continue }
 
-  target.swiftSettings = target.swiftSettings ?? [] + [
-    // Swift 6.0 - SE-335: Introduce existential any
-    .enableUpcomingFeature("ExistentialAny"),
-    // Swift 6.0 - SE-409: Access-level modifiers on import declarations
-    .enableUpcomingFeature("InternalImportsByDefault"),
-    // Swift 6.1 - SE-444: Member import visibility
-    .enableUpcomingFeature("MemberImportVisibility"),
-    // Swift 6.2 - SE-461: Run nonisolated async functions on the caller's actor by default
-    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-    // Swift 6.2 - SE-470: Global-actor isolated conformances
-    .enableUpcomingFeature("InferIsolatedConformances"),
-  ]
+  var swiftSettings = target.swiftSettings ?? []
+  // Swift 6.0 - SE-335: Introduce existential any
+  swiftSettings.append(.enableUpcomingFeature("ExistentialAny"))
+  // Swift 6.0 - SE-409: Access-level modifiers on import declarations
+  swiftSettings.append(.enableUpcomingFeature("InternalImportsByDefault"))
+  // Swift 6.1 - SE-444: Member import visibility
+  swiftSettings.append(.enableUpcomingFeature("MemberImportVisibility"))
+  // Swift 6.2 - SE-461: Run nonisolated async functions on the caller's actor by default
+  swiftSettings.append(.enableUpcomingFeature("NonisolatedNonsendingByDefault"))
+  // Swift 6.2 - SE-470: Global-actor isolated conformances
+  swiftSettings.append(.enableUpcomingFeature("InferIsolatedConformances"))
+  target.swiftSettings = swiftSettings
 }
