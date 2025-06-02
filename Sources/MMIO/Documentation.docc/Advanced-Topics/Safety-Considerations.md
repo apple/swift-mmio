@@ -44,7 +44,7 @@ Swift MMIO offers several safety layers:
     Bit field macros document intended access patterns and influence the generated API (e.g., no setter for projected `ReadOnly` fields in `Write` view).
 
 7.  **Prevention of Unintended Read-Modify-Write Cycles:**
-    - Swift MMIO's API design, particularly the ``MMIO/Register/modify(_:)-((Value.Read,Value.Write)->(T))`` method, helps prevent a common pitfall found in C-style MMIO access. In C, using a `volatile` pointer to a struct with bitfields, code like:
+    - Swift MMIO's API design, particularly the ``MMIO/Register/modify(_:)`` method, helps prevent a common pitfall found in C-style MMIO access. In C, using a `volatile` pointer to a struct with bitfields, code like:
       ```c
       // C example of potential unintended multiple RMWs
       volatile MyRegisterType* myReg = (MyRegisterType*)0x40001000;
