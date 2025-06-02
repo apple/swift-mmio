@@ -32,6 +32,7 @@ extension RegisterBlockMacro: MMIOMemberMacro {
   func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
+    conformingTo protocols: [TypeSyntax],
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] {
     // Can only applied to structs.
