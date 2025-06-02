@@ -18,6 +18,7 @@ protocol MMIOMemberMacro: MemberMacro, ParsableMacro {
   mutating func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
+    conformingTo protocols: [TypeSyntax],
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax]
 }
@@ -27,6 +28,7 @@ extension MMIOMemberMacro {
   public static func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
+    conformingTo protocols: [TypeSyntax],
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
     do {
@@ -41,6 +43,7 @@ extension MMIOMemberMacro {
       return try self.expansion(
         of: node,
         providingMembersOf: declaration,
+        conformingTo: protocols,
         in: context)
     } catch is ExpansionError {
       // Hide expansion error from user, the function which generated the error

@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.1
 
 import CompilerPluginSupport
 import PackageDescription
@@ -32,9 +32,12 @@ let package = Package(
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
       from: "1.4.0"),
+    // FIXME: Update to non-prerelease
+    // The 6.2 release is needed for `swiftlang/swift-syntax#2947` "Don’t remove
+    //#if attributes with AttributeRemover" which missed the 6.1 release.
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
-      from: "600.0.1"),
+      from: "602.0.0-prerelease-2025-05-29"),
   ],
   targets: [
     // MMIO
@@ -47,7 +50,7 @@ let package = Package(
 
     // FIXME: feature flag
     // Ideally this would be represented as MMIO + Feature: Interposable
-    // MMIOInterposable would have a dependency on MMIO with this feature
+    // MMIOInterposableTests would have a dependency on MMIO with this feature
     // enabled.
     .target(
       name: "MMIOInterposable",
@@ -178,17 +181,22 @@ func featureIsEnabled(named featureName: String, override: Bool?) -> Bool {
 // MARK: - Language Feature Flags
 for target in package.targets {
   guard ![.system, .plugin].contains(target.type) else { continue }
-
   var swiftSettings = target.swiftSettings ?? []
+
   // Swift 6.0 - SE-335: Introduce existential any
   swiftSettings.append(.enableUpcomingFeature("ExistentialAny"))
+
   // Swift 6.0 - SE-409: Access-level modifiers on import declarations
   swiftSettings.append(.enableUpcomingFeature("InternalImportsByDefault"))
+
   // Swift 6.1 - SE-444: Member import visibility
   swiftSettings.append(.enableUpcomingFeature("MemberImportVisibility"))
-  // Swift 6.2 - SE-461: Run nonisolated async functions on the caller's actor by default
+
+  // Swift 6.2 - SE-461: Run nonisolated async functions on the caller's actor
   swiftSettings.append(.enableUpcomingFeature("NonisolatedNonsendingByDefault"))
+
   // Swift 6.2 - SE-470: Global-actor isolated conformances
   swiftSettings.append(.enableUpcomingFeature("InferIsolatedConformances"))
+
   target.swiftSettings = swiftSettings
 }
