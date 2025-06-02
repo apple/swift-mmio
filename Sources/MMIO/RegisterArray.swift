@@ -30,18 +30,24 @@
 /// ## Topics
 ///
 /// ### Initializing a Register Array
-/// - ``init(unsafeAddress:stride:count:)``
-/// - ``init(unsafeAddress:stride:count:interposer:)``
+///
+/// - ``MMIO/RegisterArray/init(unsafeAddress:stride:count:)``
+///
+/// ### Instance Properties
+///
+/// - ``MMIO/RegisterArray/unsafeAddress``
+/// - ``MMIO/RegisterArray/stride``
+/// - ``MMIO/RegisterArray/count``
 ///
 /// ### Accessing Elements
-/// - ``subscript(_:)->Value``
-/// - ``subscript(_:)->Register<Value>``
 ///
-/// ### Unsafe Properties
-/// - ``unsafeAddress``
-/// - ``stride``
-/// - ``count``
-/// - ``interposer``
+/// - ``MMIO/RegisterArray/subscript(_:)->Value``
+/// - ``MMIO/RegisterArray/subscript(_:)->Register<Value>``
+///
+/// ### Interposers
+///
+/// - ``MMIO/RegisterArray/interposer``
+/// - ``MMIO/RegisterArray/init(unsafeAddress:stride:count:interposer:)``
 public struct RegisterArray<Value> {
   /// The base memory address of the first element in this array.
   public var unsafeAddress: UInt
@@ -53,48 +59,33 @@ public struct RegisterArray<Value> {
   /// The total number of elements in this array.
   public var count: UInt
 
-  #if FEATURE_INTERPOSABLE
   /// An optional interposer instance, propagated to elements accessed through
   /// this array.
-  ///
-  /// - Note: This property is only available if the `MMIO` package is compiled
-  ///   with the `FEATURE_INTERPOSABLE` Swift flag.
-  public var interposer: (any MMIOInterposer)?
+  #if !FEATURE_INTERPOSABLE
+  @available(
+    *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
+  )
   #endif
+  public var interposer: (any MMIOInterposer)? {
+    @inlinable @inline(__always) get {
+      #if FEATURE_INTERPOSABLE
+      self._interposer
+      #else
+      nil
+      #endif
+    }
+    @inlinable @inline(__always) set {
+      #if FEATURE_INTERPOSABLE
+      self._interposer = newValue
+      #endif
+    }
+  }
 
   #if FEATURE_INTERPOSABLE
-  /// Initializes a new register array with an optional interposer.
-  ///
-  /// - Precondition:
-  ///   - `unsafeAddress` must point to the beginning of a valid hardware
-  ///     register array as per the device's memory map.
-  ///   - `stride` must accurately reflect the hardware layout. For example, if
-  ///     registers are 4 bytes each and contiguous, stride is 4; if they are 4
-  ///     bytes each but located every 16 bytes, stride is 16.
-  ///   - `count` must not exceed the actual number of hardware elements in the
-  ///     array.
-  ///
-  /// - Parameters:
-  ///   - unsafeAddress: The absolute memory address of the first element in the
-  ///     array.
-  ///   - stride: The number of bytes from the start of one element to the start
-  ///     of the next (the step between elements).
-  ///   - count: The total number of elements in the array.
-  ///   - interposer: An optional ``MMIO/MMIOInterposer`` for intercepting
-  ///     memory accesses, primarily for testing.
-  @inlinable @inline(__always)
-  public init(
-    unsafeAddress: UInt,
-    stride: UInt,
-    count: UInt,
-    interposer: (any MMIOInterposer)?
-  ) {
-    self.unsafeAddress = unsafeAddress
-    self.stride = stride
-    self.count = count
-    self.interposer = interposer
-  }
-  #else
+  @usableFromInline
+  internal var _interposer: (any MMIOInterposer)?
+  #endif
+
   /// Initializes a new register array.
   ///
   /// - Precondition:
@@ -122,7 +113,43 @@ public struct RegisterArray<Value> {
     self.stride = stride
     self.count = count
   }
+
+  /// Initializes a new register array with an optional interposer.
+  ///
+  /// - Precondition:
+  ///   - `unsafeAddress` must point to the beginning of a valid hardware
+  ///     register array as per the device's memory map.
+  ///   - `stride` must accurately reflect the hardware layout. For example, if
+  ///     registers are 4 bytes each and contiguous, stride is 4; if they are 4
+  ///     bytes each but located every 16 bytes, stride is 16.
+  ///   - `count` must not exceed the actual number of hardware elements in the
+  ///     array.
+  ///
+  /// - Parameters:
+  ///   - unsafeAddress: The absolute memory address of the first element in the
+  ///     array.
+  ///   - stride: The number of bytes from the start of one element to the start
+  ///     of the next (the step between elements).
+  ///   - count: The total number of elements in the array.
+  ///   - interposer: An optional ``MMIO/MMIOInterposer`` for intercepting
+  ///     memory accesses, primarily for testing.
+  #if !FEATURE_INTERPOSABLE
+  @available(
+    *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
+  )
   #endif
+  @inlinable @inline(__always)
+  public init(
+    unsafeAddress: UInt,
+    stride: UInt,
+    count: UInt,
+    interposer: (any MMIOInterposer)?
+  ) {
+    self.unsafeAddress = unsafeAddress
+    self.stride = stride
+    self.count = count
+    self.interposer = interposer
+  }
 }
 
 extension RegisterArray where Value: RegisterValue {

@@ -26,7 +26,11 @@
 ///   conform types to it manually. Conformance is automatically provided by the
 ///   ``RegisterBlock()`` macro.
 public protocol RegisterProtocol {
-  #if FEATURE_INTERPOSABLE
+  /// Initializes a new instance of the MMIO entity.
+  ///
+  /// - Parameter unsafeAddress: The base memory address for this entity.
+  init(unsafeAddress: UInt)
+
   /// Initializes a new instance of the MMIO entity.
   ///
   /// This initializer is used when the `FEATURE_INTERPOSABLE` flag is enabled
@@ -37,11 +41,10 @@ public protocol RegisterProtocol {
   ///   - unsafeAddress: The base memory address for this entity.
   ///   - interposer: An optional ``MMIOInterposer`` to intercept
   ///     memory accesses. If `nil`, accesses go directly to hardware.
-  init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?)
-  #else
-  /// Initializes a new instance of the MMIO entity.
-  ///
-  /// - Parameter unsafeAddress: The base memory address for this entity.
-  init(unsafeAddress: UInt)
+  #if !FEATURE_INTERPOSABLE
+  @available(
+    *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
+  )
   #endif
+  init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?)
 }

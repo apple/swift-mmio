@@ -16,9 +16,12 @@
 /// ``MMIO/Register`` it redirects memory operations to the interposer's
 /// methods.
 ///
-/// - Note: Only available when compiled with the `FEATURE_INTERPOSABLE` flag.
-///
 /// For usage details, see <doc:Testing-With-Interposers>.
+#if !FEATURE_INTERPOSABLE
+@available(
+  *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
+)
+#endif
 public protocol MMIOInterposer: AnyObject {
   /// Intercepts a register read operation.
   ///

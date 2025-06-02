@@ -51,7 +51,9 @@ public macro RegisterBank(offset: Int, stride: Int, count: Int) =
 ///
 /// For a comprehensive guide on defining peripheral layouts, see
 /// <doc:Register-Blocks>.
-@attached(member, names: named(unsafeAddress), named(init), named(interposer))
+@attached(
+  member, names: named(unsafeAddress), named(init), named(interposer),
+  named(_interposer))
 @attached(extension, conformances: RegisterProtocol)
 public macro RegisterBlock() =
   #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
