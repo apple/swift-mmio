@@ -173,22 +173,42 @@ struct RegisterBlockMacroTests {
 
           let unsafeAddress: UInt
 
-          #if FEATURE_INTERPOSABLE
-          var interposer: (any MMIOInterposer)?
+          #if !FEATURE_INTERPOSABLE
+          @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
+          var interposer: (any MMIOInterposer)? {
+            @inlinable @inline(__always) get {
+              #if FEATURE_INTERPOSABLE
+              self._interposer
+              #else
+              nil
+              #endif
+            }
+            @inlinable @inline(__always) set {
+              #if FEATURE_INTERPOSABLE
+              self._interposer = newValue
+              #endif
+            }
+          }
 
           #if FEATURE_INTERPOSABLE
+          @usableFromInline
+          internal var _interposer: (any MMIOInterposer)?
+          #endif
+
+          @inlinable @inline(__always)
+          init(unsafeAddress: UInt) {
+            self.unsafeAddress = unsafeAddress
+          }
+
+          #if !FEATURE_INTERPOSABLE
+          @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
+          #endif
           @inlinable @inline(__always)
           init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
             self.unsafeAddress = unsafeAddress
             self.interposer = interposer
           }
-          #else
-          @inlinable @inline(__always)
-          init(unsafeAddress: UInt) {
-            self.unsafeAddress = unsafeAddress
-          }
-          #endif
         }
 
         extension S: RegisterProtocol {

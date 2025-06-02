@@ -48,18 +48,21 @@
 /// ### Initializing a Register
 ///
 /// - ``MMIO/Register/init(unsafeAddress:)``
-/// - ``MMIO/Register/init(unsafeAddress:interposer:)``
 ///
-/// ### Accessing Register Contents
+/// ### Instance Properties
+///
+/// - ``MMIO/Register/unsafeAddress``
+///
+/// ### Reading and Writing
 ///
 /// - ``MMIO/Register/read()``
 /// - ``MMIO/Register/write(_:)``
 /// - ``MMIO/Register/modify(_:)``
 ///
-/// ### Unsafe Properties
+/// ### Interposers
 ///
-/// - ``MMIO/Register/unsafeAddress``
 /// - ``MMIO/Register/interposer``
+/// - ``MMIO/Register/init(unsafeAddress:interposer:)``
 public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   /// The absolute memory address of this register.
   ///
@@ -78,7 +81,6 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   ///   for more details on safety.
   public var unsafeAddress: UInt
 
-  #if FEATURE_INTERPOSABLE
   /// An optional interposer instance for intercepting memory accesses,
   /// primarily for testing.
   ///
@@ -87,13 +89,31 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
   /// allows for simulating hardware behavior, tracing register accesses, or
   /// providing fixed return values during unit tests.
   ///
-  /// If this property is `nil` (the default for non-test builds or when not
-  /// specified), memory accesses performed by this `Register` instance interact
-  /// directly with hardware memory at `unsafeAddress`.
-  ///
-  /// - Note: This property is only available if the `MMIO` package is compiled
-  ///   with the `FEATURE_INTERPOSABLE` Swift flag.
-  public var interposer: (any MMIOInterposer)?
+  /// If this property is `nil` memory accesses performed by this `Register`
+  /// instance interact directly with hardware memory at `unsafeAddress`.
+  #if !FEATURE_INTERPOSABLE
+  @available(
+    *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
+  )
+  #endif
+  public var interposer: (any MMIOInterposer)? {
+    @inlinable @inline(__always) get {
+      #if FEATURE_INTERPOSABLE
+      self._interposer
+      #else
+      nil
+      #endif
+    }
+    @inlinable @inline(__always) set {
+      #if FEATURE_INTERPOSABLE
+      self._interposer = newValue
+      #endif
+    }
+  }
+
+  #if FEATURE_INTERPOSABLE
+  @usableFromInline
+  internal var _interposer: (any MMIOInterposer)?
   #endif
 
   /// Internal check to ensure the register's memory address is correctly
@@ -113,25 +133,6 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
     #endif
   }
 
-  #if FEATURE_INTERPOSABLE
-  /// Initializes a register instance targeting a specific memory address,
-  /// optionally with an interposer.
-  ///
-  /// - Precondition: `unsafeAddress` must be aligned to the natural alignment
-  ///   of the register's underlying storage type.
-  ///   alignment is for
-  ///
-  /// - Parameters:
-  ///   - unsafeAddress: The absolute memory address of the hardware register.
-  ///   - interposer: An optional ``MMIOInterposer`` to route memory
-  ///     accesses through, primarily used for testing purposes.
-  @inlinable @inline(__always)
-  public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
-    Self.preconditionAligned(unsafeAddress: unsafeAddress)
-    self.unsafeAddress = unsafeAddress
-    self.interposer = interposer
-  }
-  #else
   /// Initializes a register instance targeting a specific memory address.
   ///
   /// - Precondition: `unsafeAddress` must be aligned to the natural alignment
@@ -145,7 +146,29 @@ public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
     Self.preconditionAligned(unsafeAddress: unsafeAddress)
     self.unsafeAddress = unsafeAddress
   }
+
+  /// Initializes a register instance targeting a specific memory address,
+  /// optionally with an interposer.
+  ///
+  /// - Precondition: `unsafeAddress` must be aligned to the natural alignment
+  ///   of the register's underlying storage type.
+  ///   alignment is for
+  ///
+  /// - Parameters:
+  ///   - unsafeAddress: The absolute memory address of the hardware register.
+  ///   - interposer: An optional ``MMIOInterposer`` to route memory
+  ///     accesses through, primarily used for testing purposes.
+  #if !FEATURE_INTERPOSABLE
+  @available(
+    *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
+  )
   #endif
+  @inlinable @inline(__always)
+  public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
+    Self.preconditionAligned(unsafeAddress: unsafeAddress)
+    self.unsafeAddress = unsafeAddress
+    self.interposer = interposer
+  }
 }
 
 extension Register {
