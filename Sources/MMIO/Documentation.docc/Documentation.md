@@ -19,7 +19,7 @@ With Swift MMIO, you can:
 
 - **Define Complex Register Layouts:** Declaratively describe hardware interfaces using ``MMIO/Register(bitWidth:)`` and ``MMIO/RegisterBlock()``. See <doc:Registers> and <doc:Register-Blocks>.
 
-- **Specify Bit Fields Precisely:** Define individual bit fields, their positions, widths, and access permissions using macros like ``MMIO/ReadWrite(bits:as:)-(Range,_)``. See <doc:Registers>.
+- **Specify Bit Fields Precisely:** Define individual bit fields, their positions, widths, and access permissions using macros like ``MMIO/ReadWrite(bits:as:)``. See <doc:Registers>.
 
 - **Leverage Type Projections:** Work with bit fields as meaningful Swift types (like `Bool` or custom enums and structs) via ``MMIO/BitFieldProjectable``. See <doc:Registers>.
 
