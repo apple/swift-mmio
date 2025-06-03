@@ -6,9 +6,9 @@ Generate Swift register interfaces from SVD files from the command line.
 
 The `svd2swift` command line tool allows you to transform an SVD file into a Swift register interface. It has a variety of options for configuring generated content, including peripheral selection, indentation, and namespacing. 
 
-## Get Started
+### Get Started
 
-### Build svd2swift
+#### Build svd2swift
 
 Before using `svd2swift` you must first build it. This can be done in a couple simple steps:
 
@@ -40,7 +40,7 @@ Finally, you can optionally install `svd2swift` into a convenient location in yo
 cp $(swift build -c release --show-bin-path)/SVD2Swift ~/bin
 ```
 
-### Use the tool
+#### Use the tool
 
 Before using `svd2swift`, you need an SVD file, see <doc:SVD2Swift#Find-your-device's-SVD-file> for suggestions on how to locate the SVD file for your device. 
 
@@ -65,11 +65,11 @@ Project
 
 If you'd like to avoid manually running `svd2swift` and including generated source files in source control, see <doc:UsingSVD2SwiftPlugin> for details on running `svd2swift` as part of your build.
 
-## Option Reference
+### Option Reference
 
 `svd2swift` supports a variety of options to customize the generated code. Read on for details about each of these options.
 
-### Input
+#### Input
 
 ```console
 -i, --input <input>
@@ -77,7 +77,7 @@ If you'd like to avoid manually running `svd2swift` and including generated sour
 
 The input SVD file. Use '-' for stdin.
 
-### Output
+#### Output
 
 ```console
 -o, --output <output>
@@ -85,7 +85,7 @@ The input SVD file. Use '-' for stdin.
 
 The output directory. Use '-' for stdout.
 
-### Peripherals
+#### Peripherals
 
 ```console
 [-p, --peripherals <peripherals> ...]
@@ -95,7 +95,7 @@ The peripherals to include in the output. Skipping this option includes all peri
 
 While it may be convenient to generate Swift interfaces for all device peripherals, it can slow down the compilation of your application. Reducing the generated code to only include the peripherals your application uses can significant improve compile times.
 
-### Access Level
+#### Access Level
 
 ```console
 [--access-level <access-level>]
@@ -105,7 +105,7 @@ The access level of generated Swift types. Skipping this option omits an access 
 
 If you are generating register interfaces into a dedicated module, you will want to use `--access-level public` to ensure the types and instances are available to clients of the module.
 
-### Indentation Width
+#### Indentation Width
 
 ```console
 [--indentation-width <indentation-width>]
@@ -113,7 +113,7 @@ If you are generating register interfaces into a dedicated module, you will want
 
 The number spaces to use for indentation. This option is only applicable when '--indent-using-tabs' is not used. (default: 4)
 
-### Indent Using Tabs
+#### Indent Using Tabs
 
 ```console
 [--indent-using-tabs]
@@ -121,7 +121,7 @@ The number spaces to use for indentation. This option is only applicable when '-
 
 The indentation should use tabs.
 
-### Namespace Under Device
+#### Namespace Under Device
 
 ```console
 [--namespace-under-device]
@@ -140,7 +140,7 @@ Example diff:
 + }
 ```
 
-### Instance Member Peripherals
+#### Instance Member Peripherals
 
 ```console
 [--instance-member-peripherals]
@@ -156,7 +156,7 @@ Example diff:
 +   let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 ```
 
-### Device Name
+#### Device Name
 
 ```console
 [--device-name <device-name>]

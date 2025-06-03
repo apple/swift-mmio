@@ -2,7 +2,7 @@
 
 Build the SVD2LLDB plugin from source.
 
-## Prerequisites
+### Prerequisites
 
 Before you begin, ensure you have a modern Swift toolchain (version 5.9 or newer) and a copy of LLDB.framework with headers. 
 
@@ -10,7 +10,7 @@ Not all operating systems and Swift toolchains include LLDB.framework with heade
 
 For example, the Swift.org toolchains for macOS include LLDB.framework with headers, however the Xcode toolchains include LLDB.framework _without_ headers. Additionally, the Swift.org toolchains for Linux and Swift.org Docker containers do not include LLDB.framework at all.
 
-## Build Steps
+### Build Steps
 
 1. First, clone the `swift-mmio` repository:
 

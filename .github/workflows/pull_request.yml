@@ -50,5 +50,10 @@ jobs:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
     with:
       api_breakage_check_enabled: false  # this repo isn't API stable yet
-      docs_check_enabled: false  # too slow
+      # minimum Swift version is 6.1
+      docs_check_container_image: swift:6.1-noble
+      docs_check_additional_arguments: |
+        --enable-experimental-combined-documentation
+        --enable-experimental-overloaded-symbol-presentation
+        --symbol-graph-minimum-access-level public
       format_check_container_image: swiftlang/swift:nightly-main

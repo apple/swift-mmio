@@ -8,7 +8,7 @@ Debugging firmware can be a challenging task, often involving tedious memory add
 
 `SVD2LLDB` is an [LLDB](https://lldb.llvm.org) plugin designed to enhance your debugging experience by providing semantic access to hardware registers in debug sessions. It leverages the `SVD` library to parse CMSIS SVD files, enabling you to interact with device registers by name rather than raw memory addresses and values. 
 
-## Examples
+### Examples
 
 1. Load the SVD file corresponding to the target device:
 
@@ -59,7 +59,7 @@ Debugging firmware can be a challenging task, often involving tedious memory add
   [0:0]   EN      0x1 (Enable)
   ```
 
-## Contributions
+### Contributions
 
 Contributions and feedback are welcome! Please refer to the [Contribution Guidelines](https://github.com/apple/swift-mmio#contributing-to-swift-mmio) for more information.
 

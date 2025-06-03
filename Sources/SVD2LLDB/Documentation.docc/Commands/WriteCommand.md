@@ -8,7 +8,7 @@ The `svd write` command allows you to modify register values by name. It support
 
 > Important: `svd write` is missing support for writing fields and tracking side effects.
 
-## Syntax
+### Syntax
 
 ```console
 Write a new value to a register.
@@ -24,7 +24,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-## Examples
+### Examples
 
 1. Write the value of a register without side-effects:
 

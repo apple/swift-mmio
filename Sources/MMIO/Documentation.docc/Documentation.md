@@ -56,6 +56,10 @@ Before manually defining registers, especially for complex microcontrollers, it'
 
 While understanding the manual definition process is valuable, `SVD2Swift` should be your primary approach for generating register maps whenever SVD files are available for your target hardware. See [SVD2Swift](https://swiftpackageindex.com/apple/swift-mmio/main/documentation/svd2swift) for details.
 
+### Contributions
+
+Contributions and feedback are welcome! Please refer to the [Contribution Guidelines](https://github.com/apple/swift-mmio#contributing-to-swift-mmio) for more information.
+
 ## Topics
 
 ### Essentials

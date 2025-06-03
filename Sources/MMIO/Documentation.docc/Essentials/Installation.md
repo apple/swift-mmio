@@ -2,7 +2,7 @@
 
 Integrate Swift MMIO into your project using Swift Package Manager.
 
-## Adding Swift MMIO as a Dependency
+### Adding Swift MMIO as a Dependency
 
 1. Open your `Package.swift` file.
 
@@ -35,7 +35,7 @@ Integrate Swift MMIO into your project using Swift Package Manager.
     import MMIO
     ```
 
-## Source Stability and Versioning
+### Source Stability and Versioning
 
 Swift MMIO follows semantic versioning. While the package is in major version `0` (e.g., `0.0.x`), source stability is only guaranteed within minor versions. For example, code written for `0.0.2` is compatible with `0.0.3`, but `0.1.0` might introduce source-breaking changes.
 

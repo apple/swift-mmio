@@ -4,19 +4,13 @@ Learn how you can communicate with hardware devices.
 
 ## Overview
 
-> FIXME: "In an MMIO system" weird
-
-Memory-Mapped I/O (MMIO) is a common technique in computer architecture that enables the Central Processing Unit (CPU) to interact with hardware peripherals. In an MMIO system, the control interfaces, status indicators, and data buffers of hardware devices—such as timers, serial communication interfaces (UARTs), General-Purpose Input/Output (GPIO) controllers, and Serial Peripheral Interface (SPI) controllers—are assigned specific addresses within the CPU's main memory address space.
+Memory-Mapped I/O (MMIO) is a common technique in computer architecture that enables the Central Processing Unit (CPU) to interact with hardware peripherals. In systems with MMIO, the control interfaces, status indicators, and data buffers of hardware devices—such as timers, serial communication interfaces (UARTs), General-Purpose Input/Output (GPIO) controllers, and Serial Peripheral Interface (SPI) controllers—are assigned specific addresses within the CPU's main memory address space.
 
 This means the CPU can control and monitor hardware by reading from or writing to these special memory addresses, using the same load and store instructions it employs for accessing regular Random Access Memory (RAM). This approach contrasts with systems that use dedicated I/O instructions (often called Port-Mapped I/O).
 
 For instance, if a GPIO peripheral has a "Port Data Output Register" at memory address `0x400FF000`, the CPU could set the third pin of this port high (assuming pin 3 corresponds to bit 3 of the register) by writing the value `0x00000008` (which is binary `...00001000`) to that address.
 
-> FIXME: remove?
-
-Swift MMIO provides a safe, structured, and Swift-idiomatic way to perform these memory accesses.
-
-## Registers
+### Registers
 
 In the context of MMIO, a **register** is a small, fixed-size storage location within a hardware peripheral. Each register serves a specific purpose:
 
@@ -28,9 +22,11 @@ Registers are typically 8, 16, 32, or 64 bits wide, aligning with the processor'
 
 Swift MMIO uses the ``MMIO/Register`` macro to define the structure and properties of individual registers based on this hardware documentation.
 
-> FIXME: registers are always read/written a single continguous unit and individual fields within them cannot be mutated independently of the others. THIS isn't precise enough phrasing and is confusing.
+@Comment {
+> FIXME: registers are always read/written a single contiguous unit and individual fields within them cannot be mutated independently of the others. THIS isn't precise enough phrasing and is confusing.
+}
 
-## Bit fields
+### Bit fields
 
 A single hardware register is often subdivided into smaller **bit fields**, each controlling or representing distinct information.
 
@@ -56,7 +52,7 @@ Swift MMIO uses macros like ``MMIO/ReadWrite(bits:as:)``, ``MMIO/ReadOnly(bits:a
 
 Understanding the register map and bit fields for your microcontroller is crucial. Tools like `SVD2Swift` (part of Swift MMIO) can automate generating Swift MMIO definitions from CMSIS-SVD files.
 
-## Memory address spaces
+### Memory address spaces
 
 Microcontrollers have a memory map that specifies which address ranges correspond to RAM, flash memory (for program code), and peripheral registers. When you instantiate a peripheral block in Swift MMIO (e.g., `MyPeripheral(unsafeAddress: 0x40010000)`), you are asserting that this hardware unit is located at that specific base address in memory. All subsequent register and field accesses within `MyPeripheral` are calculated relative to this base address.
 

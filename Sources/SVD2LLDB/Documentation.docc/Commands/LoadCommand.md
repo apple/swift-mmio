@@ -8,7 +8,7 @@ The `svd load` command allows you to load a CMSIS SVD file into the current LLDB
 
 > Important: The `svd load` command must be run before any other commands.
 
-## Syntax
+### Syntax
 
 ```console
 USAGE: svd load <path>
@@ -20,7 +20,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-## Example
+### Example
 
 Load an SVD file from disk:
 
