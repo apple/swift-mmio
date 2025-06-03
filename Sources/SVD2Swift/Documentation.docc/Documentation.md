@@ -8,7 +8,7 @@ The `MMIO` library allows you to express complex register interfaces directly in
 
 Instead, the `svd2swift` and `SVD2SwiftPlugin`  tools allow you to generate a device's register interfaces using a [CMSIS](https://www.arm.com/technologies/cmsis) [SVD](https://arm-software.github.io/CMSIS_5/SVD/html/index.html) file.
 
-If you'd like to write your own tool using the SVD format, see the ``SVD`` library.
+If you'd like to write your own tool using the SVD format, see the `SVD` library.
 
 ### Get Started
 
