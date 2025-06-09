@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// A peripheral can have multiple interrupts.
 ///
 /// This entry allows the debugger to show interrupt names instead of interrupt

@@ -54,4 +54,4 @@ extension SVDDataType: Hashable {}
 
 extension SVDDataType: Sendable {}
 
-extension SVDDataType: XMLNodeInitializable {}
+extension SVDDataType: XMLElementInitializable {}

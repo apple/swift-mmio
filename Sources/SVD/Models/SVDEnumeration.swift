@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// The concept of enumerated values creates a map between unsigned integers and
 /// an identifier string.
 ///

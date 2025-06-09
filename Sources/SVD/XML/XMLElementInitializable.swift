@@ -9,49 +9,41 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
 
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
-protocol XMLNodeInitializable {
-  init(_ node: XMLNode) throws
+protocol XMLElementInitializable {
+  init(_ element: XMLElement) throws
 }
 
-extension XMLNodeInitializable
+extension XMLElementInitializable
 where Self: LosslessStringConvertible {
-  init(_ node: XMLNode) throws {
-    let stringValue = try String(node)
-    self =
-      try Self
+  init(_ element: XMLElement) throws {
+    let stringValue = try String(element)
+    self = try Self
       .init(stringValue)
       .unwrap(or: XMLError.unknownValue(stringValue))
   }
 }
 
-extension XMLNodeInitializable
+extension XMLElementInitializable
 where Self: RawRepresentable, Self.RawValue == String {
-  init(_ node: XMLNode) throws {
-    let stringValue = try String(node)
-    self =
-      try Self
+  init(_ element: XMLElement) throws {
+    let stringValue = try String(element)
+    self = try Self
       .init(rawValue: stringValue)
       .unwrap(or: XMLError.unknownValue(stringValue))
   }
 }
 
-extension String: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
-    guard let stringValue = node.stringValue else { fatalError() }
-    self = stringValue
+extension String: XMLElementInitializable {
+  init(_ element: XMLElement) throws {
+    self = element.value ?? ""
   }
 }
 
-extension Bool: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
-    let stringValue = try String(node)
+extension Bool: XMLElementInitializable {
+  init(_ element: XMLElement) throws {
+    let stringValue = try String(element)
     switch stringValue {
     case "1", "true": self = true
     case "0", "false": self = false
@@ -61,9 +53,9 @@ extension Bool: XMLNodeInitializable {
 }
 
 // scaledNonNegativeInteger: /^[+]?(0x|0X|#)?[0-9a-fA-F]+[kmgtKMGT]?$/
-extension UInt64: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
-    let stringValue = try String(node)
+extension UInt64: XMLElementInitializable {
+  init(_ element: XMLElement) throws {
+    let stringValue = try String(element)
     let parser = SVDScaledNonNegativeIntegerParser<Self>()
     guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }

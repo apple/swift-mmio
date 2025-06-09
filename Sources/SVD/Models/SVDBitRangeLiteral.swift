@@ -12,10 +12,6 @@
 import Foundation
 import MMIOUtilities
 
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// A string in the format `[<msb>:<lsb>]`.
 public struct SVDBitRangeLiteral {
   public var lsb: UInt64
@@ -46,7 +42,7 @@ extension SVDBitRangeLiteral: LosslessStringConvertible {
 
 extension SVDBitRangeLiteral: Sendable {}
 
-extension SVDBitRangeLiteral: XMLNodeInitializable {}
+extension SVDBitRangeLiteral: XMLElementInitializable {}
 
 private struct SVDBitRangeLiteralParser: ParserProtocol {
   typealias Output = (UInt64, UInt64)

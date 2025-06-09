@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// Cluster describes a sequence of neighboring registers within a peripheral.
 ///
 /// A `<cluster>` specifies the addressOffset relative to the baseAddress of the

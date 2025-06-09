@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// Define constraints for writing values to a field.
 ///
 /// You can choose between three options, which are mutually exclusive.

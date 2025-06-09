@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// Set the configuration for the Secure Attribution Unit (SAU) when they are
 /// preconfigured by HW or Firmware.
 @XMLElement
