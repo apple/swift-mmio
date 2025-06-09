@@ -9,7 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationEssentials) && canImport(FoundationXML)
+import FoundationEssentials
+import FoundationXML
+protocol NSObject {}
+#else
 import Foundation
+#endif
 
 final class XMLElementBuilder: NSObject {
   enum State {
@@ -30,10 +36,16 @@ final class XMLElementBuilder: NSObject {
 
   var state: State
 
+#if canImport(FoundationEssentials) && canImport(FoundationXML)
+  init() {
+    self.state = .initial
+  }
+#else
   override init() {
     self.state = .initial
     super.init()
   }
+#endif
 
   func start(name: String) {
     switch self.state {
