@@ -188,15 +188,15 @@ extension XMLElementBuilder: XMLParserDelegate {
 
   func parser(_ parser: XMLParser, didEndMappingPrefix prefix: String) {}
 
-  func parser(_ parser: XMLParser, foundCharacters string: String) {
+  func parser(_ parser: XMLParser, foundCharacters characters: String) {
     if let node = self.current() {
-      node.wrapped.value = string
+      node.wrapped.value = characters
     }
   }
 
   func parser(
     _ parser: XMLParser,
-    foundIgnorableWhitespace whitespaceString: String
+    foundIgnorableWhitespace whitespace: String
   ) {}
 
   func parser(
@@ -207,7 +207,7 @@ extension XMLElementBuilder: XMLParserDelegate {
 
   func parser(_ parser: XMLParser, foundComment comment: String) {}
 
-  func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {}
+  func parser(_ parser: XMLParser, foundCDATA data: Data) {}
 
   func parser(
     _ parser: XMLParser,
@@ -215,12 +215,12 @@ extension XMLElementBuilder: XMLParserDelegate {
     systemID: String?
   ) -> Data? { nil }
 
-  func parser(_ parser: XMLParser, parseErrorOccurred parseError: any Error) {
+  func parser(_ parser: XMLParser, parseErrorOccurred error: any Error) {
     self.state = .error
   }
 
   func parser(
-    _ parser: XMLParser, validationErrorOccurred validationError: any Error
+    _ parser: XMLParser, validationErrorOccurred error: any Error
   ) {
     self.state = .error
   }
