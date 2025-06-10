@@ -25,31 +25,24 @@ jobs:
           diff .swift-format .swift-format-mmio
 
   apple-cross-build:
-    name: Build / ${{ matrix.os.display }} (Xcode ${{ matrix.xcode_version }} - ${{ matrix.os.version }} - ARM64)
-    runs-on: [self-hosted, macos, "sequoia", "ARM64"]
+    name: Build / ${{ matrix.os.display }} (Xcode ${{ matrix.xcode_version }} - ${{ matrix.macos_version }} - ${{ matrix.macos_arch }})
+    runs-on: [self-hosted, macos, "${{ matrix.macos_version }}", "${{ matrix.macos_arch }}"]
     strategy:
       fail-fast: false
       matrix:
         xcode_version: ["16.3"]
         os:
-          - name: ios
-            sdk: iphoneos
-            display: iOS
-            version: "13.0"
-          - name: tvos
-            sdk: appletvos
-            display: tvOS
-            version: "13.0"
-          # https://github.com/swiftlang/swift-package-manager/issues/8796
-          # - name: xros
-          #   sdk: xros
-          #   display: visionOS
-          #   version: "1.0"
-          - name: watchos
-            sdk: watchos
-            display: watchOS
-            version: "6.0"
+          - name: iOS
+            platform: iOS
+          - name: tvOS
+            platform: tvOS
+          - name: visionOS
+            platform: xrOS
+          - name: watchOS
+            platform: watchOS
         arch: [arm64]
+        macos_version: [sequoia]
+        macos_arch: [ARM64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -58,9 +51,7 @@ jobs:
       - name: Swift version
         run: xcrun swift --version
       - name: Build / Test
-        run: |
-          triple="${{ matrix.arch }}-apple-${{ matrix.os.name }}${{ matrix.os.version }}"
-          xcrun -sdk ${{ matrix.os.sdk }} swift build --configuration release --triple "$triple"
+        run: xcodebuild build -scheme swift-mmio-Package -destination generic/platform=${{ matrix.os.platform }}
         timeout-minutes: 60
 
   tests:
