@@ -19,7 +19,8 @@ extension XMLElementInitializable
 where Self: LosslessStringConvertible {
   init(_ element: XMLElement) throws {
     let stringValue = try String(element)
-    self = try Self
+    self =
+      try Self
       .init(stringValue)
       .unwrap(or: XMLError.unknownValue(stringValue))
   }
@@ -29,7 +30,8 @@ extension XMLElementInitializable
 where Self: RawRepresentable, Self.RawValue == String {
   init(_ element: XMLElement) throws {
     let stringValue = try String(element)
-    self = try Self
+    self =
+      try Self
       .init(rawValue: stringValue)
       .unwrap(or: XMLError.unknownValue(stringValue))
   }

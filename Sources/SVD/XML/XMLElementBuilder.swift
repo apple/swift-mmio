@@ -36,16 +36,16 @@ final class XMLElementBuilder: NSObject {
 
   var state: State
 
-#if canImport(FoundationEssentials) && canImport(FoundationXML)
+  #if canImport(FoundationEssentials) && canImport(FoundationXML)
   init() {
     self.state = .initial
   }
-#else
+  #else
   override init() {
     self.state = .initial
     super.init()
   }
-#endif
+  #endif
 
   func start(name: String) {
     switch self.state {
