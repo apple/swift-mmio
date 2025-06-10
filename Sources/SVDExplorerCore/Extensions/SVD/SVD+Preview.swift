@@ -14,7 +14,7 @@ import Foundation
 
 extension SVDDocument {
   static let preview: Self = {
-    let url = Bundle.main.url(forResource: "ARM_Sample", withExtension: "svd")!
+    let url = Bundle.module.url(forResource: "ARM_Sample", withExtension: "svd")!
     let data = try! Data(contentsOf: url)
     return try! SVDDocument(data: data)
   }()

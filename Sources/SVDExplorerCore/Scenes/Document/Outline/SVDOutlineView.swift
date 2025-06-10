@@ -22,3 +22,8 @@ struct SVDOutlineItemView: View {
     .listItemTint(self.keyPathComponent.kind.imageColor)
   }
 }
+
+#Preview {
+  SVDOutlineItemView(keyPathComponent: .device("foo"))
+    .frame(width: 300, height: 60)
+}

@@ -148,7 +148,8 @@ let package = Package(
 
     .target(
       name: "SVDExplorerCore",
-      dependencies: ["MMIOUtilities", "SVD"]),
+      dependencies: ["MMIOUtilities", "SVD"],
+      resources: [.copy("ARM_Sample.svd")]),
 
     .macro(
       name: "SVDMacros",
