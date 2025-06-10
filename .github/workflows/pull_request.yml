@@ -25,22 +25,31 @@ jobs:
           diff .swift-format .swift-format-mmio
 
   apple-cross-build:
-    name: Build / ${{ matrix.os.name }} (Xcode ${{ matrix.xcode_version }} - ${{ matrix.os.version }} - ARM64)
+    name: Build / ${{ matrix.os.display }} (Xcode ${{ matrix.xcode_version }} - ${{ matrix.os.version }} - ARM64)
     runs-on: [self-hosted, macos, "sequoia", "ARM64"]
     strategy:
       fail-fast: false
       matrix:
         xcode_version: ["16.3"]
         os:
-          - name: "iOS"
+          - name: ios
+            sdk: iphoneos
+            display: iOS
             version: "13.0"
-          - name: "tvOS"
+          - name: tvos
+            sdk: appletvos
+            display: tvOS
             version: "13.0"
-          - name: "visionOS"
-            version: "1.0"
-          - name: "watchOS"
+          # https://github.com/swiftlang/swift-package-manager/issues/8796
+          # - name: xros
+          #   sdk: xros
+          #   display: visionOS
+          #   version: "1.0"
+          - name: watchos
+            sdk: watchos
+            display: watchOS
             version: "6.0"
-        arch: ["arm64"]
+        arch: [arm64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -50,10 +59,8 @@ jobs:
         run: xcrun swift --version
       - name: Build / Test
         run: |
-          set -ex
           triple="${{ matrix.arch }}-apple-${{ matrix.os.name }}${{ matrix.os.version }}"
-          triple=$(echo "$triple" | tr '[:upper:]' '[:lower:]')
-          xcrun swift build --configuration release --triple "$triple"
+          xcrun -sdk ${{ matrix.os.sdk }} swift build --configuration release --triple "$triple"
         timeout-minutes: 60
 
   tests:
