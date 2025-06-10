@@ -12,10 +12,6 @@
 import Foundation
 import MMIOUtilities
 
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// The version format is rNpM (N,M = [0 - 99]).
 public struct SVDCPURevision {
   public var revision: UInt64
@@ -73,7 +69,7 @@ extension SVDCPURevision: LosslessStringConvertible {
 
 extension SVDCPURevision: Sendable {}
 
-extension SVDCPURevision: XMLNodeInitializable {}
+extension SVDCPURevision: XMLElementInitializable {}
 
 private struct SVDCPURevisionParser: ParserProtocol {
   typealias Output = (UInt64, UInt64)

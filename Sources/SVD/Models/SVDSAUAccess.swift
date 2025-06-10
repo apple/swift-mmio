@@ -26,4 +26,4 @@ extension SVDSAUAccess: Hashable {}
 
 extension SVDSAUAccess: Sendable {}
 
-extension SVDSAUAccess: XMLNodeInitializable {}
+extension SVDSAUAccess: XMLElementInitializable {}

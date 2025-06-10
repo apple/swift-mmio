@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// Access rights.
 public enum SVDAccess {
   /// Read access is permitted. Write operations have an undefined result.
@@ -43,8 +37,8 @@ extension SVDAccess: Hashable {}
 
 extension SVDAccess: Sendable {}
 
-extension SVDAccess: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
+extension SVDAccess: XMLElementInitializable {
+  init(_ node: XMLElement) throws {
     let stringValue = try String(node)
     switch stringValue {
     case "read-only": self = .readOnly

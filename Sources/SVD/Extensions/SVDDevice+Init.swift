@@ -12,21 +12,14 @@
 public import Foundation
 import MMIOUtilities
 
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 struct SVDDecodingError: Error, CustomStringConvertible {
   var description: String
 }
 
 extension SVDDevice {
   public init(data: Data) throws {
-    let document = try XMLDocument(data: data)
-    let root =
-      try document
-      .rootElement()
+    let root = try XMLElementBuilder.build(data: data)
       .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
-    try self.init(root)
+    try self.init(root.wrapped)
   }
 }

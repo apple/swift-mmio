@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// A bit-field has a name that is unique within the register.
 ///
 /// The position and size within the register can be described in two ways:

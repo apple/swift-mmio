@@ -26,4 +26,4 @@ extension SVDEnumerationUsage: Hashable {}
 
 extension SVDEnumerationUsage: Sendable {}
 
-extension SVDEnumerationUsage: XMLNodeInitializable {}
+extension SVDEnumerationUsage: XMLElementInitializable {}

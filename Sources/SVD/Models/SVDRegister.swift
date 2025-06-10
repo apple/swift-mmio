@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 @XMLElement
 public struct SVDRegister {
   /// Specify the register name from which to inherit data.

@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 @XMLElement
 public struct SVDWriteConstraintWriteAsRead {
   public var writeAsRead: Bool

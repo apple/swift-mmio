@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 public enum SVDAddressBlockUsage: String {
   case registers
   case buffer
@@ -31,8 +25,8 @@ extension SVDAddressBlockUsage: Hashable {}
 
 extension SVDAddressBlockUsage: Sendable {}
 
-extension SVDAddressBlockUsage: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
+extension SVDAddressBlockUsage: XMLElementInitializable {
+  init(_ node: XMLElement) throws {
     let stringValue = try String(node)
     switch stringValue {
     case Self.registers.rawValue: self = .registers

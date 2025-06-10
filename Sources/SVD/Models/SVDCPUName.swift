@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 public enum SVDCPUName {
   /// Arm Cortex-M0
   case armCortexM0
@@ -149,4 +143,4 @@ extension SVDCPUName: LosslessStringConvertible {
 
 extension SVDCPUName: Sendable {}
 
-extension SVDCPUName: XMLNodeInitializable {}
+extension SVDCPUName: XMLElementInitializable {}

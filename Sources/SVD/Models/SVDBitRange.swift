@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 public enum SVDBitRange {
   case lsbMsb(SVDBitRangeLsbMsb)
   case offsetWidth(SVDBitRangeOffsetWidth)

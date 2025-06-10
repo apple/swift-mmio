@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 @XMLElement
 public struct SVDRegisterProperties {
   /// Defines the default bit-width of any register contained in the device

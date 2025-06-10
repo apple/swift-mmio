@@ -12,10 +12,6 @@
 import Foundation
 import MMIOUtilities
 
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// literal format: `[+]?(((0x|0X)[0-9a-fA-F]+)|([0-9]+)|((#|0b)[01xX]+))`.
 public struct SVDEnumerationCaseDataValueValue {
   public var value: UInt64
@@ -53,8 +49,8 @@ extension SVDEnumerationCaseDataValueValue: Hashable {}
 
 extension SVDEnumerationCaseDataValueValue: Sendable {}
 
-extension SVDEnumerationCaseDataValueValue: XMLNodeInitializable {
-  init(_ node: XMLNode) throws {
+extension SVDEnumerationCaseDataValueValue: XMLElementInitializable {
+  init(_ node: XMLElement) throws {
     let stringValue = try String(node)
     let parser = SVDEnumerationCaseDataValueValueParser<UInt64>()
     guard let value = parser.parseAll(stringValue)

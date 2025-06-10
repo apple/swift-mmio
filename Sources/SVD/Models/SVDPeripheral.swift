@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// Each peripheral describes all registers belonging to that peripheral.
 ///
 /// - The address range allocated by a peripheral is defined through one or more

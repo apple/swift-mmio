@@ -14,11 +14,7 @@ import SVD
 
 extension String {
   func coalescingConsecutiveSpaces() -> Self {
-    if #available(macOS 13.0, *) {
-      self.replacing(#/  +/#, with: " ")
-    } else {
-      self.split(separator: " ").joined(separator: " ")
-    }
+    self.split(separator: " ").joined(separator: " ")
   }
 
   func removingUnsafeCharacters() -> Self {

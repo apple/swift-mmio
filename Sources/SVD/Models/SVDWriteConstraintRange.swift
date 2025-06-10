@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 @XMLElement
 public struct SVDWriteConstraintRange {
   public var minimum: UInt64

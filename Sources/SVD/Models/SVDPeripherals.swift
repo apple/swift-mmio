@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 /// All peripherals of a device are enclosed within the tag `<peripherals>`.
 @XMLElement
 public struct SVDPeripherals {

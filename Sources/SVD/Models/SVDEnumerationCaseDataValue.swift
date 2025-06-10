@@ -12,10 +12,6 @@
 import Foundation
 import MMIOUtilities
 
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
-
 @XMLElement
 public struct SVDEnumerationCaseDataValue {
   public var value: SVDEnumerationCaseDataValueValue
