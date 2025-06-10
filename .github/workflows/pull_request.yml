@@ -25,7 +25,7 @@ jobs:
           diff .swift-format .swift-format-mmio
 
   apple-cross-build:
-    name: Build / ${{ matrix.os.display }} (Xcode ${{ matrix.xcode_version }} - ${{ matrix.macos_version }} - ${{ matrix.macos_arch }})
+    name: Build / ${{ matrix.os.name }} (Xcode ${{ matrix.xcode_version }} - ${{ matrix.macos_version }} - ${{ matrix.macos_arch }})
     runs-on: [self-hosted, macos, "${{ matrix.macos_version }}", "${{ matrix.macos_arch }}"]
     strategy:
       fail-fast: false
