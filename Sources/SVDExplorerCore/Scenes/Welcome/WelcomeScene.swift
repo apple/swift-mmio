@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import SwiftUI
 
 struct WelcomeScene: Scene {
@@ -32,3 +33,4 @@ struct WelcomeScene: Scene {
     .windowResizability(.contentSize)
   }
 }
+#endif

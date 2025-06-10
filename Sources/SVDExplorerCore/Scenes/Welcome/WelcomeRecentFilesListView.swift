@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import SwiftUI
 
 struct WelcomeRecentFilesListView: View {
@@ -66,3 +67,4 @@ struct WelcomeRecentFilesListView: View {
 #Preview {
   WelcomeRecentFilesListView()
 }
+#endif

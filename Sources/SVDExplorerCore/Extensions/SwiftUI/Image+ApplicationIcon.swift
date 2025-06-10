@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import AppKit
 import SwiftUI
 
@@ -18,3 +19,19 @@ extension Image {
     Image(nsImage: NSApp.applicationIconImage)
   }
 }
+#else
+import UIKit
+import SwiftUI
+
+extension Image {
+  @MainActor
+  static var applicationIcon: Image {
+    let iconsDictionary = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any]
+    let primaryIconsDictionary = iconsDictionary?["CFBundlePrimaryIcon"] as? [String: Any]
+    let iconFiles = primaryIconsDictionary?["CFBundleIconFiles"] as? [String]
+    let iconName = iconFiles?.last ?? ""
+
+    return Image(uiImage: UIImage(named: iconName) ?? UIImage())
+  }
+}
+#endif

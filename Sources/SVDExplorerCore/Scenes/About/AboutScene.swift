@@ -13,14 +13,18 @@ import SwiftUI
 
 struct AboutScene: Scene {
   var body: some Scene {
-    Window("About SVD Explorer", id: "about") {
+    WindowGroup("About SVD Explorer", id: "about") {
       AboutView()
         .toolbar(removing: .title)
+        #if os(macOS)
         .toolbarBackground(.hidden, for: .windowToolbar)
         .containerBackground(.thickMaterial, for: .window)
         .windowMinimizeBehavior(.disabled)
+        #endif
     }
+    #if os(macOS)
     .windowResizability(.contentSize)
     .restorationBehavior(.disabled)
+    #endif
   }
 }

@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import AppKit
 
 extension NSWindow {
@@ -18,3 +19,4 @@ extension NSWindow {
     self.standardWindowButton(.zoomButton)?.isHidden = true
   }
 }
+#endif

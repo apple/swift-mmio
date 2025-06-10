@@ -35,7 +35,9 @@ struct ItemDetailScene: Scene {
         .frame(height: 440)
         .toolbar(removing: .title)
     }
+    #if os(macOS)
     .windowStyle(.hiddenTitleBar)
     .windowResizability(.contentSize)
+    #endif
   }
 }

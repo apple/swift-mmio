@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import SwiftUI
 
 struct WelcomeRecentFileView: View {
@@ -54,3 +55,4 @@ struct WelcomeRecentFileView: View {
 #Preview {
   WelcomeRecentFileView(file: URL(fileURLWithPath: #filePath))
 }
+#endif

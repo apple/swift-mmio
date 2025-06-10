@@ -14,10 +14,10 @@ public import SwiftUI
 
 public struct SVDExplorerApp: App {
   public var body: some Scene {
-    WelcomeScene()
+    DocumentGroupLaunchScene("SVD Explorer")
     SVDDocumentScene()
     DecoderScene()
-    //    ItemDetailScene()
+    // ItemDetailScene()
     AboutScene()
   }
 

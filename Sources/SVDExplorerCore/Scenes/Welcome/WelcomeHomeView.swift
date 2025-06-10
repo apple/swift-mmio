@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import AppKit
 import SwiftUI
 
 struct WelcomeHomeView: View {

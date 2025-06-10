@@ -62,5 +62,7 @@ struct DecoderControlBarView: View {
     base: $base,
     model: previewModel
   )
+  #if os(macOS)
   .containerBackground(.thickMaterial, for: .window)
+  #endif
 }

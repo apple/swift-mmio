@@ -7,7 +7,7 @@ let package = Package(
   name: "swift-mmio",
   platforms: [
     .macOS(.v15),
-    .iOS(.v13),
+    .iOS(.v18),
     .tvOS(.v13),
     .watchOS(.v6),
     .macCatalyst(.v13),

@@ -17,15 +17,19 @@ struct DecoderScene: Scene {
       if let model = $0.wrappedValue {
         DecoderView(model: model)
           .edgesIgnoringSafeArea(.top)
+          #if os(macOS)
           .containerBackground(.ultraThickMaterial, for: .window)
+          #endif
       } else {
         BegoneView()
       }
     }
+    #if os(macOS)
     .windowStyle(.hiddenTitleBar)
     // FIXME: this seems like a hack
     .defaultSize(width: 10, height: 10)
     // FIXME: this doesn't work
     .windowIdealSize(.fitToContent)
+    #endif
   }
 }

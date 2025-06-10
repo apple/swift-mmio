@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
 import SwiftUI
 
 struct WelcomeView: View {
@@ -26,3 +27,4 @@ struct WelcomeView: View {
 #Preview {
   WelcomeView()
 }
+#endif

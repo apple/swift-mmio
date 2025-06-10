@@ -12,5 +12,11 @@
 import SwiftUI
 
 extension Color {
-  static let tertiary = Self(nsColor: .tertiarySystemFill)
+  static var tertiary: Color {
+    #if os(macOS)
+    return Color(nsColor: NSColor.tertiarySystemFill)
+    #else
+    return Color(UIColor.tertiarySystemFill)
+    #endif
+  }
 }
