@@ -50,6 +50,7 @@ jobs:
         run: xcrun swift --version
       - name: Build / Test
         run: |
+          set -ex
           triple="${{ matrix.arch }}-apple-${{ matrix.os.name }}${{ matrix.os.version }}"
           triple=$(echo "$triple" | tr '[:upper:]' '[:lower:]')
           xcrun swift build --configuration release --triple "$triple"
