@@ -20,3 +20,10 @@ struct SVDOutlineListView: View {
     }
   }
 }
+
+#Preview {
+  @Previewable @State var selection: Set<SVDKeyPath> = []
+
+  let item = SVDOutlineItem(device: .preview, keyPath: .empty)
+  SVDOutlineListView(root: item, selection: $selection)
+}

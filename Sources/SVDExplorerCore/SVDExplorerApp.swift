@@ -14,7 +14,11 @@ public import SwiftUI
 
 public struct SVDExplorerApp: App {
   public var body: some Scene {
+    #if os(macOS)
+    WelcomeScene()
+    #else
     DocumentGroupLaunchScene("SVD Explorer")
+    #endif
     SVDDocumentScene()
     DecoderScene()
     // ItemDetailScene()

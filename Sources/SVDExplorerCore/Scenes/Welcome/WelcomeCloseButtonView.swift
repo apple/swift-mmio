@@ -12,8 +12,13 @@
 import SwiftUI
 
 struct WelcomeCloseButtonView: View {
+  #if os(macOS)
+  static let defaultColor = Color(.secondaryLabelColor)
+  static let hoveredColor = Color(.tertiaryLabelColor)
+  #else
   static let defaultColor = Color(.secondaryLabel)
   static let hoveredColor = Color(.tertiaryLabel)
+  #endif
 
   @Environment(\.dismissWindow) var dismissWindow
   @State var hovered: Bool = false
