@@ -32,14 +32,14 @@ jobs:
       matrix:
         xcode_version: ["16.3"]
         os:
-        - name: "iOS"
-          version: "13.0"
-        - name: "tvOS"
-          version: "13.0"
-        - name: "visionOS"
-          version: "1.0"
-        - name: "watchOS"
-          version: "6.0"
+          - name: "iOS"
+            version: "13.0"
+          - name: "tvOS"
+            version: "13.0"
+          - name: "visionOS"
+            version: "1.0"
+          - name: "watchOS"
+            version: "6.0"
         arch: ["arm64"]
     steps:
       - name: Checkout repository
@@ -51,7 +51,8 @@ jobs:
       - name: Build / Test
         run: |
           triple="${{ matrix.arch }}-apple-${{ matrix.os.name }}${{ matrix.os.version }}"
-          xcrun swift build --configuration release --triple ${triple,,}
+          triple=$(echo "$triple" | tr '[:upper:]' '[:lower:]')
+          xcrun swift build --configuration release --triple "$triple"
         timeout-minutes: 60
 
   tests:
