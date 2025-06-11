@@ -12,7 +12,7 @@
 import MMIOUtilities
 
 struct XMLElement {
-  var children: [Arc<XMLElement>]
+  var children: [XMLElement]
   var attributes: [String: String]
   var name: String
   var value: String?
@@ -52,7 +52,7 @@ extension XMLElement: CustomStringConvertible {
     if !self.children.isEmpty {
       result += "\(nextIndent)children: [\n"
       for child in self.children {
-        result += child.wrapped.formattedDescription(indent: nextIndent + "  ")
+        result += child.formattedDescription(indent: nextIndent + "  ")
         result += ",\n"
       }
       result += "\(nextIndent)]\n"
@@ -100,8 +100,8 @@ extension XMLElement {
     fromChild name: String
   ) throws -> T? where T: XMLElementInitializable {
     try self.children
-      .first { $0.wrapped.name == name }
-      .flatMap { $0.wrapped }
+      .first { $0.name == name }
+      .flatMap { $0 }
       .map(T.init)
   }
 
@@ -120,8 +120,8 @@ extension XMLElement {
   ) throws -> [T]? where T: XMLElementInitializable {
     try self.children
       .lazy
-      .filter { $0.wrapped.name == name }
-      .compactMap { $0.wrapped }
+      .filter { $0.name == name }
+      .compactMap { $0 }
       .map(T.init)
   }
 }
