@@ -107,10 +107,17 @@ let package = Package(
     // SVD
     .target(
       name: "SVD",
-      dependencies: ["MMIOUtilities", "SVDMacros"]),
+      dependencies: ["MMIOUtilities", "SVDMacros", "XML"]),
     .testTarget(
       name: "SVDTests",
       dependencies: ["MMIOUtilities", "SVD"]),
+
+    .target(
+      name: "SVDPerf",
+      resources: [.copy("MIMXRT1062.svd")]),
+    .testTarget(
+      name: "SVDPerfTests",
+      dependencies: ["SVD", "SVDPerf"]),
 
     .target(name: "CLLDB"),
     .target(
@@ -161,6 +168,9 @@ let package = Package(
         .product(
           name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
       ]),
+
+    // XML
+    .target(name: "XML")
   ],
   cxxLanguageStandard: .cxx11)
 

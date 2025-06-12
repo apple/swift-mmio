@@ -12,19 +12,10 @@
 import MMIOUtilities
 
 struct XMLElement {
-  var children: [XMLElement]
-  var attributes: [String: String]
   var name: String
+  var attributes: [String: String]
   var value: String?
-}
-
-extension XMLElement {
-  init(name: String) {
-    self.children = []
-    self.attributes = [:]
-    self.name = name
-    self.value = nil
-  }
+  var children: [XMLElement]
 }
 
 extension XMLElement: CustomStringConvertible {
@@ -142,7 +133,7 @@ extension XMLElement {
     fromAttribute name: String
   ) throws -> T? where T: XMLElementInitializable {
     try self.attributes[name]
-      .map { XMLElement(children: [], attributes: [:], name: "", value: $0) }
+      .map { XMLElement(name: "", attributes: [:], value: $0, children: []) }
       .map(T.init)
   }
 }

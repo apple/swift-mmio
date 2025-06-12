@@ -18,7 +18,7 @@ struct SVDDecodingError: Error, CustomStringConvertible {
 
 extension SVDDevice {
   public init(data: Data) throws {
-    let root = try XMLElementBuilder.build(data: data)
+    let root = try XMLParser2.build(data: data)
       .unwrap(or: SVDDecodingError(description: "Missing root XML element"))
     try self.init(root)
   }
