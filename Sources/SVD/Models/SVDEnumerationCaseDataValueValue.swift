@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
+public import XML
 
 /// literal format: `[+]?(((0x|0X)[0-9a-fA-F]+)|([0-9]+)|((#|0b)[01xX]+))`.
 public struct SVDEnumerationCaseDataValueValue {
@@ -50,8 +50,8 @@ extension SVDEnumerationCaseDataValueValue: Hashable {}
 extension SVDEnumerationCaseDataValueValue: Sendable {}
 
 extension SVDEnumerationCaseDataValueValue: XMLElementInitializable {
-  init(_ node: XMLElement) throws {
-    let stringValue = try String(node)
+  public init(_ element: borrowing XMLElement) throws {
+    let stringValue = try String(element)
     let parser = SVDEnumerationCaseDataValueValueParser<UInt64>()
     guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }

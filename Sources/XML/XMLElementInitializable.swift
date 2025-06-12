@@ -11,13 +11,13 @@
 
 import MMIOUtilities
 
-protocol XMLElementInitializable {
-  init(_ element: XMLElement) throws
+public protocol XMLElementInitializable {
+  init(_ element: borrowing XMLElement) throws
 }
 
 extension XMLElementInitializable
 where Self: LosslessStringConvertible {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     let stringValue = try String(element)
     self =
       try Self
@@ -28,7 +28,7 @@ where Self: LosslessStringConvertible {
 
 extension XMLElementInitializable
 where Self: RawRepresentable, Self.RawValue == String {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     let stringValue = try String(element)
     self =
       try Self
@@ -38,13 +38,13 @@ where Self: RawRepresentable, Self.RawValue == String {
 }
 
 extension String: XMLElementInitializable {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     self = element.value ?? ""
   }
 }
 
 extension Bool: XMLElementInitializable {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     let stringValue = try String(element)
     switch stringValue {
     case "1", "true": self = true
@@ -56,7 +56,7 @@ extension Bool: XMLElementInitializable {
 
 // scaledNonNegativeInteger: /^[+]?(0x|0X|#)?[0-9a-fA-F]+[kmgtKMGT]?$/
 extension UInt64: XMLElementInitializable {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     let stringValue = try String(element)
     let parser = SVDScaledNonNegativeIntegerParser<Self>()
     guard let value = parser.parseAll(stringValue)

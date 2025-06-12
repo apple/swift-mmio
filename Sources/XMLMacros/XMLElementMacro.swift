@@ -23,7 +23,7 @@ enum XMLElementMacro: ExtensionMacro {
   ) throws -> [ExtensionDeclSyntax] {
     var `extension` = """
       extension \(type.trimmed): XMLElementInitializable {
-        init(_ element: XMLElement) throws {
+        public init(_ element: borrowing XMLElement) throws {
 
       """
 
@@ -48,17 +48,17 @@ enum XMLElementMacro: ExtensionMacro {
 
       if xmlAttribute {
         `extension` += """
-          self.\(name) = try element.decode(fromAttribute: "\(name)")
+              self.\(name) = try element.decode(fromAttribute: "\(name)")
 
           """
       } else if xmlInlineElement {
         `extension` += """
-          self.\(name) = try element.decode()
+              self.\(name) = try element.decode()
 
           """
       } else {
         `extension` += """
-          self.\(name) = try element.decode(fromChild: "\(name)")
+              self.\(name) = try element.decode(fromChild: "\(name)")
 
           """
       }

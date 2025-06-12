@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Define the regions of the Secure Attribution Unit (SAU).
 ///
 /// The protection level is inherited from the attribute

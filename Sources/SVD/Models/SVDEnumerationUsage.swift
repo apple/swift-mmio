@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Specifies what access types an enumeratedValues set is associated with.
 public enum SVDEnumerationUsage: String {
   case read

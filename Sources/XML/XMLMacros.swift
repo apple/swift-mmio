@@ -9,10 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-enum XMLError: Error {
-  case missingValue(name: String)
-  case unknownValue(String)
-  case unknownElement(XMLElement)
-}
+@attached(peer)
+public macro XMLAttribute() =
+  #externalMacro(module: "XMLMacros", type: "XMLMarkerMacro")
 
-extension XMLError: @unchecked Sendable {}
+@attached(
+  extension, names: named(init(_:)), conformances: XMLElementInitializable)
+public macro XMLElement() =
+  #externalMacro(module: "XMLMacros", type: "XMLElementMacro")
+
+@attached(peer)
+public macro XMLInlineElement() =
+  #externalMacro(module: "XMLMacros", type: "XMLMarkerMacro")

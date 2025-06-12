@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
+public import XML
 
 /// A string in the format `[<msb>:<lsb>]`.
 public struct SVDBitRangeLiteral {

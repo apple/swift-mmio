@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Access rights.
 public enum SVDAccess {
   /// Read access is permitted. Write operations have an undefined result.
@@ -38,8 +40,8 @@ extension SVDAccess: Hashable {}
 extension SVDAccess: Sendable {}
 
 extension SVDAccess: XMLElementInitializable {
-  init(_ node: XMLElement) throws {
-    let stringValue = try String(node)
+  public init(_ element: borrowing XMLElement) throws {
+    let stringValue = try String(element)
     switch stringValue {
     case "read-only": self = .readOnly
     case "write-only": self = .writeOnly

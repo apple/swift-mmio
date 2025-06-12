@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// The concept of enumerated values creates a map between unsigned integers and
 /// an identifier string.
 ///

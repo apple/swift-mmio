@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// All peripherals of a device are enclosed within the tag `<peripherals>`.
 @XMLElement
 public struct SVDPeripherals {

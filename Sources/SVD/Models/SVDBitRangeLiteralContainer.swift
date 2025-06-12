@@ -9,8 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-import MMIOUtilities
+public import XML
 
 @XMLElement
 public struct SVDBitRangeLiteralContainer {

@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import MMIOUtilities
+public import XML
 
 /// The version format is rNpM (N,M = [0 - 99]).
 public struct SVDCPURevision {
@@ -80,6 +80,6 @@ private struct SVDCPURevisionParser: ParserProtocol {
     .take(SwiftIntegerParser<UInt64>())
 
   func parse(_ input: inout Input) -> Output? {
-    parser.parse(&input)
+    self.parser.parse(&input)
   }
 }

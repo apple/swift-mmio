@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// An enumeratedValue defines a map between an unsigned integer and a string.
 @XMLElement
 public struct SVDEnumerationCase {

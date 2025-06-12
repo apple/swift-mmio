@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 public enum SVDDataType: String {
   /// Unsigned byte.
   case uint8 = "uint8_t"

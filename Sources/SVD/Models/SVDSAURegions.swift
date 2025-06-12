@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Set the configuration for the Secure Attribution Unit (SAU) when they are
 /// preconfigured by HW or Firmware.
 @XMLElement

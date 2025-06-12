@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 public enum SVDSAUAccess: String {
   /// Secure callable.
   case secureCallable = "c"
