@@ -107,7 +107,7 @@ let package = Package(
     // SVD
     .target(
       name: "SVD",
-      dependencies: ["MMIOUtilities", "SVDMacros"]),
+      dependencies: ["MMIOUtilities", "XML"]),
     .testTarget(
       name: "SVDTests",
       dependencies: ["MMIOUtilities", "SVD"]),
@@ -145,17 +145,24 @@ let package = Package(
       dependencies: ["MMIO"],
       plugins: ["SVD2SwiftPlugin"]),
 
+    // XML
+    .target(
+      name: "XML",
+      dependencies: ["MMIOUtilities", "XMLCore", "XMLMacros"]),
+
+    .target(name: "XMLCore"),
+
     .macro(
-      name: "SVDMacros",
+      name: "XMLMacros",
       dependencies: [
         .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
       ]),
     .testTarget(
-      name: "SVDMacrosTests",
+      name: "XMLMacrosTests",
       dependencies: [
-        "SVDMacros",
+        "XMLMacros",
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
         .product(

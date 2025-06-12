@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 public enum SVDCPUEndianness: String {
   /// Little endian memory (least significant byte gets allocated at the
   /// lowest address).

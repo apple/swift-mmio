@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 @XMLElement
 public struct SVDRegisterProperties {
   /// Defines the default bit-width of any register contained in the device

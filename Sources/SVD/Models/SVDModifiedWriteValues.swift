@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Describe the manipulation of data written to a field.
 public enum SVDModifiedWriteValues: String {
   /// Write data bit of one shall clear (set to zero) the corresponding bit in

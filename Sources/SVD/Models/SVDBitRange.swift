@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 public enum SVDBitRange {
   case lsbMsb(SVDBitRangeLsbMsb)
   case offsetWidth(SVDBitRangeOffsetWidth)
@@ -26,7 +28,7 @@ extension SVDBitRange: Hashable {}
 extension SVDBitRange: Sendable {}
 
 extension SVDBitRange: XMLElementInitializable {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     if let value = try? SVDBitRangeLsbMsb(element) {
       self = .lsbMsb(value)
     } else if let value = try? SVDBitRangeOffsetWidth(element) {
@@ -34,7 +36,7 @@ extension SVDBitRange: XMLElementInitializable {
     } else if let value = try? SVDBitRangeLiteralContainer(element) {
       self = .literal(value)
     } else {
-      throw XMLError.unknownElement(element)
+      throw XMLError.unknownElement(element.description)
     }
   }
 }

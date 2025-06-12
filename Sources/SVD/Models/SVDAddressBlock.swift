@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Specify an address range uniquely mapped to this peripheral.
 ///
 /// A peripheral must have at least one address block. If a peripheral is

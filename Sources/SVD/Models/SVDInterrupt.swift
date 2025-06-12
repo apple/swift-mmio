@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// A peripheral can have multiple interrupts.
 ///
 /// This entry allows the debugger to show interrupt names instead of interrupt

@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Grouping element to define bit-field properties of a register.
 @XMLElement
 public struct SVDFields {

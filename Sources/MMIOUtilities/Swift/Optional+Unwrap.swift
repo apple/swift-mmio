@@ -39,7 +39,7 @@ extension OptionalUnwrappingError: CustomStringConvertible {
 
 extension OptionalUnwrappingError: Error {}
 
-extension Optional {
+extension Optional where Wrapped: ~Copyable {
   /// Unwraps an Optional value, throwing an error if the value is nil.
   ///
   /// - Parameters:
@@ -47,7 +47,7 @@ extension Optional {
   ///   - line: The line number at which the unwrapping occurs.
   /// - Throws: An `OptionalUnwrappingError` if the value is nil.
   /// - Returns: The unwrapped value.
-  public func unwrap(
+  public consuming func unwrap(
     file: StaticString = #file,
     line: UInt = #line
   ) throws(OptionalUnwrappingError) -> Wrapped {
@@ -62,7 +62,7 @@ extension Optional {
   /// - Parameter error: The error to throw if the value is nil.
   /// - Throws: The specified error if the value is nil.
   /// - Returns: The unwrapped value.
-  public func unwrap<E>(
+  public consuming func unwrap<E>(
     or error: E
   ) throws(E) -> Wrapped where E: Error {
     guard let self = self else { throw error }

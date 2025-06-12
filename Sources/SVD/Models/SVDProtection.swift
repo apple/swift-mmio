@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Specify the security privilege to access an address region.
 ///
 /// This information is relevant for the programmer as well as the debugger when

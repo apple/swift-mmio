@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 public enum SVDCPUName {
   /// Arm Cortex-M0
   case armCortexM0

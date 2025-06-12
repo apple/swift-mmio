@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Side effects of a read.
 public enum SVDReadAction: String {
   /// The field is cleared (set to zero) following a read operation.

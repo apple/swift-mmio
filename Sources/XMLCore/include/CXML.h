@@ -9,15 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-@attached(peer)
-macro XMLAttribute() =
-  #externalMacro(module: "SVDMacros", type: "XMLMarkerMacro")
+#pragma once
 
-@attached(
-  extension, names: named(init(_:)), conformances: XMLElementInitializable)
-macro XMLElement() =
-  #externalMacro(module: "SVDMacros", type: "XMLElementMacro")
-
-@attached(peer)
-macro XMLInlineElement() =
-  #externalMacro(module: "SVDMacros", type: "XMLMarkerMacro")
+#include "../expat.h"

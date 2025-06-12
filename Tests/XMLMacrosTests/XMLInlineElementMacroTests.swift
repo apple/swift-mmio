@@ -13,7 +13,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import Testing
 
-@testable import SVDMacros
+@testable import XMLMacros
 
 struct XMLInlineElementMacroTests {
   static let macros: [String: any SendableMacro.Type] = [

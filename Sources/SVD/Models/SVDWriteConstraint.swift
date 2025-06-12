@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 /// Define constraints for writing values to a field.
 ///
 /// You can choose between three options, which are mutually exclusive.
@@ -35,7 +37,7 @@ extension SVDWriteConstraint: Hashable {}
 extension SVDWriteConstraint: Sendable {}
 
 extension SVDWriteConstraint: XMLElementInitializable {
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     if let value = try? element.decode(
       SVDWriteConstraintWriteAsRead.self, fromChild: "writeAsRead")
     {
@@ -49,7 +51,7 @@ extension SVDWriteConstraint: XMLElementInitializable {
     {
       self = .range(value)
     } else {
-      throw XMLError.unknownElement(element)
+      throw XMLError.unknownElement(element.description)
     }
   }
 }

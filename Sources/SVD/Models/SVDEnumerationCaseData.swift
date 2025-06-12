@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 public enum SVDEnumerationCaseData {
   case value(SVDEnumerationCaseDataValue)
   case isDefault(SVDEnumerationCaseDataDefault)
@@ -25,13 +27,13 @@ extension SVDEnumerationCaseData: XMLElementInitializable {
     .isDefault(.init(isDefault: true))
   }
 
-  init(_ element: XMLElement) throws {
+  public init(_ element: borrowing XMLElement) throws {
     if let value = try? SVDEnumerationCaseDataValue(element) {
       self = .value(value)
     } else if let value = try? SVDEnumerationCaseDataDefault(element) {
       self = .isDefault(value)
     } else {
-      throw XMLError.unknownElement(element)
+      throw XMLError.unknownElement(element.description)
     }
   }
 }

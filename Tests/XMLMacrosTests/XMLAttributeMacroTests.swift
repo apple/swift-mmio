@@ -13,41 +13,25 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import Testing
 
-@testable import SVDMacros
+@testable import XMLMacros
 
-struct XMLElementMacroTests {
+struct XMLAttributeMacroTests {
   static let macros: [String: any SendableMacro.Type] = [
-    "XMLAttribute": XMLMarkerMacro.self,
-    "XMLElement": XMLElementMacro.self,
-    "XMLInlineElement": XMLMarkerMacro.self,
+    "XMLAttribute": XMLMarkerMacro.self
   ]
   static let indentationWidth = Trivia.spaces(2)
 
-  @Test func extensionMacro_generatesXMLElementInitializableConformance() {
+  @Test func peerMacro_generatesNoPeers() {
     assertMacroExpansion(
       """
-      @XMLElement
       struct S {
-        var v0: V0
         @XMLAttribute
-        var v1: V1
-        @XMLInlineElement
-        var v2: V2
+        var v: V
       }
       """,
       expandedSource: """
         struct S {
-          var v0: V0
-          var v1: V1
-          var v2: V2
-        }
-
-        extension S: XMLElementInitializable {
-          init(_ element: XMLElement) throws {
-            self.v0 = try element.decode(fromChild: "v0")
-            self.v1 = try element.decode(fromAttribute: "v1")
-            self.v2 = try element.decode()
-          }
+          var v: V
         }
         """,
       macros: Self.macros,

@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 @XMLElement
 public struct SVDEnumerationCaseDataDefault {
   public var isDefault: Bool

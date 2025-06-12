@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 @XMLElement
 public struct SVDWriteConstraintWriteAsRead {
   public var writeAsRead: Bool

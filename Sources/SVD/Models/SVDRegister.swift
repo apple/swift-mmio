@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 @XMLElement
 public struct SVDRegister {
   /// Specify the register name from which to inherit data.

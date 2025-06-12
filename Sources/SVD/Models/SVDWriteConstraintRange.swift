@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 @XMLElement
 public struct SVDWriteConstraintRange {
   public var minimum: UInt64

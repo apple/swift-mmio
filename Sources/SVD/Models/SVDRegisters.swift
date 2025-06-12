@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import XML
+
 // FIXME: This should be an enum or have a reference to an example SVD file
 /// All registers of a peripheral are enclosed between the `<registers>` opening
 /// and closing tags.

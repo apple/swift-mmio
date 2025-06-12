@@ -9,30 +9,21 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIOUtilities
+public import MMIOUtilities
 
-struct XMLElement {
-  var children: [XMLElement]
-  var attributes: [String: String]
-  var name: String
-  var value: String?
+public struct XMLElement: ~Copyable {
+  public var name: String
+  public var attributes: OwnedArray<(String, String)>
+  public var value: String?
+  public var children: OwnedArray<XMLElement>
 }
 
 extension XMLElement {
-  init(name: String) {
-    self.children = []
-    self.attributes = [:]
-    self.name = name
-    self.value = nil
-  }
-}
-
-extension XMLElement: CustomStringConvertible {
-  var description: String {
+  public var description: String {
     self.formattedDescription(indent: "")
   }
 
-  private func formattedDescription(indent: String) -> String {
+  func formattedDescription(indent: String) -> String {
     let nextIndent = indent + "  "
     var result = "\(indent){\n"
     result += "\(nextIndent)name: \"\(name)\",\n"
@@ -43,16 +34,18 @@ extension XMLElement: CustomStringConvertible {
 
     if !self.attributes.isEmpty {
       result += "\(nextIndent)attributes: {\n"
-      for (key, val) in self.attributes {
-        result += "\(nextIndent)  \"\(key)\": \"\(val)\",\n"
+      for index in self.attributes.indices {
+        let (key, value) = self.attributes[index]
+        result += "\(nextIndent)  \"\(key)\": \"\(value)\",\n"
       }
       result += "\(nextIndent)},\n"
     }
 
     if !self.children.isEmpty {
       result += "\(nextIndent)children: [\n"
-      for child in self.children {
-        result += child.formattedDescription(indent: nextIndent + "  ")
+      for child in self.children.indices {
+        result += self.children[child]
+          .formattedDescription(indent: nextIndent + "  ")
         result += ",\n"
       }
       result += "\(nextIndent)]\n"
@@ -65,7 +58,7 @@ extension XMLElement: CustomStringConvertible {
 
 // Support for @XMLInlineElement
 extension XMLElement {
-  func decode<T>(
+  public func decode<T>(
     _: T.Type = T.self
   ) throws -> T where T: XMLElementInitializable {
     try self
@@ -73,7 +66,7 @@ extension XMLElement {
       .unwrap()
   }
 
-  func decode<T>(
+  public func decode<T>(
     _: T?.Type = T?.self
   ) throws -> T? where T: XMLElementInitializable {
     do {
@@ -86,7 +79,7 @@ extension XMLElement {
 
 // Support for @XMLChild
 extension XMLElement {
-  func decode<T>(
+  public func decode<T>(
     _: T.Type = T.self,
     fromChild name: String
   ) throws -> T where T: XMLElementInitializable {
@@ -95,17 +88,18 @@ extension XMLElement {
       .unwrap(or: XMLError.missingValue(name: name))
   }
 
-  func decode<T>(
+  public func decode<T>(
     _: T?.Type = T?.self,
     fromChild name: String
   ) throws -> T? where T: XMLElementInitializable {
-    try self.children
-      .first { $0.name == name }
-      .flatMap { $0 }
-      .map(T.init)
+    for index in self.children.indices {
+      guard self.children[index].name == name else { continue }
+      return try T(self.children[index])
+    }
+    return nil
   }
 
-  func decode<T>(
+  public func decode<T>(
     _: [T].Type = [T].self,
     fromChild name: String
   ) throws -> [T] where T: XMLElementInitializable {
@@ -114,21 +108,23 @@ extension XMLElement {
       .unwrap(or: XMLError.missingValue(name: name))
   }
 
-  func decode<T>(
+  public func decode<T>(
     _: [T]?.Type = [T]?.self,
     fromChild name: String
   ) throws -> [T]? where T: XMLElementInitializable {
-    try self.children
-      .lazy
-      .filter { $0.name == name }
-      .compactMap { $0 }
-      .map(T.init)
+    var values: [T] = []
+    for index in self.children.indices {
+      guard self.children[index].name == name else { continue }
+      let value = try T(self.children[index])
+      values.append(value)
+    }
+    return values
   }
 }
 
 // Support for @XMLAttribute
 extension XMLElement {
-  func decode<T>(
+  public func decode<T>(
     _: T.Type = T.self,
     fromAttribute name: String
   ) throws -> T where T: XMLElementInitializable {
@@ -137,12 +133,18 @@ extension XMLElement {
       .unwrap(or: XMLError.missingValue(name: name))
   }
 
-  func decode<T>(
+  public func decode<T>(
     _: T?.Type = T?.self,
     fromAttribute name: String
   ) throws -> T? where T: XMLElementInitializable {
-    try self.attributes[name]
-      .map { XMLElement(children: [], attributes: [:], name: "", value: $0) }
-      .map(T.init)
+    for index in self.attributes.indices {
+      let (key, value) = self.attributes[index]
+      guard key == name else { continue }
+      let element = XMLElement(
+        name: "", attributes: OwnedArray(), value: value, children: OwnedArray()
+      )
+      return try T(element)
+    }
+    return nil
   }
 }

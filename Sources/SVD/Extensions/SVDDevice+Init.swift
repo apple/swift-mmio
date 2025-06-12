@@ -11,6 +11,7 @@
 
 public import Foundation
 import MMIOUtilities
+import XML
 
 struct SVDDecodingError: Error, CustomStringConvertible {
   var description: String
