@@ -12,7 +12,7 @@
 enum XMLError: Error {
   case missingValue(name: String)
   case unknownValue(String)
-  case unknownElement(XMLElement)
+  case unknownElement(String)
 }
 
 extension XMLError: @unchecked Sendable {}

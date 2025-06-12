@@ -50,8 +50,8 @@ extension SVDEnumerationCaseDataValueValue: Hashable {}
 extension SVDEnumerationCaseDataValueValue: Sendable {}
 
 extension SVDEnumerationCaseDataValueValue: XMLElementInitializable {
-  init(_ node: XMLElement) throws {
-    let stringValue = try String(node)
+  init(_ element: borrowing XMLElement) throws {
+    let stringValue = try String(element)
     let parser = SVDEnumerationCaseDataValueValueParser<UInt64>()
     guard let value = parser.parseAll(stringValue)
     else { throw XMLError.unknownValue(stringValue) }

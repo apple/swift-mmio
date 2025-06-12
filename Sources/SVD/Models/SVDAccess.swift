@@ -38,8 +38,8 @@ extension SVDAccess: Hashable {}
 extension SVDAccess: Sendable {}
 
 extension SVDAccess: XMLElementInitializable {
-  init(_ node: XMLElement) throws {
-    let stringValue = try String(node)
+  init(_ element: borrowing XMLElement) throws {
+    let stringValue = try String(element)
     switch stringValue {
     case "read-only": self = .readOnly
     case "write-only": self = .writeOnly

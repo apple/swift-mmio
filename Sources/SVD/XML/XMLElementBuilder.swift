@@ -11,17 +11,72 @@
 
 import XML
 
-#if canImport(FoundationEssentials) && canImport(FoundationXML)
+#if canImport(FoundationEssentials)
 import FoundationEssentials
-import FoundationXML
-protocol NSObject {}
 #else
 import Foundation
 #endif
 
+struct OwnedArray<Element: ~Copyable>: ~Copyable {
+  var buffer: UnsafeMutableBufferPointer<Element>?
+  var capacity: Int { self.buffer?.count ?? 0 }
+  var count: Int
+  var isEmpty: Bool { self.count == 0 }
+  var indices: Range<Int> { 0..<self.count }
+
+  init() {
+    self.buffer = nil
+    self.count = 0
+  }
+
+  deinit {
+    self.buffer?.extracting(..<self.count).deinitialize()
+    self.buffer?.deallocate()
+  }
+
+  subscript(_ index: Int) -> Element {
+    _read {
+      guard index < self.count else {
+        fatalError("Index out of range")
+      }
+      yield self.buffer![index]
+    }
+    _modify {
+      guard index < self.count else {
+        fatalError("Index out of range")
+      }
+      yield &self.buffer![index]
+    }
+  }
+
+  
+
+  mutating func push(_ value: consuming Element) {
+    if self.count == self.capacity {
+      if let oldBuffer = self.buffer {
+        let newBuffer = UnsafeMutableBufferPointer<Element>.allocate(capacity: oldBuffer.count * 2)
+        _ = newBuffer.moveInitialize(fromContentsOf: oldBuffer)
+        oldBuffer.deallocate()
+        self.buffer = newBuffer
+      } else {
+        self.buffer = .allocate(capacity: 4)
+      }
+    }
+    self.buffer?.initializeElement(at: self.count, to: value)
+    self.count += 1
+  }
+
+  mutating func pop() -> Element? {
+    guard self.count > 0 else { return nil }
+    let element = self.buffer?.moveElement(from: self.count - 1)
+    self.count -= 1
+    return element
+  }
+}
+
 enum BuilderState: ~Copyable {
   case initial
-  case parsing(stack: [XMLElement])
+  case parsing(stack: OwnedArray<XMLElement>)
   case error
   case complete(root: XMLElement)
 
@@ -39,12 +94,17 @@ enum BuilderState: ~Copyable {
   }
 
   mutating func start(name: String, attributes: [String: String]) {
-    let node = XMLElement(name: name, attributes: attributes, children: [])
+    let node = XMLElement(
+      name: name,
+      attributes: attributes,
+      children: OwnedArray())
     switch consume self {
     case .initial:
-      self = .parsing(stack: [node])
+      var stack = OwnedArray<XMLElement>()
+      stack.push(node)
+      self = .parsing(stack: stack)
     case .parsing(var stack):
-      stack.append(node)
+      stack.push(node)
       self = .parsing(stack: stack)
     case .error:
       self = .error
@@ -76,12 +136,11 @@ enum BuilderState: ~Copyable {
     case .initial:
       self = .error
     case .parsing(var stack):
-      if let node = stack.last, node.name == name {
-        stack.removeLast()
+      if let node = stack.pop(), node.name == name {
         if stack.isEmpty {
           self = .complete(root: node)
         } else {
-          stack[stack.count - 1].children.append(node)
+          stack[stack.count - 1].children.push(node)
           self = .parsing(stack: stack)
         }
       } else {
@@ -114,12 +173,11 @@ enum BuilderState: ~Copyable {
 
 struct XMLParser2 {
   static func build(data: Data) -> XMLElement? {
-    // Create the expat parser
     let parser = XML_ParserCreate("UTF-8")
     defer { XML_ParserFree(parser) }
 
     var state: BuilderState = .initial
-    withUnsafeMutablePointer(to: &state) { statePointer in
+    return withUnsafeMutablePointer(to: &state) { statePointer in
       XML_SetUserData(parser, statePointer)
       defer { XML_SetUserData(parser, nil) }
 
@@ -130,23 +188,17 @@ struct XMLParser2 {
       let result0 = data.withUnsafeBytes { bytes in
         XML_Parse(parser, bytes.baseAddress, Int32(bytes.count), Int32(XML_FALSE))
       }
-      print("HELLO")
-      statePointer.pointee.dump()
       if result0 == XML_STATUS_ERROR {
         statePointer.pointee = .error
       }
 
       let result1 = XML_Parse(parser, nil, 0, Int32(XML_TRUE))
-      print("WORLD")
-      statePointer.pointee.dump()
-      if result1 != XML_STATUS_ERROR {
+      if result1 == XML_STATUS_ERROR {
         statePointer.pointee = .error
       }
-    }
 
-    print("POST")
-    state.dump()
-    return state.result()
+      return statePointer.pointee.result()
+    }
   }
 }
 
@@ -182,11 +234,19 @@ fileprivate func characterDataHandler(
 ) {
   guard let _context, let _characters else { return }
   let context = _context.bindMemory(to: BuilderState.self, capacity: 1)
-  let characters = UnsafeBufferPointer(start: _characters, count: Int(_count))
-  characters.withMemoryRebound(to: UInt8.self) { buffer in
-    let characters = String(decoding: buffer, as: UTF8.self)
-    context.pointee.characters(text: characters)
+  let count = Int(_count)
+  let buffer = UnsafeBufferPointer(start: _characters, count: count)
+  let characters = buffer.withMemoryRebound(to: UInt8.self) { input in
+    String(unsafeUninitializedCapacity: characters.count) { output in
+      output.initialize(fromContentsOf: input)
+    }
+
+
+
+//    let characters = String(decoding: buffer, as: UTF8.self)
+//    context.pointee.characters(text: characters)
   }
+  context.pointee.characters(text: characters)
 }
 
 fileprivate func endElementHandler(
@@ -198,59 +258,3 @@ fileprivate func endElementHandler(
   let name = String(cString: _name)
   context.pointee.end(name: name)
 }
-
-//final class XMLElementBuilder: NSObject {
-//  static func build(data: Data) -> XMLElement? {
-//    let parser = XMLParser(data: data)
-//    let builder = XMLElementBuilder()
-//    // parser.delegate = builder
-//    guard parser.parse() else { return nil }
-//    return builder.state.result()
-//  }
-//
-//  var state: BuilderState
-//
-//  #if canImport(FoundationEssentials) && canImport(FoundationXML)
-//  init() {
-//    self.state = .initial
-//  }
-//  #else
-//  override init() {
-//    self.state = .initial
-//    super.init()
-//  }
-//  #endif
-//}
-//
-//extension XMLElementBuilder: XMLParserDelegate {
-//  func parser(
-//    _ parser: XMLParser,
-//    didStartElement elementName: String,
-//    namespaceURI: String?,
-//    qualifiedName qName: String?,
-//    attributes attributeDict: [String: String]
-//  ) {
-//    self.state.start(name: elementName, attributes: attributeDict)
-//  }
-//
-//  func parser(
-//    _ parser: XMLParser,
-//    didEndElement elementName: String,
-//    namespaceURI: String?,
-//    qualifiedName qName: String?
-//  ) {
-//    self.state.end(name: elementName)
-//  }
-//
-//  func parser(_ parser: XMLParser, foundCharacters characters: String) {
-//    self.state.characters(text: characters)
-//  }
-//
-//  func parser(_ parser: XMLParser, parseErrorOccurred error: any Error) {
-//    self.state = .error
-//  }
-//
-//  func parser(_ parser: XMLParser, validationErrorOccurred error: any Error) {
-//    self.state = .error
-//  }
-//}

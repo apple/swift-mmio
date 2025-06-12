@@ -11,14 +11,14 @@
 
 import MMIOUtilities
 
-struct XMLElement {
+struct XMLElement: ~Copyable {
   var name: String
   var attributes: [String: String]
   var value: String?
-  var children: [XMLElement]
+  var children: OwnedArray<XMLElement>
 }
 
-extension XMLElement: CustomStringConvertible {
+extension XMLElement {
   var description: String {
     self.formattedDescription(indent: "")
   }
@@ -42,8 +42,9 @@ extension XMLElement: CustomStringConvertible {
 
     if !self.children.isEmpty {
       result += "\(nextIndent)children: [\n"
-      for child in self.children {
-        result += child.formattedDescription(indent: nextIndent + "  ")
+      for child in self.children.indices {
+        result += self.children[child]
+          .formattedDescription(indent: nextIndent + "  ")
         result += ",\n"
       }
       result += "\(nextIndent)]\n"
@@ -90,10 +91,11 @@ extension XMLElement {
     _: T?.Type = T?.self,
     fromChild name: String
   ) throws -> T? where T: XMLElementInitializable {
-    try self.children
-      .first { $0.name == name }
-      .flatMap { $0 }
-      .map(T.init)
+    for index in self.children.indices {
+      guard self.children[index].name == name else { continue }
+      return try T(self.children[index])
+    }
+    return nil
   }
 
   func decode<T>(
@@ -109,11 +111,13 @@ extension XMLElement {
     _: [T]?.Type = [T]?.self,
     fromChild name: String
   ) throws -> [T]? where T: XMLElementInitializable {
-    try self.children
-      .lazy
-      .filter { $0.name == name }
-      .compactMap { $0 }
-      .map(T.init)
+    var values = [T]()
+    for index in self.children.indices {
+      guard self.children[index].name == name else { continue }
+      let value = try T(self.children[index])
+      values.append(value)
+    }
+    return values
   }
 }
 
@@ -132,8 +136,8 @@ extension XMLElement {
     _: T?.Type = T?.self,
     fromAttribute name: String
   ) throws -> T? where T: XMLElementInitializable {
-    try self.attributes[name]
-      .map { XMLElement(name: "", attributes: [:], value: $0, children: []) }
-      .map(T.init)
+    guard let attribute = self.attributes[name] else { return nil }
+    let element = XMLElement(name: "", attributes: [:], value: attribute, children: OwnedArray())
+    return try T(element)
   }
 }

@@ -23,7 +23,7 @@ enum XMLElementMacro: ExtensionMacro {
   ) throws -> [ExtensionDeclSyntax] {
     var `extension` = """
       extension \(type.trimmed): XMLElementInitializable {
-        init(_ element: XMLElement) throws {
+        init(_ element: borrowing XMLElement) throws {
 
       """
 

@@ -26,8 +26,8 @@ extension SVDAddressBlockUsage: Hashable {}
 extension SVDAddressBlockUsage: Sendable {}
 
 extension SVDAddressBlockUsage: XMLElementInitializable {
-  init(_ node: XMLElement) throws {
-    let stringValue = try String(node)
+  init(_ element: borrowing XMLElement) throws {
+    let stringValue = try String(element)
     switch stringValue {
     case Self.registers.rawValue: self = .registers
     case Self.buffer.rawValue: self = .buffer
