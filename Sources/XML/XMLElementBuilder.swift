@@ -9,11 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+public import Foundation
 import MMIOUtilities
 import XMLCore
-public import Foundation
 
-fileprivate typealias State = XMLElementBuilderState
+private typealias State = XMLElementBuilderState
 
 public struct XMLElementBuilder {
   public static func build(data: Data) -> XMLElement? {

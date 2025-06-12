@@ -30,16 +30,16 @@ public struct OwnedArray<Element: ~Copyable>: ~Copyable {
 
   public subscript(_ index: Int) -> Element {
     _read {
-      guard index < self.count else {
+      guard let buffer = self.buffer, index < self.count else {
         fatalError("Index out of range")
       }
-      yield self.buffer![index]
+      yield buffer[index]
     }
     _modify {
-      guard index < self.count else {
+      guard let buffer = self.buffer, index < self.count else {
         fatalError("Index out of range")
       }
-      yield &self.buffer![index]
+      yield &buffer[index]
     }
   }
 
