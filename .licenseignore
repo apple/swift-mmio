@@ -3,3 +3,4 @@ Makefile
 Package.swift
 Package.resolved
 *.svd
+Sources/XMLCore

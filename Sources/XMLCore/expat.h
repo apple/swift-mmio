@@ -248,7 +248,7 @@ XML_ParserCreate(const XML_Char *encoding);
    If a namespace separator is chosen that can be part of a URI or
    part of an XML name, splitting an expanded name back into its
    1, 2 or 3 original parts on application level in the element handler
-   may end up vulnerable, so these are advised against;  sane choices for
+   may end up vulnerable, so these are advised against;  sound choices for
    a namespace separator are e.g. '\n' (line feed) and '|' (pipe).
 
    Note that Expat does not validate namespace URIs (beyond encoding)
