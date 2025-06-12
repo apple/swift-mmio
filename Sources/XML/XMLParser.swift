@@ -13,14 +13,21 @@ public import Foundation
 import MMIOUtilities
 import XMLCore
 
-private typealias State = XMLElementBuilderState
+private typealias State = XMLParserState
 
-public struct XMLElementBuilder {
-  public static func build(data: Data) -> XMLElement? {
+public enum XMLParser {
+  public static func parse<Value>(
+    _ : Value.Type = Value.self,
+    data: Data
+  ) throws -> Value where Value: _XMLParsable {
     let parser = XML_ParserCreate("UTF-8")
     defer { XML_ParserFree(parser) }
 
-    var state: State = .initial
+    var state = State(stack: [
+      ((type: Value.self, partial: Value._buildPartial()), current: "")
+    ])
+
+//    var state: State = .initial
     return withUnsafeMutablePointer(to: &state) { statePointer in
       XML_SetUserData(parser, statePointer)
       defer { XML_SetUserData(parser, nil) }
@@ -33,16 +40,26 @@ public struct XMLElementBuilder {
         XML_Parse(
           parser, bytes.baseAddress, Int32(bytes.count), Int32(XML_FALSE))
       }
+      print(result0)
       if result0 == XML_STATUS_ERROR {
-        statePointer.pointee = .error
+        let errorCode = XML_GetErrorCode(parser)
+        let errorMessage = XML_ErrorString(errorCode).map { String(cString: $0) } ?? "Unknown error"
+        let line = XML_GetCurrentLineNumber(parser)
+        let column = XML_GetCurrentColumnNumber(parser)
+        fatalError("Expat error: \(errorMessage) at line \(line), column \(column)")
       }
 
       let result1 = XML_Parse(parser, nil, 0, Int32(XML_TRUE))
       if result1 == XML_STATUS_ERROR {
-        statePointer.pointee = .error
+        let errorCode = XML_GetErrorCode(parser)
+        let errorMessage = XML_ErrorString(errorCode).map { String(cString: $0) } ?? "Unknown error"
+        let line = XML_GetCurrentLineNumber(parser)
+        let column = XML_GetCurrentColumnNumber(parser)
+        fatalError("Expat error: \(errorMessage) at line \(line), column \(column)")
       }
 
-      return statePointer.pointee.result()
+      fatalError()
+//      return statePointer.pointee.result()
     }
   }
 }
@@ -54,22 +71,23 @@ private func startElementHandler(
 ) {
   guard let _context, let _name else { return }
   let context = _context.bindMemory(to: State.self, capacity: 1)
-  let name = String(cString: _name)
+  context.pointee.start(name: _name)
 
-  var attributes = OwnedArray<(String, String)>()
-  var _attributes = _attributes
-  while true {
-    guard let _key = _attributes?.pointee else { break }
-    _attributes = _attributes?.advanced(by: 1)
-    guard let _value = _attributes?.pointee else { break }
-    _attributes = _attributes?.advanced(by: 1)
 
-    let key = String(cString: _key)
-    let value = String(cString: _value)
-    attributes.push((key, value))
-  }
 
-  context.pointee.start(name: name, attributes: attributes)
+//  var attributes = OwnedArray<(String, String)>()
+//  var _attributes = _attributes
+//  while true {
+//    guard let _key = _attributes?.pointee else { break }
+//    _attributes = _attributes?.advanced(by: 1)
+//    guard let _value = _attributes?.pointee else { break }
+//    _attributes = _attributes?.advanced(by: 1)
+//
+//    let key = String(cString: _key)
+//    let value = String(cString: _value)
+//    attributes.push((key, value))
+//  }
+//  context.pointee.start(name: name, attributes: attributes)
 }
 
 private func characterDataHandler(
@@ -87,7 +105,7 @@ private func characterDataHandler(
   guard !buffer.allSatisfy(\.isWhiteSpace) else { return }
 
   let characters = String(decoding: buffer, as: UTF8.self)
-  context.pointee.characters(text: characters)
+//  context.pointee.characters(text: characters)
 }
 
 private func endElementHandler(
@@ -96,6 +114,5 @@ private func endElementHandler(
 ) {
   guard let _context, let _name else { return }
   let context = _context.bindMemory(to: State.self, capacity: 1)
-  let name = String(cString: _name)
-  context.pointee.end(name: name)
+  context.pointee.end(name: _name)
 }

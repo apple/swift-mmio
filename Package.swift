@@ -27,6 +27,9 @@ let package = Package(
       name: "SVD2Swift",
       targets: ["SVD2Swift"]),
     .plugin(name: "SVD2SwiftPlugin", targets: ["SVD2SwiftPlugin"]),
+
+    // XML
+    .executable(name: "XMLTest", targets: ["XMLTest"]),
   ],
   dependencies: [
     .package(
@@ -112,6 +115,13 @@ let package = Package(
       name: "SVDTests",
       dependencies: ["MMIOUtilities", "SVD"]),
 
+    .target(
+      name: "SVDPerf",
+      resources: [.copy("MIMXRT1062.svd")]),
+    .testTarget(
+      name: "SVDPerfTests",
+      dependencies: ["SVD", "SVDPerf"]),
+
     .target(name: "CLLDB"),
     .target(
       name: "SVD2LLDB",
@@ -146,6 +156,11 @@ let package = Package(
       plugins: ["SVD2SwiftPlugin"]),
 
     // XML
+    .executableTarget(
+      name: "XMLTest",
+      dependencies: ["XML"],
+      resources: [.copy("ARM_sample.svd")]),
+
     .target(
       name: "XML",
       dependencies: ["MMIOUtilities", "XMLCore", "XMLMacros"]),

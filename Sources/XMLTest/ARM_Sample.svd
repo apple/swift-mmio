@@ -11,20 +11,19 @@
  -->
  
 <device schemaVersion="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_0.xsd" >
-  <name>ARMCM3xxx</name>                                          <!-- name of part or part series -->
-  <version>1.0</version>                                          <!-- version of this description -->
+  <test_a>askdjaskl</test_a>
+  <!--
+  <name>ARMCM3xxx</name>
+  <version>1.0</version>
   <description>ARM 32-bit Cortex-M3 Microcontroller based device, CPU clock up to 80MHz, etc. </description>
-  <addressUnitBits>8</addressUnitBits>                            <!-- byte addressable memory -->
-  <width>32</width>                                               <!-- bus width is 32 bits -->
-  <!-- default settings implicitly inherited by subsequent sections -->
-  <size>32</size>                                                 <!-- this is the default size (number of bits) of all peripherals
-                                                                       and register that do not define "size" themselves -->
-  <access>read-write</access>                                     <!-- default access permission for all subsequent registers -->
-  <resetValue>0x00000000</resetValue>                             <!-- by default all bits of the registers are initialized to 0 on reset -->
-  <resetMask>0xFFFFFFFF</resetMask>                               <!-- by default all 32Bits of the registers are used -->
+  <addressUnitBits>8</addressUnitBits>
+  <width>32</width>
+  <size>32</size>
+  <access>read-write</access>
+  <resetValue>0x00000000</resetValue>
+  <resetMask>0xFFFFFFFF</resetMask>
 
   <peripherals>
-    <!-- Timer 0 -->
     <peripheral>
       <name>TIMER0</name>
       <version>1.0</version>
@@ -46,7 +45,6 @@
       </interrupt>
 
       <registers>
-      <!-- CR: Control Register -->
         <register>
           <name>CR</name>
           <description>Control Register</description>
@@ -57,7 +55,6 @@
           <resetMask>0x1337F7F</resetMask>
 
           <fields>
-            <!-- EN: Enable -->
             <field>
               <name>EN</name>
               <description>Enable</description>
@@ -77,7 +74,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- RST: Reset -->
             <field>
               <name>RST</name>
               <description>Reset Timer</description>
@@ -97,7 +93,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- CNT: Counting Direction -->
             <field>
               <name>CNT</name>
               <description>Counting direction</description>
@@ -122,7 +117,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- MODE: Operation Mode -->
             <field>
               <name>MODE</name>
               <description>Operation Mode</description>
@@ -157,7 +151,7 @@
               </enumeratedValues>
             </field>
 
-            <!-- PSC: Use Prescaler -->
+
             <field>
               <name>PSC</name>
               <description>Use Prescaler</description>
@@ -177,7 +171,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- CNTSRC: Timer / Counter Soruce Divider -->
             <field>
               <name>CNTSRC</name>
               <description>Timer / Counter Source Divider</description>
@@ -232,7 +225,7 @@
               </enumeratedValues>
             </field>
 
-            <!-- CAPSRC: Timer / COunter Capture Source -->
+
             <field>
               <name>CAPSRC</name>
               <description>Timer / Counter Capture Source</description>
@@ -322,7 +315,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- CAPEDGE: Capture Edge -->
             <field>
               <name>CAPEDGE</name>
               <description>Capture Edge, select which Edge should result in a counter increment or decrement</description>
@@ -347,7 +339,7 @@
               </enumeratedValues>
             </field>
 
-            <!-- TRGEXT: Triggers an other Peripheral -->
+
             <field>
               <name>TRGEXT</name>
               <description>Triggers an other Peripheral</description>
@@ -377,7 +369,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- Reload: Selects Reload Register n -->
             <field>
               <name>RELOAD</name>
               <description>Select RELOAD Register n to reload Timer on condition</description>
@@ -407,7 +398,7 @@
               </enumeratedValues>
             </field>
 
-            <!-- IDR: Inc or dec Reload Register Selection -->
+
             <field>
               <name>IDR</name>
               <description>Selects, if Reload Register number is incremented, decremented or not modified</description>
@@ -432,7 +423,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- START: Starts / Stops the Timer/Counter -->
             <field>
               <name>S</name>
               <description>Starts and Stops the Timer / Counter</description>
@@ -454,7 +444,6 @@
           </fields>
         </register>
 
-        <!-- SR: Status Register -->
         <register>
           <name>SR</name>
           <description>Status Register</description>
@@ -465,7 +454,6 @@
           <resetMask>0xD701</resetMask>
 
           <fields>
-            <!-- RUN: Shows if Timer is running -->
             <field>
               <name>RUN</name>
               <description>Shows if Timer is running or not</description>
@@ -485,7 +473,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- MATCH: Shows if a Match was hit -->
             <field>
               <name>MATCH</name>
               <description>Shows if the MATCH was hit</description>
@@ -505,7 +492,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- UN: Shows if an underflow occured -->
             <field>
               <name>UN</name>
               <description>Shows if an underflow occured. This flag is sticky</description>
@@ -525,7 +511,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- OV: Shows if an overflow occured -->
             <field>
               <name>OV</name>
               <description>Shows if an overflow occured. This flag is sticky</description>
@@ -545,7 +530,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- RST: Shows if Timer is in RESET state -->
             <field>
               <name>RST</name>
               <description>Shows if Timer is in RESET state</description>
@@ -565,7 +549,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- RELOAD: Shows the currently active Reload Register -->
             <field>
               <name>RELOAD</name>
               <description>Shows the currently active RELOAD Register</description>
@@ -597,7 +580,6 @@
           </fields>
         </register>
 
-        <!-- INT: Interrupt Register -->
         <register>
           <name>INT</name>
           <description>Interrupt Register</description>
@@ -608,7 +590,6 @@
           <resetMask>0x0771</resetMask>
 
           <fields>
-            <!-- EN: Interrupt Enable -->
             <field>
               <name>EN</name>
               <description>Interrupt Enable</description>
@@ -628,7 +609,6 @@
               </enumeratedValues>
             </field>
 
-            <!-- MODE: Interrupt Mode -->
             <field>
               <name>MODE</name>
               <description>Interrupt Mode, selects on which condition the Timer should generate an Interrupt</description>
@@ -655,7 +635,6 @@
           </fields>
         </register>
 
-        <!-- COUNT: Counter Register -->
         <register>
           <name>COUNT</name>
           <description>The Counter Register reflects the actual Value of the Timer/Counter</description>
@@ -666,7 +645,6 @@
           <resetMask>0xFFFFFFFF</resetMask>
         </register>
 
-        <!-- MATCH: Match Register -->
         <register>
           <name>MATCH</name>
           <description>The Match Register stores the compare Value for the MATCH condition</description>
@@ -676,8 +654,7 @@
           <resetValue>0x00000000</resetValue>
           <resetMask>0xFFFFFFFF</resetMask>
         </register>
-        
-        <!-- PRESCALE: Prescale Read Register -->
+
         <register>
           <name>PRESCALE_RD</name>
           <description>The Prescale Register stores the Value for the prescaler. The cont event gets divided by this value</description>
@@ -687,8 +664,7 @@
           <resetValue>0x00000000</resetValue>
           <resetMask>0xFFFFFFFF</resetMask>
         </register>
-        
-        <!-- PRESCALE: Prescale Write Register -->
+
         <register>
           <name>PRESCALE_WR</name>
           <description>The Prescale Register stores the Value for the prescaler. The cont event gets divided by this value</description>
@@ -700,7 +676,6 @@
         </register>
 
 
-        <!-- RELOAD: Array of Reload Register with 4 elements-->
         <register>
           <dim>4</dim>
           <dimIncrement>4</dimIncrement>
@@ -716,7 +691,6 @@
       </registers>
     </peripheral>
 
-    <!-- Timer 1 -->
     <peripheral derivedFrom="TIMER0">
       <name>TIMER1</name>
       <baseAddress>0x40010100</baseAddress>
@@ -726,7 +700,6 @@
       </interrupt>
     </peripheral>
 
-    <!-- Timer 2 -->
     <peripheral derivedFrom="TIMER0">
       <name>TIMER2</name>
       <baseAddress>0x40010200</baseAddress>
@@ -736,4 +709,5 @@
       </interrupt>
     </peripheral>
   </peripherals>
+  -->
 </device>

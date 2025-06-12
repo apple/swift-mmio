@@ -17,5 +17,6 @@ struct CompilerPluginMain: CompilerPlugin {
   let providingMacros: [any Macro.Type] = [
     XMLElementMacro.self,
     XMLMarkerMacro.self,
+    XMLParsableMacro.self,
   ]
 }

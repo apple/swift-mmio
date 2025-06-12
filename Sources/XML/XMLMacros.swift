@@ -21,3 +21,16 @@ public macro XMLElement() =
 @attached(peer)
 public macro XMLInlineElement() =
   #externalMacro(module: "XMLMacros", type: "XMLMarkerMacro")
+
+@attached(
+  extension,
+  names:
+    arbitrary,
+//    named(_buildMask),
+//    named(_buildStartPartial),
+//    named(_buildStartChildPartial),
+//    named(_buildAny),
+//    named(_buildComplete),
+  conformances: _XMLParsable)
+public macro XMLParsable() =
+  #externalMacro(module: "XMLMacros", type: "XMLParsableMacro")
