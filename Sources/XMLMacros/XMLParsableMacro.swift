@@ -39,26 +39,34 @@ enum XMLParsableMacro: ExtensionMacro {
         static func _buildMask() -> UInt64 {
           \(mask)
         }
-      
+                  
+        static func _buildDump(partial: UnsafeMutableRawPointer, function: StaticString = #function) {
+          let partial = partial.bindMemory(to: _XMLPartial<Self>.self, capacity: 1)
+          let initialized = partial.pointer(to: \\.initialized)!.pointee
+          print("fn: \\(function) obj: \\(partial) init: \\(String(initialized, radix: 2)) mask: \\(Self._buildMask())")
+        }
+
         static func _buildPartial() -> UnsafeMutableRawPointer {
           let partial = UnsafeMutablePointer<_XMLPartial<Self>>.allocate(capacity: 1)
           let initialized = partial.pointer(to: \\.initialized)!
           initialized.pointee = Self._buildMask()
-          print(partial, initialized.pointee)
+          Self._buildDump(partial: partial)
           return UnsafeMutableRawPointer(partial) 
         }
-      
+
         static func _buildChild(name: UnsafePointer<CChar>) -> (any _XMLParsable.Type)? {
           // FIXME: replace with macro generated jump table or trie.
           // We shouldn't need to allocate here.
           let name = String(cString: name)
           switch name {
+
       """
 
     for (name, type) in members {
       `extension` += """
-        case \"\(name)\":
-          return \(type).self
+            case \"\(name)\":
+              return \(type).self
+
         """
     }
 
@@ -67,45 +75,80 @@ enum XMLParsableMacro: ExtensionMacro {
             return nil
           }
         }
-      
-        static func _buildAny(partial: UnsafeMutableRawPointer, name: String, value: Any) throws {
-          fatalError()
-        }
 
-        static func _buildIsFullyInitialized(partial: UnsafeMutableRawPointer) -> Bool {
-          let partial = UnsafeMutablePointer<_XMLPartial<Self>>.allocate(capacity: 1)
-          let initialized = partial.pointer(to: \\.initialized)!
-          print(#function, Self.self)
-          print(initialized.pointee)
-          print(Self._buildMask())
-          print(initialized.pointee & Self._buildMask())
-          return (initialized.pointee & Self._buildMask()) == 0
-        }
+        static func _buildAny(partial: UnsafeMutableRawPointer, name: UnsafePointer<CChar>, value: Any) {
+          Self._buildDump(partial: partial)
+          // FIXME: replace with macro generated jump table or trie.
+          // We shouldn't need to allocate here.
+          let name = String(cString: name)
+          switch (name, value) {
 
-        static func _buildTakePartial(partial: UnsafeMutableRawPointer) -> Self {
-          defer { partial.deallocate() }
-          let partial = UnsafeMutablePointer<_XMLPartial<Self>>.allocate(capacity: 1)
-          let value = partial.pointer(to: \\.value)!
-          return value.move()
-        }
+      """
 
-        static func _buildDestroyPartial(partial: UnsafeMutableRawPointer) {
-          defer { partial.deallocate() }
-          // FIXME: go through properties and deinit...
+    for index in members.indices {
+      let (name, _) = members[index]
+      `extension` += """
+            case (\"\(name)\", let value as \(type)):
+              fatalError("")
 
-          fatalError()
+        """
+    }
+
+    `extension` += """
+            default:
+              preconditionFailure("Invalid build for unknown child")
+            }
+          }
+
+          static func _buildIsFullyInitialized(partial: UnsafeMutableRawPointer) -> Bool {
+            Self._buildDump(partial: partial)
+            let partial = partial.bindMemory(to: _XMLPartial<Self>.self, capacity: 1)
+            let initialized = partial.pointer(to: \\.initialized)!
+            print("isFullyInitialized:", initialized.pointee == 0)
+            return initialized.pointee == 0
+          }
+
+          static func _buildTakePartial(partial: UnsafeMutableRawPointer) -> Self {
+            Self._buildDump(partial: partial)
+            let partial = partial.bindMemory(to: _XMLPartial<Self>.self, capacity: 1)
+            let value = partial.pointer(to: \\.value)!.move()
+            partial.deallocate()
+            return value
+          }
+
+          static func _buildDestroyPartial(partial: UnsafeMutableRawPointer) {
+            Self._buildDump(partial: partial)
+            let partial = partial.bindMemory(to: _XMLPartial<Self>.self, capacity: 1)
+            let initialized = partial.pointer(to: \\.initialized)!.pointee
+            let value = partial.pointer(to: \\.value)!
+
+        """
+
+    for index in members.indices {
+      let (name, _) = members[index]
+      `extension` += """
+            if (initialized & (1 << \(index))) == 0 {
+              let member = value.pointer(to: \\.\(name))!
+              member.deinitialize(count: 1)
+            }
+
+        """
+    }
+
+    `extension` += """
+          partial.deallocate()
         }
       
         static func _buildComplete(partial: UnsafeMutableRawPointer) throws -> Self {
+          Self._buildDump(partial: partial)
           if _buildIsFullyInitialized(partial: partial) {
             return _buildTakePartial(partial: partial)
           } else {
             _buildDestroyPartial(partial: partial)
-            // throw incomplete initialization error
-            fatalError()
+            throw XMLParseError.buildIncomplete
           }
         }
-      
+
       """
 
 //    for member in declaration.memberBlock.members {
@@ -148,6 +191,8 @@ enum XMLParsableMacro: ExtensionMacro {
     `extension` += """
       }
       """
+    print(`extension`)
+
     let decl = DeclSyntax(stringLiteral: `extension`)
     return [decl.as(ExtensionDeclSyntax.self)].compactMap { $0 }
   }

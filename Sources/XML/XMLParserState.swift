@@ -11,9 +11,6 @@
 
 import MMIOUtilities
 
-
-
-
 struct XMLParserState: ~Copyable {
   var current = ""
   var stack: [(
@@ -25,24 +22,40 @@ struct XMLParserState: ~Copyable {
     current: String
   )]
 
+  var x: [String] {
+    self.stack.map {
+      if let type = $0.0?.type {
+        "\(type)"
+      } else {
+        "nil"
+      }
+    }
+  }
+
   mutating func start(name: UnsafePointer<CChar>) {
     guard !self.stack.isEmpty else { fatalError() }
     let sString = String(cString: name)
-    print("start:", sString)
+    print("\n\(self.x) start:", sString)
 
     let (top, _) = self.stack[self.stack.count - 1]
 
     if let top = top {
+      print("TOP: \(top.type) \(top.partial) -> ", terminator: "")
       // If theres an element on the top of the stack, check if it wants to
       // parse a child by this name.
-      if let parsable = top.type._buildChild(name: name) {
+      if let type = top.type._buildChild(name: name) {
+        print(" -post-child- ", terminator: "")
+        let partial = type._buildPartial()
+        print("MATCH! -> push", type, partial)
         // if yes, push the child to the top.
-        self.stack.append(((parsable, parsable._buildPartial()), sString))
+        self.stack.append(((type, partial), sString))
       } else {
+        print("NO MATCH! -> push nil")
         // If no, push an empty element to the top.
         self.stack.append((nil, sString))
       }
     } else {
+      print("NO TOP! push nil")
       // If theres an empty element on the top of the stack, then we're
       // descending down a tree that we dont care about parsing, we can push
       // another empty child.
@@ -53,33 +66,38 @@ struct XMLParserState: ~Copyable {
   mutating func end(name: UnsafePointer<CChar>) {
     guard !self.stack.isEmpty else { fatalError() }
     let sString = String(cString: name)
-    print("end:  ", sString)
+    print("\n\(self.x) end:  ", sString)
 
     let (top, current) = self.stack.removeLast()
     // FIXME: dont crash
     precondition(sString == current)
     
     if let top = top {
+      print("TOP: \(top.type) \(top.partial) -> ", terminator: "")
       // If theres an element on the top of the stack, try to finalize it into
       // a fully initialized value.
       // FIXME: handle failure
       let value = try! top.type._buildComplete(partial: top.partial)
 
-      if self.stack.isEmpty {
+      if !self.stack.isEmpty {
         // If theres a parent of this value, give the child to parent to own.
+        guard let (type, partial) = self.stack[self.stack.count - 1].0 else {
+          preconditionFailure("Invalid empty element under valid element")
+        }
+//        type._buildAny(partial: partial, name: String, value: Any)
+
         fatalError("need to finalize")
       } else {
         // If theres no parent, then we finished parsing the tree.
         print(value)
         fatalError("We're done!")
       }
-
     } else {
       // If theres an empty element on the top of the stack, then the parent of
       // this element didn't care about parsing it. We can drop the element and
       // move on.
+      print("NO TOP! -> pop nil")
     }
-
   }
 }
 

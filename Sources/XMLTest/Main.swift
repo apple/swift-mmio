@@ -19,7 +19,6 @@ struct SVDDocument {
 
 @main
 struct Test {
-
   static func main() throws {
     let file = "/Volumes/Developer/org.swift/swift-mmio/Sources/XMLTest/ARM_Sample.svd"
     let url = URL(fileURLWithPath: file)
