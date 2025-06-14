@@ -23,11 +23,9 @@ public enum XMLParser {
     let parser = XML_ParserCreate("UTF-8")
     defer { XML_ParserFree(parser) }
 
-    var state = State(stack: [
-      ((type: Value.self, partial: Value._buildPartial()), current: "")
-    ])
+    var state = State(stack: OwnedArray())
+    state.stack.push((Value.self, Value._buildPartial()))
 
-//    var state: State = .initial
     return withUnsafeMutablePointer(to: &state) { statePointer in
       XML_SetUserData(parser, statePointer)
       defer { XML_SetUserData(parser, nil) }

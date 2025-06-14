@@ -3,7 +3,7 @@ import XML
 
 @XMLParsable
 struct Child {
-
+  var name: String
 }
 
 @XMLParsable

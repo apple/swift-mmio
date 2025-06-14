@@ -11,8 +11,7 @@
  -->
  
 <device schemaVersion="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_0.xsd" >
-  <test>askdjaskl</testa>
-  <!--
+  <test>askdjaskl</test>
   <name>ARMCM3xxx</name>
   <version>1.0</version>
   <description>ARM 32-bit Cortex-M3 Microcontroller based device, CPU clock up to 80MHz, etc. </description>
@@ -709,5 +708,4 @@
       </interrupt>
     </peripheral>
   </peripherals>
-  -->
 </device>
