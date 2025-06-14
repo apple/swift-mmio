@@ -9,8 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
-
 extension FixedWidthInteger {
   @inlinable @inline(__always)
   static func bitRangeWithinBounds(bits bitRange: Range<Int>) -> Bool {
