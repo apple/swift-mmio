@@ -43,7 +43,7 @@ enum XMLParsableMacro: ExtensionMacro {
         static func _buildDump(partial: UnsafeMutableRawPointer, function: StaticString = #function) {
           let partial = partial.bindMemory(to: _XMLPartial<Self>.self, capacity: 1)
           let initialized = partial.pointer(to: \\.initialized)!.pointee
-          print("fn: \\(function) obj: \\(partial) init: \\(String(initialized, radix: 2)) mask: \\(Self._buildMask())")
+          print("func: \\(function) type: \\(Self.self) partial: \\(partial) init: \\(String(initialized, radix: 2)) mask: \\(String(Self._buildMask(), radix: 2))")
         }
 
         static func _buildPartial() -> UnsafeMutableRawPointer {
@@ -78,6 +78,11 @@ enum XMLParsableMacro: ExtensionMacro {
 
         static func _buildAny(partial: UnsafeMutableRawPointer, name: UnsafePointer<CChar>, value: Any) {
           Self._buildDump(partial: partial)
+      
+          let partial = partial.bindMemory(to: _XMLPartial<Self>.self, capacity: 1)
+          let initializedPointer = partial.pointer(to: \\.initialized)!
+          let valuePointer = partial.pointer(to: \\.value)!
+
           // FIXME: replace with macro generated jump table or trie.
           // We shouldn't need to allocate here.
           let name = String(cString: name)
@@ -86,10 +91,16 @@ enum XMLParsableMacro: ExtensionMacro {
       """
 
     for index in members.indices {
-      let (name, _) = members[index]
+      let (name, type) = members[index]
       `extension` += """
             case (\"\(name)\", let value as \(type)):
-              fatalError("")
+              if (initializedPointer.pointee & (1 << \(index))) != 0 {
+                let member = valuePointer.pointer(to: \\.\(name))!
+                member.initialize(to: value)
+                initializedPointer.pointee &= ~(1 << \(index))
+              } else {
+                fatalError("Multiple Init")
+              }
 
         """
     }

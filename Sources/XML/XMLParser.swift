@@ -26,7 +26,7 @@ public enum XMLParser {
     var state = State(stack: OwnedArray())
     state.stack.push((Value.self, Value._buildPartial()))
 
-    return withUnsafeMutablePointer(to: &state) { statePointer in
+    withUnsafeMutablePointer(to: &state) { statePointer in
       XML_SetUserData(parser, statePointer)
       defer { XML_SetUserData(parser, nil) }
 
@@ -56,9 +56,11 @@ public enum XMLParser {
         fatalError("Expat error: \(errorMessage) at line \(line), column \(column)")
       }
 
-      fatalError()
+//      fatalError()
 //      return statePointer.pointee.result()
     }
+
+    return try state.complete().unwrap()
   }
 }
 

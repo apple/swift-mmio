@@ -19,37 +19,43 @@ struct XMLParserState: ~Copyable {
     var x = ""
     for index in self.stack.indices {
       if x != "" { x += "/" }
-      if let (type, _) = self.stack[index] {
-        x += "\(type)"
-      } else {
-        x += "nil"
-      }
+      x += d(self.stack[index])
     }
     return x
   }
 
-  mutating func start(name: UnsafePointer<CChar>) {
-    guard !self.stack.isEmpty else { fatalError() }
-    let sString = String(cString: name)
-    print("\n\(self.x) start:", sString)
+  func d(_ x: (any _XMLParsable.Type, UnsafeMutableRawPointer)?) -> String {
+    if let (type, partial) = x {
+      let low = UInt8(truncatingIfNeeded: UInt(bitPattern: partial))
+      return "\(type)(\(String(low, radix: 16)))"
+    } else {
+      return "nil"
+    }
+  }
 
-    if let (type, partial) = self.stack[self.stack.count - 1] {
-      print("TOP: \(type) \(partial) -> ", terminator: "")
+  mutating func start(name: UnsafePointer<CChar>) {
+    guard !self.stack.isEmpty else { fatalError("goto fail") }
+    let sString = String(cString: name)
+    print("\n-------\n\(self.x) -> \(sString)")
+
+    if let (type, _) = self.stack[self.stack.count - 1] {
+      // FIXME: check if current partial wants more children for "name" error
+      // early if not.
+
       // If theres an element on the top of the stack, check if it wants to
       // parse a child by this name.
       if let childType = type._buildChild(name: name) {
-        print(" -post-child- ", terminator: "")
-        let childPartial = type._buildPartial()
-        print("MATCH! -> push", childType, childPartial)
+        let childPartial = childType._buildPartial()
+        print("\t-> \(d((childType, childPartial)))")
         // if yes, push the child to the top.
         self.stack.push((childType, childPartial))
       } else {
-        print("NO MATCH! -> push nil")
+        print("\t-> nil")
         // If no, push an empty element to the top.
         self.stack.push(nil)
       }
     } else {
-      print("NO TOP! push nil")
+      print("\t-> nil")
       // If theres an empty element on the top of the stack, then we're
       // descending down a tree that we dont care about parsing, we can push
       // another empty child.
@@ -58,37 +64,41 @@ struct XMLParserState: ~Copyable {
   }
 
   mutating func end(name: UnsafePointer<CChar>) {
-    guard let top = self.stack.pop() else { fatalError() }
     let sString = String(cString: name)
-    print("\n\(self.x) end:  ", sString)
+    print("\n-------\n\(self.x) <- \(sString)")
 
-    if let (type, partial) = top {
-      print("TOP: \(type) \(partial) -> ", terminator: "")
+    guard let top = self.stack.pop() else { fatalError("goto fail") }
+
+    if let (_type, partial) = top {
       // If theres an element on the top of the stack, try to finalize it into
       // a fully initialized value.
       // FIXME: handle failure
-      let value = try! type._buildComplete(partial: partial)
+      let value = try! _type._buildComplete(partial: partial)
+      print("\t<- \(type(of: value))")
+      // There must be a parent to end, error if none.
+      guard !self.stack.isEmpty else { fatalError("goto fail") }
 
-      if !self.stack.isEmpty {
-        // If theres a parent of this value, give the child to parent to own.
-        let topIndex = self.stack.count - 1
-        guard let (parentType, parentPartial) = self.stack[topIndex] else {
-          preconditionFailure("Invalid empty element under valid element")
-        }
-        parentType._buildAny(partial: parentPartial, name: name, value: value)
-
-        fatalError("need to finalize")
-      } else {
-        // If theres no parent, then we finished parsing the tree.
-        print(value)
-        fatalError("We're done!")
+      // Give the initialized child to parent to assign to the proper member.
+      let topIndex = self.stack.count - 1
+      guard let (parentType, parentPartial) = self.stack[topIndex] else {
+        preconditionFailure("Invalid empty element under valid element")
       }
+      parentType._buildAny(partial: parentPartial, name: name, value: value)
+
     } else {
       // If theres an empty element on the top of the stack, then the parent of
       // this element didn't care about parsing it. We can drop the element and
       // move on.
-      print("NO TOP! -> pop nil")
+      print("\t<- nil")
     }
+  }
+
+  mutating func complete<Value>(as _: Value.Type = Value.self) -> Value? {
+    guard self.stack.count == 1 else { fatalError("goto fail") }
+    guard let (type, partial) = self.stack[0] else { fatalError("goto fail") }
+    let value = try! type._buildComplete(partial: partial)
+    guard let value = value as? Value else { fatalError("goto fail") }
+    return value
   }
 }
 
