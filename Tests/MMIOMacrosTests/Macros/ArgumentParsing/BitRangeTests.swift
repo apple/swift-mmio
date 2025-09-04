@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
@@ -99,4 +98,3 @@ struct BitRangeTests {
       vector.value.canonicalizedClosedRange == vector.canonicalizedClosedRange)
   }
 }
-#endif

@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
@@ -143,4 +142,3 @@ struct VariableDeclSyntaxTests {
     #expect(vector.decl.isComputedProperty == vector.isComputedProperty)
   }
 }
-#endif
