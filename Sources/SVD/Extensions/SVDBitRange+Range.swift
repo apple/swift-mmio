@@ -21,3 +21,12 @@ extension SVDBitRange {
     }
   }
 }
+
+extension SVDBitRange: Comparable {
+  public static func < (lhs: Self, rhs: Self) -> Bool {
+    guard lhs.range.startIndex == rhs.range.startIndex else {
+      return lhs.range.startIndex < rhs.range.startIndex
+    }
+    return lhs.range.endIndex < rhs.range.endIndex
+  }
+}

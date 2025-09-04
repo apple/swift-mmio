@@ -491,7 +491,8 @@ extension SVDRegister: SVDExportable {
       \(options.accessLevel)struct \(context.swiftTypeName)
       """
     outputWriter.scope(scope) { outputWriter in
-      let fields = self.fields?.field ?? []
+      var fields = self.fields?.field ?? []
+      fields.sort(by: { $0.bitRange < $1.bitRange })
       for field in fields {
         field.exportAccessor(
           outputWriter: &outputWriter,
