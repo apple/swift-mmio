@@ -54,6 +54,9 @@ extension SVD2SwiftTests {
                       name: "E",
                       bitRange: .literal(
                         .init(bitRange: .init(lsb: 10, msb: 14)))),
+                    .init(
+                      name: "OutOfOrder",
+                      bitRange: .lsbMsb(.init(lsb: 0, msb: 1))),
                   ]))
             ]))
       ]))
@@ -89,6 +92,10 @@ extension SVD2SwiftTests {
           /// An example register
           @Register(bitWidth: 32)
           struct ExampleRegister {
+            /// OutOfOrder
+            @ReadWrite(bits: 0..<2)
+            var outoforder: OutOfOrder
+
             /// A
             @ReadWrite(bits: 2..<7)
             var a: A
