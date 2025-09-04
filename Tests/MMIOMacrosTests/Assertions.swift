@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
@@ -98,4 +97,3 @@ func assertMacroExpansion(
     line: UInt(sourceLocation.line),
     column: UInt(sourceLocation.column))
 }
-#endif
