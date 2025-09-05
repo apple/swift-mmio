@@ -9,34 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-// Deprecated RegisterBank macros
-@_documentation(visibility: internal)
-@available(
-  *, deprecated, message: "Use @RegisterBlock() instead.",
-  renamed: "RegisterBlock()"
-)
-@attached(member, names: named(unsafeAddress), named(init), named(interposer))
-public macro RegisterBank() =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
-
-@_documentation(visibility: internal)
-@available(
-  *, deprecated, message: "Use @RegisterBlock(offset:) instead.",
-  renamed: "RegisterBlock(offset:)"
-)
-@attached(accessor)
-public macro RegisterBank(offset: Int) =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBlockScalarMemberMacro")
-
-@_documentation(visibility: internal)
-@available(
-  *, deprecated, message: "Use @RegisterBlock(offset:stride:count:) instead.",
-  renamed: "RegisterBlock(offset:stride:count:)"
-)
-@attached(accessor)
-public macro RegisterBank(offset: Int, stride: Int, count: Int) =
-  #externalMacro(module: "MMIOMacros", type: "RegisterBlockArrayMemberMacro")
-
 // MARK: - RegisterBlock macros
 
 /// Defines a group of memory-mapped registers, such as a hardware peripheral or

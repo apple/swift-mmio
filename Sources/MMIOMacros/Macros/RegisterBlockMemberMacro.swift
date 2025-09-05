@@ -73,8 +73,6 @@ extension RegisterBlockMemberMacro {
 let registerBlockMemberMacros: [any RegisterBlockMemberMacro.Type] = [
   RegisterBlockScalarMemberMacro.self,
   RegisterBlockArrayMemberMacro.self,
-  RegisterBankScalarMemberMacro.self,
-  RegisterBankArrayMemberMacro.self,
 ]
 
 public struct RegisterBlockScalarMemberMacro {
@@ -166,96 +164,3 @@ extension RegisterBlockArrayMemberMacro: MMIOAccessorMacro {
 }
 
 extension RegisterBlockArrayMemberMacro: RegisterBlockMemberMacro {}
-
-// Deprecated Macros
-// FIXME: delete these when the deprecated entry points are removed.
-
-struct RegisterBankScalarMemberMacro {
-  @Argument(label: "offset")
-  var offset: Int
-}
-
-extension RegisterBankScalarMemberMacro: ParsableMacro {
-  static let baseName = "RegisterBank"
-
-  mutating func update(
-    label: String,
-    from expression: ExprSyntax,
-    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws {
-    switch label {
-    case "offset":
-      try self._offset.update(from: expression, in: context)
-    default:
-      fatalError()
-    }
-  }
-}
-
-extension RegisterBankScalarMemberMacro: MMIOAccessorMacro {
-  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-
-  func expansion(
-    of node: AttributeSyntax,
-    providingAccessorsOf declaration: some DeclSyntaxProtocol,
-    in context: MacroContext<Self, some MacroExpansionContext>
-  ) throws -> [AccessorDeclSyntax] {
-    try self.expansion(
-      of: node,
-      offset: self.$offset,
-      array: nil,
-      providingAccessorsOf: declaration,
-      in: context)
-  }
-}
-
-extension RegisterBankScalarMemberMacro: RegisterBlockMemberMacro {}
-
-struct RegisterBankArrayMemberMacro {
-  @Argument(label: "offset")
-  var offset: Int
-  @Argument(label: "stride")
-  var stride: Int
-  @Argument(label: "count")
-  var count: Int
-}
-
-extension RegisterBankArrayMemberMacro: ParsableMacro {
-  static let baseName = "RegisterBank"
-
-  mutating func update(
-    label: String,
-    from expression: ExprSyntax,
-    in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
-  ) throws {
-    switch label {
-    case "offset":
-      try self._offset.update(from: expression, in: context)
-    case "stride":
-      try self._stride.update(from: expression, in: context)
-    case "count":
-      try self._count.update(from: expression, in: context)
-    default:
-      fatalError()
-    }
-  }
-}
-
-extension RegisterBankArrayMemberMacro: MMIOAccessorMacro {
-  static var accessorMacroSuppressParsingDiagnostics: Bool { false }
-
-  func expansion(
-    of node: AttributeSyntax,
-    providingAccessorsOf declaration: some DeclSyntaxProtocol,
-    in context: MacroContext<Self, some MacroExpansionContext>
-  ) throws -> [AccessorDeclSyntax] {
-    try self.expansion(
-      of: node,
-      offset: self.$offset,
-      array: (stride: self.$stride, count: self.$count),
-      providingAccessorsOf: declaration,
-      in: context)
-  }
-}
-
-extension RegisterBankArrayMemberMacro: RegisterBlockMemberMacro {}
