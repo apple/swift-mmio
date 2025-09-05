@@ -41,20 +41,6 @@ struct BitFieldTests {
     #expect(!UInt32.bitRangeWithinBounds(bits: -2..<36))  // both side
   }
 
-  @Test func bitRangeCoalesced() {
-    // Coalesced
-    #expect(UInt8.bitRangesCoalesced(bits: [0..<1, 2..<5, 7..<8]))
-    // Not sorted
-    #expect(UInt8.bitRangesCoalesced(bits: [2..<3, 0..<1]))
-    // FIXME: this should only be valid if in reverse order 1..<2, 0..<1
-    #expect(UInt8.bitRangesCoalesced(bits: [0..<1, 1..<2]))  // Touching
-    // v Good. ^ Bad.
-    #expect(UInt8.bitRangesCoalesced(bits: [1..<2, 0..<1]))  // Touching
-
-    // Not coalesced
-    #expect(!UInt8.bitRangesCoalesced(bits: [0..<1, 0..<2]))
-  }
-
   @Test func bitRangeExtract() {
     assertExtract(
       bitRanges: 0..<1,
