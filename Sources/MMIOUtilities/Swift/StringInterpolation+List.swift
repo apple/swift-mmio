@@ -12,6 +12,7 @@
 extension String.StringInterpolation {
   public mutating func appendInterpolation(
     list collection: some Collection,
+    quoted: Bool = true,
     separator: String = ",",
     conjunction: String = "or"
   ) {
@@ -22,22 +23,22 @@ extension String.StringInterpolation {
 
     case 1:
       let element = collection[collection.startIndex]
-      self.appendInterpolation(quoted: element)
+      self.appendInterpolation(value: element, quoted: quoted)
 
     case 2:
       var index = collection.startIndex
       var element = collection[index]
-      self.appendInterpolation(quoted: element)
+      self.appendInterpolation(value: element, quoted: quoted)
       self.appendInterpolation(" ")
       self.appendInterpolation(conjunction)
       self.appendInterpolation(" ")
       collection.formIndex(after: &index)
       element = collection[index]
-      self.appendInterpolation(quoted: element)
+      self.appendInterpolation(value: element, quoted: quoted)
 
     default:
       for (index, element) in collection.enumerated() {
-        self.appendInterpolation(quoted: element)
+        self.appendInterpolation(value: element, quoted: quoted)
         if index < count - 2 {
           self.appendInterpolation(separator)
           self.appendInterpolation(" ")
@@ -52,18 +53,23 @@ extension String.StringInterpolation {
   }
 
   public mutating func appendInterpolation<Value>(
-    quoted value: Value
+    value: Value,
+    quoted: Bool
   ) {
-    self.appendInterpolation("'")
+    if quoted {
+      self.appendInterpolation("'")
+    }
     self.appendInterpolation("\(value)")
-    self.appendInterpolation("'")
+    if quoted {
+      self.appendInterpolation("'")
+    }
   }
 
   public mutating func appendInterpolation<C>(
     cycle collection: C
   ) where C: Collection {
     for (index, element) in collection.enumerated() {
-      self.appendInterpolation(quoted: "\(element)")
+      self.appendInterpolation(value: element, quoted: true)
       if index < collection.count - 1 {
         self.appendInterpolation(" -> ")
       }

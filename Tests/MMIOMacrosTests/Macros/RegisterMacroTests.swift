@@ -1240,5 +1240,184 @@ struct RegisterMacroTests {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+
+  @Test func registerWithOverlappingBitRanges_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 64)
+      struct S {
+        @Reserved(bits: 0..<10)
+        var field0: Field0
+
+        @Reserved(bits: 0..<4, 8..<12)
+        var field1: Field1
+
+        @Reserved(bits: 10..<24)
+        var field2: Field2
+
+        @Reserved(bits: 23..<24)
+        var field3: Field3
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var field0: Field0 {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var field1: Field1 {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var field2: Field2 {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var field3: Field3 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum Field0: ContiguousBitField {
+            typealias Storage = UInt64
+            typealias Projection = Never
+            static let bitRange = 0 ..< 10
+          }
+
+          enum Field1: DiscontiguousBitField {
+            typealias Storage = UInt64
+            typealias Projection = Never
+            static let bitRanges = [0 ..< 4, 8 ..< 12]
+          }
+
+          enum Field2: ContiguousBitField {
+            typealias Storage = UInt64
+            typealias Projection = Never
+            static let bitRange = 10 ..< 24
+          }
+
+          enum Field3: ContiguousBitField {
+            typealias Storage = UInt64
+            typealias Projection = Never
+            static let bitRange = 23 ..< 24
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt64
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var field0: UInt64 {
+              @inlinable @inline(__always) get {
+                Field0.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Field0.insertBits(newValue, into: &self.storage)
+              }
+            }
+            var field1: UInt64 {
+              @inlinable @inline(__always) get {
+                Field1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Field1.insertBits(newValue, into: &self.storage)
+              }
+            }
+            var field2: UInt64 {
+              @inlinable @inline(__always) get {
+                Field2.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Field2.insertBits(newValue, into: &self.storage)
+              }
+            }
+            var field3: UInt64 {
+              @inlinable @inline(__always) get {
+                Field3.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Field3.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt64
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.registerOverlappingBitRanges(name: "S")
+            .message,
+          line: 2,
+          column: 8,
+          highlights: ["S"],
+          notes: [
+            .init(
+              message:
+                "bit range '0..<4' overlaps bit range '0..<10' in 'field0'",
+              line: 6,
+              column: 19),
+            .init(
+              message:
+                "bit range '0..<10' overlaps bit ranges '0..<4' and '8..<12' in 'field1'",
+              line: 3,
+              column: 19),
+            .init(
+              message:
+                "bit range '8..<12' overlaps bit ranges '0..<10' in 'field0' and '10..<24' in 'field2'",
+              line: 6,
+              column: 26),
+            .init(
+              message:
+                "bit range '10..<24' overlaps bit ranges '8..<12' in 'field1' and '23..<24' in 'field3'",
+              line: 9,
+              column: 19),
+            .init(
+              message:
+                "bit range '23..<24' overlaps bit range '10..<24' in 'field2'",
+              line: 12,
+              column: 19),
+          ]
+        )
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
 #endif
