@@ -15,9 +15,65 @@ dependency using `.upToNextMinor(from: "0.0.1")` as the requirement.
 
 *No changes yet.*
 
-<!-- 
+<!--
 Add new items at the end of the relevant section under **Unreleased**.
 -->
+
+---
+
+## [0.1.0] - 2025-09-05
+
+- Major feature release with new SVD tooling and API enhancements
+
+### Additions
+
+- Introduces `svd2swift` tool and SVD2SwiftPlugin for generating Swift MMIO
+  interfaces from CMSIS System View Description (SVD) files. Supports manual
+  command-line usage and automatic build-time generation via SwiftPM
+  plugin. [#74]
+- Adds SVD2LLDB plugin for improved debugging of MMIO registers using LLDB.
+  Enables interaction with device registers by name rather than raw memory
+  addresses, with visual decoding support. [#98]
+- Adds support for SVD enumerated values, automatically generating bit field
+  projections from SVD enumerations. Fully closed enumerations become Swift
+  enums, others become structs with safer API access. [#119]
+- Adds support for `as:` parameter in `@Reserved` bit field macro. [#147]
+- Always exposes interposer API (previously hidden behind compilation flag) with
+  deprecation warnings when not using `FEATURE_INTERPOSABLE`. [#164]
+- Adds `Projection` associated type to `BitField` protocol, requiring
+  conformance to `BitFieldProjectable`. Renames existing `insert`/`extract`
+  methods to `insertBits`/`extractBits` and adds new typed variants. [#130]
+- Conforms all standard integer types (`UInt8`, `UInt16`, `UInt32`, `UInt64`,
+  `Int8`, `Int16`, `Int32`, `Int64`) to `BitFieldProjectable`. [#129]
+
+### Changes
+
+- Renames `@RegisterBank` macro to `@RegisterBlock` to avoid confusion with ARM
+  register banking terminology. [#68]
+- Updates to Swift 6.1 as minimum required version, with Swift 6.2 prerelease
+  swift-syntax for macro expansion fixes. [#163]
+- Major XML parsing performance improvements by replacing FoundationXML with
+  libexpat, avoiding objc bridging allocations and using non-copyable array
+  types. [#167]
+- Generates SVD bit fields in LSB to MSB order for consistent Swift interfaces
+  regardless of XML ordering. [#169]
+- Reduces use of dynamic arrays to improve compatibility with Embedded Swift's
+  no-allocations mode. [#172]
+- Updates SVD2Swift to generate RegisterArrays and adds support for exporting
+  clusters. [#116] [#114]
+- Adds support for common protocols with SVD types. [#109]
+
+### Fixes
+
+- Fixes bug in `@ReadOnly(bits: ...)` macro which caused it to use the write
+  only expansion. [#120]
+- Fixes use of interpolated strings in Embedded Swift. [#124]
+- Fixes handling of access levels in generated `.storage` properties. [#153]
+- Prevents generation of empty projected types. [#148]
+- Adds diagnostics for invalid bit field ranges. [#140] [#171]
+
+The 0.1.0 release includes contributions from [ahoppen], [kubamracek],
+[Kyle-Ye], [MaxDesiatov], [rauhul], [ShenghaiWang], and [ugurkoltuk]. Thank you!
 
 ---
 
@@ -72,7 +128,7 @@ Thank you!
 - Introduces `@RegisterBank` and `@RegisterBank(offset:)` macros, enabling you
   to define register groups directly in Swift code. [#2]
 - Introduces `@Register` macro and bit field macros (`@Reserved`, `@ReadWrite`,
-  `@ReadOnly`, `@WriteOnly`) for declaring registers composed of bit fields. Bit 
+  `@ReadOnly`, `@WriteOnly`) for declaring registers composed of bit fields. Bit
   field macros take a range parameter which describes the subset of bits they
   reference (e.g., `@ReadWrite(bits: 3..<7)`). [#4]
 - Enhances bit field macros to support discontiguous bit fields. They now accept
@@ -90,7 +146,8 @@ The 0.0.1 release includes contributions from [rauhul]. Thank you!
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-mmio/compare/0.0.2...HEAD
+[Unreleased]: https://github.com/apple/swift-mmio/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/apple/swift-mmio/releases/tag/0.1.0
 [0.0.2]: https://github.com/apple/swift-mmio/releases/tag/0.0.2
 [0.0.1]: https://github.com/apple/swift-mmio/releases/tag/0.0.1
 
@@ -108,11 +165,39 @@ The 0.0.1 release includes contributions from [rauhul]. Thank you!
 [#63]: https://github.com/apple/swift-mmio/pull/63
 [#64]: https://github.com/apple/swift-mmio/pull/64
 [#65]: https://github.com/apple/swift-mmio/pull/65
+[#68]: https://github.com/apple/swift-mmio/pull/68
+[#74]: https://github.com/apple/swift-mmio/pull/74
 [#75]: https://github.com/apple/swift-mmio/pull/75
 [#79]: https://github.com/apple/swift-mmio/pull/79
 [#81]: https://github.com/apple/swift-mmio/pull/81
+[#98]: https://github.com/apple/swift-mmio/pull/98
+[#109]: https://github.com/apple/swift-mmio/pull/109
+[#114]: https://github.com/apple/swift-mmio/pull/114
+[#116]: https://github.com/apple/swift-mmio/pull/116
+[#119]: https://github.com/apple/swift-mmio/pull/119
+[#120]: https://github.com/apple/swift-mmio/pull/120
+[#124]: https://github.com/apple/swift-mmio/pull/124
+[#129]: https://github.com/apple/swift-mmio/pull/129
+[#130]: https://github.com/apple/swift-mmio/pull/130
+[#140]: https://github.com/apple/swift-mmio/pull/140
+[#147]: https://github.com/apple/swift-mmio/pull/147
+[#148]: https://github.com/apple/swift-mmio/pull/148
+[#153]: https://github.com/apple/swift-mmio/pull/153
+[#163]: https://github.com/apple/swift-mmio/pull/163
+[#164]: https://github.com/apple/swift-mmio/pull/164
+[#165]: https://github.com/apple/swift-mmio/pull/165
+[#167]: https://github.com/apple/swift-mmio/pull/167
+[#169]: https://github.com/apple/swift-mmio/pull/169
+[#171]: https://github.com/apple/swift-mmio/pull/171
+[#172]: https://github.com/apple/swift-mmio/pull/172
 
 <!-- Link references for contributors -->
 
+[ahoppen]: https://github.com/apple/swift-mmio/commits?author=ahoppen
+[kubamracek]: https://github.com/apple/swift-mmio/commits?author=kubamracek
+[Kyle-Ye]: https://github.com/apple/swift-mmio/commits?author=Kyle-Ye
+[MaxDesiatov]: https://github.com/apple/swift-mmio/commits?author=MaxDesiatov
 [rauhul]: https://github.com/apple/swift-mmio/commits?author=rauhul
 [SamHastings1066]: https://github.com/apple/swift-mmio/commits?author=SamHastings1066
+[ShenghaiWang]: https://github.com/apple/swift-mmio/commits?author=ShenghaiWang
+[ugurkoltuk]: https://github.com/apple/swift-mmio/commits?author=ugurkoltuk
