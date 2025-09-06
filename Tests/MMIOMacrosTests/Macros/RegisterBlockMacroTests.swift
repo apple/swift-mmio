@@ -106,9 +106,6 @@ struct RegisterBlockMacroTests {
             .init(message: "Insert '@RegisterBlock(offset:)' macro"),
             .init(
               message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(
-              message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
@@ -122,9 +119,6 @@ struct RegisterBlockMacroTests {
             .init(message: "Insert '@RegisterBlock(offset:)' macro"),
             .init(
               message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(
-              message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
           ]),
         .init(
           message:
@@ -138,9 +132,6 @@ struct RegisterBlockMacroTests {
             .init(message: "Insert '@RegisterBlock(offset:)' macro"),
             .init(
               message: "Insert '@RegisterBlock(offset:stride:count:)' macro"),
-            .init(message: "Insert '@RegisterBank(offset:)' macro"),
-            .init(
-              message: "Insert '@RegisterBank(offset:stride:count:)' macro"),
           ]),
       ],
       macros: Self.macros,
