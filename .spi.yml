@@ -7,7 +7,6 @@ builder:
         - SVD2LLDB
         - SVD2Swift
       custom_documentation_parameters:
-        - --enable-experimental-combined-documentation
         - --enable-experimental-overloaded-symbol-presentation
         - --symbol-graph-minimum-access-level
         - public
