@@ -1,5 +1,8 @@
 name: Apple CC Matrix
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
 
