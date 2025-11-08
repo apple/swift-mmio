@@ -6,14 +6,14 @@ Define projections to map hardware bit fields to meaningful Swift types.
 
 When working with memory-mapped hardware registers, you're fundamentally manipulating raw bits. However, these bits often represent meaningful concepts: a single bit might indicate an enabled/disabled state, a 2-bit field might represent one of four operating modes, or a multi-bit field might encode a complex configuration.
 
-Swift MMIO provides **type projections** through the ``MMIO/BitFieldProjectable`` protocol, allowing you to map raw bit patterns to semantically meaningful Swift types. While Swift MMIO includes built-in projections for common types like `Bool` and integer types, creating your own custom projections offers several key benefits:
+Swift MMIO provides **type projections** through the ``MMIO/BitFieldProjectable`` protocol, allowing you to map raw bit patterns to semantically meaningful Swift types. Swift MMIO includes built-in projections for common types like `Bool` and integer types and creating your own custom projections lets you:
 
-- **Improved type safety**: Replace magic numbers with strongly-typed values
-- **Better code readability**: Express hardware states with meaningful names
-- **Compile-time validation**: Catch errors at compile time rather than runtime
-- **Domain-specific abstractions**: Model hardware concepts using appropriate Swift types
+- Replace magic numbers with strongly-typed values
+- Express hardware states with meaningful names
+- Catch errors at compile time rather than runtime
+- Model hardware concepts using appropriate Swift types
 
-This article guides you through creating custom types that conform to ``MMIO/BitFieldProjectable``, enabling you to represent hardware bit fields in a way that's both safer and more expressive.
+This article walks through creating custom types that conform to ``MMIO/BitFieldProjectable``.
 
 ### Understanding the BitFieldProjectable protocol
 
@@ -41,7 +41,7 @@ static var bitWidth: Int { get }
 
 This property defines how many bits your type occupies in the hardware register. This value must **exactly match** the width of the physical bit field as defined in your register macro (e.g., `bits: 4..<6` is 2 bits wide).
 
-A mismatch between your type's `bitWidth` and the actual bit field width will cause a runtime trap when accessing the register. This is a safety feature that ensures your type accurately represents the hardware's capabilities.
+A mismatch between your type's `bitWidth` and the actual bit field width causes a runtime trap when accessing the register. This safety feature ensures your type accurately represents the hardware's capabilities.
 
 #### Converting from storage
 
@@ -69,7 +69,7 @@ This method converts your type back to a raw integer value for writing to the ha
 2. Places these bits at the correct position in the register value
 3. Writes the complete register value to hardware
 
-The returned value must only use bits up to `Self.bitWidth` or will cause a runtime trap when written. The method should accurately represent your type's state in the bit pattern expected by the hardware
+The returned value must only use bits up to `Self.bitWidth` or will cause a runtime trap when written. Make sure it accurately represents your type's state in the bit pattern the hardware expects.
 
 ### Projecting an enum
 
@@ -201,7 +201,7 @@ Finally, let's add a factory method that creates values matching our "off" patte
 
 ```swift
 struct FanSpeed: BitFieldProjectable, RawRepresentable {
-    // ... 
+    // ...
 
     static func off(rawValue: UInt8 = 0b00) -> Self {
         let value = Self(rawValue: rawValue)
@@ -251,7 +251,7 @@ fanControl.modify { view in
 }
 ```
 
-This approach gives us tremendous flexibility. We can represent specific named values for common states, while also handling bit patterns with "don't care" bits. The custom pattern matching allows us to check if a value matches a particular pattern, ignoring bits that don't affect functionality.
+This approach gives us great flexibility. We can represent specific named values for common states while also handling bit patterns with "don't care" bits. The custom pattern matching lets us check if a value matches a pattern, ignoring bits that don't affect functionality.
 
 The real power of this technique becomes apparent when working with hardware that has complex bit field semantics. For example, many hardware peripherals use bit patterns where:
 - Some bits are reserved and must be zero

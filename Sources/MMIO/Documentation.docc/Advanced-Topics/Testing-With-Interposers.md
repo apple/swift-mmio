@@ -10,9 +10,9 @@ Testing code that interacts with hardware registers presents unique challenges. 
 - Specialized debugging equipment
 - Complex setup procedures to create specific hardware states
 
-These requirements make unit testing hardware-dependent code slow, expensive, and difficult to automate. Yet verifying that your code correctly interacts with hardware registers is crucial for reliable embedded systems.
+These requirements make unit testing hardware-dependent code slow, expensive, and difficult to automate. Verifying correct register interaction is crucial for reliable embedded systems.
 
-Swift MMIO addresses this challenge with **interposers**. An interposer intercepts memory operations that would normally target hardware registers. Instead of accessing physical memory, operations on ``MMIO/Register`` instances are redirected to methods on your custom interposer object. This redirection allows you to:
+Swift MMIO addresses this with **interposers**. An interposer intercepts memory operations that would normally target hardware registers. Instead of accessing physical memory, operations on ``MMIO/Register`` instances are redirected to methods on your custom interposer object. With interposers, you can:
 
 - Test register interaction logic without actual hardware
 - Verify sequences of register reads and writes
@@ -30,8 +30,8 @@ To create an interposer, define a class that conforms to the ``MMIO/MMIOInterpos
 
 Start by creating a basic interposer that simulates memory by storing values in a dictionary. This interposer:
 1. Maps memory addresses to values
-2. Returns stored values when registers are read
-3. Updates stored values when registers are written
+2. Returns stored values on reads
+3. Updates stored values on writes
 
 First, define the class structure and storage:
 
@@ -41,7 +41,7 @@ import MMIOInterposable // Use this target for interposer-enabled builds
 class BasicInterposer: MMIOInterposer {
     // Simulated memory storage - maps addresses to values
     private var memory: [UInt: UInt64] = [:]
-    
+
     // Protocol methods will be implemented next
 }
 ```
@@ -73,7 +73,7 @@ Then, implement the `store` method. This method is called whenever code writes t
 ```swift
 class BasicInterposer: MMIOInterposer {
     // ...
-    
+
     func store<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
         _ value: Value, to pointer: UnsafeMutablePointer<Value>
     ) {
@@ -121,7 +121,7 @@ Next, create the tracing interposer class:
 class TracingInterposer: MMIOInterposer {
     // Record of all register accesses
     var trace: [MMIOTraceEvent] = []
-    
+
     // Simulated memory storage
     private var simulatedMemory: [UInt: UInt64] = [:]
 }
@@ -132,16 +132,16 @@ Now, implement the `load` method to record read operations. This method performs
 ```swift
 class TracingInterposer: MMIOInterposer {
     // ...
-    
+
     func load<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
         from pointer: UnsafePointer<Value>
     ) -> Value {
         let address = UInt(bitPattern: pointer)
         let value = simulatedMemory[address, default: 0]
-        
+
         // Record this read operation in the trace
         trace.append(MMIOTraceEvent(type: .load, address: address, value: value))
-        
+
         return Value(value)
     }
 }
@@ -152,16 +152,16 @@ Finally, implement the `store` method to record write operations. This method al
 ```swift
 class TracingInterposer: MMIOInterposer {
     // ...
-    
+
     func store<Value: FixedWidthInteger & UnsignedInteger & _RegisterStorage>(
         _ value: Value, to pointer: UnsafeMutablePointer<Value>
     ) {
         let address = UInt(bitPattern: pointer)
         let storedValue = UInt64(value)
-        
+
         // Update simulated memory
         simulatedMemory[address] = storedValue
-        
+
         // Record this write operation in the trace
         trace.append(MMIOTraceEvent(type: .store, address: address, value: storedValue))
     }
@@ -194,10 +194,10 @@ import Testing
 struct ControlRegister {
     @ReadWrite(bits: 0..<1, as: Bool.self)
     var enable: ENABLE
-    
+
     @ReadWrite(bits: 1..<3)
     var mode: MODE
-    
+
     @ReadWrite(bits: 3..<8)
     var prescaler: PRESCALER
 }
@@ -229,22 +229,22 @@ Finally, write a test that verifies the function works correctly. The test:
    - Then, it should write the updated value with (binary 00100001 = decimal 33):
      - enable=true
      - mode=2
-     - prescaler=4 
+     - prescaler=4
 
 ```swift
 struct ControlRegisterTests {
     @Test func testUpdateWhenDisabled() throws {
         let interposer = TracingInterposer() // 1
-        
+
         let control = ControlRegister(unsafeAddress: 0x40000000, interposer: interposer) // 2
-        
+
         updateControlRegister(control, newMode: 2) // 3
-        
+
         let expectedTrace = [
             MMIOTraceEvent(type: .load, address: 0x40000000, value: 0), // 4
             MMIOTraceEvent(type: .store, address: 0x40000000, value: 33) // 4
         ]
-        
+
         #expect(interposer.trace == expectedTrace) // 4
     }
 }

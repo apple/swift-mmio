@@ -4,22 +4,22 @@ Organize and access groups of hardware registers using the RegisterBlock macro.
 
 ## Overview
 
-In memory-mapped I/O, hardware peripherals like timers, communication interfaces (UART, SPI), or DMA controllers typically consist of multiple registers. These registers aren't standalone entities but are grouped together at a specific base memory address, forming what's known as a **register block**. Grouping registers this way provides a structured and organized view of a peripheral's control and status interface. Each register within the block is accessed via an offset from the block's base address.
+In memory-mapped I/O, hardware peripherals like timers, communication interfaces (UART, SPI), or DMA controllers typically consist of multiple registers. These registers aren't standalone entities but are grouped together at a specific base memory address, forming a **register block**. Grouping registers this way provides a structured and organized view of a peripheral's control and status interface. Each register within the block is accessed via an offset from the block's base address.
 
 > Note: This article assumes you have a basic understanding of what hardware registers are and how they are defined using the ``MMIO/Register(bitWidth:)`` macro. For an introduction to individual registers, please see <doc:Registers>.
 
 ### The @RegisterBlock macro
 
-The ``MMIO/RegisterBlock()`` macro is fundamental for structuring memory-mapped hardware interfaces in Swift MMIO. It lets you define register blocks in a type-safe and declarative manner by applying it to a Swift `struct`. This `struct` then represents a hardware peripheral or a distinct, addressable block of registers within a larger peripheral.
+Apply the ``MMIO/RegisterBlock()`` macro to a Swift `struct` to define a register block. The struct represents a hardware peripheral or a sub-block within a larger peripheral.
 
-The annotated `@RegisterBlock` type serves as a container for:
+A `@RegisterBlock` struct contains:
 - Individual hardware registers, defined using ``MMIO/Register(bitWidth:)``, such as `Register<MyRegisterLayout>`.
 - Nested register blocks, also defined using ``MMIO/RegisterBlock()``, to model sub-modules or grouped registers.
 - Arrays of registers or register blocks, for repetitive hardware structures.
 
 ### Defining a simple register block
 
-The following example explores how to define a register block by modeling a UART (Universal Asynchronous Receiver/Transmitter) peripheral — a common communication interface found in many embedded systems.
+The following example explores how to define a register block by modeling a UART (Universal Asynchronous Receiver/Transmitter) peripheral — a common communication interface found in most embedded systems.
 
 A typical UART peripheral contains several registers that control its operation:
 - A data register for sending and receiving bytes.
@@ -64,11 +64,11 @@ struct UARTPeripheral {
     // The Status Register is at offset 0x04
     @RegisterBlock(offset: 0x04)
     var status: Register<UARTStatus>
-    
+
     // Control register at offset 0x08
     @RegisterBlock(offset: 0x08)
     var control: Register<UARTControl>
-    
+
     // Baud rate configuration at offset 0x0C
     @RegisterBlock(offset: 0x0C)
     var baudRate: Register<UARTBaudRate>
