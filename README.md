@@ -32,7 +32,7 @@ control.cr1.modify { $0.en = true }
 Swift MMIO supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:
 
 ```swift
-.package(url: "https://github.com/apple/swift-mmio", from: "0.1.0"),
+.package(url: "https://github.com/apple/swift-mmio", from: "0.1.1"),
 ```
 
 Second, add the `MMIO` library to your target's dependencies:
@@ -49,11 +49,16 @@ Finally, `import MMIO` in your Swift source code.
 
 ### Source Stability 
 
-This project follows semantic versioning. While still in major version `0`, source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking package updates, you can specify your package dependency using `.upToNextMinor(from: "0.0.2")` as the requirement:
+Swift MMIO follows semantic versioning. While the package is in major version `0` (e.g., `0.0.x`), source stability is only guaranteed within minor versions. For example, code written for `0.0.2` is compatible with `0.0.3`, but `0.1.0` might introduce source-breaking changes.
+
+To protect your project against potentially source-breaking updates during the `0.x.y` development phase, specify your package dependency using the `.upToNextMinor(from:)` requirement:
 
 ```swift
-.package(url: "https://github.com/apple/swift-mmio", .upToNextMinor(from: "0.1.0")),
+.package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
 ```
+
+This ensures that `swift package update` fetches compatible updates within the `0.0.x` series (e.g., `0.0.3`, `0.0.4`) but does not automatically update to `0.1.0` if it becomes available.
+
 
 ## Documentation
 

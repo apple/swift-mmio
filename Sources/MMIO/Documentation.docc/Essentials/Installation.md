@@ -13,7 +13,7 @@ Integrate Swift MMIO into your project using Swift Package Manager.
     name: "MyApplication",
     dependencies: [
       // Add Swift MMIO package dependency
-      .package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
+      .package(url: "https://github.com/apple/swift-mmio.git", from: "0.1.1"),
     ],
     //...
   ```

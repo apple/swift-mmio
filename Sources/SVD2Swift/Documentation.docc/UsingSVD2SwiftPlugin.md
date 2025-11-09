@@ -13,7 +13,7 @@ The `SVD2SwiftPlugin` integrates `svd2swift` into the SwiftPM build process, all
 First, add the Swift MMIO repository to your Package's dependencies:
 
 ```swift
-.package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
+.package(url: "https://github.com/apple/swift-mmio.git", from: "0.1.1"),
 ```
 
 > Important: See [source stability](https://github.com/apple/swift-mmio#source-stability) for details on major version "0".

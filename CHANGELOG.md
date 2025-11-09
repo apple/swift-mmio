@@ -5,11 +5,7 @@ All notable changes to this project will be documented in this file.
 This changelog's format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-While still in major version `0`, source-stability is only guaranteed within
-minor versions (e.g. between `0.0.3` and `0.0.4`). If you want to guard against
-potentially source-breaking package updates, you can specify your package
-dependency using `.upToNextMinor(from: "0.0.1")` as the requirement.
+> Important: See [source stability](https://github.com/apple/swift-mmio#source-stability) for details on major version "0".
 
 ## [Unreleased]
 
@@ -20,6 +16,12 @@ Add new items at the end of the relevant section under **Unreleased**.
 -->
 
 ---
+
+## [0.1.1] - 2025-11-08
+
+- Minor documention improvements.
+
+The 0.1.1 release includes contributions from [rauhul]. Thank you!
 
 ## [0.1.0] - 2025-09-05
 
@@ -146,7 +148,8 @@ The 0.0.1 release includes contributions from [rauhul]. Thank you!
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-mmio/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/apple/swift-mmio/compare/0.1.1...HEAD
+[0.1.1]: https://github.com/apple/swift-mmio/releases/tag/0.1.1
 [0.1.0]: https://github.com/apple/swift-mmio/releases/tag/0.1.0
 [0.0.2]: https://github.com/apple/swift-mmio/releases/tag/0.0.2
 [0.0.1]: https://github.com/apple/swift-mmio/releases/tag/0.0.1
