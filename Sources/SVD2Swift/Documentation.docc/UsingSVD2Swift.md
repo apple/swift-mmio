@@ -18,7 +18,7 @@ Clone the swift-mmio repository:
 
 ```console
 $ git clone git@github.com:apple/swift-mmio.git
-$ git checkout 0.0.2
+$ git checkout 0.1.1
 ```
 
 Build `svd2swift` in release mode:

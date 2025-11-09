@@ -21,7 +21,7 @@ This library is intended to enable development of _tooling_ surrounding SVD file
 `SVD` supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:
 
 ```swift
-.package(url: "https://github.com/apple/swift-mmio.git", from: "0.0.2"),
+.package(url: "https://github.com/apple/swift-mmio.git", from: "0.1.1"),
 ```
 
 > Important: See [source stability](https://github.com/apple/swift-mmio#source-stability) for details on major version "0".
