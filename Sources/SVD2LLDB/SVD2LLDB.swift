@@ -48,7 +48,6 @@ extension SVD2LLDB {
 /// This function serves as lldb's entry point for initializing a plugin. It
 /// must use the `C` calling and must match the mangled name of the `C++`
 /// function: `bool lldb::PluginInitialize(lldb::SBDebugger debugger)`.
-@_used
 @_cdecl("_ZN4lldb16PluginInitializeENS_10SBDebuggerE")
 public func pluginInitialize(debugger: UnsafeMutableRawPointer) -> Bool {
   let debugger = debugger.bindMemory(to: lldb.SBDebugger.self, capacity: 1)
