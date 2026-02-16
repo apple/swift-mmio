@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
@@ -586,4 +585,3 @@ struct ParsableMacroTests {
     #expect("\(F.attributeWithPlaceholders)" == "@F(foo: <#Int#>)")
   }
 }
-#endif
