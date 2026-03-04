@@ -45,12 +45,8 @@ enum XMLElementBuilderState: ~Copyable {
     case .initial:
       self = .error
     case .parsing(var stack):
-      if !stack.isEmpty {
-        stack[stack.count - 1].value = text
-        self = .parsing(stack: stack)
-      } else {
-        self = .error
-      }
+      stack[stack.count - 1].value = text
+      self = .parsing(stack: stack)
     case .error:
       self = .error
     case .complete:
