@@ -24,7 +24,7 @@ jobs:
           - name: watchOS
             platform: watchOS
         arch: [arm64]
-        macos_version: [sequoia]
+        macos_version: [tahoe]
         macos_arch: [ARM64]
     steps:
       - name: Checkout repository
