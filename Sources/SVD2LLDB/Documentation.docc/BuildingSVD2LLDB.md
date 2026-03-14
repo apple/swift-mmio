@@ -19,7 +19,7 @@ For example, the Swift.org toolchains for macOS include LLDB.framework with head
   $ cd swift-mmio
   ```
 
-2. Locate LLDB.framework and ensure it include headers. For example, a Swift.org macOS toolchain installed globally would be found under `/Library/Developer/Toolchains`.
+2. Locate LLDB.framework and ensure it includes headers. For example, a Swift.org macOS toolchain installed globally would be found under `/Library/Developer/Toolchains`.
 
   ```console
   $ ls /Library/Developer/Toolchains/swift-DEVELOPMENT-SNAPSHOT-2024-05-15-a.xctoolchain/System/Library/PrivateFrameworks

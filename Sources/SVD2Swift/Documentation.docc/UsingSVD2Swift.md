@@ -93,7 +93,7 @@ The output directory. Use '-' for stdout.
 
 The peripherals to include in the output. Skipping this option includes all peripherals in the output.
 
-While it may be convenient to generate Swift interfaces for all device peripherals, it can slow down the compilation of your application. Reducing the generated code to only include the peripherals your application uses can significant improve compile times.
+While it may be convenient to generate Swift interfaces for all device peripherals, it can slow down the compilation of your application. Reducing the generated code to only include the peripherals your application uses can significantly improve compile times.
 
 #### Access Level
 
