@@ -151,7 +151,7 @@ if enabled == 1 {
 
 ### Adding more fields
 
-The following example extends the register defintion with multiple functional fields for a more complete exeample:
+The following example extends the register definition with multiple functional fields for a more complete example:
 
 ```swift
 import MMIO
@@ -345,7 +345,7 @@ struct DeviceStatus {
 ```
 
 The `DeviceStatus` register now contains a mix of field types:
-- `powerEnabled` and `interruptEnable` are configuration bits that you can be both read and write.
+- `powerEnabled` and `interruptEnable` are configuration bits that can be both read and written.
 - `busy` is a status bit that can only be read (the hardware sets this bit)
 - `reset` is a command bit that can only be written (writing `true` triggers a reset)
 - `deviceMode` is a configuration field that can be both read and written

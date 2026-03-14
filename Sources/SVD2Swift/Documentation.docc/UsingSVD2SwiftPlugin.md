@@ -4,7 +4,7 @@ Generate Swift register interfaces from SVD files during of your SwiftPM build.
 
 ## Overview
 
-The `SVD2SwiftPlugin` integrates `svd2swift` into the SwiftPM build process, allowing you to exclude generated source code into your repository.
+The `SVD2SwiftPlugin` integrates `svd2swift` into the SwiftPM build process, allowing you to exclude generated source code from your repository.
 
 ### Get Started
 
