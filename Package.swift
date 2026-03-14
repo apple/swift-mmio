@@ -43,7 +43,8 @@ let package = Package(
     // MMIO
     .target(
       name: "MMIO",
-      dependencies: ["MMIOMacros", "MMIOVolatile"]),
+      dependencies: ["MMIOMacros", "MMIOVolatile"],
+      plugins: ["BuildToolVersioning"]),
     .testTarget(
       name: "MMIOTests",
       dependencies: ["MMIO", "MMIOUtilities"]),
@@ -140,6 +141,9 @@ let package = Package(
       name: "SVD2SwiftPlugin",
       capability: .buildTool,
       dependencies: ["SVD2Swift"]),
+    .plugin(
+      name: "BuildToolVersioning",
+      capability: .buildTool),
     .testTarget(
       name: "SVD2SwiftPluginTests",
       dependencies: ["MMIO"],
