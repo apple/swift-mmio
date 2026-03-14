@@ -19,7 +19,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [0.1.1] - 2025-11-08
 
-- Minor documention improvements.
+- Minor documentation improvements.
 
 The 0.1.1 release includes contributions from [rauhul]. Thank you!
 

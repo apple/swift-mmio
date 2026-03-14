@@ -4,7 +4,7 @@
   @CallToAction(
     url: "https://github.com/apple/swift-mmio",
     purpose: link,
-    label: "View on Github")
+    label: "View on GitHub")
 }
 
 Type-safe Swift bindings for memory-mapped I/O registers in embedded systems.
