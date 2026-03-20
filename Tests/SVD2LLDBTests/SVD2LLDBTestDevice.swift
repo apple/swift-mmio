@@ -63,14 +63,27 @@ private let fields: [SVDField] = [
   .init(
     name: "S",
     bitRange: .lsbMsb(.init(lsb: 31, msb: 31)),
-    enumeratedValues: .init(
-      enumeratedValue: [
-        .init(
-          name: "STOP", data: .value(.init(value: .init(value: 0, mask: mask)))),
-        .init(
-          name: "START", data: .value(.init(value: .init(value: 1, mask: mask)))
-        ),
-      ])),
+    enumeratedValues: [
+      .init(
+        usage: .read,
+        enumeratedValue: [
+          .init(
+            name: "STOP", data: .value(.init(value: .init(value: 0, mask: mask)))),
+          .init(
+            name: "START", data: .value(.init(value: .init(value: 1, mask: mask)))
+          ),
+        ]),
+      .init(
+        usage: .write,
+        enumeratedValue: [
+          .init(
+            name: "W_STOP",
+            data: .value(.init(value: .init(value: 0, mask: mask)))),
+          .init(
+            name: "W_START",
+            data: .value(.init(value: .init(value: 1, mask: mask)))),
+        ]),
+    ]),
   .init(
     name: "IDR",
     bitRange: .lsbMsb(.init(lsb: 26, msb: 27)),

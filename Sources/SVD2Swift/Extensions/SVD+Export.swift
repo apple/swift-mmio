@@ -537,13 +537,15 @@ extension SVDField: SVDExportable {
     self.description?.coalescingConsecutiveSpaces() ?? swiftTypeName
   }
 
-  func enumeration() -> SVDEnumeration? {
+  func enumeration(for usage: SVDEnumerationUsage = .readWrite) -> SVDEnumeration? {
     // FIXME: support derivedFrom
-    guard let enumeration = self.enumeratedValues else { return nil }
-    guard !enumeration.enumeratedValue.isEmpty else { return nil }
-    // FIXME: support read / insert only projections
-    guard enumeration.usage ?? .readWrite == .readWrite else { return nil }
-    return enumeration
+    let enumerations = self.enumeratedValues ?? []
+    guard !enumerations.isEmpty else { return nil }
+
+    let nonEmptyEnumerations = enumerations.filter { !$0.enumeratedValue.isEmpty }
+    guard !nonEmptyEnumerations.isEmpty else { return nil }
+
+    return nonEmptyEnumerations.first(where: { ($0.usage ?? .readWrite) == usage })
   }
 
   func childTypes() -> [any SVDExportable] {

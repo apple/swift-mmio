@@ -41,11 +41,13 @@ extension SVD2SwiftTests {
                     .init(
                       name: "A",
                       bitRange: .lsbMsb(.init(lsb: 2, msb: 6)),
-                      enumeratedValues: .init(
-                        usage: .readWrite,
-                        enumeratedValue: [
-                          .init(data: .value(0x0, mask: .max))
-                        ]))
+                      enumeratedValues: [
+                        .init(
+                          usage: .readWrite,
+                          enumeratedValue: [
+                            .init(data: .value(0x0, mask: .max))
+                          ])
+                      ]),
                   ]))
             ]))
       ]))
@@ -76,27 +78,29 @@ extension SVD2SwiftTests {
                     .init(
                       name: "A",
                       bitRange: .lsbMsb(.init(lsb: 2, msb: 6)),
-                      enumeratedValues: .init(
-                        name: "ExampleEnumeratedValues",
-                        usage: .readWrite,
-                        enumeratedValue: [
-                          .init(
-                            name: "NamedExample0",
-                            description: "An example enumerated value 0",
-                            data: .value(0x0, mask: .max)),
-                          .init(
-                            name: "NamedExample1",
-                            data: .value(0x1, mask: .max)),
-                          .init(
-                            description: "An example enumerated value 2",
-                            data: .value(0x2, mask: .max)),
-                          .init(
-                            data: .value(0x3, mask: .max)),
-                          .init(
-                            name: "ExampleDontCareBits",
-                            description: "An example with dont-care bits",
-                            data: .value(0b11100, mask: 0b11100)),
-                        ]))
+                      enumeratedValues: [
+                        .init(
+                          name: "ExampleEnumeratedValues",
+                          usage: .readWrite,
+                          enumeratedValue: [
+                            .init(
+                              name: "NamedExample0",
+                              description: "An example enumerated value 0",
+                              data: .value(0x0, mask: .max)),
+                            .init(
+                              name: "NamedExample1",
+                              data: .value(0x1, mask: .max)),
+                            .init(
+                              description: "An example enumerated value 2",
+                              data: .value(0x2, mask: .max)),
+                            .init(
+                              data: .value(0x3, mask: .max)),
+                            .init(
+                              name: "ExampleDontCareBits",
+                              description: "An example with dont-care bits",
+                              data: .value(0b11100, mask: 0b11100)),
+                          ])
+                      ]),
                   ]))
             ]))
       ]))
