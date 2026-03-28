@@ -71,7 +71,9 @@ public struct SVDField {
   /// instructed by the user.
   public var readAction: SVDReadAction?
   /// Next lower level of description.
-  public var enumeratedValues: SVDEnumeration?
+  ///
+  /// CMSIS-SVD allows up to two `enumeratedValues` elements per field.
+  public var enumeratedValues: [SVDEnumeration]?
 }
 
 extension SVDField: Decodable {}
@@ -83,3 +85,23 @@ extension SVDField: Equatable {}
 extension SVDField: Hashable {}
 
 extension SVDField: Sendable {}
+
+extension SVDField {
+  /// Backward-compatible convenience initializer for single-enumeration call sites.
+  public init(
+    name: String,
+    bitRange: SVDBitRange,
+    enumeratedValues: SVDEnumeration?
+  ) {
+    self.derivedFrom = nil
+    self.dimensionElement = nil
+    self.name = name
+    self.description = nil
+    self.bitRange = bitRange
+    self.access = nil
+    self.modifiedWriteValues = nil
+    self.writeConstraint = nil
+    self.readAction = nil
+    self.enumeratedValues = enumeratedValues.map { [$0] }
+  }
+}
