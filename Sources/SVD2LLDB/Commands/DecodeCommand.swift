@@ -169,17 +169,25 @@ struct DecodeCommand: SVD2LLDBCommand {
 
 // MARK: - Output rendering
 extension DecodeCommand {
-  func enumeration(for field: SVDField, usage: SVDEnumerationUsage = .read) -> SVDEnumeration? {
+  func enumeration(for field: SVDField, usage: SVDEnumerationUsage = .read)
+    -> SVDEnumeration?
+  {
     let enumerations = field.enumeratedValues ?? []
     guard !enumerations.isEmpty else { return nil }
 
-    let nonEmptyEnumerations = enumerations.filter { !$0.enumeratedValue.isEmpty }
+    let nonEmptyEnumerations = enumerations.filter {
+      !$0.enumeratedValue.isEmpty
+    }
     guard !nonEmptyEnumerations.isEmpty else { return nil }
 
-    if let exact = nonEmptyEnumerations.first(where: { ($0.usage ?? .readWrite) == usage }) {
+    if let exact = nonEmptyEnumerations.first(where: {
+      ($0.usage ?? .readWrite) == usage
+    }) {
       return exact
     }
-    if let readWrite = nonEmptyEnumerations.first(where: { ($0.usage ?? .readWrite) == .readWrite }) {
+    if let readWrite = nonEmptyEnumerations.first(where: {
+      ($0.usage ?? .readWrite) == .readWrite
+    }) {
       return readWrite
     }
     return nonEmptyEnumerations.first
@@ -307,7 +315,8 @@ extension DecodeCommand {
 
       var valueName: String?
       var defaultValueName: String?
-      for enumeratedValue in self.enumeration(for: field)?.enumeratedValue ?? [] {
+      for enumeratedValue in self.enumeration(for: field)?.enumeratedValue ?? []
+      {
         switch enumeratedValue.data {
         case .value(let data):
           let mask = data.value.mask[bits: range]

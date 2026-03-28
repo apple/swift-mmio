@@ -47,7 +47,7 @@ extension SVD2SwiftTests {
                           enumeratedValue: [
                             .init(data: .value(0x0, mask: .max))
                           ])
-                      ]),
+                      ])
                   ]))
             ]))
       ]))
@@ -100,7 +100,7 @@ extension SVD2SwiftTests {
                               description: "An example with dont-care bits",
                               data: .value(0b11100, mask: 0b11100)),
                           ])
-                      ]),
+                      ])
                   ]))
             ]))
       ]))

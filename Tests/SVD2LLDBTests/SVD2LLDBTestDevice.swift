@@ -68,9 +68,11 @@ private let fields: [SVDField] = [
         usage: .read,
         enumeratedValue: [
           .init(
-            name: "STOP", data: .value(.init(value: .init(value: 0, mask: mask)))),
+            name: "STOP",
+            data: .value(.init(value: .init(value: 0, mask: mask)))),
           .init(
-            name: "START", data: .value(.init(value: .init(value: 1, mask: mask)))
+            name: "START",
+            data: .value(.init(value: .init(value: 1, mask: mask)))
           ),
         ]),
       .init(
