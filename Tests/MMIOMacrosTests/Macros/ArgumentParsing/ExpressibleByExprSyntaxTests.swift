@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
@@ -80,4 +79,3 @@ struct ExpressibleByExprSyntaxTests {
     assertNoParse(expression: "1", as: BitFieldTypeProjection.self)
   }
 }
-#endif
