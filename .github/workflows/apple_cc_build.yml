@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode_version: ["16.3"]
+        xcode_version: ["26.4"]
         os:
           - name: iOS
             platform: iOS
@@ -23,7 +23,6 @@ jobs:
             platform: xrOS
           - name: watchOS
             platform: watchOS
-        arch: [arm64]
         macos_version: [tahoe]
         macos_arch: [ARM64]
     steps:
@@ -31,8 +30,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install xcbeautify
         run: |
-          curl -L https://github.com/cpisciotta/xcbeautify/releases/download/2.28.0/xcbeautify-2.28.0-arm64-apple-macosx.zip -o xcbeautify.zip
-          sha256 -c 00d16a08b426e004e5d101631515ea1bbc0ab20209541cd4cacb569d3289c9e7 xcbeautify.zip
+          curl -L https://github.com/cpisciotta/xcbeautify/releases/download/3.2.1/xcbeautify-3.2.1-arm64-apple-macosx.zip -o xcbeautify.zip
+          sha256 -c ed32972e41bc3aa19588f8b0f4a0209ef70c663ad60bbf4ad84a2de73355d637 xcbeautify.zip
           unzip xcbeautify.zip -d /tmp
           chmod +x /tmp/xcbeautify
           /tmp/xcbeautify --version
