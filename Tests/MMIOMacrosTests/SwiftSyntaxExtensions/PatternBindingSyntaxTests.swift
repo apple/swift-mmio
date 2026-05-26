@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
@@ -160,4 +159,3 @@ struct PatternBindingSyntaxTests {
     #expect(accessor == vector.accessor)
   }
 }
-#endif

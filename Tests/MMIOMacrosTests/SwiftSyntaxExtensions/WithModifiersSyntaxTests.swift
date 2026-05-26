@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import Testing
@@ -63,4 +62,3 @@ struct WithModifiersSyntaxTests {
         == vector.accessLevel?.name.tokenKind)
   }
 }
-#endif
