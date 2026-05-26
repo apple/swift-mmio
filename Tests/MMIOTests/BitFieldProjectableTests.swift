@@ -45,6 +45,68 @@ struct BitFieldProjectableTests {
     #expect(true.storage(UInt64.self) == 0x1)
     #endif
   }
+  
+  @Test func int_fromStorage() {
+    #expect(UInt8(0xF) == UInt8(storage: UInt8(0xF)))
+    #expect(UInt16(0xF) == UInt16(storage: UInt16(0xF)))
+    #expect(UInt32(0xF) == UInt32(storage: UInt32(0xF)))
+    #if arch(x86_64) || arch(arm64)
+    #expect(UInt64(0xF) == UInt64(storage: UInt64(0xF)))
+    #endif
+  }
+  
+  @Test func int_toStorage() {
+    #expect(UInt8(0xF).storage(UInt8.self) == UInt8(0xF))
+    #expect(UInt16(0xF).storage(UInt16.self) == UInt16(0xF))
+    #expect(UInt32(0xF).storage(UInt32.self) == UInt32(0xF))
+    #if arch(x86_64) || arch(arm64)
+    #expect(UInt64(0xF).storage(UInt64.self) == UInt64(0xF))
+    #endif
+  }
+  
+  /// Test that when the bit range width (8 bits) equals the type width (8 bits), there is no error.
+  @Test func int_projection_bitRange_equals_type() async {
+    
+    struct TestBitField : ContiguousBitField {
+      static let bitRange: Range = 0..<8
+      
+      typealias Storage = UInt8
+      typealias Projection = UInt8
+    }
+    
+    #expect(TestBitField.extract(from: TestBitField.Storage(0xFF)) == 0xFF)
+
+  }
+  
+  /// Test that when the bit range width (8 bits) exceeds the type width (16 bits), there is no error.
+  @Test func int_projection_bitRange_less_than_type() async {
+    
+    struct TestBitField : ContiguousBitField {
+      static let bitRange: Range = 0..<8
+      
+      typealias Storage = UInt16
+      typealias Projection = UInt16
+    }
+    
+    #expect(TestBitField.extract(from: TestBitField.Storage(0xFF)) == 0xFF)
+
+  }
+  
+  /// Test that when the bit range width (16 bits) exceeds the type width (8 bits), there is an error.
+  @Test func int_projection_bitRange_exceeds_type() async {
+    
+    struct TestBitField : ContiguousBitField {
+      static let bitRange: Range = 0..<16
+      
+      typealias Storage = UInt8
+      typealias Projection = UInt8
+    }
+    
+    await #expect(processExitsWith: .failure) {
+      _ = TestBitField.extract(from: TestBitField.Storage(0xFF))
+    }
+
+  }
 
   private enum Example: UInt8, BitFieldProjectable, CaseIterable {
     static let bitWidth = 2
