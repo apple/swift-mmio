@@ -264,9 +264,9 @@ extension Register {
   ///
   /// This is a convenience method for preparing and writing a new value to the
   /// register in a single operation. The `Value.Write` view passed to the `body`
-  /// closure is initialized with all bits set to zero. You configure this view
-  /// within the closure, and its final state is then written to the hardware
-  /// register.
+  /// closure is initialized with all bits set to zero, not with the register's
+  /// existing value. You configure this view within the closure, and its final
+  /// state is then written to the hardware register.
   ///
   /// ```swift
   /// // Write to the register using a closure
@@ -282,9 +282,10 @@ extension Register {
   /// more.
   ///
   /// - Warning: This method performs a direct write, overwriting all bits in
-  ///   the register. If you intend to modify only specific fields while
-  ///   preserving others, use the ``MMIO/Register/modify(_:)`` method instead,
-  ///   which performs a read-modify-write operation.
+  ///   the register. Fields you don't set in the closure are written as zero.
+  ///   If you intend to modify only specific fields while preserving others,
+  ///   use the ``MMIO/Register/modify(_:)`` method instead, which performs a
+  ///   read-modify-write operation.
   ///
   /// - Parameter body: A closure that receives an `inout Value.Write` view.
   ///   Modify this view to set the desired register state.
