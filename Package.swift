@@ -32,12 +32,9 @@ let package = Package(
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
       from: "1.4.0"),
-    // FIXME: Update to non-prerelease
-    // The 6.2 release is needed for `swiftlang/swift-syntax#2947` "Don’t remove
-    //#if attributes with AttributeRemover" which missed the 6.1 release.
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
-      from: "603.0.0"),
+      from: "603.0.1"),
   ],
   targets: [
     // MMIO
