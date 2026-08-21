@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode_version: ["26.4"]
+        xcode_version: ["swift_6.3"]
         os:
           - name: iOS
             platform: iOS
@@ -27,7 +27,7 @@ jobs:
         macos_arch: [ARM64]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install xcbeautify
         run: |
           curl -L https://github.com/cpisciotta/xcbeautify/releases/download/3.2.1/xcbeautify-3.2.1-arm64-apple-macosx.zip -o xcbeautify.zip
