@@ -26,13 +26,22 @@ struct MMIOFileCheckTests: Sendable {
     var buildOutputs: URL
 
     var buildModulesDirectory: URL {
+      #if compiler(>=6.4)
+      self.buildOutputs
+      #else
       self.buildOutputs
         .appendingPathComponent("Modules")
+      #endif
     }
 
     var buildMMIOMacrosFile: URL {
+      #if compiler(>=6.4)
+      self.buildOutputs
+        .appendingPathComponent("MMIOMacros")
+      #else
       self.buildOutputs
         .appendingPathComponent("MMIOMacros-tool")
+      #endif
     }
 
     var mmioVolatileDirectory: URL {
