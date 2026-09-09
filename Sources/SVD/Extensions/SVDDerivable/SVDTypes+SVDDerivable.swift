@@ -15,6 +15,9 @@ extension SVDPeripheral: SVDDerivable {
   static let kind = "Peripheral"
 
   mutating func merging(_ other: Self) {
+    self.registerProperties = self.registerProperties.merging(
+      other.registerProperties)
+
     self.derivedFrom ??= other.derivedFrom
     self.version ??= other.version
     self.description ??= other.description
@@ -34,6 +37,9 @@ extension SVDCluster: SVDDerivable {
   static let kind = "Cluster"
 
   mutating func merging(_ other: Self) {
+    self.registerProperties = self.registerProperties.merging(
+      other.registerProperties)
+
     self.alternateCluster ??= other.alternateCluster
     self.headerStructName ??= other.headerStructName
     self.cluster ??= other.cluster
@@ -45,6 +51,9 @@ extension SVDRegister: SVDDerivable {
   static let kind = "Register"
 
   mutating func merging(_ other: Self) {
+    self.registerProperties = self.registerProperties.merging(
+      other.registerProperties)
+
     self.displayName ??= other.displayName
     self.description ??= other.description
     self.alternateGroup ??= other.alternateGroup
