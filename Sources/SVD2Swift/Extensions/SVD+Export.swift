@@ -697,25 +697,25 @@ extension SVDEnumeration: SVDExportable {
             outputWriter.insert(
               """
               \(comment: swiftDescription)
-              \(options.accessLevel)static let \(swiftName) = Self(rawValue: \(hex: value))
+              \(options.accessLevel)static let \(identifier: swiftName) = Self(rawValue: \(hex: value))
               """)
 
           default:
             outputWriter.insert(
               """
               \(comment: swiftDescription)
-              \(options.accessLevel)static let \(swiftName) = Pattern(rawValue: \(hex: value), mask: \(hex: mask, bits: bitWidth))
+              \(options.accessLevel)static let \(identifier: swiftName) = Pattern(rawValue: \(hex: value), mask: \(hex: mask, bits: bitWidth))
               """)
 
             let factoryScope = """
               \(comment: swiftDescription)
-              \(options.accessLevel)static func \(swiftName)(_ rawValue: \(rawValueType) = \(swiftName).value) -> Self
+              \(options.accessLevel)static func \(identifier: swiftName)(_ rawValue: \(rawValueType) = \(identifier: swiftName).value) -> Self
               """
             outputWriter.scope(factoryScope) { outputWriter in
               outputWriter.insert(
                 """
                 let value = Self(rawValue: rawValue)
-                precondition(\(swiftName) ~= value, "Invalid bits set in rawValue")
+                precondition(\(identifier: swiftName) ~= value, "Invalid bits set in rawValue")
                 return value
                 """)
             }
