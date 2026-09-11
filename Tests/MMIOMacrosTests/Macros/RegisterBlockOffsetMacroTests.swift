@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
@@ -297,4 +296,3 @@ struct RegisterBlockOffsetMacroTests {
       indentationWidth: Self.indentationWidth)
   }
 }
-#endif
