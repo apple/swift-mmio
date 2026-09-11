@@ -32,6 +32,7 @@ extension SVD2SwiftTests {
           interrupt: [
             .init(name: "TIMER0", description: "Timer 0", value: 4),
             .init(name: "TIMER0_CC", value: 5),
+            .init(name: "TIMER0_EXTI", description: "Timer 0, via EXTI", value: 4),
           ]),
         .init(
           derivedFrom: "TIMER0",
@@ -72,6 +73,9 @@ extension SVD2SwiftTests {
 
           /// Timer 0
           case timer0 = 4
+
+          /// Timer 0, via EXTI
+          static var timer0_exti: Self { .timer0 }
 
           /// TIMER0_CC
           case timer0_cc = 5

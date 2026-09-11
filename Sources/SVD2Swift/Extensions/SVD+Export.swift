@@ -267,16 +267,10 @@ extension SVDDevice: SVDExportable {
     context: ExportContext
   ) {}
 
-  /// The device's interrupts, by NVIC number: every peripheral's interrupts,
-  /// not just the selected ones, since the interrupt table is a property of
-  /// the device as a whole.
-  ///
-  /// Derived peripherals inherit their parent's interrupts, so the same
-  /// interrupt can appear more than once; the first occurrence wins.
-  func outputInterrupts() -> [SVDInterrupt] {
-    var interrupts: [SVDInterrupt] = []
+  func outputInterrupts() -> [(interrupt: SVDInterrupt, aliases: [SVDInterrupt])] {
+    var interrupts: [(interrupt: SVDInterrupt, aliases: [SVDInterrupt])] = []
     var seenNames: Set<String> = []
-    var seenValues: Set<UInt64> = []
+    var indexByValue: [UInt64: Int] = [:]
 
     for peripheral in self.peripherals.peripheral {
       for interrupt in peripheral.interrupt {
@@ -284,20 +278,16 @@ extension SVDDevice: SVDExportable {
           continue
         }
 
-        guard seenValues.insert(interrupt.value).inserted else {
-          print(
-            """
-            warning: skipping interrupt '\(interrupt.name)': \
-            value \(interrupt.value) is already used by another interrupt
-            """)
-          continue
+        if let index = indexByValue[interrupt.value] {
+          interrupts[index].aliases.append(interrupt)
+        } else {
+          indexByValue[interrupt.value] = interrupts.count
+          interrupts.append((interrupt: interrupt, aliases: []))
         }
-
-        interrupts.append(interrupt)
       }
     }
 
-    return interrupts.sorted { $0.value < $1.value }
+    return interrupts.sorted { $0.interrupt.value < $1.interrupt.value }
   }
 
   func exportInterrupts(
@@ -316,16 +306,29 @@ extension SVDDevice: SVDExportable {
       """
 
     outputWriter.scope(scope) { outputWriter in
-      for interrupt in interrupts {
+      for (interrupt, aliases) in interrupts {
+        let swiftName = interrupt.name.lowercased()
         let desc = interrupt.description?.coalescingConsecutiveSpaces()
         let swiftDescription = desc ?? interrupt.name
 
         outputWriter.insert(
           """
           \(comment: swiftDescription)
-          case \(identifier: interrupt.name.lowercased()) = \(interrupt.value)
+          case \(identifier: swiftName) = \(interrupt.value)
           """
         )
+
+        for alias in aliases {
+          let desc = alias.description?.coalescingConsecutiveSpaces()
+          let swiftDescription = desc ?? alias.name
+
+          outputWriter.insert(
+            """
+            \(comment: swiftDescription)
+            \(options.accessLevel)static var \(identifier: alias.name.lowercased()): Self { .\(identifier: swiftName) }
+            """
+          )
+        }
       }
     }
   }
