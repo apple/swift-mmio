@@ -254,6 +254,8 @@ extension SVDDevice: SVDExportable {
           options: options,
           context: context.asParentContext().childContext(for: peripheral))
       }
+
+      self.exportInterrupts(outputWriter: &outputWriter, options: options)
     }
 
     return outputPeripherals
@@ -264,6 +266,72 @@ extension SVDDevice: SVDExportable {
     options: ExportOptions,
     context: ExportContext
   ) {}
+
+  func outputInterrupts() -> [(interrupt: SVDInterrupt, aliases: [SVDInterrupt])] {
+    var interrupts: [(interrupt: SVDInterrupt, aliases: [SVDInterrupt])] = []
+    var seenNames: Set<String> = []
+    var indexByValue: [UInt64: Int] = [:]
+
+    for peripheral in self.peripherals.peripheral {
+      for interrupt in peripheral.interrupt {
+        guard seenNames.insert(interrupt.name).inserted else {
+          continue
+        }
+
+        if let index = indexByValue[interrupt.value] {
+          interrupts[index].aliases.append(interrupt)
+        } else {
+          indexByValue[interrupt.value] = interrupts.count
+          interrupts.append((interrupt: interrupt, aliases: []))
+        }
+      }
+    }
+
+    return interrupts.sorted { $0.interrupt.value < $1.interrupt.value }
+  }
+
+  func exportInterrupts(
+    outputWriter: inout OutputWriter,
+    options: ExportOptions
+  ) {
+    let interrupts = self.outputInterrupts()
+
+    guard !interrupts.isEmpty else {
+      return
+    }
+
+    let scope = """
+      /// Device interrupts, by NVIC number.
+      \(options.accessLevel)enum Interrupt: UInt16
+      """
+
+    outputWriter.scope(scope) { outputWriter in
+      for (interrupt, aliases) in interrupts {
+        let swiftName = interrupt.name.lowercased()
+        let desc = interrupt.description?.coalescingConsecutiveSpaces()
+        let swiftDescription = desc ?? interrupt.name
+
+        outputWriter.insert(
+          """
+          \(comment: swiftDescription)
+          case \(identifier: swiftName) = \(interrupt.value)
+          """
+        )
+
+        for alias in aliases {
+          let desc = alias.description?.coalescingConsecutiveSpaces()
+          let swiftDescription = desc ?? alias.name
+
+          outputWriter.insert(
+            """
+            \(comment: swiftDescription)
+            \(options.accessLevel)static var \(identifier: alias.name.lowercased()): Self { .\(identifier: swiftName) }
+            """
+          )
+        }
+      }
+    }
+  }
 }
 
 extension SVDPeripheral: SVDExportable {
