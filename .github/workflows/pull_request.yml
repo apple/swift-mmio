@@ -33,7 +33,7 @@ jobs:
 
   tests:
     name: Test
-    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.14
+    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.15
     with:
       enable_macos_checks: true
       enable_windows_checks: false  # too slow
@@ -48,7 +48,7 @@ jobs:
 
   soundness:
     name: Soundness
-    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.14
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.15
     with:
       api_breakage_check_enabled: false  # this repo isn't API stable yet
       docs_check_additional_arguments: |
