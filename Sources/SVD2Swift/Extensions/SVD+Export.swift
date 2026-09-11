@@ -254,6 +254,8 @@ extension SVDDevice: SVDExportable {
           options: options,
           context: context.asParentContext().childContext(for: peripheral))
       }
+
+      self.exportInterrupts(outputWriter: &outputWriter, options: options)
     }
 
     return outputPeripherals
@@ -264,6 +266,69 @@ extension SVDDevice: SVDExportable {
     options: ExportOptions,
     context: ExportContext
   ) {}
+
+  /// The device's interrupts, by NVIC number: every peripheral's interrupts,
+  /// not just the selected ones, since the interrupt table is a property of
+  /// the device as a whole.
+  ///
+  /// Derived peripherals inherit their parent's interrupts, so the same
+  /// interrupt can appear more than once; the first occurrence wins.
+  func outputInterrupts() -> [SVDInterrupt] {
+    var interrupts: [SVDInterrupt] = []
+    var seenNames: Set<String> = []
+    var seenValues: Set<UInt64> = []
+
+    for peripheral in self.peripherals.peripheral {
+      for interrupt in peripheral.interrupt {
+        guard seenNames.insert(interrupt.name).inserted else {
+          continue
+        }
+
+        guard seenValues.insert(interrupt.value).inserted else {
+          print(
+            """
+            warning: skipping interrupt '\(interrupt.name)': \
+            value \(interrupt.value) is already used by another interrupt
+            """)
+          continue
+        }
+
+        interrupts.append(interrupt)
+      }
+    }
+
+    return interrupts.sorted { $0.value < $1.value }
+  }
+
+  func exportInterrupts(
+    outputWriter: inout OutputWriter,
+    options: ExportOptions
+  ) {
+    let interrupts = self.outputInterrupts()
+
+    guard !interrupts.isEmpty else {
+      return
+    }
+
+    let scope = """
+      /// Device interrupts, by NVIC number.
+      \(options.accessLevel)enum Interrupt: UInt16
+      """
+
+    outputWriter.scope(scope) { outputWriter in
+      for interrupt in interrupts {
+        let desc = interrupt.description?.coalescingConsecutiveSpaces()
+        let swiftDescription = desc ?? interrupt.name
+
+        outputWriter.insert(
+          """
+          \(comment: swiftDescription)
+          case \(identifier: interrupt.name.lowercased()) = \(interrupt.value)
+          """
+        )
+      }
+    }
+  }
 }
 
 extension SVDPeripheral: SVDExportable {
