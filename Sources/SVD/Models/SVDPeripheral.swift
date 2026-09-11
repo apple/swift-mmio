@@ -104,7 +104,7 @@ public struct SVDPeripheral {
   ///
   /// This entry allows the debugger to show interrupt names instead of
   /// interrupt numbers.
-  public var interrupt: SVDInterrupt?  // FIXME: Array<SVDInterrupt>
+  public var interrupt: [SVDInterrupt]?
   /// Group to enclose register definitions.
   public var registers: SVDRegisters?
 }
