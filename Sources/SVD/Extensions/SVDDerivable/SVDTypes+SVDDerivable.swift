@@ -25,7 +25,7 @@ extension SVDPeripheral: SVDDerivable {
     self.headerStructName ??= other.headerStructName
     self.disableCondition ??= other.disableCondition
     self.addressBlock ??= other.addressBlock
-    self.interrupt ??= other.interrupt
+    if self.interrupt.isEmpty { self.interrupt = other.interrupt }
     self.registers ??= other.registers
   }
 }
