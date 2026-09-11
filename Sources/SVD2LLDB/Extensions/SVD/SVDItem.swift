@@ -90,7 +90,7 @@ extension SVDPeripheral: SVDItem {
     if let version { info.append(("Version", "\(version)")) }
     if let description { info.append(("Description", "\(description)")) }
     info.append(("Address", "\(hex: address)"))
-    if let interrupt = self.interrupt {
+    for interrupt in self.interrupt ?? [] {
       info.append(("Interrupt Name", "\(interrupt.name)"))
       if let description = interrupt.description {
         info.append(("Interrupt Description", "\(description)"))
