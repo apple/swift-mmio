@@ -38,7 +38,10 @@ extension SVDPeripheral {
   }
 
   func register(name: some StringProtocol) -> SVDRegister? {
-    self.registers?.register.first(where: { $0.name.matches(name) })
+    if let reg = self.registers?.register.first(where: { $0.name.matches(name) }) {
+      return reg
+    }
+    return self.registers?.register.first(where: { $0.dimIndex(for: name) != nil })
   }
 
   func address(
@@ -53,6 +56,10 @@ extension SVDPeripheral {
         at: keyPath,
         baseAddress: baseAddress + item.addressOffset)
     } else if let item = self.register(name: key) {
+      if let index = item.dimIndex(for: key) {
+        let addr = item.address(forDimIndex: index, baseAddress: baseAddress + item.addressOffset) ?? (baseAddress + item.addressOffset)
+        return item.address(at: keyPath, baseAddress: addr)
+      }
       return item.address(
         at: keyPath,
         baseAddress: baseAddress + item.addressOffset)
