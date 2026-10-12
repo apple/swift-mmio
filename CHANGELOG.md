@@ -14,6 +14,7 @@ This changelog's format is based on
 - Updates to Swift 6.4 as minimum required version.
 - Raises minimum deployment targets to macOS 12, iOS 15, tvOS 15, watchOS 9,
   and Mac Catalyst 15, the oldest versions that Swift 6.4 supports.
+- Enables strict memory safety checking for the MMIO module.
 
 <!--
 Add new items at the end of the relevant section under **Unreleased**.

@@ -40,7 +40,8 @@ let package = Package(
     // MMIO
     .target(
       name: "MMIO",
-      dependencies: ["MMIOMacros", "MMIOVolatile"]),
+      dependencies: ["MMIOMacros", "MMIOVolatile"],
+      swiftSettings: [.strictMemorySafety()]),
     .testTarget(
       name: "MMIOTests",
       dependencies: ["MMIO", "MMIOUtilities"]),
@@ -52,7 +53,10 @@ let package = Package(
     .target(
       name: "MMIOInterposable",
       dependencies: ["MMIOMacros", "MMIOVolatile"],
-      swiftSettings: [.define("FEATURE_INTERPOSABLE")]),
+      swiftSettings: [
+        .define("FEATURE_INTERPOSABLE"),
+        .strictMemorySafety(),
+      ]),
     .testTarget(
       name: "MMIOInterposableTests",
       dependencies: ["MMIOInterposable", "MMIOUtilities"],
