@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.4
 
 import CompilerPluginSupport
 import PackageDescription
@@ -6,11 +6,11 @@ import PackageDescription
 let package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS(.v10_15),
-    .iOS(.v13),
-    .tvOS(.v13),
-    .watchOS(.v6),
-    .macCatalyst(.v13),
+    .macOS(.v12),
+    .iOS(.v15),
+    .tvOS(.v15),
+    .watchOS(.v9),
+    .macCatalyst(.v15),
     .visionOS(.v1),
   ],
   products: [

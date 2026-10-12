@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode_version: ["swift_6.3"]
+        xcode_version: ["swift_6.4"]
         os:
           - name: iOS
             platform: iOS

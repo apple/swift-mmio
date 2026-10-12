@@ -38,12 +38,21 @@ jobs:
       enable_macos_checks: true
       enable_windows_checks: false  # too slow
       swift_flags: --configuration release
-      # minimum Swift version is 6.1
+      # minimum Swift version is 6.4
       linux_exclude_swift_versions: |
         [
           {"swift_version": "5.9"},
           {"swift_version": "5.10"},
           {"swift_version": "6.0"},
+          {"swift_version": "6.1"},
+          {"swift_version": "6.2"},
+          {"swift_version": "6.3"},
+        ]
+      macos_exclude_xcode_versions: |
+        [
+          {"xcode_version": "swift_6.1"},
+          {"xcode_version": "swift_6.2"},
+          {"xcode_version": "swift_6.3"},
         ]
 
   soundness:
@@ -51,6 +60,8 @@ jobs:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.15
     with:
       api_breakage_check_enabled: false  # this repo isn't API stable yet
+      # minimum Swift version is 6.4
+      docs_check_container_image: "swift:6.4-noble"
       docs_check_additional_arguments: |
         --enable-experimental-combined-documentation
         --enable-experimental-overloaded-symbol-presentation
