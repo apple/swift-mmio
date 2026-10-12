@@ -62,7 +62,8 @@ jobs:
       api_breakage_check_enabled: false  # this repo isn't API stable yet
       # minimum Swift version is 6.4
       docs_check_container_image: "swift:6.4-noble"
+      # Keep in sync with documentation_targets in .spi.yml.
+      docs_check_targets: MMIO SVD SVD2LLDB SVD2Swift
       docs_check_additional_arguments: |
-        --enable-experimental-combined-documentation
         --enable-experimental-overloaded-symbol-presentation
         --symbol-graph-minimum-access-level public
