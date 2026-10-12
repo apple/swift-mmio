@@ -177,7 +177,7 @@ extension Register {
   var pointer: UnsafeMutablePointer<Value.Raw.Storage> {
     // Unsafety is justified by the `unsafeAddress` initializer precondition
     // and the nature of MMIO.
-    .init(bitPattern: self.unsafeAddress).unsafelyUnwrapped
+    unsafe .init(bitPattern: self.unsafeAddress).unsafelyUnwrapped
   }
 
   /// Performs a volatile read from the register and returns a read view of
@@ -208,12 +208,12 @@ extension Register {
     let storage: Value.Raw.Storage
     #if FEATURE_INTERPOSABLE
     if let interposer = self.interposer {
-      storage = interposer.load(from: self.pointer)
+      storage = unsafe interposer.load(from: self.pointer)
     } else {
-      storage = Value.Raw.Storage.load(from: self.pointer)
+      storage = unsafe Value.Raw.Storage.load(from: self.pointer)
     }
     #else
-    storage = Value.Raw.Storage.load(from: self.pointer)
+    storage = unsafe Value.Raw.Storage.load(from: self.pointer)
     #endif
     return Value.Read(Value.Raw(storage))
   }
@@ -250,12 +250,12 @@ extension Register {
     let storage = Value.Raw(newValue).storage
     #if FEATURE_INTERPOSABLE
     if let interposer = self.interposer {
-      interposer.store(storage, to: self.pointer)
+      unsafe interposer.store(storage, to: self.pointer)
     } else {
-      Value.Raw.Storage.store(storage, to: self.pointer)
+      unsafe Value.Raw.Storage.store(storage, to: self.pointer)
     }
     #else
-    Value.Raw.Storage.store(storage, to: self.pointer)
+    unsafe Value.Raw.Storage.store(storage, to: self.pointer)
     #endif
   }
 

@@ -64,7 +64,7 @@ extension UInt8: _RegisterStorage {
   /// address.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint8_t(pointer)
+    unsafe mmio_volatile_load_uint8_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt8` value to the specified memory
@@ -74,7 +74,7 @@ extension UInt8: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint8_t(pointer, value)
+    unsafe mmio_volatile_store_uint8_t(pointer, value)
   }
 }
 
@@ -83,7 +83,7 @@ extension UInt16: _RegisterStorage {
   /// address.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint16_t(pointer)
+    unsafe mmio_volatile_load_uint16_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt16` value to the specified memory
@@ -93,7 +93,7 @@ extension UInt16: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint16_t(pointer, value)
+    unsafe mmio_volatile_store_uint16_t(pointer, value)
   }
 }
 
@@ -102,7 +102,7 @@ extension UInt32: _RegisterStorage {
   /// address.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint32_t(pointer)
+    unsafe mmio_volatile_load_uint32_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt32` value to the specified memory
@@ -112,7 +112,7 @@ extension UInt32: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint32_t(pointer, value)
+    unsafe mmio_volatile_store_uint32_t(pointer, value)
   }
 }
 
@@ -123,7 +123,7 @@ extension UInt64: _RegisterStorage {
   /// address.
   @inlinable @inline(__always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
-    mmio_volatile_load_uint64_t(pointer)
+    unsafe mmio_volatile_load_uint64_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt64` value to the specified memory
@@ -133,7 +133,7 @@ extension UInt64: _RegisterStorage {
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
   ) {
-    mmio_volatile_store_uint64_t(pointer, value)
+    unsafe mmio_volatile_store_uint64_t(pointer, value)
   }
 }
 #endif
