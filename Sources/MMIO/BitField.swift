@@ -114,16 +114,16 @@ extension BitField {
     #if hasFeature(Embedded)
     // FIXME: Embedded doesn't have static interpolated strings yet
     precondition(
-      Self.bitWidth == Projection.bitWidth,
-      "Illegal projection of bit-field as type of differing bit-width",
+      Self.bitWidth <= Projection.bitWidth,
+      "Illegal projection of bit-field (projection bit-width must equal or exceed storage bit-width)",
       file: file,
       line: line)
     #else
     precondition(
-      Self.bitWidth == Projection.bitWidth,
+      Self.bitWidth <= Projection.bitWidth,
       """
       Illegal projection of \(Self.bitWidth) bit bit-field '\(Self.self)' \
-      as \(Projection.bitWidth) bit type '\(Projection.self)'
+      as \(Projection.bitWidth) bit type '\(Projection.self) (projection bit-width must equal or exceed storage bit width)'
       """,
       file: file,
       line: line)
