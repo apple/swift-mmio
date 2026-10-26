@@ -657,6 +657,15 @@ extension SVDField: SVDExportable {
       return ", as: \(name).self"
     }
 
+    // Returns the bitfield macro's bits argument, using a bit index, e.g.
+    // "bits: 3", for fields which are exactly one bit wide.
+    func _bits(_ bitRange: Range<UInt64>) -> String {
+      guard bitRange.count == 1 else {
+        return "bits: \(bitRange.lowerBound)..<\(bitRange.upperBound)"
+      }
+      return "bits: \(bitRange.lowerBound)"
+    }
+
     let range = self.bitRange.range
     if let dimensionElement = self.dimensionElement {
       let count = dimensionElement.dim
@@ -667,10 +676,12 @@ extension SVDField: SVDExportable {
       // to describe an array like RegisterArray
       for index in 0..<count {
         let bitOffset = stride * index
+        let shiftedRange =
+          (range.lowerBound + bitOffset)..<(range.upperBound + bitOffset)
         outputWriter.insert(
           """
           \(comment: context.swiftDescription)
-          @\(macro)(bits: \(range.lowerBound + bitOffset)..<\(range.upperBound + bitOffset)\(_projection()))
+          @\(macro)(\(_bits(shiftedRange))\(_projection()))
           \(options.accessLevel)var \(identifier: "\(context.swiftInstanceName)\(index)"): \(context.swiftTypeName)\(index)
           """)
       }
@@ -678,7 +689,7 @@ extension SVDField: SVDExportable {
       outputWriter.insert(
         """
         \(comment: context.swiftDescription)
-        @\(macro)(bits: \(range.lowerBound)..<\(range.upperBound)\(_projection()))
+        @\(macro)(\(_bits(range))\(_projection()))
         \(options.accessLevel)var \(identifier: context.swiftInstanceName): \(context.swiftTypeName)
         """)
     }

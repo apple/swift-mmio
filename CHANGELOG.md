@@ -9,6 +9,14 @@ This changelog's format is based on
 
 ## [Unreleased]
 
+### Additions
+
+- Adds support for integer bit indices in bit field macros. Each index
+  describes a single-bit range, so `@ReadWrite(bits: 12)` is equivalent to
+  `@ReadWrite(bits: 12..<13)` and `@ReadWrite(bits: 0, 3)` is equivalent to
+  `@ReadWrite(bits: 0..<1, 3..<4)`. Indices and ranges can be mixed in a single
+  macro application, e.g. `@ReadWrite(bits: 0, 4..<6)`.
+
 ### Changes
 
 - Updates to Swift 6.4 as minimum required version.
@@ -20,6 +28,9 @@ This changelog's format is based on
   single macro application, e.g. `@ReadWrite(bits: 0..<2, 4...5)`. Negative
   range bounds are now diagnosed as outside the register's bounds, and empty
   ranges as requiring a non-empty range.
+- Updates `SVD2Swift` to export fields which are exactly one bit wide using a
+  bit index instead of a range, e.g. `@ReadWrite(bits: 12)` instead of
+  `@ReadWrite(bits: 12..<13)`.
 
 ### Fixes
 

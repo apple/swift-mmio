@@ -544,6 +544,168 @@ struct RegisterMacroTests {
       indentationWidth: Self.indentationWidth)
   }
 
+  @Test func expansion_discontiguousSingleBits() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @ReadWrite(bits: 0, 3, as: UInt16.self)
+        var v1: V1
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V1: DiscontiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = UInt16
+            static let bitRanges = [0 ..< 1, 3 ..< 4]
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            var v1: UInt16 {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func expansion_discontiguousIndicesAndRanges() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @ReadWrite(bits: 0, 2..<4, as: UInt8.self)
+        var v1: V1
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V1: DiscontiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = UInt8
+            static let bitRanges = [0 ..< 1, 2 ..< 4]
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
   @Test func expansion_asymmetric() {
     assertMacroExpansion(
       """
@@ -927,6 +1089,102 @@ struct RegisterMacroTests {
       indentationWidth: Self.indentationWidth)
   }
 
+  @Test func expansion_singleBit() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 32)
+      struct SingleBit {
+        @Reserved(bits: 0)
+        var low: Low
+        @Reserved(bits: 31)
+        var high: High
+      }
+      """,
+      expandedSource: """
+        struct SingleBit {
+          @available(*, unavailable)
+          var low: Low {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var high: High {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum Low: ContiguousBitField {
+            typealias Storage = UInt32
+            typealias Projection = Never
+            static let bitRange = 0 ..< 1
+          }
+
+          enum High: ContiguousBitField {
+            typealias Storage = UInt32
+            typealias Projection = Never
+            static let bitRange = 31 ..< 32
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = SingleBit
+            typealias Storage = UInt32
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var low: UInt32 {
+              @inlinable @inline(__always) get {
+                Low.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Low.insertBits(newValue, into: &self.storage)
+              }
+            }
+            var high: UInt32 {
+              @inlinable @inline(__always) get {
+                High.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                High.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = SingleBit
+            var storage: UInt32
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension SingleBit: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
   @Test func accessLevel_propagation() {
     assertMacroExpansion(
       """
@@ -1135,6 +1393,97 @@ struct RegisterMacroTests {
       indentationWidth: Self.indentationWidth)
   }
 
+  @Test func singleBitOutOfValidRegisterRange_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @Reserved(bits: 10)
+        var v: V
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v: V {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V: ContiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = Never
+            static let bitRange = 7 ..< 8
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v: UInt8 {
+              @inlinable @inline(__always) get {
+                V.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.bitFieldOutOfBounds(
+            attribute: "@Reserved(bits: 10)",
+            pluralize: false
+          ).message,
+          line: 3,
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message:
+                "bit range '10' extends outside register bit range '0..<8'",
+              line: 3,
+              column: 19)
+          ])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
   @Test func negativeRangeBound_emitsDiagnostics() {
     assertMacroExpansion(
       """
@@ -1218,6 +1567,97 @@ struct RegisterMacroTests {
             .init(
               message:
                 "bit range '-1..<1' extends outside register bit range '0..<8'",
+              line: 3,
+              column: 19)
+          ])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func negativeBitIndex_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @Reserved(bits: -1)
+        var v: V
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v: V {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V: ContiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = Never
+            static let bitRange = 0 ..< 1
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v: UInt8 {
+              @inlinable @inline(__always) get {
+                V.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.bitFieldOutOfBounds(
+            attribute: "@Reserved(bits: -1)",
+            pluralize: false
+          ).message,
+          line: 3,
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message:
+                "bit range '-1' extends outside register bit range '0..<8'",
               line: 3,
               column: 19)
           ])
@@ -1325,6 +1765,102 @@ struct RegisterMacroTests {
               message: "bit range '36..<44' overlaps bit range '16..<48'",
               line: 3,
               column: 44),
+          ]
+        )
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func bitFieldWithOverlappingIndexAndRange_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 8)
+      struct S {
+        @Reserved(bits: 2, 0..<4)
+        var field: Field
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var field: Field {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum Field: DiscontiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = Never
+            static let bitRanges = [2 ..< 3, 0 ..< 4]
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var field: UInt8 {
+              @inlinable @inline(__always) get {
+                Field.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                Field.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.bitFieldOverlappingBitRanges(
+            attribute: "@Reserved(bits: 2, 0..<4)"
+          )
+          .message,
+          line: 3,
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message:
+                "bit range '0..<4' overlaps bit range '2' over subrange '2..<3'",
+              line: 3,
+              column: 22),
+            .init(
+              message: "bit range '2' overlaps bit range '0..<4'",
+              line: 3,
+              column: 19),
           ]
         )
       ],

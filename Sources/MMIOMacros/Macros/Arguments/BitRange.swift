@@ -120,9 +120,8 @@ extension BitRange: ExpressibleByExprSyntax {
   ) throws {
     if let sequence = expression.as(SequenceExprSyntax.self) {
       let folded = try OperatorTable.standardOperators.foldSingle(sequence)
-      guard !folded.is(SequenceExprSyntax.self) else {
-        throw context.error(at: expression, message: .expectedRangeLiteral())
-      }
+      // A sequence which did not fold into a single expression is diagnosed
+      // by the initializer below.
       try self.init(original: expression, expression: folded, in: context)
     } else {
       try self.init(original: expression, expression: expression, in: context)
@@ -134,6 +133,14 @@ extension BitRange: ExpressibleByExprSyntax {
     expression: ExprSyntax,
     in context: MacroContext<some ParsableMacro, some MacroExpansionContext>
   ) throws {
+    // An integer bit index, e.g. the `3` in `@ReadWrite(bits: 3)`, describes
+    // the single-bit range `3...3`.
+    if let bitIndex = Self.integer(from: expression) {
+      self.lowerBound = .init(value: bitIndex, inclusive: true)
+      self.upperBound = .init(value: bitIndex, inclusive: true)
+      return
+    }
+
     let lowerBoundExpression: ExprSyntax?
     let operatorText: String
     let upperBoundExpression: ExprSyntax?
@@ -152,7 +159,8 @@ extension BitRange: ExpressibleByExprSyntax {
     case .infixOperatorExpr(let infix):
       lowerBoundExpression = infix.leftOperand
       guard let op = infix.operator.as(BinaryOperatorExprSyntax.self) else {
-        throw context.error(at: original, message: .expectedRangeLiteral())
+        throw context.error(
+          at: original, message: .expectedIntegerOrRangeLiteral())
       }
       operatorText = op.operator.text
       upperBoundExpression = infix.rightOperand
@@ -163,7 +171,8 @@ extension BitRange: ExpressibleByExprSyntax {
       upperBoundExpression = nil
 
     default:
-      throw context.error(at: original, message: .expectedRangeLiteral())
+      throw context.error(
+        at: original, message: .expectedIntegerOrRangeLiteral())
     }
 
     let upperBoundInclusive: Bool
@@ -173,7 +182,8 @@ extension BitRange: ExpressibleByExprSyntax {
     case "...":
       upperBoundInclusive = true
     default:
-      throw context.error(at: original, message: .expectedRangeLiteral())
+      throw context.error(
+        at: original, message: .expectedIntegerOrRangeLiteral())
     }
 
     func bound(_ expression: ExprSyntax) throws -> Int {
@@ -198,12 +208,13 @@ extension BitRange: ExpressibleByExprSyntax {
     }
   }
 
-  /// Returns the value of an integer literal expression, such as the `-3` in
-  /// `@ReadWrite(bits: -3..<4)`, or nil if the expression is not an integer
-  /// literal.
+  /// Returns the value of an integer literal expression, such as the `3` in
+  /// `@ReadWrite(bits: 3)` or the `-3` in `@ReadWrite(bits: -3..<4)`, or nil
+  /// if the expression is not an integer literal.
   ///
-  /// A leading '-' is accepted so that negative range bounds are diagnosed as
-  /// outside the register's bounds instead of as malformed values.
+  /// A leading '-' is accepted so that negative bit indices and range bounds
+  /// are diagnosed as outside the register's bounds instead of as malformed
+  /// values.
   private static func integer(from expression: ExprSyntax) -> Int? {
     if let integerLiteral = expression.as(IntegerLiteralExprSyntax.self) {
       return integerLiteral.value
@@ -238,12 +249,15 @@ extension BitRange: LosslessStringConvertible {
 }
 
 extension ErrorDiagnostic {
-  static func expectedRangeLiteral() -> Self {
-    .init("'\(Macro.signature)' requires expression to be a range literal")
-  }
-
   static func expectedNonEmptyRange() -> Self {
     .init("'\(Macro.signature)' requires expression to be a non-empty range")
+  }
+
+  static func expectedIntegerOrRangeLiteral() -> Self {
+    .init(
+      """
+      '\(Macro.signature)' requires expression to be an integer or range literal
+      """)
   }
 }
 

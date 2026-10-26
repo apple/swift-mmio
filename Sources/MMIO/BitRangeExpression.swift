@@ -12,14 +12,17 @@
 /// A type that describes the bits of a bit field in a bit field macro, such as
 /// ``MMIO/ReadWrite(bits:as:)``.
 ///
-/// A range literal with integer bounds describes the bits in the range. You
-/// can use different kinds of ranges together in one macro, for example
-/// `@ReadWrite(bits: 0..<2, 4...5)`. The first item provides the least
-/// significant bits of the field.
+/// An integer bit index describes a single-bit range, so `3` is equal to
+/// `3..<4`. A range literal with integer bounds describes the bits in the
+/// range. You can use indices and ranges together in one macro, for example
+/// `@ReadWrite(bits: 0, 4..<6)`. The first item provides the least significant
+/// bits of the field.
 ///
 /// The bit field macros read the bits from the source text of the macro
 /// arguments. Do not add conformances to this protocol.
 @_marker public protocol BitRangeExpression {}
+
+extension Int: BitRangeExpression {}
 
 extension Range: BitRangeExpression where Bound: BinaryInteger {}
 

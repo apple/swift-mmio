@@ -65,7 +65,13 @@ extension SVD2SwiftTests {
                                 dim: 5,
                                 dimIncrement: 5),
                               name: "ExampleField",
-                              bitRange: .lsbMsb(.init(lsb: 2, msb: 3)))
+                              bitRange: .lsbMsb(.init(lsb: 2, msb: 3))),
+                            .init(
+                              dimensionElement: .init(
+                                dim: 2,
+                                dimIncrement: 1),
+                              name: "ExampleFlag",
+                              bitRange: .lsbMsb(.init(lsb: 0, msb: 0))),
                           ]))
                     ])
                 ])
@@ -124,6 +130,14 @@ extension SVD2SwiftTests {
           /// An example register
           @Register(bitWidth: 32)
           struct ExampleRegister {
+            /// ExampleFlag
+            @ReadWrite(bits: 0)
+            var exampleflag0: ExampleFlag0
+
+            /// ExampleFlag
+            @ReadWrite(bits: 1)
+            var exampleflag1: ExampleFlag1
+
             /// ExampleField
             @ReadWrite(bits: 2..<4)
             var examplefield0: ExampleField0

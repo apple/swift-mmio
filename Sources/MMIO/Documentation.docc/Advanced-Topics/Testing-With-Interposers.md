@@ -192,7 +192,7 @@ import Testing
 
 @Register(bitWidth: 32)
 struct ControlRegister {
-    @ReadWrite(bits: 0..<1, as: Bool.self)
+    @ReadWrite(bits: 0, as: Bool.self)
     var enable: ENABLE
 
     @ReadWrite(bits: 1..<3)

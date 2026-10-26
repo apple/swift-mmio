@@ -39,7 +39,7 @@ Let's examine each requirement in detail:
 static var bitWidth: Int { get }
 ```
 
-This property defines how many bits your type occupies in the hardware register. This value must **exactly match** the width of the physical bit field as defined in your register macro (e.g., `bits: 4..<6` is 2 bits wide).
+This property defines how many bits your type occupies in the hardware register. This value must **exactly match** the width of the physical bit field as defined in your register macro (e.g., `bits: 4..<6` and `bits: 0, 3` are each 2 bits wide).
 
 A mismatch between your type's `bitWidth` and the actual bit field width causes a runtime trap when accessing the register. This safety feature ensures your type accurately represents the hardware's capabilities.
 

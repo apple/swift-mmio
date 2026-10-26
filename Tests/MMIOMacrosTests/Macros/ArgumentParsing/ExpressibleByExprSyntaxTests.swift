@@ -52,6 +52,12 @@ struct ExpressibleByExprSyntaxTests {
     assertParse(expression: "..<0", expected: "(-∞, 0)" as BitRange)
     // Range
     assertParse(expression: "0..<1", expected: "[0, 1)" as BitRange)
+    // Bit index
+    assertParse(expression: "0", expected: "[0, 0]" as BitRange)
+    assertParse(expression: "0x1f", expected: "[31, 31]" as BitRange)
+    assertParse(expression: "-1", expected: "[-1, -1]" as BitRange)
+    assertParse(expression: "-0", expected: "[0, 0]" as BitRange)
+    assertParse(expression: "1_0", expected: "[10, 10]" as BitRange)
     // Range with negative bounds
     assertParse(expression: "-3..<4", expected: "[-3, 4)" as BitRange)
     assertParse(expression: "-3...0", expected: "[-3, 0]" as BitRange)
@@ -62,6 +68,13 @@ struct ExpressibleByExprSyntaxTests {
     assertParse(
       expression: "-9223372036854775808..<0",
       expected: "[-9223372036854775808, 0)" as BitRange)
+    // Integer limits
+    assertParse(
+      expression: "9223372036854775807",
+      expected: "[9223372036854775807, 9223372036854775807]" as BitRange)
+    assertParse(
+      expression: "-9223372036854775808",
+      expected: "[-9223372036854775808, -9223372036854775808]" as BitRange)
 
     assertNoParse(expression: "1...0", as: BitRange.self)
     assertNoParse(expression: "1..<0", as: BitRange.self)
@@ -69,7 +82,11 @@ struct ExpressibleByExprSyntaxTests {
     assertNoParse(expression: "(0)..<1", as: BitRange.self)
     assertNoParse(expression: "0..<(1)", as: BitRange.self)
     assertNoParse(expression: "(0)..<(1)", as: BitRange.self)
+    assertNoParse(expression: "(0)", as: BitRange.self)
+    assertNoParse(expression: "0 + 1", as: BitRange.self)
     // Integer limits: values outside of `Int` are rejected without trapping.
+    assertNoParse(expression: "9223372036854775808", as: BitRange.self)
+    assertNoParse(expression: "-9223372036854775809", as: BitRange.self)
     assertNoParse(expression: "0..<9223372036854775808", as: BitRange.self)
     assertNoParse(expression: "-9223372036854775809..<0", as: BitRange.self)
   }

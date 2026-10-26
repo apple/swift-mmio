@@ -101,11 +101,11 @@ extension SVD2SwiftTests {
             var a: A
 
             /// B
-            @ReadWrite(bits: 6..<7)
+            @ReadWrite(bits: 6)
             var b: B
 
             /// C
-            @ReadWrite(bits: 7..<8)
+            @ReadWrite(bits: 7)
             var c: C
 
             /// D
