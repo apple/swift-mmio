@@ -334,5 +334,30 @@ struct BitFieldMacroTests {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+  @Test func bits_requiresNonEmptyRange() {
+    assertMacroExpansion(
+      """
+      @Test(bits: 4..<4) var a: Int
+      @Test(bits: 5...4) var b: Int
+      """,
+      expandedSource: """
+        var a: Int
+        var b: Int
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.expectedNonEmptyRange().message,
+          line: 1,
+          column: 13,
+          highlights: ["4..<4"]),
+        .init(
+          message: ErrorDiagnostic.expectedNonEmptyRange().message,
+          line: 2,
+          column: 13,
+          highlights: ["5...4"]),
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
 #endif

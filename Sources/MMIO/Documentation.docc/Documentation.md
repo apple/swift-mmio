@@ -59,4 +59,5 @@ Contributions and feedback are welcome. Please refer to the [Contribution Guidel
 - <doc:Safety-Considerations>
 
 - ``MMIO/BitFieldProjectable``
+- ``MMIO/BitRangeExpression``
 - ``MMIO/MMIOInterposer``
