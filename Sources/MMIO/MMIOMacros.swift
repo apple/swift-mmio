@@ -92,8 +92,9 @@ public macro Register(bitWidth: Int) =
 ///
 /// - Parameters:
 ///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
-///     1, 2, and 3). Use `...` if the field spans the entire register. See
-///     ``MMIO/BitRangeExpression``.
+///     1, 2, and 3) or bit indices (e.g., `5` for bit 5). A bit index is equal
+///     to a single-bit range, so `5` is equal to `5..<6`. Use `...` if the
+///     field spans the entire register. See ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
@@ -120,8 +121,9 @@ where Value: BitFieldProjectable
 ///
 /// - Parameters:
 ///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
-///     1, 2, and 3). Use `...` if the field spans the entire register. See
-///     ``MMIO/BitRangeExpression``.
+///     1, 2, and 3) or bit indices (e.g., `5` for bit 5). A bit index is equal
+///     to a single-bit range, so `5` is equal to `5..<6`. Use `...` if the
+///     field spans the entire register. See ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
@@ -150,8 +152,9 @@ where Value: BitFieldProjectable
 ///
 /// - Parameters:
 ///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
-///     1, 2, and 3). Use `...` if the field spans the entire register. See
-///     ``MMIO/BitRangeExpression``.
+///     1, 2, and 3) or bit indices (e.g., `5` for bit 5). A bit index is equal
+///     to a single-bit range, so `5` is equal to `5..<6`. Use `...` if the
+///     field spans the entire register. See ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
@@ -180,8 +183,9 @@ where Value: BitFieldProjectable
 ///
 /// - Parameters:
 ///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
-///     1, 2, and 3). Use `...` if the field spans the entire register. See
-///     ``MMIO/BitRangeExpression``.
+///     1, 2, and 3) or bit indices (e.g., `5` for bit 5). A bit index is equal
+///     to a single-bit range, so `5` is equal to `5..<6`. Use `...` if the
+///     field spans the entire register. See ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.

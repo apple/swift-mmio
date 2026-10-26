@@ -24,7 +24,7 @@ struct MMIOInterposableTests {
 
   @Register(bitWidth: 32)
   struct RegA {
-    @ReadWrite(bits: 0..<1, as: Bool.self)
+    @ReadWrite(bits: 0, as: Bool.self)
     var en: EN
     @Reserved(bits: 1..<32)
     var reserved0: Reserved0
@@ -32,9 +32,9 @@ struct MMIOInterposableTests {
 
   @Register(bitWidth: 16)
   struct RegB {
-    @ReadOnly(bits: 0..<1, as: Bool.self)
+    @ReadOnly(bits: 0, as: Bool.self)
     var en: EN
-    @WriteOnly(bits: 1..<2, as: Bool.self)
+    @WriteOnly(bits: 1, as: Bool.self)
     var rst: RST
     @Reserved(bits: 3..<16)
     var reserved0: Reserved0

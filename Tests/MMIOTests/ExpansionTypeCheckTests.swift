@@ -14,29 +14,29 @@ import MMIO
 // Sample register from an STM32F746
 @Register(bitWidth: 32)
 struct OTG_HPRT {
-  @ReadWrite(bits: 0..<1)
+  @ReadWrite(bits: 0)
   var pcsts: PCSTS
-  @ReadWrite(bits: 1..<2)
+  @ReadWrite(bits: 1)
   var pcdet: PCDET
-  @ReadWrite(bits: 2..<3)
+  @ReadWrite(bits: 2)
   var pena: PENA
-  @ReadWrite(bits: 3..<4)
+  @ReadWrite(bits: 3)
   var penChng: PEN_CHNG
-  @ReadWrite(bits: 4..<5)
+  @ReadWrite(bits: 4)
   var poca: POCA
-  @ReadWrite(bits: 5..<6)
+  @ReadWrite(bits: 5)
   var pocChng: POC_CHNG
-  @ReadWrite(bits: 6..<7)
+  @ReadWrite(bits: 6)
   var pres: PRES
-  @ReadWrite(bits: 7..<8)
+  @ReadWrite(bits: 7)
   var psusp: PSUSP
-  @ReadWrite(bits: 8..<9)
+  @ReadWrite(bits: 8)
   var prst: PRST
-  @Reserved(bits: 9..<10)
+  @Reserved(bits: 9)
   var reserved0: Reserved0
   @ReadWrite(bits: 10..<12)
   var plsts: PLSTS
-  @ReadWrite(bits: 12..<13)
+  @ReadWrite(bits: 12)
   var ppwr: PPWR
   @ReadWrite(bits: 13..<17)
   var ptctl: PTCTL
@@ -84,6 +84,22 @@ struct OtherRangeTypes2 {
 struct MixedRangeTypes {
   @Reserved(bits: ..<2, 4...5, 8..<10, 30...)
   var mixed: Mixed
+}
+
+@Register(bitWidth: 32)
+struct OtherRangeTypes3 {
+  @Reserved(bits: 0)
+  var index: Index
+  @ReadOnly(bits: 1, 3, as: UInt8.self)
+  var discontiguousIndices: DiscontiguousIndices
+  @WriteOnly(bits: 2, as: Bool.self)
+  var writeOnlyIndex: WriteOnlyIndex
+  @ReadWrite(bits: 4, 0x1f)
+  var hexadecimalIndices: HexadecimalIndices
+  @ReadWrite(bits: 5, 8..<10, 12...13, as: UInt8.self)
+  var mixedIndicesAndRanges: MixedIndicesAndRanges
+  @ReadWrite(bits: 14, 16..<31)
+  var mixedIndexAndRange: MixedIndexAndRange
 }
 
 @Register(bitWidth: 32)

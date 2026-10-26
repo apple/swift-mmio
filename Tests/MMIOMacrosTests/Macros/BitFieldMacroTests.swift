@@ -334,6 +334,26 @@ struct BitFieldMacroTests {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+
+  @Test func bits_requiresIntegerOrRangeLiteral() {
+    assertMacroExpansion(
+      """
+      @Test(bits: 1 + 2) var a: Int
+      """,
+      expandedSource: """
+        var a: Int
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.expectedIntegerOrRangeLiteral().message,
+          line: 1,
+          column: 13,
+          highlights: ["1 + 2"])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
   @Test func bits_requiresNonEmptyRange() {
     assertMacroExpansion(
       """
@@ -356,6 +376,23 @@ struct BitFieldMacroTests {
           column: 13,
           highlights: ["5...4"]),
       ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func expansion_multipleSingleBits() {
+    assertMacroExpansion(
+      """
+      @Test(bits: 0, 3) var a: Int
+      """,
+      expandedSource: """
+        var a: Int {
+          get {
+            fatalError()
+          }
+        }
+        """,
+      diagnostics: [],
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }

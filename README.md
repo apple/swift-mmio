@@ -19,7 +19,7 @@ struct Control {
 
 @Register(bitWidth: 32)
 struct CR1 {
-  @ReadWrite(bits: 12..<13, as: Bool.self)
+  @ReadWrite(bits: 12, as: Bool.self)
   var en: EN
 }
 

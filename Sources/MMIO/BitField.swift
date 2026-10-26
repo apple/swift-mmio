@@ -147,8 +147,8 @@ extension BitField {
 /// within a register.
 ///
 /// - Note: This is an internal detail; types conforming to this are generated
-///   by macros like ``MMIO/ReadWrite(bits:as:)`` when a single range is
-///   specified.
+///   by macros like ``MMIO/ReadWrite(bits:as:)`` when a single bit range or
+///   bit index is specified.
 public protocol ContiguousBitField: BitField {
   /// The range of bits this field occupies within the register (e.g., `0..<4`
   /// for bits 0, 1, 2, 3).
@@ -193,8 +193,8 @@ extension ContiguousBitField {
 /// (discontiguous) segments of bits within a register.
 ///
 /// - Note: This is an internal detail; types conforming to this are generated
-///   by macros like ``MMIO/ReadWrite(bits:as:)`` when multiple ranges are
-///   specified.
+///   by macros like ``MMIO/ReadWrite(bits:as:)`` when multiple bit ranges or
+///   bit indices are specified.
 public protocol DiscontiguousBitField: BitField {
   /// An array of bit ranges that make up this logical field.
   ///

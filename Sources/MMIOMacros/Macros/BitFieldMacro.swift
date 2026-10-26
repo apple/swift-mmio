@@ -14,7 +14,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-// @BaseName(bits: 3..<4, 0..<1, as: Swift.Bool.self)
+// @BaseName(bits: 3, 4..<6, as: Swift.UInt8.self)
 protocol BitFieldMacro: MMIOAccessorMacro, ParsableMacro {
   static var isReadable: Bool { get }
   static var isWriteable: Bool { get }

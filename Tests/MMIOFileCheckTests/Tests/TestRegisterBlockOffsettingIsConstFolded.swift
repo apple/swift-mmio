@@ -33,9 +33,9 @@ struct C {
 
 @Register(bitWidth: 64)
 struct R {
-  @ReadWrite(bits: 0..<1)
+  @ReadWrite(bits: 0)
   var lo: LO
-  @ReadWrite(bits: 63..<64)
+  @ReadWrite(bits: 63)
   var hi: HI
 }
 

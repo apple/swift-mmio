@@ -22,8 +22,8 @@ public protocol BitFieldProjectable {
   /// The number of bits this type occupies within the register field.
   ///
   /// This static property must match the width of the bit field as defined in
-  /// your register macro (e.g., `bits: 4..<6` is 2 bits wide). A mismatch will
-  /// cause a runtime trap when accessing the register.
+  /// your register macro (e.g., `bits: 4..<6` and `bits: 0, 3` are each 2 bits
+  /// wide). A mismatch will cause a runtime trap when accessing the register.
   static var bitWidth: Int { get }
 
   /// Converts a raw integer value to this type when reading a register.

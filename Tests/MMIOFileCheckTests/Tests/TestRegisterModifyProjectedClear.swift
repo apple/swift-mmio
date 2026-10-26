@@ -13,36 +13,36 @@ import MMIO
 
 @Register(bitWidth: 8)
 struct R8 {
-  @ReadWrite(bits: 0..<1, as: Bool.self)
+  @ReadWrite(bits: 0, as: Bool.self)
   var lo: LO
-  @ReadWrite(bits: 7..<8, as: Bool.self)
+  @ReadWrite(bits: 7, as: Bool.self)
   var hi: HI
 }
 let r8 = Register<R8>(unsafeAddress: 0x1000)
 
 @Register(bitWidth: 16)
 struct R16 {
-  @ReadWrite(bits: 0..<1, as: Bool.self)
+  @ReadWrite(bits: 0, as: Bool.self)
   var lo: LO
-  @ReadWrite(bits: 15..<16, as: Bool.self)
+  @ReadWrite(bits: 15, as: Bool.self)
   var hi: HI
 }
 let r16 = Register<R16>(unsafeAddress: 0x1000)
 
 @Register(bitWidth: 32)
 struct R32 {
-  @ReadWrite(bits: 0..<1, as: Bool.self)
+  @ReadWrite(bits: 0, as: Bool.self)
   var lo: LO
-  @ReadWrite(bits: 31..<32, as: Bool.self)
+  @ReadWrite(bits: 31, as: Bool.self)
   var hi: HI
 }
 let r32 = Register<R32>(unsafeAddress: 0x1000)
 
 @Register(bitWidth: 64)
 struct R64 {
-  @ReadWrite(bits: 0..<1, as: Bool.self)
+  @ReadWrite(bits: 0, as: Bool.self)
   var lo: LO
-  @ReadWrite(bits: 63..<64, as: Bool.self)
+  @ReadWrite(bits: 63, as: Bool.self)
   var hi: HI
 }
 let r64 = Register<R64>(unsafeAddress: 0x1000)
