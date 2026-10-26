@@ -213,11 +213,10 @@ extension BitRange: ExpressibleByExprSyntax {
       let prefixOperator = expression.as(PrefixOperatorExprSyntax.self),
       prefixOperator.operator.text == "-",
       let integerLiteral =
-        prefixOperator.expression.as(IntegerLiteralExprSyntax.self),
-      let magnitude = integerLiteral.value
+        prefixOperator.expression.as(IntegerLiteralExprSyntax.self)
     else { return nil }
 
-    return -magnitude
+    return integerLiteral.negatedValue
   }
 }
 

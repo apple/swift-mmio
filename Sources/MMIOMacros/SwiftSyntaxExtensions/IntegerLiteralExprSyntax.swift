@@ -14,6 +14,12 @@ import SwiftSyntax
 
 extension IntegerLiteralExprSyntax {
   var value: Int? {
-    SwiftIntegerParser<Int>().parseAll(self.literal.text)
+    SwiftIntegerLiteralParser<Int>().parseAll(self.literal.text)
+  }
+
+  /// The negation of the literal's value, such as `-3` for the literal `3` in
+  /// the expression `-3`.
+  var negatedValue: Int? {
+    SwiftIntegerLiteralParser<Int>(negated: true).parseAll(self.literal.text)
   }
 }

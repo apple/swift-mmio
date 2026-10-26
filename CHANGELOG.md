@@ -21,6 +21,12 @@ This changelog's format is based on
   range bounds are now diagnosed as outside the register's bounds, and empty
   ranges as requiring a non-empty range.
 
+### Fixes
+
+- Fixes integer parsing in `svd2lldb` and the macros to reject negative values
+  for unsigned types instead of trapping, and to accept the minimum value of
+  signed types, e.g. `-9223372036854775808` for `Int`.
+
 <!--
 Add new items at the end of the relevant section under **Unreleased**.
 -->
