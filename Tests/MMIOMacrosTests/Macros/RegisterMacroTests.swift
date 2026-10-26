@@ -1135,6 +1135,97 @@ struct RegisterMacroTests {
       indentationWidth: Self.indentationWidth)
   }
 
+  @Test func negativeRangeBound_emitsDiagnostics() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @Reserved(bits: -1..<1)
+        var v: V
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v: V {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V: ContiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = Never
+            static let bitRange = 0 ..< 1
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v: UInt8 {
+              @inlinable @inline(__always) get {
+                V.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.bitFieldOutOfBounds(
+            attribute: "@Reserved(bits: -1..<1)",
+            pluralize: false
+          ).message,
+          line: 3,
+          column: 4,
+          highlights: ["Reserved"],
+          notes: [
+            .init(
+              message:
+                "bit range '-1..<1' extends outside register bit range '0..<8'",
+              line: 3,
+              column: 19)
+          ])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
   @Test func bitFieldWithOverlappingBitRanges_emitsDiagnostics() {
     assertMacroExpansion(
       """

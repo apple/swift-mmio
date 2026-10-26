@@ -176,19 +176,48 @@ extension BitRange: ExpressibleByExprSyntax {
       throw context.error(at: original, message: .expectedRangeLiteral())
     }
 
+    func bound(_ expression: ExprSyntax) throws -> Int {
+      guard let value = Self.integer(from: expression) else {
+        throw context.error(at: expression, message: .expectedIntegerLiteral())
+      }
+      return value
+    }
+
     if let lowerBoundExpression = lowerBoundExpression {
-      let value = try Int(expression: lowerBoundExpression, in: context)
+      let value = try bound(lowerBoundExpression)
       self.lowerBound = .init(value: value, inclusive: true)
     }
 
     if let upperBoundExpression = upperBoundExpression {
-      let value = try Int(expression: upperBoundExpression, in: context)
+      let value = try bound(upperBoundExpression)
       self.upperBound = .init(value: value, inclusive: upperBoundInclusive)
     }
 
     guard self.canonicalizedLowerBound <= self.canonicalizedUpperBound else {
-      throw context.error(at: original, message: .expectedRangeLiteral())
+      throw context.error(at: original, message: .expectedNonEmptyRange())
     }
+  }
+
+  /// Returns the value of an integer literal expression, such as the `-3` in
+  /// `@ReadWrite(bits: -3..<4)`, or nil if the expression is not an integer
+  /// literal.
+  ///
+  /// A leading '-' is accepted so that negative range bounds are diagnosed as
+  /// outside the register's bounds instead of as malformed values.
+  private static func integer(from expression: ExprSyntax) -> Int? {
+    if let integerLiteral = expression.as(IntegerLiteralExprSyntax.self) {
+      return integerLiteral.value
+    }
+
+    guard
+      let prefixOperator = expression.as(PrefixOperatorExprSyntax.self),
+      prefixOperator.operator.text == "-",
+      let integerLiteral =
+        prefixOperator.expression.as(IntegerLiteralExprSyntax.self),
+      let magnitude = integerLiteral.value
+    else { return nil }
+
+    return -magnitude
   }
 }
 
@@ -212,6 +241,10 @@ extension BitRange: LosslessStringConvertible {
 extension ErrorDiagnostic {
   static func expectedRangeLiteral() -> Self {
     .init("'\(Macro.signature)' requires expression to be a range literal")
+  }
+
+  static func expectedNonEmptyRange() -> Self {
+    .init("'\(Macro.signature)' requires expression to be a non-empty range")
   }
 }
 

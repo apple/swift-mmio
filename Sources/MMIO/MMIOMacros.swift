@@ -91,21 +91,20 @@ public macro Register(bitWidth: Int) =
 /// explicitly instructed by the hardware documentation.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
-///     or a comma-separated list of range expressions. Use `...` if the field
-///     spans the entire register.
+///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
+///     1, 2, and 3). Use `...` if the field spans the entire register. See
+///     ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
 ///
 /// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
-public macro Reserved<Range, Value>(
-  bits: Range..., as: Value.Type = Never.self
+public macro Reserved<Value>(
+  bits: any BitRangeExpression..., as: Value.Type = Never.self
 ) =
   #externalMacro(module: "MMIOMacros", type: "ReservedMacro")
-where
-  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where Value: BitFieldProjectable
 
 @_documentation(visibility: internal)
 @attached(accessor)
@@ -120,21 +119,20 @@ where Value: BitFieldProjectable
 /// Bits within this field can be both read from and written to by software.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
-///     or a comma-separated list of range expressions. Use `...` if the field
-///     spans the entire register.
+///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
+///     1, 2, and 3). Use `...` if the field spans the entire register. See
+///     ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
 ///
 /// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
-public macro ReadWrite<Range, Value>(
-  bits: Range..., as: Value.Type = Never.self
+public macro ReadWrite<Value>(
+  bits: any BitRangeExpression..., as: Value.Type = Never.self
 ) =
   #externalMacro(module: "MMIOMacros", type: "ReadWriteMacro")
-where
-  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where Value: BitFieldProjectable
 
 @_documentation(visibility: internal)
 @attached(accessor)
@@ -151,21 +149,20 @@ where Value: BitFieldProjectable
 /// effect or is an error, depending on the hardware.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
-///     or a comma-separated list of range expressions. Use `...` if the field
-///     spans the entire register.
+///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
+///     1, 2, and 3). Use `...` if the field spans the entire register. See
+///     ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
 ///
 /// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
-public macro ReadOnly<Range, Value>(
-  bits: Range..., as: Value.Type = Never.self
+public macro ReadOnly<Value>(
+  bits: any BitRangeExpression..., as: Value.Type = Never.self
 ) =
   #externalMacro(module: "MMIOMacros", type: "ReadOnlyMacro")
-where
-  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where Value: BitFieldProjectable
 
 @_documentation(visibility: internal)
 @attached(accessor)
@@ -182,21 +179,20 @@ where Value: BitFieldProjectable
 /// specific hardware side effects, as defined by the hardware documentation.
 ///
 /// - Parameters:
-///   - bits: A `RangeExpression` (e.g., `0..<4` for bits 0, 1, 2, and 3)
-///     or a comma-separated list of range expressions. Use `...` if the field
-///     spans the entire register.
+///   - bits: A comma-separated list of bit ranges (e.g., `0..<4` for bits 0,
+///     1, 2, and 3). Use `...` if the field spans the entire register. See
+///     ``MMIO/BitRangeExpression``.
 ///   - as: An optional type conforming to ``BitFieldProjectable`` For example,
 ///     can use `Bool`.self for single-bit flags, or a custom enumeration for
 ///     multi-bit fields representing specific states.
 ///
 /// For detailed usage examples and explanations, refer to <doc:Registers>.
 @attached(accessor)
-public macro WriteOnly<Range, Value>(
-  bits: Range..., as: Value.Type = Never.self
+public macro WriteOnly<Value>(
+  bits: any BitRangeExpression..., as: Value.Type = Never.self
 ) =
   #externalMacro(module: "MMIOMacros", type: "WriteOnlyMacro")
-where
-  Range: RangeExpression, Range.Bound: BinaryInteger, Value: BitFieldProjectable
+where Value: BitFieldProjectable
 
 @_documentation(visibility: internal)
 @attached(accessor)

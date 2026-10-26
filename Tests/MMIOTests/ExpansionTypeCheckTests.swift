@@ -81,6 +81,12 @@ struct OtherRangeTypes2 {
 }
 
 @Register(bitWidth: 32)
+struct MixedRangeTypes {
+  @Reserved(bits: ..<2, 4...5, 8..<10, 30...)
+  var mixed: Mixed
+}
+
+@Register(bitWidth: 32)
 struct RegisterWithValues {
   struct FieldValues: BitFieldProjectable, RawRepresentable {
     static let bitWidth = 2

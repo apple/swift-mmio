@@ -52,6 +52,16 @@ struct ExpressibleByExprSyntaxTests {
     assertParse(expression: "..<0", expected: "(-∞, 0)" as BitRange)
     // Range
     assertParse(expression: "0..<1", expected: "[0, 1)" as BitRange)
+    // Range with negative bounds
+    assertParse(expression: "-3..<4", expected: "[-3, 4)" as BitRange)
+    assertParse(expression: "-3...0", expected: "[-3, 0]" as BitRange)
+    // Range bounds at integer limits
+    assertParse(
+      expression: "0...9223372036854775807",
+      expected: "[0, 9223372036854775807]" as BitRange)
+    assertParse(
+      expression: "-9223372036854775807..<0",
+      expected: "[-9223372036854775807, 0)" as BitRange)
 
     assertNoParse(expression: "1...0", as: BitRange.self)
     assertNoParse(expression: "1..<0", as: BitRange.self)
@@ -59,6 +69,12 @@ struct ExpressibleByExprSyntaxTests {
     assertNoParse(expression: "(0)..<1", as: BitRange.self)
     assertNoParse(expression: "0..<(1)", as: BitRange.self)
     assertNoParse(expression: "(0)..<(1)", as: BitRange.self)
+    // Integer limits: values outside of `Int` are rejected without trapping.
+    assertNoParse(expression: "0..<9223372036854775808", as: BitRange.self)
+    assertNoParse(expression: "-9223372036854775809..<0", as: BitRange.self)
+    // FIXME: `Int.min` is a valid `Int`, but the integer literal parser reads
+    // the magnitude, which overflows, before it applies the sign.
+    assertNoParse(expression: "-9223372036854775808..<0", as: BitRange.self)
   }
 
   @Test func bitWidth() throws {
