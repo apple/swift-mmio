@@ -14,6 +14,7 @@ private struct ParserAndBase {
   var base: Int
 }
 
+/// Parses an integer with an optional leading sign, such as `-0x1f`.
 public struct SwiftIntegerParser<Output>: ParserProtocol
 where Output: FixedWidthInteger {
   public init() {}
@@ -21,17 +22,43 @@ where Output: FixedWidthInteger {
   public func parse(_ input: inout Input) -> Output? {
     let original = input
 
-    let positive: Bool
+    let negated: Bool
     switch input.first {
     case UInt8(ascii: "-"):
-      positive = false
+      negated = true
       input.removeFirst()
     case UInt8(ascii: "+"):
-      positive = true
+      negated = false
       input.removeFirst()
     default:
-      positive = true
+      negated = false
     }
+
+    let literalParser = SwiftIntegerLiteralParser<Output>(negated: negated)
+    guard let value = literalParser.parse(&input) else {
+      input = original
+      return nil
+    }
+    return value
+  }
+}
+
+/// Parses an unsigned Swift integer literal, such as `0x1f`, and returns its
+/// value, or the negation of its value if `negated` is true.
+///
+/// A Swift integer literal never contains a sign; `-3` is the prefix operator
+/// `-` applied to the literal `3`. Negating during parsing, and not after,
+/// parses `Output.min`, whose magnitude does not fit in `Output`.
+public struct SwiftIntegerLiteralParser<Output>: ParserProtocol
+where Output: FixedWidthInteger {
+  let negated: Bool
+
+  public init(negated: Bool = false) {
+    self.negated = negated
+  }
+
+  public func parse(_ input: inout Input) -> Output? {
+    let original = input
 
     let oneOf = OneOfParser<ParserAndBase>(
       ("0b", .init(parser: BinaryDigitParser(), base: 2)),
@@ -47,14 +74,19 @@ where Output: FixedWidthInteger {
     var digitsConsumed = false
     while !input.isEmpty {
       guard let digit = parserAndBase.parser.parse(&input) else { break }
-      guard
-        value.incrementalParseAppend(
-          digit: Output(digit),
-          base: Output(parserAndBase.base))
-      else {
+      // Accumulate in the direction of the sign, so a negated literal can
+      // reach `Output.min` and an unsigned one fails instead of trapping.
+      let shifted = value.multipliedReportingOverflow(
+        by: Output(parserAndBase.base))
+      let appended =
+        self.negated
+        ? shifted.partialValue.subtractingReportingOverflow(Output(digit))
+        : shifted.partialValue.addingReportingOverflow(Output(digit))
+      guard !shifted.overflow, !appended.overflow else {
         input = original
         return nil
       }
+      value = appended.partialValue
 
       digitsConsumed = true
       while input.first == UInt8(ascii: "_") {
@@ -67,6 +99,6 @@ where Output: FixedWidthInteger {
       return nil
     }
 
-    return positive ? value : 0 - value
+    return value
   }
 }

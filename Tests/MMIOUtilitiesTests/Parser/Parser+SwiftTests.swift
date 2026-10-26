@@ -93,5 +93,47 @@ extension ParserTests {
 
     assertParse(parser, "0xff", 0xff)
     assertNoParse(parser, "0x100")
+    assertParse(parser, "-0", 0)
+    // Negative values do not fit in an unsigned type.
+    assertNoParse(parser, "-1")
+    assertNoParse(parser, "-0x100")
+  }
+
+  @Test func parseSwiftInteger_signedBoundaryConditions() {
+    let parser = SwiftIntegerParser<Int8>()
+
+    assertParse(parser, "127", .max)
+    assertNoParse(parser, "128")
+    assertParse(parser, "-128", .min)
+    assertNoParse(parser, "-129")
+    assertParse(parser, "-0x80", .min)
+    assertNoParse(parser, "-0x81")
+  }
+
+  @Test func parseSwiftIntegerLiteral() {
+    let parser = SwiftIntegerLiteralParser<Int8>()
+    let negatedParser = SwiftIntegerLiteralParser<Int8>(negated: true)
+
+    assertParse(parser, "0x1f", 31)
+    assertParse(parser, "1_0", 10)
+    assertParse(parser, "127", .max)
+    assertNoParse(parser, "128")
+    // A Swift integer literal never contains a sign.
+    assertNoParse(parser, "-1")
+    assertNoParse(parser, "+1")
+
+    assertParse(negatedParser, "0", 0)
+    assertParse(negatedParser, "0x1f", -31)
+    assertParse(negatedParser, "128", .min)
+    assertNoParse(negatedParser, "129")
+    assertNoParse(negatedParser, "-1")
+  }
+
+  @Test func parseSwiftIntegerLiteral_unsigned() {
+    let negatedParser = SwiftIntegerLiteralParser<UInt8>(negated: true)
+
+    assertParse(negatedParser, "0", 0)
+    // Negative values do not fit in an unsigned type.
+    assertNoParse(negatedParser, "1")
   }
 }
