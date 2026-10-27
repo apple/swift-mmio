@@ -79,10 +79,7 @@ private func characterDataHandler(
   let raw = UnsafeRawPointer(_characters)
   let typed = raw.bindMemory(to: UInt8.self, capacity: count)
   let buffer = UnsafeBufferPointer(start: typed, count: count)
-  guard !buffer.allSatisfy(\.isWhiteSpace) else { return }
-
-  let characters = String(decoding: buffer, as: UTF8.self)
-  context.pointee.characters(text: characters)
+  context.pointee.characters(text: buffer)
 }
 
 private func endElementHandler(
