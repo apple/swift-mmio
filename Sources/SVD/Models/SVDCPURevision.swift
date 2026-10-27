@@ -69,7 +69,7 @@ extension SVDCPURevision: LosslessStringConvertible {
 
 extension SVDCPURevision: Sendable {}
 
-extension SVDCPURevision: XMLElementInitializable {}
+extension SVDCPURevision: XMLValueDecodable {}
 
 private struct SVDCPURevisionParser: ParserProtocol {
   typealias Output = (UInt64, UInt64)

@@ -35,4 +35,4 @@ extension SVDReadAction: Hashable {}
 
 extension SVDReadAction: Sendable {}
 
-extension SVDReadAction: XMLElementInitializable {}
+extension SVDReadAction: XMLValueDecodable {}

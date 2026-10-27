@@ -145,4 +145,4 @@ extension SVDCPUName: LosslessStringConvertible {
 
 extension SVDCPUName: Sendable {}
 
-extension SVDCPUName: XMLElementInitializable {}
+extension SVDCPUName: XMLValueDecodable {}

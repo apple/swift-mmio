@@ -11,14 +11,9 @@
 
 import MMIOUtilities
 
-public protocol XMLElementInitializable {
-  init(_ element: borrowing XMLElement) throws
-}
-
-extension XMLElementInitializable
-where Self: LosslessStringConvertible {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
+extension XMLValueDecodable where Self: LosslessStringConvertible {
+  public init(_ text: XMLText) throws {
+    let stringValue = String(text)
     self =
       try Self
       .init(stringValue)
@@ -26,10 +21,10 @@ where Self: LosslessStringConvertible {
   }
 }
 
-extension XMLElementInitializable
+extension XMLValueDecodable
 where Self: RawRepresentable, Self.RawValue == String {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
+  public init(_ text: XMLText) throws {
+    let stringValue = String(text)
     self =
       try Self
       .init(rawValue: stringValue)
@@ -37,15 +32,11 @@ where Self: RawRepresentable, Self.RawValue == String {
   }
 }
 
-extension String: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    self = element.value ?? ""
-  }
-}
+extension String: XMLValueDecodable {}
 
-extension Bool: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
+extension Bool: XMLValueDecodable {
+  public init(_ text: XMLText) throws {
+    let stringValue = String(text)
     switch stringValue {
     case "1", "true": self = true
     case "0", "false": self = false
@@ -55,19 +46,19 @@ extension Bool: XMLElementInitializable {
 }
 
 // scaledNonNegativeInteger: /^[+]?(0x|0X|#)?[0-9a-fA-F]+[kmgtKMGT]?$/
-extension UInt64: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
+extension UInt64: XMLValueDecodable {
+  public init(_ text: XMLText) throws {
+    var input = text.bytes[...]
     let parser = SVDScaledNonNegativeIntegerParser<Self>()
-    guard let value = parser.parseAll(stringValue)
-    else { throw XMLError.unknownValue(stringValue) }
+    guard let value = parser.parse(&input), input.isEmpty
+    else { throw XMLError.unknownValue(String(text)) }
     self = value
   }
 }
 
-private struct SVDScaledNonNegativeIntegerParser<Output>: ParserProtocol
+private struct SVDScaledNonNegativeIntegerParser<Output>
 where Output: FixedWidthInteger {
-  func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Slice<UnsafeBufferPointer<UInt8>>) -> Output? {
     let original = input
 
     if input.first == UInt8(ascii: "+") {
@@ -75,10 +66,13 @@ where Output: FixedWidthInteger {
     }
 
     let base: Output
+    let second = input.dropFirst().first
     if input.first == UInt8(ascii: "#") {
       input.removeFirst()
       base = 2
-    } else if input.starts(with: "0x".utf8) || input.starts(with: "0X".utf8) {
+    } else if input.first == UInt8(ascii: "0"),
+      second == UInt8(ascii: "x") || second == UInt8(ascii: "X")
+    {
       input.removeFirst(2)
       base = 16
     } else {

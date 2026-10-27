@@ -42,7 +42,7 @@ extension SVDBitRangeLiteral: LosslessStringConvertible {
 
 extension SVDBitRangeLiteral: Sendable {}
 
-extension SVDBitRangeLiteral: XMLElementInitializable {}
+extension SVDBitRangeLiteral: XMLValueDecodable {}
 
 private struct SVDBitRangeLiteralParser: ParserProtocol {
   typealias Output = (UInt64, UInt64)

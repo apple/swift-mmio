@@ -18,7 +18,7 @@ public enum SVDEnumerationCaseData {
 
 extension SVDEnumerationCaseData: Sendable {}
 
-extension SVDEnumerationCaseData: XMLElementInitializable {
+extension SVDEnumerationCaseData: XMLElementDecodable {
   static func value(_ value: UInt64, mask: UInt64) -> Self {
     .value(.init(value: .init(value: value, mask: mask)))
   }
@@ -27,13 +27,38 @@ extension SVDEnumerationCaseData: XMLElementInitializable {
     .isDefault(.init(isDefault: true))
   }
 
-  public init(_ element: borrowing XMLElement) throws {
-    if let value = try? SVDEnumerationCaseDataValue(element) {
-      self = .value(value)
-    } else if let value = try? SVDEnumerationCaseDataDefault(element) {
-      self = .isDefault(value)
-    } else {
-      throw XMLError.unknownElement(element.description)
+  /// Builds each form of enumeration case data from the same element, and
+  /// uses the first form that the element has.
+  public struct XMLBuilder: XMLElementBuilder {
+    var value = SVDEnumerationCaseDataValue.XMLBuilder()
+    var isDefault = SVDEnumerationCaseDataDefault.XMLBuilder()
+
+    public init() {}
+
+    public mutating func attribute(_ name: XMLName, _ value: XMLText) {
+      self.value.attribute(name, value)
+      self.isDefault.attribute(name, value)
+    }
+
+    public static func child(
+      _ name: XMLName,
+      of builder: XMLBuilderPointer<Self>
+    ) -> XMLFrame? {
+      SVDEnumerationCaseDataValue.XMLBuilder.child(
+        name, of: builder.member(\.value))
+        ?? SVDEnumerationCaseDataDefault.XMLBuilder.child(
+          name, of: builder.member(\.isDefault))
+    }
+
+    public mutating func build() throws(XMLBuildError) -> SVDEnumerationCaseData
+    {
+      if let value = try? self.value.build() {
+        .value(value)
+      } else if let value = try? self.isDefault.build() {
+        .isDefault(value)
+      } else {
+        throw .failure(XMLError.unknownElement("enumerated value data"))
+      }
     }
   }
 }

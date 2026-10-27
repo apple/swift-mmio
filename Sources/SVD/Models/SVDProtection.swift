@@ -33,6 +33,6 @@ extension SVDProtection: Equatable {}
 
 extension SVDProtection: Hashable {}
 
-extension SVDProtection: XMLElementInitializable {}
+extension SVDProtection: XMLValueDecodable {}
 
 extension SVDProtection: Sendable {}

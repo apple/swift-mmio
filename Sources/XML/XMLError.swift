@@ -13,6 +13,7 @@ public enum XMLError {
   case missingValue(name: String)
   case unknownValue(String)
   case unknownElement(String)
+  case invalidDocument(String)
 }
 
 extension XMLError: Error {}

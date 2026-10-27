@@ -49,22 +49,22 @@ extension SVDEnumerationCaseDataValueValue: Hashable {}
 
 extension SVDEnumerationCaseDataValueValue: Sendable {}
 
-extension SVDEnumerationCaseDataValueValue: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
+extension SVDEnumerationCaseDataValueValue: XMLValueDecodable {
+  public init(_ text: XMLText) throws {
+    var input = text.bytes[...]
     let parser = SVDEnumerationCaseDataValueValueParser<UInt64>()
-    guard let value = parser.parseAll(stringValue)
-    else { throw XMLError.unknownValue(stringValue) }
+    guard let value = parser.parse(&input), input.isEmpty
+    else { throw XMLError.unknownValue(String(text)) }
     self.value = value.0
     self.mask = value.1
   }
 }
 
-private struct SVDEnumerationCaseDataValueValueParser<Integer>: ParserProtocol
+private struct SVDEnumerationCaseDataValueValueParser<Integer>
 where Integer: FixedWidthInteger {
   typealias Output = (Integer, Integer)
 
-  func parse(_ input: inout Input) -> Output? {
+  func parse(_ input: inout Slice<UnsafeBufferPointer<UInt8>>) -> Output? {
     let original = input
 
     if input.first == UInt8(ascii: "+") {
@@ -72,13 +72,16 @@ where Integer: FixedWidthInteger {
     }
 
     let base: Integer
+    let second = input.dropFirst().first
     if input.first == UInt8(ascii: "#") {
       input.removeFirst()
       base = 2
-    } else if input.starts(with: "0b".utf8) {
+    } else if input.first == UInt8(ascii: "0"), second == UInt8(ascii: "b") {
       input.removeFirst(2)
       base = 2
-    } else if input.starts(with: "0x".utf8) || input.starts(with: "0X".utf8) {
+    } else if input.first == UInt8(ascii: "0"),
+      second == UInt8(ascii: "x") || second == UInt8(ascii: "X")
+    {
       input.removeFirst(2)
       base = 16
     } else {
