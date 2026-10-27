@@ -31,12 +31,17 @@ This changelog's format is based on
 - Updates `SVD2Swift` to export fields which are exactly one bit wide using a
   bit index instead of a range, e.g. `@ReadWrite(bits: 12)` instead of
   `@ReadWrite(bits: 12..<13)`.
+- Improves SVD decoding performance about 2x. Integers are parsed without
+  parser combinators, and expat no longer scans the data a second time to
+  track line positions.
 
 ### Fixes
 
 - Fixes integer parsing in `svd2lldb` and the macros to reject negative values
   for unsigned types instead of trapping, and to accept the minimum value of
   signed types, e.g. `-9223372036854775808` for `Int`.
+- Fixes SVD decoding to throw an error instead of trapping when a scaled
+  integer, e.g. `20000000000000000k`, overflows.
 
 <!--
 Add new items at the end of the relevant section under **Unreleased**.
