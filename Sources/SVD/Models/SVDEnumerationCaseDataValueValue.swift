@@ -60,11 +60,6 @@ extension SVDEnumerationCaseDataValueValue: XMLElementInitializable {
   }
 }
 
-private enum EnumerationParserAndBase {
-  case binary(any ParserProtocol<(UInt8, UInt8)>)
-  case other(any ParserProtocol<UInt8>)
-}
-
 private struct SVDEnumerationCaseDataValueValueParser<Integer>: ParserProtocol
 where Integer: FixedWidthInteger {
   typealias Output = (Integer, Integer)
@@ -76,40 +71,33 @@ where Integer: FixedWidthInteger {
       input.removeFirst()
     }
 
-    let oneOf = OneOfParser<(EnumerationParserAndBase, Int)>(
-      ("#", (.binary(BinaryOrAnyDigitParser()), 2)),
-      ("0b", (.binary(BinaryOrAnyDigitParser()), 2)),
-      ("0x", (.other(HexadecimalDigitParser()), 16)),
-      ("0X", (.other(HexadecimalDigitParser()), 16)),
-    )
-
-    let parserAndBase =
-      oneOf.parse(&input)
-      ?? (.other(DecimalDigitParser()), 10)
+    let base: Integer
+    if input.first == UInt8(ascii: "#") {
+      input.removeFirst()
+      base = 2
+    } else if input.starts(with: "0b".utf8) {
+      input.removeFirst(2)
+      base = 2
+    } else if input.starts(with: "0x".utf8) || input.starts(with: "0X".utf8) {
+      input.removeFirst(2)
+      base = 16
+    } else {
+      base = 10
+    }
 
     var value = Integer(0)
     var mask = Integer(0) &- 1
     var digitsConsumed = false
-    loop: while !input.isEmpty {
-      let digitValue: Integer
-
-      switch parserAndBase.0 {
-      case .binary(let parser):
-        guard let digit = parser.parse(&input) else { break loop }
-        digitValue = Integer(digit.0)
-        mask = mask << 1 | Integer(digit.1)
-
-      case .other(let parser):
-        guard let digit = parser.parse(&input) else { break loop }
-        digitValue = Integer(digit)
+    while let (digit, digitMask) = input.first.flatMap({
+      Self.digit($0, base: base)
+    }) {
+      input.removeFirst()
+      if base == 2 {
+        mask = mask << 1 | digitMask
       }
 
       // Add the digit to the parsed value.
-      guard
-        value.incrementalParseAppend(
-          digit: digitValue,
-          base: Integer(parserAndBase.1))
-      else {
+      guard value.incrementalParseAppend(digit: digit, base: base) else {
         // Exit early on overflow.
         input = original
         return nil
@@ -124,5 +112,27 @@ where Integer: FixedWidthInteger {
     }
 
     return (value, mask)
+  }
+
+  /// Returns the value and mask of a digit in the base.
+  ///
+  /// Binary digits "x" and "X" have a value and mask of 0.
+  static func digit(_ ascii: UInt8, base: Integer) -> (Integer, Integer)? {
+    let digit: Integer
+    switch ascii {
+    case UInt8(ascii: "x"), UInt8(ascii: "X"):
+      guard base == 2 else { return nil }
+      return (0, 0)
+    case UInt8(ascii: "0")...UInt8(ascii: "9"):
+      digit = Integer(ascii - UInt8(ascii: "0"))
+    case UInt8(ascii: "a")...UInt8(ascii: "f"):
+      digit = Integer(ascii - UInt8(ascii: "a") + 10)
+    case UInt8(ascii: "A")...UInt8(ascii: "F"):
+      digit = Integer(ascii - UInt8(ascii: "A") + 10)
+    default:
+      return nil
+    }
+    guard digit < base else { return nil }
+    return (digit, 1)
   }
 }
