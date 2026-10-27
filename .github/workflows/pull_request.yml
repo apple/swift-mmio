@@ -48,12 +48,8 @@ jobs:
           {"swift_version": "6.2"},
           {"swift_version": "6.3"},
         ]
-      macos_exclude_xcode_versions: |
-        [
-          {"xcode_version": "swift_6.1"},
-          {"xcode_version": "swift_6.2"},
-          {"xcode_version": "swift_6.3"},
-        ]
+      macos_versions: '["goldengate"]'
+      macos_xcode_versions: '["swift_6.4"]'
 
   soundness:
     name: Soundness

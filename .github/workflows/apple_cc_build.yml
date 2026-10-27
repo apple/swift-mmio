@@ -23,7 +23,7 @@ jobs:
             platform: xrOS
           - name: watchOS
             platform: watchOS
-        macos_version: [tahoe]
+        macos_version: [goldengate]
         macos_arch: [ARM64]
     steps:
       - name: Checkout repository
