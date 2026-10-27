@@ -33,7 +33,7 @@ jobs:
 
   tests:
     name: Test
-    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.15
+    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.17
     with:
       enable_macos_checks: true
       enable_windows_checks: false  # too slow
@@ -53,7 +53,7 @@ jobs:
 
   soundness:
     name: Soundness
-    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.15
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.17
     with:
       api_breakage_check_enabled: false  # this repo isn't API stable yet
       # minimum Swift version is 6.4
