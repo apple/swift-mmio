@@ -10,27 +10,12 @@
 //===----------------------------------------------------------------------===//
 
 extension UInt8 {
-  // FIXME: use InlineArray if/when back deployed
-  static let whiteSpaceMap: [Bool] = {
-    var whiteSpaceMap = [Bool](repeating: false, count: 256)
-    let horizontalTab = 0x9
-    let newline = 0xa
-    let verticalTab = 0xb
-    let formFeed = 0xc
-    let carriageReturn = 0xd
-    let space = 0x20
-
-    whiteSpaceMap[horizontalTab] = true
-    whiteSpaceMap[newline] = true
-    whiteSpaceMap[verticalTab] = true
-    whiteSpaceMap[formFeed] = true
-    whiteSpaceMap[carriageReturn] = true
-    whiteSpaceMap[space] = true
-
-    return whiteSpaceMap
-  }()
-
+  /// A Boolean value that indicates whether the byte is an ASCII horizontal
+  /// tab, newline, vertical tab, form feed, carriage return, or space.
   public var isWhiteSpace: Bool {
-    Self.whiteSpaceMap[Int(self)]
+    switch self {
+    case 0x09...0x0d, 0x20: true
+    default: false
+    }
   }
 }
