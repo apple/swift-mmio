@@ -38,9 +38,7 @@ extension SVDWriteConstraint: Sendable {}
 
 extension SVDWriteConstraint: XMLElementInitializable {
   public init(_ element: borrowing XMLElement) throws {
-    if let value = try? element.decode(
-      SVDWriteConstraintWriteAsRead.self, fromChild: "writeAsRead")
-    {
+    if let value = try? SVDWriteConstraintWriteAsRead(element) {
       self = .writeAsRead(value)
     } else if let value = try? element.decode(
       Bool.self, fromChild: "useEnumeratedValues")

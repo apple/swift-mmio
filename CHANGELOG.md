@@ -44,6 +44,8 @@ This changelog's format is based on
   integer, e.g. `20000000000000000k`, overflows.
 - Fixes SVD decoding to throw an error instead of trapping when a boolean
   value is not `true`, `false`, `1`, or `0`.
+- Fixes SVD decoding of `<writeConstraint>` elements that contain
+  `<writeAsRead>`. Before, these elements caused the decode to fail.
 
 <!--
 Add new items at the end of the relevant section under **Unreleased**.
