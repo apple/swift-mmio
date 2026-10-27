@@ -29,16 +29,11 @@ public struct XMLElementBuilder {
       XML_SetCharacterDataHandler(parser, characterDataHandler)
       XML_SetEndElementHandler(parser, endElementHandler)
 
-      let result0 = data.withUnsafeBytes { bytes in
+      let result = data.withUnsafeBytes { bytes in
         XML_Parse(
-          parser, bytes.baseAddress, Int32(bytes.count), Int32(XML_FALSE))
+          parser, bytes.baseAddress, Int32(bytes.count), Int32(XML_TRUE))
       }
-      if result0 == XML_STATUS_ERROR {
-        statePointer.pointee = .error
-      }
-
-      let result1 = XML_Parse(parser, nil, 0, Int32(XML_TRUE))
-      if result1 == XML_STATUS_ERROR {
+      if result == XML_STATUS_ERROR {
         statePointer.pointee = .error
       }
 
