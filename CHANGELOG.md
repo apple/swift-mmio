@@ -42,6 +42,8 @@ This changelog's format is based on
   signed types, e.g. `-9223372036854775808` for `Int`.
 - Fixes SVD decoding to throw an error instead of trapping when a scaled
   integer, e.g. `20000000000000000k`, overflows.
+- Fixes SVD decoding to throw an error instead of trapping when a boolean
+  value is not `true`, `false`, `1`, or `0`.
 
 <!--
 Add new items at the end of the relevant section under **Unreleased**.

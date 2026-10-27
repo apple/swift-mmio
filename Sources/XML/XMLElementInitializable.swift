@@ -49,7 +49,7 @@ extension Bool: XMLElementInitializable {
     switch stringValue {
     case "1", "true": self = true
     case "0", "false": self = false
-    default: fatalError()
+    default: throw XMLError.unknownValue(stringValue)
     }
   }
 }
