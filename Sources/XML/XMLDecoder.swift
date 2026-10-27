@@ -43,13 +43,12 @@ public enum XMLDecoder {
     let parser = XML_ParserCreate("UTF-8")
     defer { XML_ParserFree(parser) }
 
-    var state = XMLDecoderState(root: root)
+    var state = XMLDecoderState(parser: parser, root: root)
     try withUnsafeMutablePointer(to: &state) { state in
       XML_SetUserData(parser, state)
       defer { XML_SetUserData(parser, nil) }
 
       XML_SetStartElementHandler(parser, startElementHandler)
-      XML_SetCharacterDataHandler(parser, characterDataHandler)
       XML_SetEndElementHandler(parser, endElementHandler)
 
       let result = data.withUnsafeBytes { bytes in
@@ -69,6 +68,7 @@ public enum XMLDecoder {
 }
 
 struct XMLDecoderState {
+  var parser: XML_Parser?
   /// The frame of the root element, until the root element starts.
   var root: XMLFrame?
   /// The frames of the open elements that the decoder decodes.
@@ -82,7 +82,8 @@ struct XMLDecoderState {
   /// White space that is not yet part of the text.
   var space: [UInt8] = []
 
-  init(root: XMLFrame) {
+  init(parser: XML_Parser?, root: XMLFrame) {
+    self.parser = parser
     self.root = root
   }
 
@@ -114,6 +115,12 @@ struct XMLDecoderState {
     self.text.removeAll(keepingCapacity: true)
     self.space.removeAll(keepingCapacity: true)
     self.frames.append(frame)
+    if case .value = frame.decoder {
+      // Only elements that decode from their text need the text. Expat does
+      // not report text when no handler is set, for example the white space
+      // between the children of an element.
+      XML_SetCharacterDataHandler(self.parser, characterDataHandler)
+    }
     return frame
   }
 
@@ -152,6 +159,7 @@ struct XMLDecoderState {
     let frame = self.frames.removeLast()
     switch frame.decoder {
     case .value(let valueType):
+      XML_SetCharacterDataHandler(self.parser, nil)
       self.appendSpace()
       self.text.withUnsafeBufferPointer { text in
         valueType._decode(XMLText(bytes: text), into: frame.destination)
