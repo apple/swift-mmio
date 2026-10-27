@@ -34,6 +34,8 @@ This changelog's format is based on
 - Improves SVD decoding performance about 2x. Integers are parsed without
   parser combinators, and expat no longer scans the data a second time to
   track line positions.
+- Decodes SVD types while expat parses the document, without an XML tree in
+  between. This makes SVD decoding about 1.2x faster.
 
 ### Fixes
 
