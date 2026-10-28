@@ -46,6 +46,9 @@ This changelog's format is based on
   value is not `true`, `false`, `1`, or `0`.
 - Fixes SVD decoding of `<writeConstraint>` elements that contain
   `<writeAsRead>`. Before, these elements caused the decode to fail.
+- Fixes SVD decoding to keep all of the text of an element. Before, text
+  was lost before a newline, an entity reference, a character reference,
+  or a comment, e.g. `<name>F &amp; G</name>` decoded as `" G"`.
 
 <!--
 Add new items at the end of the relevant section under **Unreleased**.
