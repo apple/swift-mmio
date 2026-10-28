@@ -14,7 +14,7 @@ import MMIOUtilities
 enum XMLElementBuilderState: ~Copyable {
   case initial
   /// `space` holds white space that is not yet part of a value.
-  case parsing(stack: OwnedArray<XMLElement>, space: [UInt8])
+  case parsing(stack: OwnedArray<XMLElement>, space: XMLByteBuffer)
   case error
   case complete(root: XMLElement)
 
@@ -30,7 +30,7 @@ enum XMLElementBuilderState: ~Copyable {
     case .initial:
       var stack = OwnedArray<XMLElement>()
       stack.push(node)
-      self = .parsing(stack: stack, space: [])
+      self = .parsing(stack: stack, space: XMLByteBuffer())
     case .parsing(var stack, var space):
       stack[stack.count - 1].append(space: &space)
       stack.push(node)
@@ -55,8 +55,8 @@ enum XMLElementBuilderState: ~Copyable {
       } else {
         space.append(contentsOf: text)
         let value = stack[top].value ?? ""
-        stack[top].value = value + String(decoding: space, as: UTF8.self)
-        space.removeAll(keepingCapacity: true)
+        stack[top].value = value + space.string()
+        space.removeAll()
       }
       self = .parsing(stack: stack, space: space)
     case .error:
@@ -108,11 +108,11 @@ enum XMLElementBuilderState: ~Copyable {
 }
 
 extension XMLElement {
-  fileprivate mutating func append(space: inout [UInt8]) {
+  fileprivate mutating func append(space: inout XMLByteBuffer) {
     guard !space.isEmpty else { return }
     if let value = self.value {
-      self.value = value + String(decoding: space, as: UTF8.self)
+      self.value = value + space.string()
     }
-    space.removeAll(keepingCapacity: true)
+    space.removeAll()
   }
 }
