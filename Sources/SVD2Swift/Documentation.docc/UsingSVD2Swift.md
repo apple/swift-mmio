@@ -106,7 +106,7 @@ If you are generating register interfaces into a dedicated module, you will want
 [--indentation-width <indentation-width>]
 ```
 
-The number spaces to use for indentation. This option is only applicable when '--indent-using-tabs' is not used. (default: 4)
+The number of spaces to use for indentation. This option is only applicable when '--indent-using-tabs' is not used. (default: 4)
 
 #### Indent Using Tabs
 

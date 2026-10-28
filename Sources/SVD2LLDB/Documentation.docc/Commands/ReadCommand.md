@@ -12,8 +12,7 @@ The `svd read` command allows you to read registers by name. It supports reading
 USAGE: svd read <key-path> ... [--force]
 
 ARGUMENTS:
-  <key-path>              Key-path to a device, peripheral, cluster, register,
-                          or field to get information about.
+  <key-path>              Key-path to a peripheral, cluster, register, or field.
 
 OPTIONS:
   --force                 Always read ignoring side-effects.

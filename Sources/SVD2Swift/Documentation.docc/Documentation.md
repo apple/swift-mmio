@@ -14,7 +14,7 @@ If you'd like to write your own tool using the SVD format, see the `SVD` library
 
 #### Find your device's SVD file
 
-Before using either tool code generation tool, you will need to find the SVD for your device. Vendors typically provide SVD files via their official websites. Look for a dedicated section for SVD files or download links.
+Before using either code generation tool, you will need to find the SVD for your device. Vendors typically provide SVD files via their official websites. Look for a dedicated section for SVD files or download links.
 
 Note that some vendors may require you to log in and/or agree to specific terms and conditions. Be sure to follow all vendor license requirements.
 

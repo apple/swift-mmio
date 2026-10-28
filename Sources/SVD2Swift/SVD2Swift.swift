@@ -60,7 +60,7 @@ struct SVD2Swift: ParsableCommand {
     name: .long,
     help:
       """
-      Specify the number spaces to use for indentation. This option is only \
+      Specify the number of spaces to use for indentation. This option is only \
       applicable when '--indent-using-tabs' is not used.
       """)
   var indentationWidth: Int = 4
