@@ -27,7 +27,7 @@ public protocol MMIOInterposer: AnyObject {
   ///
   /// Called when a register with this interposer is read via
   /// ``MMIO/Register/read()`` or during the read phase of
-  /// ``MMIO/Register/modify(_:)``.
+  /// ``MMIO/Register/modify(_:)-((Value.Read,Value.Write)->(T))``.
   ///
   /// - Parameter pointer: A pointer to the register's memory address.
   ///
@@ -39,8 +39,8 @@ public protocol MMIOInterposer: AnyObject {
   /// Intercepts a register write operation.
   ///
   /// Called when a value is written to a register with this interposer via
-  /// ``MMIO/Register/write(_:)`` or during the write phase of
-  /// ``MMIO/Register/modify(_:)``.
+  /// ``MMIO/Register/write(_:)->()`` or during the write phase of
+  /// ``MMIO/Register/modify(_:)-((Value.Read,Value.Write)->(T))``.
   ///
   /// - Parameters:
   ///   - value: The value being written.

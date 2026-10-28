@@ -8,7 +8,7 @@ With memory-mapped I/O (MMIO), you control hardware peripherals by reading from 
 
 Registers are the fundamental building blocks for controlling peripherals like timers, serial ports, or sensors. For example, writing a specific bit pattern to a control register might enable a timer, while reading from a status register might tell you if a data transmission is complete.
 
-Swift MMIO uses macros to define type-safe register interfaces without manual bit manipulation.
+Swift MMIO uses macros to define type-safe register interfaces without manual bit manipulation. For an introduction to registers and bit fields, see <doc:Understanding-MMIO>.
 
 > Note: While registers are typically grouped into larger structures called register blocks, this article focuses on defining and understanding individual registers. For information on register blocks, see <doc:Register-Blocks>.
 
@@ -34,7 +34,7 @@ Even without defining any bit fields, this bare register definition is already u
 let control = Register<DeviceControl>(unsafeAddress: 0x40000000)
 ```
 
-> Note: The `unsafeAddress` parameter specifies the physical memory location of this register in your hardware's memory map. This address typically comes from your microcontroller's datasheet.
+> Note: The `unsafeAddress` parameter specifies the physical memory location of this register in your hardware's memory map. This address typically comes from your chip's datasheet.
 
 Once you have a register instance, you can read its current value from hardware:
 

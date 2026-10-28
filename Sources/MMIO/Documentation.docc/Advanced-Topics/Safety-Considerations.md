@@ -42,7 +42,7 @@ Swift MMIO offers several safety layers:
     Bit field macros document intended access patterns and influence the generated API (e.g., no setter for projected `ReadOnly` fields in `Write` view).
 
 7.  **Prevention of Unintended Read-Modify-Write Cycles:**
-    - Swift MMIO's API design, particularly ``MMIO/Register/modify(_:)``, prevents a common pitfall in C-style MMIO access. In C, using a `volatile` pointer to a struct with bitfields like this:
+    - Swift MMIO's API design, particularly ``MMIO/Register/modify(_:)-((Value.Read,Value.Write)->(T))``, prevents a common pitfall in C-style MMIO access. In C, using a `volatile` pointer to a struct with bitfields like this:
       ```c
       // C example of potential unintended multiple RMWs
       volatile MyRegisterType* myReg = (MyRegisterType*)0x40001000;
@@ -57,4 +57,4 @@ Swift MMIO offers several safety layers:
           view.fieldB = valueB
       }
       ```
-      Swift MMIO performs a single volatile read before the closure, allows modifications to an in-cpu-memory representation inside the closure, then performs a single volatile write after. This ensures `fieldA` and `fieldB` (and all other register fields) are updated in hardware as one coherent register write.
+      Swift MMIO performs a single volatile read before the closure, allows modifications to an in-cpu-memory representation inside the closure, then performs a single volatile write after. This ensures `fieldA` and `fieldB` (and all other register fields) are updated in hardware as one coherent register write. The read and the write are still two separate accesses, so the sequence isn't atomic. See <doc:Volatile-Access>.

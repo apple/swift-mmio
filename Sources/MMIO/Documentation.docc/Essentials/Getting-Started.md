@@ -6,17 +6,16 @@ Define a register, add it to a register block, and read, write, and modify it.
 
 This article shows the shortest path from a datasheet to working code. It uses a hypothetical timer peripheral with one control register. For more details about each step, see <doc:Registers> and <doc:Register-Blocks>.
 
-> Note: Before you start, add Swift MMIO to your project. See <doc:Installation>.
+Before you start, add Swift MMIO to your project as described in <doc:Installation>. If you haven't programmed hardware before, read <doc:Understanding-MMIO> first.
 
 ### Read the datasheet
 
-Suppose the datasheet for your microcontroller describes a timer peripheral at base address `0x4000_0000`. The timer has a 32-bit control register at offset `0x00`:
+Suppose the datasheet for your chip describes a timer peripheral at base address `0x4000_0000`. The timer has a 32-bit control register at offset `0x00`:
 
 | Bits | Name        | Description              | Access     |
 |:-----|:------------|:-------------------------|:-----------|
 | 0    | `ENABLE`    | Timer enable             | Read/Write |
 | 1-3  | `PRESCALER` | Clock prescaler          | Read/Write |
-
 
 ### Define the register
 

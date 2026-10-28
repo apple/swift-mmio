@@ -15,6 +15,8 @@ Memory-Mapped I/O (MMIO) is a fundamental technique that enables software to con
 
 Swift MMIO provides a robust, macro-driven framework to define these hardware interfaces safely in Swift, bringing strong type safety, clarity, and modern language features to low-level hardware programming.
 
+If you're new to memory-mapped I/O, start with <doc:Understanding-MMIO>, then continue with <doc:Getting-Started>.
+
 ### Automating Definitions with SVD2Swift
 
 Use `SVD2Swift` (included with Swift MMIO) to generate register definitions from CMSIS-SVD files when available. CMSIS-SVD files are XML-based descriptions of a microcontroller's memory map, supplied by hardware vendors or maintained by the community. `SVD2Swift` parses these files and generates the corresponding Swift MMIO struct definitions.
@@ -30,20 +32,19 @@ Contributions and feedback are welcome. Please refer to the [Contribution Guidel
 ### Essentials
 
 - <doc:Installation>
+- <doc:Understanding-MMIO>
 - <doc:Getting-Started>
 - <doc:Registers>
 - <doc:Register-Blocks>
 
-### Core Concepts
-
-- <doc:Understanding-MMIO>
-- <doc:Volatile-Access>
-
 ### Advanced Topics
 
+- <doc:Volatile-Access>
+- <doc:Safety-Considerations>
 - <doc:Custom-BitFieldProjectable>
 - <doc:Testing-With-Interposers>
-- <doc:Safety-Considerations>
+
+### Protocols
 
 - ``MMIO/BitFieldProjectable``
 - ``MMIO/BitRangeExpression``
