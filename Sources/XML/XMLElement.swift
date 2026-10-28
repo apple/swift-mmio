@@ -112,7 +112,13 @@ extension XMLElement {
     _: [T]?.Type = [T]?.self,
     fromChild name: String
   ) throws -> [T]? where T: XMLElementInitializable {
+    var count = 0
+    for index in self.children.indices
+    where self.children[index].name == name {
+      count += 1
+    }
     var values: [T] = []
+    values.reserveCapacity(count)
     for index in self.children.indices {
       guard self.children[index].name == name else { continue }
       let value = try T(self.children[index])
