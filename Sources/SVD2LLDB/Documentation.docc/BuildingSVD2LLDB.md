@@ -4,7 +4,7 @@ Build the SVD2LLDB plugin from source.
 
 ### Prerequisites
 
-Before you begin, ensure you have a modern Swift toolchain (version 5.9 or newer) and a copy of LLDB.framework with headers. 
+Before you begin, ensure you have a modern Swift toolchain (version 6.4 or newer) and a copy of LLDB.framework with headers. 
 
 Not all operating systems and Swift toolchains include LLDB.framework with headers. 
 

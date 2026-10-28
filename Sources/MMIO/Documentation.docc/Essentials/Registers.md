@@ -31,7 +31,7 @@ Even without defining any bit fields, this bare register definition is already u
 
 ```swift
 // Create an instance of DeviceStatus at memory address 0x40000000
-let status = DeviceStatus(unsafeAddress: 0x40000000)
+let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
 ```
 
 > Note: The `unsafeAddress` parameter specifies the physical memory location of this register in your hardware's memory map. This address typically comes from your microcontroller's datasheet.
@@ -53,7 +53,7 @@ The next example shows how you can write a value back to the register:
 
 ```swift
 // Create a raw value to write
-let writeValue = DeviceStatus.Write(0b1)
+let writeValue = DeviceStatus.Write(DeviceStatus.Raw(0b1))
 status.write(writeValue)
 ```
 
@@ -107,7 +107,7 @@ When you read a register with bit fields, Swift MMIO provides a `.raw` view that
 
 ```swift
 // Create our register instance
-let status = DeviceStatus(unsafeAddress: 0x40000000)
+let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
 
 // Read the current value
 let value = status.read()
@@ -363,7 +363,7 @@ When working with asymmetric registers, different fields are available on differ
 Swift MMIO enforces these access restrictions at compile time:
 
 ```swift
-let status = DeviceStatus(unsafeAddress: 0x40000000)
+let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
 
 // Reading the register
 let readValue = status.read()
@@ -430,7 +430,7 @@ struct InterruptStatus {
 }
 
 // To check and clear the overflow flag:
-let intStatus = InterruptStatus(unsafeAddress: 0x40000008)
+let intStatus = Register<InterruptStatus>(unsafeAddress: 0x40000008)
 if intStatus.read().overflowFlag {
     print("Overflow detected!")
 
@@ -452,7 +452,7 @@ struct FIFOStatus {
 }
 
 // Reading this flag will clear it in hardware
-let status = FIFOStatus(unsafeAddress: 0x4000000C).read()
+let status = Register<FIFOStatus>(unsafeAddress: 0x4000000C).read()
 if status.dataAvailable {
     print("Data is available, flag now cleared")
     // Process the data...
@@ -470,7 +470,7 @@ struct LEDControl {
 }
 
 // Toggle the LED state
-LEDControl(unsafeAddress: 0x40000010).write { writeValue in
+Register<LEDControl>(unsafeAddress: 0x40000010).write { writeValue in
     writeValue.ledToggle = true
 }
 ```
@@ -504,7 +504,7 @@ The order of ranges is important:
 When you read this field, Swift MMIO combines the bits from both ranges into a single logical value:
 
 ```swift
-let status = DeviceStatus(unsafeAddress: 0x40000000)
+let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
 
 // If bits 2-3 contain 0b01 and bits 6-7 contain 0b10,
 // the logical value of deviceMode will be 0b1001 (9)

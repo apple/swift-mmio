@@ -23,6 +23,12 @@ struct CR1 {
   var en: EN
 }
 
+@Register(bitWidth: 32)
+struct CR2 {
+  @ReadWrite(bits: 0..<4)
+  var prescaler: PRESCALER
+}
+
 let control = Control(unsafeAddress: 0x1000)
 control.cr1.modify { $0.en = true }
 ```
@@ -49,15 +55,15 @@ Finally, `import MMIO` in your Swift source code.
 
 ### Source Stability 
 
-Swift MMIO follows semantic versioning. While the package is in major version `0` (e.g., `0.0.x`), source stability is only guaranteed within minor versions. For example, code written for `0.0.2` is compatible with `0.0.3`, but `0.1.0` might introduce source-breaking changes.
+Swift MMIO follows semantic versioning. While the package is in major version `0` (e.g., `0.x.y`), source stability is only guaranteed within minor versions. For example, code written for `0.1.0` is compatible with `0.1.1`, but `0.2.0` might introduce source-breaking changes.
 
 To protect your project against potentially source-breaking updates during the `0.x.y` development phase, specify your package dependency using the `.upToNextMinor(from:)` requirement:
 
 ```swift
-.package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.0.2")),
+.package(url: "https://github.com/apple/swift-mmio.git", .upToNextMinor(from: "0.1.1")),
 ```
 
-This ensures that `swift package update` fetches compatible updates within the `0.0.x` series (e.g., `0.0.3`, `0.0.4`) but does not automatically update to `0.1.0` if it becomes available.
+This ensures that `swift package update` fetches compatible updates within the `0.1.x` series (e.g., `0.1.2`, `0.1.3`) but does not automatically update to `0.2.0` if it becomes available.
 
 
 ## Documentation

@@ -41,7 +41,7 @@ OPTIONS:
     Description: The GPIO A pin bank control registers
     Registers:   [MODER, ODR, OSPEEDR]
   GPIOA.MODER:
-    Address:     0x4100_0004
+    Address:     0x4200_0000
   ...
   ```
 
