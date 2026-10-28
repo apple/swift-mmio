@@ -16,13 +16,13 @@ Swift MMIO uses macros to define type-safe register interfaces without manual bi
 
 The first step in working with a hardware register is to define its basic characteristic: its size. Swift MMIO uses the ``MMIO/Register(bitWidth:)`` macro, applied to a Swift `struct`, to declare a new register type with the specified bit width.
 
-Let's start with a simple status register for a device. According to its datasheet, this register is 32 bits wide:
+Let's start with a simple control register for a device. According to its datasheet, this register is 32 bits wide:
 
 ```swift
 import MMIO
 
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct DeviceControl {
     // Bit-field definitions will go here
 }
 ```
@@ -30,8 +30,8 @@ struct DeviceStatus {
 Even without defining any bit fields, this bare register definition is already usable. To interact with it, first create an instance by providing the memory address where the register is located:
 
 ```swift
-// Create an instance of DeviceStatus at memory address 0x40000000
-let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
+// Create an instance of DeviceControl at memory address 0x40000000
+let control = Register<DeviceControl>(unsafeAddress: 0x40000000)
 ```
 
 > Note: The `unsafeAddress` parameter specifies the physical memory location of this register in your hardware's memory map. This address typically comes from your microcontroller's datasheet.
@@ -39,7 +39,7 @@ let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
 Once you have a register instance, you can read its current value from hardware:
 
 ```swift
-let readValue = status.read()
+let readValue = control.read()
 if readValue.storage != 0 {
     print("Register contains non-zero value: \(readValue.storage)")
 }
@@ -53,14 +53,14 @@ The next example shows how you can write a value back to the register:
 
 ```swift
 // Create a raw value to write
-let writeValue = DeviceStatus.Write(DeviceStatus.Raw(0b1))
-status.write(writeValue)
+let writeValue = DeviceControl.Write(DeviceControl.Raw(0b1))
+control.write(writeValue)
 ```
 
 Swift MMIO provides a more convenient closure-based API for writing to registers. This API creates a zeroed write view and lets you modify it within a closure before it writes it to the hardware:
 
 ```swift
-status.write { writeValue in
+control.write { writeValue in
     writeValue.storage = 0b1
 }
 ```
@@ -68,15 +68,15 @@ status.write { writeValue in
 A common pattern is to read the current value, modify it, and write it back. This is useful to change some bits while preserving others:
 
 ```swift
-var value = status.read()
+var value = control.read()
 value.storage += 1
-status.write(value)
+control.write(value)
 ```
 
 This pattern is so common that Swift MMIO provides a dedicated `modify` method. The method reads the current value from hardware, passes it to your closure for modification, then writes the modified value back to hardware:
 
 ```swift
-status.modify { value in
+control.modify { value in
     value.storage += 1
 }
 ```
@@ -87,13 +87,13 @@ While working with bare registers is possible, defining bit fields makes your co
 
 Most hardware registers aren't just simple storage units — they contain multiple functional segments called **bit fields**. Each bit field represents a specific feature or setting within the register. For example, a single 32-bit control register might contain an enable bit, a mode selection field, and status flags, all packed together to efficiently use the available bits.
 
-Let's enhance our `DeviceStatus` register by adding a bit field. According to our hypothetical device's datasheet, bit 1 controls whether interrupts are enabled:
+Let's enhance our `DeviceControl` register by adding a bit field. According to our hypothetical device's datasheet, bit 1 controls whether interrupts are enabled:
 
 ```swift
 import MMIO
 
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct DeviceControl {
     @ReadWrite(bits: 1)
     var interruptEnable: INTERRUPT_ENABLE
 }
@@ -107,10 +107,10 @@ When you read a register with bit fields, Swift MMIO provides a `.raw` view that
 
 ```swift
 // Create our register instance
-let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
+let control = Register<DeviceControl>(unsafeAddress: 0x40000000)
 
 // Read the current value
-let value = status.read()
+let value = control.read()
 
 // Check if interrupts are enabled
 if value.raw.interruptEnable == 1 {
@@ -128,7 +128,7 @@ For example, you could use the modify operation and the `.raw.interruptEnable` f
 
 ```swift
 // Enable interrupts while preserving all other bits
-status.modify { value in
+control.modify { value in
     value.raw.interruptEnable = 1
 }
 ```
@@ -138,8 +138,8 @@ The raw field accessors like `raw.interruptEnable` are bounds-checked at runtime
 For advanced users who need to perform C-style bit manipulation (though this is generally not recommended), Swift MMIO provides access to the bit masks and offsets as properties available on the generated field type, `INTERRUPT_ENABLE` in this example:
 
 ```swift
-let value = status.read()
-let enabled = (value.storage & DeviceStatus.INTERRUPT_ENABLE.bitMask) >> DeviceStatus.INTERRUPT_ENABLE.bitOffset
+let value = control.read()
+let enabled = (value.storage & DeviceControl.INTERRUPT_ENABLE.bitMask) >> DeviceControl.INTERRUPT_ENABLE.bitOffset
 if enabled == 1 {
     print("Interrupts are enabled")
 } else {
@@ -157,35 +157,35 @@ The following example extends the register definition with multiple functional f
 import MMIO
 
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct DeviceControl {
     @ReadWrite(bits: 0)
     var powerEnabled: POWER_ENABLED
 
     @ReadWrite(bits: 1)
     var interruptEnable: INTERRUPT_ENABLE
 
-    @ReadWrite(bits: 4..<8)
+    @ReadWrite(bits: 4..<6)
     var deviceMode: DEVICE_MODE
 }
 ```
 
-The example added a 1-bit `powerEnabled` field at bit 0 and a 4-bit `deviceMode` field at bits 4-7. The `deviceMode` field is wider than one bit, so it uses the range `4..<8`. Now you can interact with all three functional fields:
+The example added a 1-bit `powerEnabled` field at bit 0 and a 2-bit `deviceMode` field at bits 4-5. The `deviceMode` field is wider than one bit, so it uses the range `4..<6`. Now you can interact with all three functional fields:
 
 ```swift
-// Update status fields
-status.modify { value in
+// Update several fields
+control.modify { value in
     // print the current mode:
     print("Device mode: \(value.raw.deviceMode)")
     // Update the state
     value.raw.powerEnabled = 1       // Power on
     value.raw.interruptEnable = 1    // Enable interrupts
-    value.raw.deviceMode = 0b0011    // Set mode to 3
+    value.raw.deviceMode = 0b11      // Set mode to 3
 }
 ```
 
 ### Type Projections
 
-Working with raw integer values through the `.raw` property is functional but not ideal. For instance, using `1` and `0` for a power state isn't as clear as using `true` and `false`. Similarly, using numeric constants like `0b0011` for a device mode isn't as expressive as using named values like `.normal` or `.highPerformance`.
+Working with raw integer values through the `.raw` property is functional but not ideal. For instance, using `1` and `0` for a power state isn't as clear as using `true` and `false`. Similarly, using numeric constants like `0b11` for a device mode isn't as expressive as using named values like `.normal` or `.high`.
 
 Swift MMIO solves this with **type projections**, which map bit field values to more meaningful Swift types. You can project a bit field to any type that conforms to the ``MMIO/BitFieldProjectable`` protocol.
 
@@ -195,14 +195,14 @@ Let's start with a simple example, projecting our 1-bit fields to `Bool`. By add
 import MMIO
 
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct DeviceControl {
     @ReadWrite(bits: 0, as: Bool.self)
     var powerEnabled: POWER_ENABLED
 
     @ReadWrite(bits: 1, as: Bool.self)
     var interruptEnable: INTERRUPT_ENABLE
 
-    @ReadWrite(bits: 4..<8)
+    @ReadWrite(bits: 4..<6)
     var deviceMode: DEVICE_MODE
 }
 ```
@@ -211,7 +211,7 @@ With type projections, you can access fields directly without using the `.raw` v
 
 ```swift
 // Read the current register state
-let value = status.read()
+let value = control.read()
 
 // Check power status using Bool
 if value.powerEnabled {
@@ -232,7 +232,7 @@ You can also write to these fields using `Bool` values:
 
 ```swift
 // Set fields using Bool values
-status.write { value in
+control.write { value in
     value.powerEnabled = true      // Power on
     value.interruptEnable = true   // Enable interrupts
 }
@@ -263,14 +263,14 @@ Now you can update your register definition to use this enum for the mode field:
 
 ```swift
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct DeviceControl {
     @ReadWrite(bits: 0, as: Bool.self)
     var powerEnabled: POWER_ENABLED
 
     @ReadWrite(bits: 1, as: Bool.self)
     var interruptEnable: INTERRUPT_ENABLE
 
-    @ReadWrite(bits: 2..<4, as: DeviceMode.self)
+    @ReadWrite(bits: 4..<6, as: DeviceMode.self)
     var deviceMode: DEVICE_MODE
 }
 ```
@@ -279,7 +279,7 @@ With this projection in place, you can work with the device mode using the enum'
 
 ```swift
 // Read the current register state
-let value = status.read()
+let value = control.read()
 
 // Check the current device mode using the enum
 switch value.deviceMode {
@@ -294,7 +294,7 @@ case .high:
 }
 
 // Set the device mode using the enum
-status.modify { value in
+control.modify { value in
     value.deviceMode = .normal
 }
 ```
@@ -315,15 +315,15 @@ Registers can be categorized based on their field access patterns:
 
 - **Asymmetric registers** contain `@ReadOnly` and/or `@WriteOnly` fields alongside other types. Different fields are available on different views (Read vs. Write), that leads to a more complex API.
 
-When you call `status.read()`, Swift MMIO returns a `DeviceStatus.Read` view of the register. Similarly, when you call `status.write()`, you're working with a `DeviceStatus.Write` view. For symmetric registers, these views are identical — Swift MMIO uses type aliases to make `Read = ReadWrite` and `Write = ReadWrite`. This is why, in our earlier examples, you could access all fields on both read and write views.
+When you call `control.read()`, Swift MMIO returns a `DeviceControl.Read` view of the register. Similarly, when you call `control.write()`, you're working with a `DeviceControl.Write` view. For symmetric registers, these views are identical — Swift MMIO uses type aliases to make `Read = ReadWrite` and `Write = ReadWrite`. This is why, in our earlier examples, you could access all fields on both read and write views.
 
-The following example expands the `DeviceStatus` register to include fields with different access permissions:
+The following example expands the `DeviceControl` register to include fields with different access permissions:
 
 ```swift
 import MMIO
 
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct DeviceControl {
     @ReadWrite(bits: 0, as: Bool.self)
     var powerEnabled: POWER_ENABLED
 
@@ -344,14 +344,14 @@ struct DeviceStatus {
 }
 ```
 
-The `DeviceStatus` register now contains a mix of field types:
+The `DeviceControl` register now contains a mix of field types:
 - `powerEnabled` and `interruptEnable` are configuration bits that can be both read and written.
 - `busy` is a status bit that can only be read (the hardware sets this bit)
 - `reset` is a command bit that can only be written (writing `true` triggers a reset)
 - `deviceMode` is a configuration field that can be both read and written
 - `_reserved` marks the remaining bits as reserved
 
-This makes `DeviceStatus` an asymmetric register, with different fields available on different views.
+This makes `DeviceControl` an asymmetric register, with different fields available on different views.
 
 #### Field Availability on Different Views
 
@@ -363,16 +363,16 @@ When working with asymmetric registers, different fields are available on differ
 Swift MMIO enforces these access restrictions at compile time:
 
 ```swift
-let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
+let control = Register<DeviceControl>(unsafeAddress: 0x40000000)
 
 // Reading the register
-let readValue = status.read()
+let readValue = control.read()
 let isEnabled = readValue.powerEnabled // OK - ReadWrite field
 let isBusy = readValue.busy            // OK - ReadOnly field
 // readValue.reset                     // error: can't read WriteOnly field
 
 // Writing to the register
-status.write { writeValue in
+control.write { writeValue in
     writeValue.powerEnabled = true    // OK - ReadWrite field
     writeValue.reset = true           // OK - WriteOnly field
     // writeValue.busy = false        // error: can't write ReadOnly field
@@ -384,7 +384,7 @@ status.write { writeValue in
 For symmetric registers, use the single-parameter form of `modify`:
 
 ```swift
-status.modify { value in
+control.modify { value in
     value.powerEnabled = true
     value.interruptEnable = true
 }
@@ -393,7 +393,7 @@ status.modify { value in
 For asymmetric registers, use the two-parameter version of `modify` that provides both the current read value and a write value to modify:
 
 ```swift
-status.modify { readValue, writeValue in
+control.modify { readValue, writeValue in
     // Use readValue to check current state
     if readValue.busy {
         print("Device is busy, not changing settings")
@@ -483,17 +483,15 @@ Some hardware registers use non-adjacent bits to represent a single logical valu
 
 > Note: Use discontiguous bit fields only when necessary to match hardware requirements. They add complexity and can make your code harder to understand.
 
-For example, suppose our device status register's mode field is split across two non-adjacent bit ranges:
+For example, suppose a different device has a 4-bit mode field that is split across two non-adjacent bit ranges:
 
 ```swift
 import MMIO
 
 @Register(bitWidth: 32)
-struct DeviceStatus {
+struct SplitControl {
     @ReadWrite(bits: 2..<4, 6..<8)
-    var deviceMode: DEVICE_MODE
-
-    // ...
+    var mode: MODE
 }
 ```
 
@@ -504,21 +502,21 @@ The order of ranges is important:
 When you read this field, Swift MMIO combines the bits from both ranges into a single logical value:
 
 ```swift
-let status = Register<DeviceStatus>(unsafeAddress: 0x40000000)
+let split = Register<SplitControl>(unsafeAddress: 0x40000004)
 
 // If bits 2-3 contain 0b01 and bits 6-7 contain 0b10,
-// the logical value of deviceMode will be 0b1001 (9)
-let value = status.read().raw.deviceMode
+// the logical value of mode will be 0b1001 (9)
+let value = split.read().raw.mode
 ```
 
 When writing, Swift MMIO splits the logical value across the physical bit ranges:
 
 ```swift
-status.write { view in
+split.write { view in
     // Writing 0b1101 (13) will set:
     // - bits 2-3 to 0b01
     // - bits 6-7 to 0b11
-    view.raw.deviceMode = 0b1101
+    view.raw.mode = 0b1101
 }
 ```
 

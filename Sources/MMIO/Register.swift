@@ -225,8 +225,8 @@ extension Register {
   /// written, assembled according to the register's layout.
   ///
   /// ```swift
-  /// // Create a write view
-  /// var writeValue = DeviceStatus.Write(0)  // Initialize with all zeros
+  /// // Create a write view with all bits set to zero
+  /// var writeValue = DeviceStatus.Write(DeviceStatus.Raw(0))
   /// writeValue.powerEnabled = true          // Set power enabled bit
   /// writeValue.deviceMode = .normal         // Set device mode
   ///
