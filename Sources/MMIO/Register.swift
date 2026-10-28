@@ -19,7 +19,7 @@
 ///
 /// ```swift
 /// // Create a register instance at a specific memory address
-/// let statusRegister = DeviceStatus(unsafeAddress: 0x40000000)
+/// let statusRegister = Register<DeviceStatus>(unsafeAddress: 0x40000000)
 ///
 /// // Read the current value
 /// let status = statusRegister.read()

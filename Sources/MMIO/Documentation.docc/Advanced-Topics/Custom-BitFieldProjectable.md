@@ -147,10 +147,10 @@ Let's explore a practical example that handles these scenarios. Imagine we have 
 
 This is a common pattern in hardware where not all possible bit combinations are valid or meaningful.
 
-First, we'll define a custom type that implements both `BitFieldProjectable` and `RawRepresentable`:
+First, we'll define a custom type that conforms to `BitFieldProjectable` and `RawRepresentable`. The type also conforms to `Equatable`, so a `switch` can match it against the named values `low` and `high`:
 
 ```swift
-struct FanSpeed: BitFieldProjectable, RawRepresentable {
+struct FanSpeed: BitFieldProjectable, RawRepresentable, Equatable {
     static let bitWidth = 2
 
     var rawValue: UInt8
@@ -164,7 +164,7 @@ struct FanSpeed: BitFieldProjectable, RawRepresentable {
 This establishes our basic structure - a 2-bit field represented by a `UInt8` raw value. Now, let's add a way to handle pattern matching for "don't care" bits. We'll create a `Pattern` structure that can represent a value and a mask:
 
 ```swift
-struct FanSpeed: BitFieldProjectable, RawRepresentable {
+struct FanSpeed: BitFieldProjectable, RawRepresentable, Equatable {
     // ...
 
     struct Pattern {
@@ -183,7 +183,7 @@ The custom `~=` operator enables pattern matching that considers only the bits s
 Now, let's define our named values and patterns:
 
 ```swift
-struct FanSpeed: BitFieldProjectable, RawRepresentable {
+struct FanSpeed: BitFieldProjectable, RawRepresentable, Equatable {
     // ...
 
     // Specific values
@@ -200,7 +200,7 @@ Here we've defined two specific named values (`0b01` for low speed and `0b11` fo
 Finally, let's add a factory method that creates values matching our "off" pattern:
 
 ```swift
-struct FanSpeed: BitFieldProjectable, RawRepresentable {
+struct FanSpeed: BitFieldProjectable, RawRepresentable, Equatable {
     // ...
 
     static func off(rawValue: UInt8 = 0b00) -> Self {
@@ -229,7 +229,8 @@ let currentSpeed = fanControl.read().speed
 
 // Pattern matching with specific values
 switch currentSpeed {
-case .off:
+// `off` is a `Pattern`, not a `FanSpeed`, so write the type name in full
+case FanSpeed.off:
     print("Fan is off")
 case .low:
     print("Fan is running at low speed")

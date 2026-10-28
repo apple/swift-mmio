@@ -102,7 +102,7 @@ First, define a structure to represent a traced memory access event:
 ```swift
 import MMIOInterposable
 
-struct MMIOTraceEvent {
+struct MMIOTraceEvent: Equatable {
     enum AccessType: String { case load, store }
     let type: AccessType
     let address: UInt
@@ -206,14 +206,14 @@ struct ControlRegister {
 Now, create a function that updates the register based on its current state:
 
 ```swift
-func updateControlRegister(_ control: Register<ControlRegister>, newMode: UInt8) {
+func updateControlRegister(_ control: Register<ControlRegister>, newMode: UInt32) {
     control.modify { value in
         if !value.enable {
             value.enable = true
-            value.mode = newMode
-            value.prescaler = 4
+            value.raw.mode = newMode
+            value.raw.prescaler = 4
         } else {
-            value.mode = newMode
+            value.raw.mode = newMode
         }
     }
 }
@@ -226,7 +226,7 @@ Finally, write a test that verifies the function works correctly. The test:
 3. Calls the `updateControlRegister` function with mode value 2
 4. Verifies the sequence of register accesses:
    - First, the function should read the current register value (0 by default)
-   - Then, it should write the updated value with (binary 00100001 = decimal 33):
+   - Then, it should write the updated value with (binary 00100101 = decimal 37):
      - enable=true
      - mode=2
      - prescaler=4
@@ -236,13 +236,13 @@ struct ControlRegisterTests {
     @Test func testUpdateWhenDisabled() throws {
         let interposer = TracingInterposer() // 1
 
-        let control = ControlRegister(unsafeAddress: 0x40000000, interposer: interposer) // 2
+        let control = Register<ControlRegister>(unsafeAddress: 0x40000000, interposer: interposer) // 2
 
         updateControlRegister(control, newMode: 2) // 3
 
         let expectedTrace = [
             MMIOTraceEvent(type: .load, address: 0x40000000, value: 0), // 4
-            MMIOTraceEvent(type: .store, address: 0x40000000, value: 33) // 4
+            MMIOTraceEvent(type: .store, address: 0x40000000, value: 37) // 4
         ]
 
         #expect(interposer.trace == expectedTrace) // 4

@@ -94,7 +94,7 @@ struct SVD2Swift: ParsableCommand {
     help:
       """
       Specify a custom top-level device name. This option is only applicable \
-      when '--namespace-under-device-type' is used.
+      when '--namespace-under-device' is used.
       """)
   var overrideDeviceName: String?
 

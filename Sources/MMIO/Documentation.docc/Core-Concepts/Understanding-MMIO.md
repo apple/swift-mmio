@@ -8,7 +8,7 @@ With memory-mapped I/O (MMIO), you interact with hardware peripherals using regu
 
 You control hardware by reading from and writing to these memory addresses, using the same load and store instructions used for RAM. This is different from Port-Mapped I/O, which uses dedicated I/O instructions.
 
-For instance, if a GPIO peripheral has a "Data Output Register" at memory address `0x400FF000`, the CPU could set the third pin of this port high (assuming pin 3 corresponds to bit 3 of the register) by writing the value `0x00000008` (which is binary `...00001000`) to that address.
+For instance, if a GPIO peripheral has a "Data Output Register" at memory address `0x400FF000`, the CPU could set pin 3 of this port high (assuming pin 3 corresponds to bit 3 of the register) by writing the value `0x00000008` (which is binary `...00001000`) to that address.
 
 ### Registers
 
@@ -20,7 +20,7 @@ In the context of MMIO, a **register** is a small, fixed-size storage location w
 
 Registers are typically 8, 16, 32, or 64 bits wide, aligning with the processor's data bus width or common data sizes. The precise address, layout, and behavior of each register for a microcontroller are detailed in its **reference manual** or **datasheet**. This document is the authoritative source for understanding a peripheral's register structure. The datasheet also specifies critical details like the reset value of each register (its state after a system reset).
 
-Swift MMIO uses the ``MMIO/Register`` macro to define the structure and properties of individual registers based on this hardware documentation.
+Swift MMIO uses the ``MMIO/Register(bitWidth:)`` macro to define the structure and properties of individual registers based on this hardware documentation.
 
 @Comment {
 > FIXME: registers are always read/written a single contiguous unit and individual fields within them cannot be mutated independently of the others. THIS isn't precise enough phrasing and is confusing.

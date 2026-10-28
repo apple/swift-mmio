@@ -17,7 +17,8 @@ Before using `svd2swift` you must first build it. This can be done in a couple s
 Clone the swift-mmio repository:
 
 ```console
-$ git clone git@github.com:apple/swift-mmio.git
+$ git clone https://github.com/apple/swift-mmio.git
+$ cd swift-mmio
 $ git checkout 0.1.1
 ```
 
@@ -31,13 +32,13 @@ Locate the tool in the build directory:
 
 ```console
 $ ls $(swift build -c release --show-bin-path)/SVD2Swift
-/Volumes/Developer/org.swift/swift-mmio/.build/arm64-apple-macosx/release/SVD2Swift
+/path/to/swift-mmio/.build/arm64-apple-macosx/release/SVD2Swift
 ```
 
 Finally, you can optionally install `svd2swift` into a convenient location in your `$PATH`.
 
 ```console
-cp $(swift build -c release --show-bin-path)/SVD2Swift ~/bin
+$ cp $(swift build -c release --show-bin-path)/SVD2Swift ~/bin
 ```
 
 #### Use the tool
@@ -54,13 +55,7 @@ The resulting Swift source files are written to "Sources/Application". Add these
 
 ```console
 $ ls Sources/Application
-Project
-╰╴Sources
-  ╰╴Application
-    ├─ Device.swift
-    ├─ ADC0.swift
-    ├─ ...
-    └─ TIMER2.swift
+ADC0.swift    Device.swift  ...  TIMER2.swift
 ```
 
 If you'd like to avoid manually running `svd2swift` and including generated source files in source control, see <doc:UsingSVD2SwiftPlugin> for details on running `svd2swift` as part of your build.
@@ -132,11 +127,11 @@ The generated types and peripheral instances should be nested under a "device" t
 Example diff:
 ```diff
 - /// An example peripheral
-- let examplePeripheral = ExamplePeripheral(unsafeAddress: 0x1000)
+- let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 + /// An example device
 + enum ExampleDevice {
 +   /// An example peripheral
-+   static let examplePeripheral = ExamplePeripheral(unsafeAddress: 0x1000)
++   static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 + }
 ```
 
@@ -152,7 +147,7 @@ Example diff:
 ```diff
 - enum ExampleDevice {
 + struct ExampleDevice {
--   static let examplePeripheral = ExamplePeripheral(unsafeAddress: 0x1000)
+-   static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 +   let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 ```
 
@@ -162,7 +157,7 @@ Example diff:
 [--device-name <device-name>]
 ```
 
-A custom top-level device name. This option is only applicable when `--namespace-under-device-type` is used.
+A custom top-level device name. This option is only applicable when `--namespace-under-device` is used.
 
 Example diff:
 ```diff
