@@ -32,7 +32,7 @@ If standard compiler optimizations are applied to MMIO accesses, these unique ch
 
 ### The "volatile" concept
 
-To prevent these issues, low-level programming languages like C and C++ provide the `volatile` keyword. The `volatile` keyword instructs the compiler that a particular memory locations must be treated more carefully.
+To prevent these issues, low-level programming languages like C and C++ provide the `volatile` keyword. The `volatile` keyword instructs the compiler that particular memory locations must be treated more carefully.
 
 The `volatile` qualifier tells the compiler:
 

@@ -30,6 +30,7 @@ Contributions and feedback are welcome. Please refer to the [Contribution Guidel
 ### Essentials
 
 - <doc:Installation>
+- <doc:Getting-Started>
 - <doc:Registers>
 - <doc:Register-Blocks>
 
