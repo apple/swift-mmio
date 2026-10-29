@@ -24,6 +24,9 @@ This changelog's format is based on
   and Mac Catalyst 15, the oldest versions that Swift 6.4 supports.
 - Enables strict memory safety checking for all targets and treats strict
   memory safety warnings as errors.
+- Makes `@Register` types and their `Raw`, `Read`, and `Write` views
+  `Sendable`. `RegisterValue`, `RegisterValueRaw`, `RegisterValueRead`, and
+  `RegisterValueWrite` now refine `Sendable`.
 - Changes the `bits` parameter of the bit field macros to
   `any BitRangeExpression...`, so different kinds of ranges can be mixed in a
   single macro application, e.g. `@ReadWrite(bits: 0..<2, 4...5)`. Negative
@@ -35,6 +38,13 @@ This changelog's format is based on
 - Improves SVD decoding performance about 2x. Integers are parsed without
   parser combinators, and expat no longer scans the data a second time to
   track line positions.
+- Makes `Register` and `RegisterArray` explicitly not `Sendable`, so a
+  register is used from one isolation domain unless the code shares it
+  through an actor or a lock.
+- Makes `@RegisterBlock` types explicitly not `Sendable`, like `Register`.
+  `SVD2Swift` now exports global and static peripherals as
+  `nonisolated(unsafe)`. Use `--instance-member-peripherals` to make the
+  compiler check how tasks share peripherals.
 
 ### Fixes
 

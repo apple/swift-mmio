@@ -38,6 +38,10 @@
 /// correct interaction with hardware. See <doc:Volatile-Access> for more
 /// details.
 ///
+/// `Register` is not `Sendable`. Two tasks that both modify one register
+/// can interleave their reads and writes, which can cause unexpected
+/// hardware behavior. To use a register from more than one task, give it
+/// to one actor, or protect it with a lock such as `Mutex`.
 ///
 /// - Parameter Value: A `struct`, typically defined using the
 ///   ``MMIO/Register(bitWidth:)`` macro, that describes the bit-level layout of
@@ -65,7 +69,8 @@
 ///
 /// - ``MMIO/Register/interposer``
 /// - ``MMIO/Register/init(unsafeAddress:interposer:)``
-public struct Register<Value>: RegisterProtocol where Value: RegisterValue {
+public struct Register<Value>: RegisterProtocol, ~Sendable
+where Value: RegisterValue {
   /// The absolute memory address of this register.
   ///
   /// This address is the target for all load and store operations performed by

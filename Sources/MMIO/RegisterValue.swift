@@ -26,7 +26,10 @@
 ///
 /// These views are used by the ``Register`` type to perform actual hardware
 /// read and write operations.
-public protocol RegisterValue {
+///
+/// A register value and its views are `Sendable`. The views store only the
+/// register's raw integer, so you can send a value you read to another task.
+public protocol RegisterValue: Sendable {
   /// The type providing raw, untyped access to this register's underlying
   /// storage.
   ///
@@ -57,7 +60,7 @@ public protocol RegisterValue {
 ///   ``RegisterValueWrite``) of a register.
 /// - Providing an escape hatch for low-level manipulation if necessary, though
 ///   direct use is generally discouraged in favor of typed field access.
-public protocol RegisterValueRaw {
+public protocol RegisterValueRaw: Sendable {
   /// A type alias back to the primary ``RegisterValue``-conforming type that
   /// this raw view is associated with.
   associatedtype Value: RegisterValue where Value.Raw == Self
@@ -91,7 +94,7 @@ public protocol RegisterValueRaw {
 ///
 /// A `Read` view is usually obtained by calling ``Register/read()``, which
 /// populates it with the current hardware state of the register.
-public protocol RegisterValueRead {
+public protocol RegisterValueRead: Sendable {
   /// A type alias back to the primary ``RegisterValue``-conforming type that
   /// this read view is associated with.
   associatedtype Value: RegisterValue where Value.Read == Self
@@ -127,7 +130,7 @@ extension RegisterValueRead {
 /// specific bit pattern) or from a `Read` view for read-modify-write
 /// operations, ensuring that unchanged fields retain the hardware's current
 /// values.
-public protocol RegisterValueWrite {
+public protocol RegisterValueWrite: Sendable {
   /// A type alias back to the primary ``RegisterValue``-conforming type that
   /// this write view is associated with.
   associatedtype Value: RegisterValue where Value.Write == Self

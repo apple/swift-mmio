@@ -127,13 +127,15 @@ The generated types and peripheral instances should be nested under a "device" t
 Example diff:
 ```diff
 - /// An example peripheral
-- let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+- nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 + /// An example device
 + enum ExampleDevice {
 +   /// An example peripheral
-+   static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
++   nonisolated(unsafe) static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 + }
 ```
+
+Peripherals are not `Sendable`, so global and static peripheral instances are `nonisolated(unsafe)`. The compiler does not check how tasks share them. To make the compiler check this, use `--instance-member-peripherals`.
 
 #### Instance Member Peripherals
 
@@ -147,9 +149,11 @@ Example diff:
 ```diff
 - enum ExampleDevice {
 + struct ExampleDevice {
--   static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+-   nonisolated(unsafe) static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 +   let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 ```
+
+The compiler checks instance member peripherals. A device value is not `Sendable`, so it stays in one isolation domain. To use it from more than one task, give it to one actor, or protect it with a lock such as `Mutex`.
 
 #### Device Name
 

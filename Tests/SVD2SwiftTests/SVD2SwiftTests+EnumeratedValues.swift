@@ -111,7 +111,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -180,7 +180,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        public let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        public nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -262,7 +262,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
