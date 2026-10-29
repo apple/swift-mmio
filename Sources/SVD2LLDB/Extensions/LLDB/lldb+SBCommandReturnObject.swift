@@ -15,15 +15,15 @@ extension lldb.SBCommandReturnObject: SVD2LLDBResult {
   mutating func output(_ string: String) {
     var string = string
     string.withUTF8 { buffer in
-      self.PutCString(buffer.baseAddress, Int32(buffer.count))
+      unsafe self.PutCString(buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   mutating func warning(_ string: String) {
-    self.AppendWarning(string)
+    unsafe self.AppendWarning(string)
   }
 
   mutating func error(_ string: String) {
-    self.SetError(string)
+    unsafe self.SetError(string)
   }
 }

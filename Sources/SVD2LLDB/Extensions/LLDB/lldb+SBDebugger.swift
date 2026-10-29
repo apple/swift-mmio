@@ -25,7 +25,7 @@ extension lldb.SBDebugger: SVD2LLDBDebugger {
     precondition(bytes <= MemoryLayout.size(ofValue: value))
     var target = self.GetSelectedTarget()
     var process = target.GetProcess()
-    let count = process.ReadMemory(address, &value, Int(bytes), &error)
+    let count = unsafe process.ReadMemory(address, &value, Int(bytes), &error)
     if count != bytes {
       error.SetError(Self.lldbEIOError, lldb.eErrorTypePOSIX)
       throw error
@@ -47,7 +47,7 @@ extension lldb.SBDebugger: SVD2LLDBDebugger {
     precondition(bytes <= MemoryLayout.size(ofValue: value))
     var target = self.GetSelectedTarget()
     var process = target.GetProcess()
-    let count = process.WriteMemory(address, &value, Int(bytes), &error)
+    let count = unsafe process.WriteMemory(address, &value, Int(bytes), &error)
     if count != bytes {
       error.SetError(Self.lldbEIOError, lldb.eErrorTypePOSIX)
       throw error

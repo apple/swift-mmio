@@ -33,7 +33,7 @@ extension SVD2LLDB {
   convenience init(debugger: inout lldb.SBDebugger) {
     self.init(device: nil)
     var interpreter = debugger.GetCommandInterpreter()
-    var svdCommand = interpreter.AddMultiwordCommand(
+    var svdCommand = unsafe interpreter.AddMultiwordCommand(
       "svd", "Operate on registers by name.")
     _ = svdCommand.add(DecodeCommand.self, context: self)
     _ = svdCommand.add(InfoCommand.self, context: self)
@@ -50,7 +50,8 @@ extension SVD2LLDB {
 /// function: `bool lldb::PluginInitialize(lldb::SBDebugger debugger)`.
 @_cdecl("_ZN4lldb16PluginInitializeENS_10SBDebuggerE")
 public func pluginInitialize(debugger: UnsafeMutableRawPointer) -> Bool {
-  let debugger = debugger.bindMemory(to: lldb.SBDebugger.self, capacity: 1)
-  SVD2LLDB.shared = SVD2LLDB(debugger: &debugger.pointee)
+  let debugger = unsafe debugger.bindMemory(
+    to: lldb.SBDebugger.self, capacity: 1)
+  unsafe SVD2LLDB.shared = SVD2LLDB(debugger: &debugger.pointee)
   return true
 }
