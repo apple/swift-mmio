@@ -704,7 +704,9 @@ extension SVDEnumeration: SVDExportable {
       self.name?.removingUnsafeCharacters()
       ?? context.swiftParentTypeNames.last.map { "\($0)Values" }
       ?? "Unknown"
-    if name == context.swiftParentTypeNames.last {
+    // The type is emitted into the scope of the register, so it can collide
+    // with the name of the register as well as the name of the field.
+    if context.swiftParentTypeNames.suffix(2).contains(name) {
       name.append("Values")
     }
     return name
