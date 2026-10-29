@@ -48,12 +48,12 @@ enum XMLElementBuilderState: ~Copyable {
       self = .error
     case .parsing(var stack, var space):
       let top = stack.count - 1
-      if text.allSatisfy(\.isWhiteSpace) {
-        space.append(contentsOf: text)
+      if unsafe text.allSatisfy(\.isWhiteSpace) {
+        unsafe space.append(contentsOf: text)
       } else if stack[top].value == nil, space.isEmpty {
-        stack[top].value = String(decoding: text, as: UTF8.self)
+        stack[top].value = unsafe String(decoding: text, as: UTF8.self)
       } else {
-        space.append(contentsOf: text)
+        unsafe space.append(contentsOf: text)
         let value = stack[top].value ?? ""
         stack[top].value = value + space.string()
         space.removeAll()
