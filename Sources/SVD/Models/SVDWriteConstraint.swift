@@ -36,24 +36,6 @@ extension SVDWriteConstraint: Hashable {}
 
 extension SVDWriteConstraint: Sendable {}
 
-extension SVDWriteConstraint: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    if let value = try? SVDWriteConstraintWriteAsRead(element) {
-      self = .writeAsRead(value)
-    } else if let value = try? element.decode(
-      Bool.self, fromChild: "useEnumeratedValues")
-    {
-      self = .useEnumeratedValues(value)
-    } else if let value = try? element.decode(
-      SVDWriteConstraintRange.self, fromChild: "range")
-    {
-      self = .range(value)
-    } else {
-      throw XMLError.unknownElement(element.description)
-    }
-  }
-}
-
 extension SVDWriteConstraint: XMLStructDecodable {
   public struct Fields: XMLFields {
     var writeAsRead = SVDWriteConstraintWriteAsRead.Fields()

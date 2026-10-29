@@ -39,26 +39,6 @@ extension SVDAccess: Hashable {}
 
 extension SVDAccess: Sendable {}
 
-extension SVDAccess: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
-    switch stringValue {
-    case "read-only": self = .readOnly
-    case "write-only": self = .writeOnly
-    case "read-write": self = .readWrite
-    case "write-once": self = .writeOnce
-    case "read-writeOnce": self = .readWriteOnce
-    // FIXME: AT32WB415xx_v2.svd
-    case "read-write ": self = .readWrite
-    // FIXME: GD32VF103.svd
-    case "write": self = .writeOnly
-    // FIXME: nrf9160
-    case "read-writeonce": self = .readWriteOnce
-    default: throw XMLError.unknownValue(stringValue)
-    }
-  }
-}
-
 extension SVDAccess: CommonDecodable {
   public static func decode(
     from decoder: inout some CommonDecoder & ~Escapable

@@ -27,21 +27,6 @@ extension SVDAddressBlockUsage: Hashable {}
 
 extension SVDAddressBlockUsage: Sendable {}
 
-extension SVDAddressBlockUsage: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    let stringValue = try String(element)
-    switch stringValue {
-    case Self.registers.rawValue: self = .registers
-    case Self.buffer.rawValue: self = .buffer
-    case Self.reserved.rawValue: self = .reserved
-    // FIXME: esp8266.svd
-    // FIXME: esp32.svd
-    // These SVDs have invalid usage strings
-    default: self = .registers
-    }
-  }
-}
-
 extension SVDAddressBlockUsage: CommonDecodable {
   public static func decode(
     from decoder: inout some CommonDecoder & ~Escapable

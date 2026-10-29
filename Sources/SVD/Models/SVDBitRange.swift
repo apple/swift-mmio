@@ -27,20 +27,6 @@ extension SVDBitRange: Hashable {}
 
 extension SVDBitRange: Sendable {}
 
-extension SVDBitRange: XMLElementInitializable {
-  public init(_ element: borrowing XMLElement) throws {
-    if let value = try? SVDBitRangeLsbMsb(element) {
-      self = .lsbMsb(value)
-    } else if let value = try? SVDBitRangeOffsetWidth(element) {
-      self = .offsetWidth(value)
-    } else if let value = try? SVDBitRangeLiteralContainer(element) {
-      self = .literal(value)
-    } else {
-      throw XMLError.unknownElement(element.description)
-    }
-  }
-}
-
 extension SVDBitRange: XMLStructDecodable {
   public struct Fields: XMLFields {
     var lsbMsb = SVDBitRangeLsbMsb.Fields()

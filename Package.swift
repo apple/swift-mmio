@@ -152,14 +152,10 @@ let package = Package(
     .target(
       name: "XML",
       dependencies: [
-        "MMIOUtilities",
-        "XMLCore",
         "XMLMacros",
         .product(name: "NewCodable", package: "swift-foundation"),
       ],
       swiftSettings: [.enableExperimentalFeature("Lifetimes")]),
-
-    .target(name: "XMLCore"),
 
     .macro(
       name: "XMLMacros",

@@ -49,6 +49,4 @@ extension SVDModifiedWriteValues: Hashable {}
 
 extension SVDModifiedWriteValues: Sendable {}
 
-extension SVDModifiedWriteValues: XMLElementInitializable {}
-
 extension SVDModifiedWriteValues: CommonDecodable {}

@@ -14,8 +14,7 @@ public macro XMLAttribute() =
   #externalMacro(module: "XMLMacros", type: "XMLMarkerMacro")
 
 @attached(
-  extension, conformances: XMLElementInitializable, XMLStructDecodable,
-  names: named(init(_:)), named(Fields))
+  extension, conformances: XMLStructDecodable, names: named(Fields))
 public macro XMLElement() =
   #externalMacro(module: "XMLMacros", type: "XMLElementMacro")
 
