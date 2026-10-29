@@ -65,7 +65,7 @@ extension UInt64: XMLElementInitializable {
   }
 }
 
-private struct SVDScaledNonNegativeIntegerParser<Output>: ParserProtocol
+struct SVDScaledNonNegativeIntegerParser<Output>: ParserProtocol
 where Output: FixedWidthInteger {
   func parse(_ input: inout Input) -> Output? {
     let original = input
