@@ -22,7 +22,8 @@ This changelog's format is based on
 - Updates to Swift 6.4 as minimum required version.
 - Raises minimum deployment targets to macOS 12, iOS 15, tvOS 15, watchOS 9,
   and Mac Catalyst 15, the oldest versions that Swift 6.4 supports.
-- Enables strict memory safety checking for the MMIO module.
+- Enables strict memory safety checking for all targets and treats strict
+  memory safety warnings as errors.
 - Changes the `bits` parameter of the bit field macros to
   `any BitRangeExpression...`, so different kinds of ranges can be mixed in a
   single macro application, e.g. `@ReadWrite(bits: 0..<2, 4...5)`. Negative

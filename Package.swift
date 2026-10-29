@@ -40,8 +40,7 @@ let package = Package(
     // MMIO
     .target(
       name: "MMIO",
-      dependencies: ["MMIOMacros", "MMIOVolatile"],
-      swiftSettings: [.strictMemorySafety()]),
+      dependencies: ["MMIOMacros", "MMIOVolatile"]),
     .testTarget(
       name: "MMIOTests",
       dependencies: ["MMIO", "MMIOUtilities"]),
@@ -53,10 +52,7 @@ let package = Package(
     .target(
       name: "MMIOInterposable",
       dependencies: ["MMIOMacros", "MMIOVolatile"],
-      swiftSettings: [
-        .define("FEATURE_INTERPOSABLE"),
-        .strictMemorySafety(),
-      ]),
+      swiftSettings: [.define("FEATURE_INTERPOSABLE")]),
     .testTarget(
       name: "MMIOInterposableTests",
       dependencies: ["MMIOInterposable", "MMIOUtilities"],
@@ -199,6 +195,10 @@ for target in package.targets {
 
   // Swift 6.1 - SE-444: Member import visibility
   swiftSettings.append(.enableUpcomingFeature("MemberImportVisibility"))
+
+  // Swift 6.2 - SE-458: Opt-in strict memory safety checking
+  swiftSettings.append(.strictMemorySafety())
+  swiftSettings.append(.treatWarning("StrictMemorySafety", as: .error))
 
   // Swift 6.2 - SE-461: Run nonisolated async functions on the caller's actor
   swiftSettings.append(.enableUpcomingFeature("NonisolatedNonsendingByDefault"))
