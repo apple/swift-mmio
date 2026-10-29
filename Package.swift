@@ -5,13 +5,14 @@ import PackageDescription
 
 let package = Package(
   name: "swift-mmio",
+  // NewCodable requires the 26 releases.
   platforms: [
-    .macOS(.v12),
-    .iOS(.v15),
-    .tvOS(.v15),
-    .watchOS(.v9),
-    .macCatalyst(.v15),
-    .visionOS(.v1),
+    .macOS(.v26),
+    .iOS(.v26),
+    .tvOS(.v26),
+    .watchOS(.v26),
+    .macCatalyst(.v26),
+    .visionOS(.v26),
   ],
   products: [
     // MMIO
@@ -35,6 +36,10 @@ let package = Package(
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
       from: "603.0.1"),
+    // FIXME: Experimental. Use a release when NewCodable ships.
+    .package(
+      url: "https://github.com/swiftlang/swift-foundation.git",
+      branch: "experimental/new-codable"),
   ],
   targets: [
     // MMIO
@@ -104,7 +109,8 @@ let package = Package(
     // SVD
     .target(
       name: "SVD",
-      dependencies: ["MMIOUtilities", "XML"]),
+      dependencies: ["MMIOUtilities", "XML"],
+      swiftSettings: [.enableExperimentalFeature("Lifetimes")]),
     .testTarget(
       name: "SVDTests",
       dependencies: ["MMIOUtilities", "SVD"]),
@@ -145,7 +151,13 @@ let package = Package(
     // XML
     .target(
       name: "XML",
-      dependencies: ["MMIOUtilities", "XMLCore", "XMLMacros"]),
+      dependencies: [
+        "MMIOUtilities",
+        "XMLCore",
+        "XMLMacros",
+        .product(name: "NewCodable", package: "swift-foundation"),
+      ],
+      swiftSettings: [.enableExperimentalFeature("Lifetimes")]),
 
     .target(name: "XMLCore"),
 
