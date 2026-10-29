@@ -19,6 +19,12 @@ This changelog's format is based on
 
 ### Changes
 
+- Replaces libexpat with a Swift pull decoder for SVD files. The decoder is a
+  `CommonDecoder` from the experimental NewCodable package and decodes SVD
+  types while it reads the XML, so no XML tree is built. Decoding is about 4×
+  faster.
+- Raises minimum deployment targets to macOS 26, iOS 26, tvOS 26, watchOS 26,
+  Mac Catalyst 26, and visionOS 26, which NewCodable requires.
 - Updates to Swift 6.4 as minimum required version.
 - Raises minimum deployment targets to macOS 12, iOS 15, tvOS 15, watchOS 9,
   and Mac Catalyst 15, the oldest versions that Swift 6.4 supports.
