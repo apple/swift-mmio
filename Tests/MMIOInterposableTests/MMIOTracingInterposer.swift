@@ -28,7 +28,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
   func load<Value>(
     from pointer: UnsafePointer<Value>
   ) -> Value where Value: FixedWidthInteger & UnsignedInteger {
-    assertMMIOAlignment(pointer: pointer)
+    unsafe assertMMIOAlignment(pointer: pointer)
 
     let address = UInt(bitPattern: pointer)
     let size = MemoryLayout<Value>.size
@@ -49,7 +49,7 @@ extension MMIOTracingInterposer: MMIOInterposer {
     _ value: Value,
     to pointer: UnsafeMutablePointer<Value>
   ) where Value: FixedWidthInteger & UnsignedInteger {
-    assertMMIOAlignment(pointer: pointer)
+    unsafe assertMMIOAlignment(pointer: pointer)
 
     let address = UInt(bitPattern: pointer)
     let size = MemoryLayout<Value>.size

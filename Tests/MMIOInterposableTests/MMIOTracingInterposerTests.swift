@@ -16,7 +16,7 @@ struct MMIOTracingInterposerTests {
     let interposer = MMIOTracingInterposer()
     interposer.memory[0x10] = 0x5a
     interposer.memory[0x11] = 0xa5
-    let value: UInt16 = interposer.load(from: .init(bitPattern: 0x10)!)
+    let value: UInt16 = unsafe interposer.load(from: .init(bitPattern: 0x10)!)
     #expect(value == 0xa55a)
 
     assertMMIOInterposerTrace(
@@ -28,7 +28,7 @@ struct MMIOTracingInterposerTests {
 
   @Test func memory_store() {
     let interposer = MMIOTracingInterposer()
-    interposer.store(
+    unsafe interposer.store(
       UInt16(0xa55a),
       to: .init(bitPattern: 0x10)!)
     #expect(interposer.memory[0x10] == 0x5a)
@@ -41,12 +41,13 @@ struct MMIOTracingInterposerTests {
   }
 
   @Test func assertMMIOAlignment_pass() {
-    assertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x2)!)
+    unsafe assertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x2)!)
   }
 
   @Test func assertMMIOAlignment_fail() {
     withKnownIssue("testing negative case") {
-      assertMMIOAlignment(pointer: UnsafePointer<UInt16>(bitPattern: 0x1)!)
+      unsafe assertMMIOAlignment(
+        pointer: UnsafePointer<UInt16>(bitPattern: 0x1)!)
     }
   }
 

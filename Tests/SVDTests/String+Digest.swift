@@ -19,7 +19,7 @@ extension String {
 
     self.init(unsafeUninitializedCapacity: digits) { utf8Buffer in
       var utf8BufferIndex = 0
-      digest.withUnsafeBytes { digestBuffer in
+      unsafe digest.withUnsafeBytes { digestBuffer in
         func appendNibble(_ nibble: UInt8) {
           let ascii =
             switch nibble {
@@ -30,11 +30,11 @@ extension String {
             default:
               preconditionFailure("Invalid hexadecimal digit \(nibble)")
             }
-          utf8Buffer[utf8BufferIndex] = ascii
+          unsafe utf8Buffer[utf8BufferIndex] = ascii
           utf8BufferIndex += 1
         }
 
-        for byte in digestBuffer {
+        for unsafe byte in unsafe digestBuffer {
           appendNibble((byte >> 4) & 0xf)
           appendNibble((byte >> 0) & 0xf)
         }
