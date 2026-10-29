@@ -83,3 +83,5 @@ private struct SVDCPURevisionParser: ParserProtocol {
     self.parser.parse(&input)
   }
 }
+
+extension SVDCPURevision: CommonDecodable {}

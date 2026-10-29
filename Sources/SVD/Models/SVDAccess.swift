@@ -58,3 +58,27 @@ extension SVDAccess: XMLElementInitializable {
     }
   }
 }
+
+extension SVDAccess: CommonDecodable {
+  public static func decode(
+    from decoder: inout some CommonDecoder & ~Escapable
+  ) throws(CodingError.Decoding) -> Self {
+    let stringValue = try decoder.decode(String.self)
+    switch stringValue {
+    case "read-only": return .readOnly
+    case "write-only": return .writeOnly
+    case "read-write": return .readWrite
+    case "write-once": return .writeOnce
+    case "read-writeOnce": return .readWriteOnce
+    // FIXME: AT32WB415xx_v2.svd
+    case "read-write ": return .readWrite
+    // FIXME: GD32VF103.svd
+    case "write": return .writeOnly
+    // FIXME: nrf9160
+    case "read-writeonce": return .readWriteOnce
+    default:
+      throw CodingError.dataCorrupted(
+        debugDescription: "Invalid access '\(stringValue)'")
+    }
+  }
+}

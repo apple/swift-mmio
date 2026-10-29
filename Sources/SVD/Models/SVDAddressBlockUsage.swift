@@ -41,3 +41,13 @@ extension SVDAddressBlockUsage: XMLElementInitializable {
     }
   }
 }
+
+extension SVDAddressBlockUsage: CommonDecodable {
+  public static func decode(
+    from decoder: inout some CommonDecoder & ~Escapable
+  ) throws(CodingError.Decoding) -> Self {
+    // FIXME: esp8266.svd, esp32.svd
+    // These SVDs have invalid usage strings
+    Self(rawValue: try decoder.decode(String.self)) ?? .registers
+  }
+}

@@ -36,3 +36,5 @@ extension SVDCPUEndianness: Hashable {}
 extension SVDCPUEndianness: Sendable {}
 
 extension SVDCPUEndianness: XMLElementInitializable {}
+
+extension SVDCPUEndianness: CommonDecodable {}

@@ -29,3 +29,5 @@ extension SVDEnumerationUsage: Hashable {}
 extension SVDEnumerationUsage: Sendable {}
 
 extension SVDEnumerationUsage: XMLElementInitializable {}
+
+extension SVDEnumerationUsage: CommonDecodable {}

@@ -36,3 +36,5 @@ extension SVDProtection: Hashable {}
 extension SVDProtection: XMLElementInitializable {}
 
 extension SVDProtection: Sendable {}
+
+extension SVDProtection: CommonDecodable {}

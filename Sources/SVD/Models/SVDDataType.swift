@@ -57,3 +57,5 @@ extension SVDDataType: Hashable {}
 extension SVDDataType: Sendable {}
 
 extension SVDDataType: XMLElementInitializable {}
+
+extension SVDDataType: CommonDecodable {}

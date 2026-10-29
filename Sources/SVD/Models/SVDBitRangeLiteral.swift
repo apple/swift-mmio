@@ -57,3 +57,5 @@ private struct SVDBitRangeLiteralParser: ParserProtocol {
     self.parser.parse(&input)
   }
 }
+
+extension SVDBitRangeLiteral: CommonDecodable {}

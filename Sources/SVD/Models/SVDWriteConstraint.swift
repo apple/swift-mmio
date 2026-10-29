@@ -53,3 +53,70 @@ extension SVDWriteConstraint: XMLElementInitializable {
     }
   }
 }
+
+extension SVDWriteConstraint: XMLStructDecodable {
+  public struct Fields: XMLFields {
+    var writeAsRead = SVDWriteConstraintWriteAsRead.Fields()
+    var writeAsReadFailed = false
+    var useEnumeratedValues: Bool? = nil
+    var useEnumeratedValuesFailed = false
+    var range: SVDWriteConstraintRange? = nil
+    var rangeFailed = false
+
+    public init() {}
+
+    public static var slotCount: Int {
+      SVDWriteConstraintWriteAsRead.Fields.slotCount + 2
+    }
+
+    @inline(__always)
+    public static func slot(
+      for field: borrowing some CommonFieldDecoder & ~Escapable
+    ) -> Int {
+      let base = SVDWriteConstraintWriteAsRead.Fields.slotCount
+      if field.matches("useEnumeratedValues") { return base }
+      if field.matches("range") { return base + 1 }
+      return SVDWriteConstraintWriteAsRead.Fields.slot(for: field)
+    }
+
+    public mutating func decode(
+      slot: Int, from decoder: inout some CommonDecoder & ~Escapable
+    ) throws(CodingError.Decoding) {
+      // Like `try?` on each choice: an error removes only that choice.
+      switch slot - SVDWriteConstraintWriteAsRead.Fields.slotCount {
+      case 0:
+        guard self.useEnumeratedValues == nil, !self.useEnumeratedValuesFailed
+        else { return }
+        do { self.useEnumeratedValues = try decoder.decode(Bool.self) } catch {
+          self.useEnumeratedValuesFailed = true
+        }
+      case 1:
+        guard self.range == nil, !self.rangeFailed else { return }
+        do {
+          self.range = try decoder.decode(SVDWriteConstraintRange.self)
+        } catch {
+          self.rangeFailed = true
+        }
+      default:
+        do { try self.writeAsRead.decode(slot: slot, from: &decoder) } catch {
+          self.writeAsReadFailed = true
+        }
+      }
+    }
+
+    public consuming func build() throws(CodingError.Decoding)
+      -> SVDWriteConstraint?
+    {
+      if !self.writeAsReadFailed, let value = try? self.writeAsRead.build() {
+        return .writeAsRead(value)
+      }
+      if let value = self.useEnumeratedValues {
+        return .useEnumeratedValues(value)
+      }
+      if let value = self.range {
+        return .range(value)
+      }
+      return nil
+    }
+  }
+}
