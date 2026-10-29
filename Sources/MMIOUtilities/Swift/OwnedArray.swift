@@ -9,59 +9,63 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// A growable array of noncopyable elements.
+///
+/// The array owns its buffer and checks each index, so its API is safe.
+@safe
 public struct OwnedArray<Element: ~Copyable>: ~Copyable {
-  var buffer: UnsafeMutableBufferPointer<Element>?
-  var _count: Int
+  private var buffer: UnsafeMutableBufferPointer<Element>?
+  private var _count: Int
 
-  public var capacity: Int { self.buffer?.count ?? 0 }
+  public var capacity: Int { unsafe self.buffer?.count ?? 0 }
   public var count: Int { self._count }
   public var isEmpty: Bool { self.count == 0 }
   public var indices: Range<Int> { 0..<self.count }
 
   public init() {
-    self.buffer = nil
+    unsafe self.buffer = nil
     self._count = 0
   }
 
   deinit {
-    self.buffer?.extracting(..<self.count).deinitialize()
-    self.buffer?.deallocate()
+    unsafe self.buffer?.extracting(..<self.count).deinitialize()
+    unsafe self.buffer?.deallocate()
   }
 
   public subscript(_ index: Int) -> Element {
     _read {
-      guard let buffer = self.buffer, index < self.count else {
+      guard let buffer = unsafe self.buffer, self.indices.contains(index) else {
         fatalError("Index out of range")
       }
-      yield buffer[index]
+      yield unsafe buffer[index]
     }
     _modify {
-      guard let buffer = self.buffer, index < self.count else {
+      guard let buffer = unsafe self.buffer, self.indices.contains(index) else {
         fatalError("Index out of range")
       }
-      yield &buffer[index]
+      yield unsafe &buffer[index]
     }
   }
 
   public mutating func push(_ value: consuming Element) {
     if self.count == self.capacity {
-      if let oldBuffer = self.buffer {
+      if let oldBuffer = unsafe self.buffer {
         let newBuffer = UnsafeMutableBufferPointer<Element>.allocate(
           capacity: oldBuffer.count * 2)
-        _ = newBuffer.moveInitialize(fromContentsOf: oldBuffer)
-        oldBuffer.deallocate()
-        self.buffer = newBuffer
+        _ = unsafe newBuffer.moveInitialize(fromContentsOf: oldBuffer)
+        unsafe oldBuffer.deallocate()
+        unsafe self.buffer = newBuffer
       } else {
-        self.buffer = .allocate(capacity: 4)
+        unsafe self.buffer = .allocate(capacity: 4)
       }
     }
-    self.buffer?.initializeElement(at: self.count, to: value)
+    unsafe self.buffer?.initializeElement(at: self.count, to: value)
     self._count += 1
   }
 
   public mutating func pop() -> Element? {
     guard self.count > 0 else { return nil }
-    let element = self.buffer?.moveElement(from: self.count - 1)
+    let element = unsafe self.buffer?.moveElement(from: self.count - 1)
     self._count -= 1
     return element
   }
