@@ -14,8 +14,8 @@ import CLLDB
 extension lldb.SBError: CustomStringConvertible {
   @_documentation(visibility: internal)
   public var description: String {
-    if self.IsValid(), let cString = lldb.GetCString(self) {
-      String(cString: cString)
+    if self.IsValid(), let cString = unsafe lldb.GetCString(self) {
+      unsafe String(cString: cString)
     } else {
       ""
     }

@@ -15,10 +15,10 @@ import CLLDB
 extension Array where Element == String {
   init(_ arguments: lldb.SBCommandRawArguments?) {
     self.init()
-    guard var arguments = arguments else { return }
-    while let argument = arguments.pointee {
-      arguments = arguments.successor()
-      self.append(String(cString: argument))
+    guard var arguments = unsafe arguments else { return }
+    while let argument = unsafe arguments.pointee {
+      unsafe arguments = arguments.successor()
+      unsafe self.append(String(cString: argument))
     }
   }
 }
@@ -29,10 +29,10 @@ extension lldb.SBCommand {
     context: SVD2LLDB
   ) -> lldb.SBCommand
   where Command: SVD2LLDBCommand {
-    self.AddCommand(
+    unsafe self.AddCommand(
       Command.configuration.commandName,
       lldb.newSBCommand {
-        Command.run(
+        unsafe Command.run(
           arguments: .init($1),
           debugger: &$0.pointee,
           result: &$2.pointee,
