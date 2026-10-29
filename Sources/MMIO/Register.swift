@@ -56,8 +56,10 @@
 /// ### Reading and Writing
 ///
 /// - ``MMIO/Register/read()``
-/// - ``MMIO/Register/write(_:)``
-/// - ``MMIO/Register/modify(_:)``
+/// - ``MMIO/Register/write(_:)->()``
+/// - ``MMIO/Register/write(_:)->_``
+/// - ``MMIO/Register/modify(_:)-((Value.Write)->(T))``
+/// - ``MMIO/Register/modify(_:)-((Value.Read,Value.Write)->(T))``
 ///
 /// ### Interposers
 ///
@@ -240,8 +242,9 @@ extension Register {
   ///
   /// - Warning: This method performs a direct write, overwriting all bits in
   ///   the register. If you intend to modify only specific fields while
-  ///   preserving others, use the ``modify(_:)`` method instead, which performs
-  ///   a read-modify-write operation.
+  ///   preserving others, use the
+  ///   ``modify(_:)-((Value.Read,Value.Write)->(T))`` method instead, which
+  ///   performs a read-modify-write operation.
   ///
   /// - Parameter newValue: A `Value.Write` instance containing the data to be
   ///   written.
@@ -284,8 +287,8 @@ extension Register {
   /// - Warning: This method performs a direct write, overwriting all bits in
   ///   the register. Fields you don't set in the closure are written as zero.
   ///   If you intend to modify only specific fields while preserving others,
-  ///   use the ``MMIO/Register/modify(_:)`` method instead, which performs a
-  ///   read-modify-write operation.
+  ///   use the ``MMIO/Register/modify(_:)-((Value.Read,Value.Write)->(T))``
+  ///   method instead, which performs a read-modify-write operation.
   ///
   /// - Parameter body: A closure that receives an `inout Value.Write` view.
   ///   Modify this view to set the desired register state.

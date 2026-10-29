@@ -6,7 +6,7 @@ Organize and access groups of hardware registers using the RegisterBlock macro.
 
 In memory-mapped I/O, hardware peripherals like timers, communication interfaces (UART, SPI), or DMA controllers typically consist of multiple registers. These registers aren't standalone entities but are grouped together at a specific base memory address, forming a **register block**. Grouping registers this way provides a structured and organized view of a peripheral's control and status interface. Each register within the block is accessed via an offset from the block's base address.
 
-> Note: This article assumes you have a basic understanding of what hardware registers are and how they are defined using the ``MMIO/Register(bitWidth:)`` macro. For an introduction to individual registers, please see <doc:Registers>.
+> Note: This article assumes you have a basic understanding of what hardware registers are and how they are defined using the ``MMIO/Register(bitWidth:)`` macro. For an introduction to individual registers, please see <doc:Registers>. For how base addresses and offsets work, see <doc:Understanding-MMIO>.
 
 ### The @RegisterBlock macro
 
@@ -92,7 +92,7 @@ To use this UART peripheral, first create an instance by providing the base memo
 let uart = UARTPeripheral(unsafeAddress: 0x40010000)
 ```
 
-The `unsafeAddress` parameter (`0x40010000` in this example) represents the physical memory address where the UART peripheral's registers begin in the memory map. This address comes from your microcontroller's datasheet. The parameter is named `unsafeAddress` because it asserts the device can be found at the user-provided address, which the Swift language can't verify.
+The `unsafeAddress` parameter (`0x40010000` in this example) represents the physical memory address where the UART peripheral's registers begin in the memory map. This address comes from your chip's datasheet. The parameter is named `unsafeAddress` because it asserts the device can be found at the user-provided address, which the Swift language can't verify.
 
 Once you have an instance of your register block, access its members using standard Swift property syntax:
 
