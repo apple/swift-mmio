@@ -27,6 +27,11 @@
 ///     the ``RegisterBlock()`` macro), if the array consists of groups of
 ///     registers (register blocks).
 ///
+/// `RegisterArray` is not `Sendable`. Two tasks that both modify one register
+/// can interleave their reads and writes, which can cause unexpected
+/// hardware behavior. To use a register from more than one task, give it
+/// to one actor, or protect it with a lock such as `Mutex`.
+///
 /// ## Topics
 ///
 /// ### Initializing a Register Array
@@ -48,7 +53,7 @@
 ///
 /// - ``MMIO/RegisterArray/interposer``
 /// - ``MMIO/RegisterArray/init(unsafeAddress:stride:count:interposer:)``
-public struct RegisterArray<Value> {
+public struct RegisterArray<Value>: ~Sendable {
   /// The base memory address of the first element in this array.
   public var unsafeAddress: UInt
 

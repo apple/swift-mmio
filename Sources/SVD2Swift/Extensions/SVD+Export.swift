@@ -395,11 +395,18 @@ extension SVDPeripheral: SVDExportable {
     options: ExportOptions,
     context: ExportContext
   ) {
+    // Peripherals are not `Sendable`. A global or static peripheral must be
+    // `nonisolated(unsafe)` to compile in Swift 6 mode, so the compiler does
+    // not check how tasks share it. Instance member peripherals are checked.
+    let isInstanceMember =
+      options.namespaceUnderDevice && options.instanceMemberPeripherals
     let accessorModifier =
-      if options.namespaceUnderDevice && !options.instanceMemberPeripherals {
-        "static "
-      } else {
+      if isInstanceMember {
         ""
+      } else if options.namespaceUnderDevice {
+        "nonisolated(unsafe) static "
+      } else {
+        "nonisolated(unsafe) "
       }
 
     if let dimensionElement = self.dimensionElement {

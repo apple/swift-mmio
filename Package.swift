@@ -166,6 +166,7 @@ let package = Package(
           name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
       ]),
   ],
+  swiftLanguageModes: [.v6],
   cxxLanguageStandard: .cxx11)
 
 let svd2lldb = "FEATURE_SVD2LLDB"

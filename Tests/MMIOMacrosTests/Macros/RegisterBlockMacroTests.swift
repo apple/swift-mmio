@@ -92,6 +92,9 @@ struct RegisterBlockMacroTests {
 
         extension S: RegisterProtocol {
         }
+
+        @available(*, unavailable) extension S: Sendable {
+        }
         """,
       diagnostics: [
         .init(
@@ -203,6 +206,9 @@ struct RegisterBlockMacroTests {
         }
 
         extension S: RegisterProtocol {
+        }
+
+        @available(*, unavailable) extension S: Sendable {
         }
         """,
       diagnostics: [],

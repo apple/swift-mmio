@@ -103,6 +103,9 @@ struct RegisterBlockAndOffsetMacroTests {
 
         extension I2C: RegisterProtocol {
         }
+
+        @available(*, unavailable) extension I2C: Sendable {
+        }
         """,
       macros: Self.scalarMacros,
       indentationWidth: Self.indentationWidth)
@@ -182,6 +185,9 @@ struct RegisterBlockAndOffsetMacroTests {
 
         extension I2C: RegisterProtocol {
         }
+
+        @available(*, unavailable) extension I2C: Sendable {
+        }
         """,
       macros: Self.arrayMacros,
       indentationWidth: Self.indentationWidth)
@@ -260,6 +266,9 @@ struct RegisterBlockAndOffsetMacroTests {
         }
 
         extension I2C: RegisterProtocol {
+        }
+
+        @available(*, unavailable) extension I2C: Sendable {
         }
         """,
       macros: Self.scalarMacros,
