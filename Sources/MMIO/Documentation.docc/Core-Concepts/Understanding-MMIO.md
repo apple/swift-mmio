@@ -1,32 +1,34 @@
 # Understanding Memory-Mapped I/O
 
-Learn how you can communicate with hardware devices.
+Learn how software controls hardware peripherals through registers at memory addresses.
 
 ## Overview
 
-With memory-mapped I/O (MMIO), software controls hardware through ordinary memory reads and writes.
+With memory-mapped I/O (MMIO), software controls hardware peripherals through ordinary memory reads and writes.
 
-A chip, from a small microcontroller to a large system on a chip (SoC), contains one or more CPUs, memory, and **peripherals**: hardware units such as timers, general-purpose input/output (GPIO) pins, and serial interfaces such as UART and SPI. Each peripheral has registers at fixed addresses in the CPU's memory space.
+A chip, from a small microcontroller to a large system on a chip (SoC), contains one or more CPUs, memory, and peripherals: hardware units such as timers, general-purpose input/output (GPIO) pins, and serial interfaces such as UART and SPI. Each peripheral has registers at fixed addresses in the CPU's memory space.
 
 To control a peripheral, the CPU reads from and writes to these addresses with the same load and store instructions that access RAM. In Swift, this is similar to reading and writing through a pointer, but the memory at the address is a hardware device, not RAM. Some processors also have port-mapped I/O, which uses separate I/O instructions in place of loads and stores.
 
 For example, suppose bit 3 of a GPIO data output register at address `0x400F_F000` controls pin 3. To set pin 3 high (make the pin output a high voltage), the CPU stores `0x0000_0008`, a value with only bit 3 set, to that address.
 
+You can think of MMIO as the ABI of the hardware, and the registers of each peripheral as its API. The ABI is the low-level convention that all access uses: loads and stores to addresses. The API is the specific set of registers and bit fields that a peripheral makes available, which its datasheet documents.
+
 ### Registers
 
-A **register** is a small, fixed-size storage location in a peripheral. Registers usually have one of these purposes:
+A register is a small, fixed-size storage location in a peripheral. Registers usually have one of these purposes:
 
 - term **Control registers**: Configure the behavior of the peripheral. Examples include enabling or disabling features, setting operational modes, or selecting clock sources.
 - term **Status registers**: Reflect the current state of the peripheral, such as whether an operation is complete, an error has occurred, or data is ready. The datasheet specifies whether you can write to a status register, and whether a read changes its value. For example, some status bits clear when you read them.
 - term **Data registers**: Transfer data to or from the peripheral. For example, writing a byte to a UART transmit data register sends it over the serial line, while reading an analog-to-digital converter (ADC) result register retrieves the latest conversion value.
 
-Swift MMIO supports registers that are 8, 16, or 32 bits wide, and 64 bits wide on 64-bit targets. The chip vendor describes the address, layout, behavior, and reset value (the value after a system reset) of each register in the chip's **datasheet** or **reference manual**.
+Swift MMIO supports registers that are 8, 16, or 32 bits wide, and 64 bits wide on 64-bit targets. The chip vendor describes the address, layout, behavior, and reset value (the value after a system reset) of each register in the chip's datasheet or reference manual.
 
 In Swift MMIO, you define each register from the datasheet with the ``MMIO/Register(bitWidth:)`` macro.
 
 ### Bit fields
 
-Hardware registers are usually divided into smaller **bit fields**, where each field controls or represents a specific piece of information.
+Hardware registers are usually divided into smaller bit fields, where each field controls or represents a specific piece of information.
 
 For example, the datasheet of a timer might describe its 32-bit control register, `TIMER_CTRL`, like this:
 
@@ -47,7 +49,7 @@ For example, the datasheet of a timer might describe its 32-bit control register
 - term **`OVF_FLAG` (Bit 8)**: Read-only flag set by hardware on overflow, cleared by writing `1` to `OVF_CLR`.
 - term **`OVF_CLR` (Bit 9)**: Write-only; writing `1` clears `OVF_FLAG`. The datasheet specifies the value that you get if you read it.
 
-In Swift MMIO, you write this table as a struct with the ``MMIO/Register(bitWidth:)`` macro. Each row of the table becomes one property with a bit field macro:
+In Swift MMIO, write this table as a struct with the ``MMIO/Register(bitWidth:)`` macro. Each row of the table becomes one property with a bit field macro:
 
 ```swift
 import MMIO
@@ -103,7 +105,7 @@ The `modify` method starts from the value that it read. It writes back the read 
 
 ### Memory maps and base addresses
 
-A chip has a **memory map** that specifies which address ranges correspond to memory, such as RAM and flash, and which correspond to peripheral registers. Each peripheral starts at a **base address**, and each of its registers is at a fixed **offset** from that base address. The datasheet gives both values.
+A chip has a memory map that specifies which address ranges correspond to memory, such as RAM and flash, and which correspond to peripheral registers. Each peripheral starts at a **base address**, and each of its registers is at a fixed **offset** from that base address. The datasheet gives both values.
 
 For example, suppose a timer peripheral has its base address at `0x4000_1000`, and its control register is at offset `0x08`. The address of the control register is the sum of the two:
 

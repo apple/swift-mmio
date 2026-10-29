@@ -1,6 +1,6 @@
 # Understanding Volatile Memory Access
 
-Learn why specialized memory access is needed when you interact with hardware registers.
+Learn how compiler optimizations can break hardware register access, and how volatile access prevents this.
 
 ## Overview
 
