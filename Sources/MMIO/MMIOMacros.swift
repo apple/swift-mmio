@@ -21,12 +21,15 @@
 /// for single elements or ``RegisterBlock(offset:stride:count:)`` for arrays of
 /// elements.
 ///
+/// The macro makes the struct not `Sendable`, for the same reason as
+/// ``MMIO/Register``.
+///
 /// For a comprehensive guide on defining peripheral layouts, see
 /// <doc:Register-Blocks>.
 @attached(
   member, names: named(unsafeAddress), named(init), named(interposer),
   named(_interposer))
-@attached(extension, conformances: RegisterProtocol)
+@attached(extension, conformances: RegisterProtocol, Sendable)
 public macro RegisterBlock() =
   #externalMacro(module: "MMIOMacros", type: "RegisterBlockMacro")
 

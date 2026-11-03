@@ -128,9 +128,19 @@ extension RegisterBlockMacro: MMIOExtensionMacro {
     // Only create extension when applied to struct decls.
     guard declaration.is(StructDeclSyntax.self) else { return [] }
 
-    let `extension`: DeclSyntax =
+    let registerProtocolExtension: DeclSyntax =
       "extension \(type.trimmed): RegisterProtocol {}"
 
-    return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
+    // Register blocks are not `Sendable`, like `Register`. A macro can not
+    // add `~Sendable` to the struct declaration, so mark the conformance as
+    // unavailable instead.
+    let sendableExtension: DeclSyntax =
+      "@available(*, unavailable) extension \(type.trimmed): Sendable {}"
+
+    return [
+      try registerProtocolExtension.requireAs(
+        ExtensionDeclSyntax.self, context),
+      try sendableExtension.requireAs(ExtensionDeclSyntax.self, context),
+    ]
   }
 }

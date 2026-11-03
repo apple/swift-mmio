@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import MMIO
+public import MMIO
 
 // Sample register from an STM32F746
 @Register(bitWidth: 32)
@@ -124,3 +124,30 @@ struct Block {
   @RegisterBlock(offset: 0x8, stride: 0x10, count: 100)
   var asym: RegisterArray<SampleAsym>
 }
+
+// Public, so that Swift does not infer `Sendable` for these types. The
+// conformance must come from the `@Register` macro.
+@Register(bitWidth: 32)
+public struct PublicSymmetric {
+  @ReadWrite(bits: 0..<32)
+  public var field: FIELD
+}
+
+@Register(bitWidth: 32)
+public struct PublicAsymmetric {
+  @ReadOnly(bits: 0..<16)
+  public var ro: RO
+  @WriteOnly(bits: 16..<32)
+  public var wo: WO
+}
+
+// Fails to compile if register values are not Sendable.
+private let sendableTypes: [any Sendable.Type] = [
+  PublicSymmetric.self,
+  PublicSymmetric.Raw.self,
+  PublicSymmetric.ReadWrite.self,
+  PublicAsymmetric.self,
+  PublicAsymmetric.Raw.self,
+  PublicAsymmetric.Read.self,
+  PublicAsymmetric.Write.self,
+]

@@ -63,7 +63,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -111,7 +111,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -159,7 +159,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        public let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        public nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -211,7 +211,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -261,7 +261,7 @@ extension SVD2SwiftTests {
         /// An example device
         enum ExampleDevice {
           /// An example peripheral
-          static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+          nonisolated(unsafe) static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
         }
 
         """,
@@ -312,7 +312,7 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
 
         """,
 
@@ -416,7 +416,7 @@ extension SVD2SwiftTests {
         /// An example device
         enum CustomDevice {
           /// An example peripheral
-          static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+          nonisolated(unsafe) static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
         }
 
         """,
