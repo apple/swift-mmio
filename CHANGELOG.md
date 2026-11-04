@@ -16,6 +16,12 @@ This changelog's format is based on
   `@ReadWrite(bits: 12..<13)` and `@ReadWrite(bits: 0, 3)` is equivalent to
   `@ReadWrite(bits: 0..<1, 3..<4)`. Indices and ranges can be mixed in a single
   macro application, e.g. `@ReadWrite(bits: 0, 4..<6)`.
+- Adds `BitVector<width>`, a fixed-width sequence of bits with no sign. It
+  converts from an integer if the value fits in `width` bits as a signed or
+  an unsigned value, e.g. `BitVector<4>(exactly: -1)` is `0b1111`.
+  Conversions to integers and to other bit vectors state how to fill or
+  discard bits: `zeroExtending:`, `signExtending:`, or `truncating:`.
+  It has bitwise operators, and prints as a binary literal, e.g. `0b0101`.
 - Adds support for 64-bit registers on arm64_32, which has 64-bit general
   purpose registers.
 
