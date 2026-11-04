@@ -18,14 +18,14 @@ struct BitFieldProjectableTests {
     #expect(false == Bool(storage: UInt8(0x0)))
     #expect(false == Bool(storage: UInt16(0x0)))
     #expect(false == Bool(storage: UInt32(0x0)))
-    #if arch(x86_64) || arch(arm64)
+    #if arch(x86_64) || arch(arm64) || arch(arm64_32)
     #expect(false == Bool(storage: UInt64(0x0)))
     #endif
 
     #expect(true == Bool(storage: UInt8(0x1)))
     #expect(true == Bool(storage: UInt16(0x1)))
     #expect(true == Bool(storage: UInt32(0x1)))
-    #if arch(x86_64) || arch(arm64)
+    #if arch(x86_64) || arch(arm64) || arch(arm64_32)
     #expect(true == Bool(storage: UInt64(0x1)))
     #endif
   }
@@ -34,14 +34,14 @@ struct BitFieldProjectableTests {
     #expect(false.storage(UInt8.self) == 0x0)
     #expect(false.storage(UInt16.self) == 0x0)
     #expect(false.storage(UInt32.self) == 0x0)
-    #if arch(x86_64) || arch(arm64)
+    #if arch(x86_64) || arch(arm64) || arch(arm64_32)
     #expect(false.storage(UInt64.self) == 0x0)
     #endif
 
     #expect(true.storage(UInt8.self) == 0x1)
     #expect(true.storage(UInt16.self) == 0x1)
     #expect(true.storage(UInt32.self) == 0x1)
-    #if arch(x86_64) || arch(arm64)
+    #if arch(x86_64) || arch(arm64) || arch(arm64_32)
     #expect(true.storage(UInt64.self) == 0x1)
     #endif
   }
@@ -59,7 +59,7 @@ struct BitFieldProjectableTests {
       #expect(`case` == Example(storage: UInt8(`case`.rawValue)))
       #expect(`case` == Example(storage: UInt16(`case`.rawValue)))
       #expect(`case` == Example(storage: UInt32(`case`.rawValue)))
-      #if arch(x86_64) || arch(arm64)
+      #if arch(x86_64) || arch(arm64) || arch(arm64_32)
       #expect(`case` == Example(storage: UInt64(`case`.rawValue)))
       #endif
     }
@@ -70,7 +70,7 @@ struct BitFieldProjectableTests {
       #expect(`case`.storage(UInt8.self) == UInt8(`case`.rawValue))
       #expect(`case`.storage(UInt16.self) == UInt16(`case`.rawValue))
       #expect(`case`.storage(UInt32.self) == UInt32(`case`.rawValue))
-      #if arch(x86_64) || arch(arm64)
+      #if arch(x86_64) || arch(arm64) || arch(arm64_32)
       #expect(`case`.storage(UInt64.self) == UInt64(`case`.rawValue))
       #endif
     }
