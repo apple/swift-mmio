@@ -16,12 +16,15 @@ This changelog's format is based on
   `@ReadWrite(bits: 12..<13)` and `@ReadWrite(bits: 0, 3)` is equivalent to
   `@ReadWrite(bits: 0..<1, 3..<4)`. Indices and ranges can be mixed in a single
   macro application, e.g. `@ReadWrite(bits: 0, 4..<6)`.
+- Adds support for 64-bit registers on arm64_32, which has 64-bit general
+  purpose registers.
 
 ### Changes
 
 - Updates to Swift 6.4 as minimum required version.
-- Raises minimum deployment targets to macOS 12, iOS 15, tvOS 15, watchOS 9,
-  and Mac Catalyst 15, the oldest versions that Swift 6.4 supports.
+- Raises minimum deployment targets to macOS 26, iOS 26, tvOS 26, watchOS 26,
+  Mac Catalyst 26, and visionOS 26, the oldest versions that support integer
+  generic parameters.
 - Enables strict memory safety checking for all targets and treats strict
   memory safety warnings as errors.
 - Makes `@Register` types and their `Raw`, `Read`, and `Write` views

@@ -116,8 +116,10 @@ extension UInt32: _RegisterStorage {
   }
 }
 
-#if arch(x86_64) || arch(arm64)
-// `UInt64` operations are typically available on 64-bit architectures.
+#if arch(x86_64) || arch(arm64) || arch(arm64_32)
+// `UInt64` operations are typically available on architectures with 64-bit
+// general purpose registers. arm64_32 has 64-bit registers and 32-bit
+// pointers.
 extension UInt64: _RegisterStorage {
   /// Performs a volatile load of a `UInt64` value from the specified memory
   /// address.

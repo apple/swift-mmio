@@ -6,12 +6,12 @@ import PackageDescription
 let package = Package(
   name: "swift-mmio",
   platforms: [
-    .macOS(.v12),
-    .iOS(.v15),
-    .tvOS(.v15),
-    .watchOS(.v9),
-    .macCatalyst(.v15),
-    .visionOS(.v1),
+    .macOS(.v26),
+    .iOS(.v26),
+    .tvOS(.v26),
+    .watchOS(.v26),
+    .macCatalyst(.v26),
+    .visionOS(.v26),
   ],
   products: [
     // MMIO
