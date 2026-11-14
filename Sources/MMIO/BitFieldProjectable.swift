@@ -105,7 +105,9 @@ extension BitFieldProjectable where Self: FixedWidthInteger {
       formed from storage '\(storage)' of bit width '\(storageBitWidth)'
       """)
     #endif
-    self = Self(storage)
+    // Reinterpret the bits of the field as `Self`, so a signed type reads a
+    // field with its top bit set as a negative value (two's complement).
+    self = Self(truncatingIfNeeded: Self.Magnitude(storage))
   }
 
   @inlinable @inline(__always)
@@ -124,7 +126,9 @@ extension BitFieldProjectable where Self: FixedWidthInteger {
       represent value '\(self)' of bit width '\(Self.bitWidth)'
       """)
     #endif
-    return Storage(self)
+    // Store the bit pattern of `self`, so a negative value of a signed type is
+    // written as its two's complement bits.
+    return Storage(Self.Magnitude(truncatingIfNeeded: self))
   }
 }
 

@@ -63,6 +63,9 @@ This changelog's format is based on
 - Fixes SVD decoding to keep all of the text of an element. Before, text
   was lost before a newline, an entity reference, a character reference,
   or a comment, e.g. `<name>F &amp; G</name>` decoded as `" G"`.
+- Fixes bit fields projected as `Int8`, `Int16`, `Int32`, or `Int64` to read
+  and write negative values as two's complement bits instead of trapping, e.g.
+  an 8-bit field with bits `0xff` now reads as `-1` when projected as `Int8`.
 
 <!--
 Add new items at the end of the relevant section under **Unreleased**.
