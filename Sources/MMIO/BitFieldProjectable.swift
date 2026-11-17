@@ -89,6 +89,8 @@ extension Bool: BitFieldProjectable {
 /// `BitFieldProjectable` generally does not require any additional
 /// customization beyond declaring conformance.
 ///
+/// The bit field must be exactly as wide as the integer type.
+///
 /// Signed types use the two's complement representation, so the most
 /// significant bit of the field is the sign bit. For example, an 8-bit field
 /// that holds `0xff` projects as `Int8(-1)`.
