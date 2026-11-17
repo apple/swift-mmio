@@ -254,4 +254,28 @@ struct DecodeCommandTests {
         [0:0]   EN      0x1 (Enable)
         """)
   }
+
+  @Test func decodeUsesReadEnumeratedValuesWhenBothExist() {
+    assertCommand(
+      command: DecodeCommand.self,
+      arguments: ["TestPeripheral.TestRegister3", "0x8000_0000"],
+      success: true,
+      debugger: "",
+      result: """
+        TestPeripheral.TestRegister3: 0x8000_0000
+
+        [31:31] S       0x1 (START)
+        [27:26] IDR     0x0 (KEEP)
+        [25:24] RELOAD  0x0 (RELOAD0)
+        [21:20] TRGEXT  0x0 (NONE)
+        [17:16] CAPEDGE 0x0 (RISING)
+        [15:12] CAPSRC  0x0 (CClk)
+        [11:8]  CNTSRC  0x0 (CAP_SRC)
+        [7:7]   PSC     0x0 (Disabled)
+        [6:4]   MODE    0x0 (Continous)
+        [3:2]   CNT     0x0 (Count_UP)
+        [1:1]   RST     0x0 (Reserved)
+        [0:0]   EN      0x0 (Disable)
+        """)
+  }
 }
