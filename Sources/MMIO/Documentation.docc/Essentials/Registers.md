@@ -139,7 +139,7 @@ For advanced users who need to perform C-style bit manipulation (though this is 
 
 ```swift
 let value = control.read()
-let enabled = (value.storage & DeviceControl.INTERRUPT_ENABLE.bitMask) >> DeviceControl.INTERRUPT_ENABLE.bitOffset
+let enabled = (value.storage >> DeviceControl.INTERRUPT_ENABLE.bitOffset) & DeviceControl.INTERRUPT_ENABLE.bitMask
 if enabled == 1 {
     print("Interrupts are enabled")
 } else {

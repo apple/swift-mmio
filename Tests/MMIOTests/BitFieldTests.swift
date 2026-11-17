@@ -123,4 +123,111 @@ struct BitFieldTests {
   }
 }
 
+// MARK: - Bit field types for the macros
+
+extension BitFieldTests {
+  /// Values that cover all bits set, no bits set, and a mix of bits.
+  static let storages: [UInt32] = [
+    0x0000_0000, 0xffff_ffff, 0xff00_ff00, 0x00ff_00ff, 0xdead_beef,
+    0x1234_5678, 0x8000_0001, 0x5555_5555, 0xaaaa_aaaa,
+  ]
+
+  func assertMatchesSubscript<Value, Projection, BitRanges>(
+    _: _MMIOBitField<Value, UInt32, Projection, BitRanges>.Type,
+    bitRanges: [Range<Int>],
+    sourceLocation: SourceLocation = #_sourceLocation
+  ) {
+    typealias Field = _MMIOBitField<Value, UInt32, Projection, BitRanges>
+    let bitWidth = bitRanges.reduce(0) { $0 + $1.count }
+    #expect(Field.bitWidth == bitWidth, sourceLocation: sourceLocation)
+    let bitMask: UInt32 = 1 << bitWidth &- 1
+    for storage in Self.storages {
+      #expect(
+        Field.extractBits(from: storage) == storage[bits: bitRanges],
+        sourceLocation: sourceLocation)
+      for value in Self.storages.map({ $0 & bitMask }) {
+        var expected = storage
+        expected[bits: bitRanges] = value
+        var actual = storage
+        Field.insertBits(value, into: &actual)
+        #expect(actual == expected, sourceLocation: sourceLocation)
+      }
+    }
+  }
+
+  @Test func oneBitRange() {
+    typealias Low = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>
+    >
+    typealias Middle = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<12, 20, _MMIOBitFieldRangeEnd>
+    >
+    typealias Full = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<0, 32, _MMIOBitFieldRangeEnd>
+    >
+    assertMatchesSubscript(Low.self, bitRanges: [0..<1])
+    assertMatchesSubscript(Middle.self, bitRanges: [12..<20])
+    assertMatchesSubscript(Full.self, bitRanges: [0..<32])
+  }
+
+  @Test func multipleBitRanges() {
+    typealias Two = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<0, 1, _MMIOBitFieldRange<8, 9, _MMIOBitFieldRangeEnd>>
+    >
+    typealias Four = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<
+        0, 1,
+        _MMIOBitFieldRange<
+          8, 9,
+          _MMIOBitFieldRange<
+            12, 20, _MMIOBitFieldRange<23, 25, _MMIOBitFieldRangeEnd>
+          >
+        >
+      >
+    >
+    // Bit range order _matters_.
+    typealias Unordered = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<
+        8, 9,
+        _MMIOBitFieldRange<
+          0, 1,
+          _MMIOBitFieldRange<
+            23, 25, _MMIOBitFieldRange<12, 20, _MMIOBitFieldRangeEnd>
+          >
+        >
+      >
+    >
+    assertMatchesSubscript(Two.self, bitRanges: [0..<1, 8..<9])
+    assertMatchesSubscript(
+      Four.self, bitRanges: [0..<1, 8..<9, 12..<20, 23..<25])
+    assertMatchesSubscript(
+      Unordered.self, bitRanges: [8..<9, 0..<1, 23..<25, 12..<20])
+  }
+
+  @Test func compatibilityMembers() {
+    typealias Mode = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<8, 12, _MMIOBitFieldRangeEnd>
+    >
+    #expect(Mode.bitRange == 8..<12)
+    #expect(Mode.bitOffset == 8)
+    #expect(Mode.bitMask == 0b1111)
+    #expect(Mode.bitRanges == [8..<12])
+    #expect(Mode.Storage.self == UInt32.self)
+    #expect(Mode.Projection.self == Never.self)
+
+    typealias Split = _MMIOBitField<
+      BitFieldTests, UInt32, Never,
+      _MMIOBitFieldRange<0, 1, _MMIOBitFieldRange<4, 6, _MMIOBitFieldRangeEnd>>
+    >
+    #expect(Split.bitRanges == [0..<1, 4..<6])
+  }
+}
+
 // FIXME: Add tests to check crash on out of bounds operation

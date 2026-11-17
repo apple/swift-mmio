@@ -32,49 +32,22 @@ extension BitFieldDescription {
 }
 
 extension BitFieldDescription {
-  func bitRangeExpression(_ bitRange: BitRange) -> ExprSyntax {
-    let clampedRange = bitRange
-      .canonicalizedClosedRange
-      .clamped(to: 0...(self.bitWidth - 1))
-    let infix = InfixOperatorExprSyntax(
-      leftOperand: IntegerLiteralExprSyntax(clampedRange.lowerBound),
-      operator: BinaryOperatorExprSyntax(operator: .binaryOperator("..<")),
-      rightOperand: IntegerLiteralExprSyntax(clampedRange.upperBound + 1))
-    guard let expression = ExprSyntax(infix) else {
-      preconditionFailure("InfixOperatorExprSyntax must be an ExprSyntax")
-    }
-    return expression
-  }
-
   func declarations() -> [DeclSyntax] {
-    switch bitRanges.count {
-    case 0:
-      preconditionFailure()
-    case 1:
-      let bitRangeExpression = self.bitRangeExpression(self.bitRanges[0])
-      return [
-        """
-        \(self.accessLevel)enum \(self.fieldType): ContiguousBitField {
-          \(self.accessLevel)typealias Storage = \(self.storageType())
-          \(self.accessLevel)typealias Projection = \(self.projectedType ?? "Never")
-          \(self.accessLevel)static let bitRange = \(bitRangeExpression)
-        }
-        """
-      ]
-    default:
-      let bitRangeExpressions = self
-        .bitRanges
-        .map { self.bitRangeExpression($0) }
-      return [
-        """
-        \(self.accessLevel)enum \(self.fieldType): DiscontiguousBitField {
-          \(self.accessLevel)typealias Storage = \(self.storageType())
-          \(self.accessLevel)typealias Projection = \(self.projectedType ?? "Never")
-          \(self.accessLevel)static let bitRanges = \(ArrayExprSyntax(expressions: bitRangeExpressions))
-        }
-        """
-      ]
+    precondition(!self.bitRanges.isEmpty)
+    let projection = self.projectedType.map { "\($0.trimmed)" } ?? "Never"
+    let storageBits = 0...(self.bitWidth - 1)
+    let bitRanges = self.bitRanges.reversed().reduce("_MMIOBitFieldRangeEnd") {
+      // Clamp to the storage width; a partial range has an open bound.
+      let range = Range($1.canonicalizedClosedRange.clamped(to: storageBits))
+      let (lowerBound, upperBound) = (range.lowerBound, range.upperBound)
+      return "_MMIOBitFieldRange<\(lowerBound), \(upperBound), \($0)>"
     }
+    return [
+      """
+      \(self.accessLevel)typealias \(self.fieldType) = _MMIOBitField<Self, \
+      \(self.storageType()), \(raw: projection), \(raw: bitRanges)>
+      """
+    ]
   }
 }
 
