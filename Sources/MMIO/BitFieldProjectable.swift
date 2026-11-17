@@ -149,6 +149,10 @@ extension Int64: BitFieldProjectable {}
 /// `enum MyState: UInt8`), you typically only need to implement the static
 /// `bitWidth` requirement. The conversion to and from storage is handled by
 /// this extension.
+///
+/// Signed raw values use the two's complement representation, so the most
+/// significant bit of the field is the sign bit. For example, a 2-bit field
+/// that holds `0b11` has the raw value `-1`.
 extension BitFieldProjectable
 where Self: RawRepresentable, RawValue: FixedWidthInteger {
   @inlinable @inline(__always)
@@ -168,7 +172,17 @@ where Self: RawRepresentable, RawValue: FixedWidthInteger {
       """)
     #endif
 
-    let rawValue = RawValue(storage)
+    let rawValue: RawValue
+    if RawValue.isSigned {
+      precondition(
+        Self.bitWidth <= RawValue.bitWidth,
+        "Raw value type is narrower than bit field")
+      // Sign-extend from the most significant bit of the field.
+      let shift = RawValue.bitWidth - Self.bitWidth
+      rawValue = (RawValue(truncatingIfNeeded: storage) << shift) >> shift
+    } else {
+      rawValue = RawValue(storage)
+    }
     guard let value = Self(rawValue: rawValue) else {
       #if hasFeature(Embedded)
       preconditionFailure("Illegal value does not correspond to any raw value")
@@ -199,6 +213,18 @@ where Self: RawRepresentable, RawValue: FixedWidthInteger {
       represent value '\(self)' of bit width '\(Self.bitWidth)'
       """)
     #endif
+    if RawValue.isSigned {
+      precondition(
+        Self.bitWidth <= RawValue.bitWidth,
+        "Raw value type is narrower than bit field")
+      let shift = RawValue.bitWidth - Self.bitWidth
+      precondition(
+        (rawValue << shift) >> shift == rawValue,
+        "Raw value does not fit in bit field")
+      // Keep only the two's complement bits that are in the field.
+      let bitMask: Storage = (1 << Self.bitWidth) &- 1
+      return Storage(truncatingIfNeeded: rawValue) & bitMask
+    }
     return Storage(rawValue)
   }
 }

@@ -290,4 +290,55 @@ extension BitFieldProjectableTests {
       #endif
     }
   }
+
+  private enum SignedExample: Int8, BitFieldProjectable {
+    static let bitWidth = 2
+    case minusTwo = -2
+    case minusOne = -1
+    case zero = 0
+    case one = 1
+  }
+
+  private enum FullWidthSignedExample: Int8, BitFieldProjectable {
+    static let bitWidth = 8
+    case lowest = -128
+    case highest = 127
+  }
+
+  @Test func signedRawRepresentable_fromStorage() {
+    #expect(SignedExample.minusTwo == SignedExample(storage: UInt8(0b10)))
+    #expect(SignedExample.minusOne == SignedExample(storage: UInt8(0b11)))
+    #expect(SignedExample.zero == SignedExample(storage: UInt8(0b00)))
+    #expect(SignedExample.one == SignedExample(storage: UInt8(0b01)))
+
+    #expect(
+      FullWidthSignedExample.lowest
+        == FullWidthSignedExample(storage: UInt16(0x0080)))
+    #expect(
+      FullWidthSignedExample.highest
+        == FullWidthSignedExample(storage: UInt16(0x007f)))
+  }
+
+  @Test func signedRawRepresentable_toStorage() {
+    #expect(SignedExample.minusTwo.storage(UInt8.self) == 0b10)
+    #expect(SignedExample.minusOne.storage(UInt8.self) == 0b11)
+    #expect(SignedExample.zero.storage(UInt8.self) == 0b00)
+    #expect(SignedExample.one.storage(UInt8.self) == 0b01)
+
+    #expect(FullWidthSignedExample.lowest.storage(UInt16.self) == 0x0080)
+    #expect(FullWidthSignedExample.highest.storage(UInt16.self) == 0x007f)
+  }
+
+  private struct SignedExampleField: ContiguousBitField {
+    typealias Storage = UInt8
+    typealias Projection = SignedExample
+    static let bitRange = 3..<5
+  }
+
+  @Test func signedRawRepresentable_bitField() {
+    expectBitField(SignedExampleField.self, .minusTwo, 0xb2)
+    expectBitField(SignedExampleField.self, .minusOne, 0xba)
+    expectBitField(SignedExampleField.self, .zero, 0xa2)
+    expectBitField(SignedExampleField.self, .one, 0xaa)
+  }
 }
