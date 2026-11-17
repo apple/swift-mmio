@@ -106,13 +106,13 @@ extension SVDDevice {
     }
 
     outputWriter.insert(fileHeader)
-    let childTypes = try self.exportType(
+    _ = try self.exportType(
       outputWriter: &outputWriter,
       options: options,
       context: deviceContext)
     try outputWriter.flush(to: "Device.swift")
 
-    for peripheral in childTypes {
+    for peripheral in try self.outputPeripherals(options: options) {
       outputWriter.insert(fileHeader)
 
       if options.namespaceUnderDevice {
@@ -167,8 +167,10 @@ extension SVDDevice {
         }
       }
 
+      // Name the file after the peripheral, not its type, because the type
+      // name can differ. The plugin expects these file names.
       try outputWriter.flush(
-        to: "\(peripheralContext.swiftTypeName).swift")
+        to: "\(peripheral.name.removingUnsafeCharacters()).swift")
     }
   }
 }
