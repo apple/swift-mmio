@@ -233,7 +233,7 @@ extension SVD2SwiftTests {
             public static let `switch` = Pattern(rawValue: 0x1c, mask: 0x1c)
 
             /// switch
-            public static func `switch`(_ rawValue: UInt8 = `switch`.value) -> Self {
+            public static func `switch`(_ rawValue: UInt8 = `switch`.rawValue) -> Self {
               let value = Self(rawValue: rawValue)
               precondition(`switch` ~= value, "Invalid bits set in rawValue")
               return value
@@ -318,7 +318,7 @@ extension SVD2SwiftTests {
             static let ExampleDontCareBits = Pattern(rawValue: 0x1c, mask: 0x1c)
 
             /// An example with dont-care bits
-            static func ExampleDontCareBits(_ rawValue: UInt8 = ExampleDontCareBits.value) -> Self {
+            static func ExampleDontCareBits(_ rawValue: UInt8 = ExampleDontCareBits.rawValue) -> Self {
               let value = Self(rawValue: rawValue)
               precondition(ExampleDontCareBits ~= value, "Invalid bits set in rawValue")
               return value

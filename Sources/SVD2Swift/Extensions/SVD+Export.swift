@@ -748,8 +748,8 @@ extension SVDEnumeration: SVDExportable {
         outputWriter.scope(patternScope) { outputWriter in
           outputWriter.insert(
             """
-            var rawValue: UInt8
-            var mask: UInt8
+            var rawValue: \(rawValueType)
+            var mask: \(rawValueType)
             """)
         }
 
@@ -797,7 +797,7 @@ extension SVDEnumeration: SVDExportable {
 
             let factoryScope = """
               \(comment: swiftDescription)
-              \(options.accessLevel)static func \(identifier: swiftName)(_ rawValue: \(rawValueType) = \(identifier: swiftName).value) -> Self
+              \(options.accessLevel)static func \(identifier: swiftName)(_ rawValue: \(rawValueType) = \(identifier: swiftName).rawValue) -> Self
               """
             outputWriter.scope(factoryScope) { outputWriter in
               outputWriter.insert(
