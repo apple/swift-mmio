@@ -303,6 +303,25 @@ This makes your code more expressive and less error-prone. Instead of rememberin
 
 > Note: Even when you add a type projection, the `.raw` API remains available if you need direct access to the underlying bits. However, the typed API should be preferred for most use cases as it provides better type safety and readability.
 
+#### Projecting to Integer Types
+
+A bit field projected to an integer type must be exactly as wide as that type. For example, `bits: 0..<8, as: UInt8.self` is valid, but `bits: 0..<4, as: UInt8.self` traps at runtime, because a `UInt8` can hold values that do not fit in 4 bits.
+
+For a narrower field, use the `.raw` view, or a custom type whose `bitWidth` matches the field:
+
+```swift
+struct Channel: BitFieldProjectable, RawRepresentable {
+    static let bitWidth = 4
+    var rawValue: UInt8
+}
+
+@Register(bitWidth: 32)
+struct ChannelSelect {
+    @ReadWrite(bits: 0..<4, as: Channel.self)
+    var channel: CHANNEL
+}
+```
+
 ### Access Permissions
 
 Hardware registers often have fields with different access permissions. Some bits can only be read (status flags set by hardware), some can only be written (command triggers), and some can be both read and written (configuration settings). Swift MMIO provides macros to model these different access types.
