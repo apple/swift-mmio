@@ -88,6 +88,10 @@ extension Bool: BitFieldProjectable {
 /// Conforming a `FixedWidthInteger` type (like `UInt8`, `Int16`) to
 /// `BitFieldProjectable` generally does not require any additional
 /// customization beyond declaring conformance.
+///
+/// Signed types use the two's complement representation, so the most
+/// significant bit of the field is the sign bit. For example, an 8-bit field
+/// that holds `0xff` projects as `Int8(-1)`.
 extension BitFieldProjectable where Self: FixedWidthInteger {
   @inlinable @inline(__always)
   public init<Storage>(storage: Storage)
@@ -105,8 +109,6 @@ extension BitFieldProjectable where Self: FixedWidthInteger {
       formed from storage '\(storage)' of bit width '\(storageBitWidth)'
       """)
     #endif
-    // Reinterpret the bits of the field as `Self`, so a signed type reads a
-    // field with its top bit set as a negative value (two's complement).
     self = Self(truncatingIfNeeded: Self.Magnitude(storage))
   }
 
@@ -126,8 +128,6 @@ extension BitFieldProjectable where Self: FixedWidthInteger {
       represent value '\(self)' of bit width '\(Self.bitWidth)'
       """)
     #endif
-    // Store the bit pattern of `self`, so a negative value of a signed type is
-    // written as its two's complement bits.
     return Storage(Self.Magnitude(truncatingIfNeeded: self))
   }
 }
