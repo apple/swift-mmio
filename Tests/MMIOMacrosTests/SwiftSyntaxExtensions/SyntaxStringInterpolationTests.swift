@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import Testing
@@ -57,4 +56,3 @@ struct SyntaxStringInterpolationTests {
     #expect(expected.description == actual.description)
   }
 }
-#endif

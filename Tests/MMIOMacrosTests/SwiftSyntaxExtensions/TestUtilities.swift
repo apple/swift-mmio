@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
@@ -49,4 +48,3 @@ struct Macro1: MMIOMemberMacro {
     in context: MacroContext<Self, some MacroExpansionContext>
   ) throws -> [DeclSyntax] { [] }
 }
-#endif

@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(MMIOMacros)
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacroExpansion
@@ -99,4 +98,3 @@ struct WithAttributesSyntaxTests {
     #expect(actual?.macroType.signature == expected?.macroType.signature)
   }
 }
-#endif
