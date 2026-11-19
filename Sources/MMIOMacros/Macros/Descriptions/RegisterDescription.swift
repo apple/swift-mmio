@@ -67,6 +67,7 @@ extension RegisterDescription {
       if isSymmetric {
         [
           """
+          @export(implementation) @inline(always)
           \(self.accessLevel)init(_ value: Value.ReadWrite) {
             self.storage = value.storage
           }
@@ -75,11 +76,13 @@ extension RegisterDescription {
       } else {
         [
           """
+          @export(implementation) @inline(always)
           \(self.accessLevel)init(_ value: Value.Read) {
             self.storage = value.storage
           }
           """,
           """
+          @export(implementation) @inline(always)
           \(self.accessLevel)init(_ value: Value.Write) {
             self.storage = value.storage
           }
@@ -93,7 +96,9 @@ extension RegisterDescription {
       \(self.accessLevel)struct Raw: RegisterValueRaw {
         \(self.accessLevel)typealias Value = \(self.name)
         \(self.accessLevel)typealias Storage = UInt\(raw: self.bitWidth)
+        @export(implementation) @inline(always)
         \(self.accessLevel)var storage: Storage
+        @export(implementation) @inline(always)
         \(self.accessLevel)init(_ storage: Storage) {
           self.storage = storage
         }
@@ -122,10 +127,13 @@ extension RegisterDescription {
       \(self.accessLevel)\
       struct ReadWrite: RegisterValueRead, RegisterValueWrite {
         \(self.accessLevel)typealias Value = \(self.name)
+        @export(implementation) @inline(always)
         \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
+        @export(implementation) @inline(always)
         \(self.accessLevel)init(_ value: ReadWrite) {
           self.storage = value.storage
         }
+        @export(implementation) @inline(always)
         \(self.accessLevel)init(_ value: Raw) {
           self.storage = value.storage
         }
@@ -148,7 +156,9 @@ extension RegisterDescription {
       """
       \(self.accessLevel)struct Read: RegisterValueRead {
         \(self.accessLevel)typealias Value = \(self.name)
+        @export(implementation) @inline(always)
         \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
+        @export(implementation) @inline(always)
         \(self.accessLevel)init(_ value: Raw) { self.storage = value.storage }
         \(nodes: bitFieldDeclarations)
       }
@@ -169,10 +179,13 @@ extension RegisterDescription {
       """
       \(self.accessLevel)struct Write: RegisterValueWrite {
         \(self.accessLevel)typealias Value = \(self.name)
+        @export(implementation) @inline(always)
         \(self.accessLevel)var storage: UInt\(raw: self.bitWidth)
+        @export(implementation) @inline(always)
         \(self.accessLevel)init(_ value: Raw) {
           self.storage = value.storage
         }
+        @export(implementation) @inline(always)
         \(self.accessLevel)init(_ value: Read) {
           // FIXME: mask off bits
           self.storage = value.storage

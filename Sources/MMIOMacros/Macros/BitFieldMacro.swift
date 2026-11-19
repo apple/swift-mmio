@@ -50,7 +50,7 @@ extension BitFieldMacro {
     // Binding must not have any accessors.
     try binding.requireNoAccessor(context)
 
-    return ["get { fatalError() }"]
+    return ["@export(implementation) @inline(always) get { fatalError() }"]
   }
 }
 

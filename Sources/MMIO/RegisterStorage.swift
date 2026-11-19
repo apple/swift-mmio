@@ -62,14 +62,14 @@ public protocol _RegisterStorage {
 extension UInt8: _RegisterStorage {
   /// Performs a volatile load of a `UInt8` value from the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     unsafe mmio_volatile_load_uint8_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt8` value to the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
@@ -81,14 +81,14 @@ extension UInt8: _RegisterStorage {
 extension UInt16: _RegisterStorage {
   /// Performs a volatile load of a `UInt16` value from the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     unsafe mmio_volatile_load_uint16_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt16` value to the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
@@ -100,14 +100,14 @@ extension UInt16: _RegisterStorage {
 extension UInt32: _RegisterStorage {
   /// Performs a volatile load of a `UInt32` value from the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     unsafe mmio_volatile_load_uint32_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt32` value to the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>
@@ -123,14 +123,14 @@ extension UInt32: _RegisterStorage {
 extension UInt64: _RegisterStorage {
   /// Performs a volatile load of a `UInt64` value from the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func load(from pointer: UnsafePointer<Self>) -> Self {
     unsafe mmio_volatile_load_uint64_t(pointer)
   }
 
   /// Performs a volatile store of a `UInt64` value to the specified memory
   /// address.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func store(
     _ value: Self,
     to pointer: UnsafeMutablePointer<Self>

@@ -12,21 +12,21 @@
 extension FixedWidthInteger {
   // This condition should already satisfied by the macro. This method is a
   // soundness check used only in debug mode to catch bugs in the macro.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   static func bitRangeWithinBounds(bits bitRange: Range<Int>) -> Bool {
     bitRange.lowerBound >= 0 && bitRange.upperBound <= Self.bitWidth
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   subscript(bits bitRange: Range<Int>) -> Self {
-    @inlinable @inline(__always) get {
+    @export(implementation) @inline(always) get {
       assert(Self.bitRangeWithinBounds(bits: bitRange))
       let bitWidth = bitRange.upperBound - bitRange.lowerBound
       let bitMask: Self = 1 << bitWidth &- 1
       return (self >> bitRange.lowerBound) & bitMask
     }
 
-    @inlinable @inline(__always) set {
+    @export(implementation) @inline(always) set {
       assert(Self.bitRangeWithinBounds(bits: bitRange))
       let bitWidth = bitRange.upperBound - bitRange.lowerBound
       let bitMask: Self = 1 << bitWidth &- 1
@@ -38,9 +38,9 @@ extension FixedWidthInteger {
 }
 
 extension FixedWidthInteger {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   subscript(bits bitRanges: [Range<Int>]) -> Self {
-    @inlinable @inline(__always) get {
+    @export(implementation) @inline(always) get {
       var currentShift = 0
       var value: Self = 0
       for bitRange in bitRanges {
@@ -54,7 +54,7 @@ extension FixedWidthInteger {
       return value
     }
 
-    @inlinable @inline(__always) set {
+    @export(implementation) @inline(always) set {
       var fullBitWidth = 0
       for bitRange in bitRanges {
         fullBitWidth += bitRange.upperBound - bitRange.lowerBound

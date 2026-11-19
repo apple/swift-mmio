@@ -89,7 +89,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = RegisterArray<ExamplePeripheral>(unsafeAddress: 0x10000, stride: 0x1000, count: 1)
+        @export(implementation) @inline(always)
+        var exampleperipheral: RegisterArray<ExamplePeripheral> { RegisterArray<ExamplePeripheral>(unsafeAddress: 0x10000, stride: 0x1000, count: 1) }
 
         """,
 

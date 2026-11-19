@@ -33,7 +33,7 @@ public protocol BitFieldProjectable {
   ///
   /// - Parameter storage: The masked and shifted value from the bit field,
   ///   guaranteed to be truncated to `Self.bitWidth` bits.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger
 
@@ -44,30 +44,32 @@ public protocol BitFieldProjectable {
   ///
   /// - Parameter type: The target integer type for the bit field.
   /// - Returns: A value that fits within `Self.bitWidth` bits.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   func storage<Storage>(_ type: Storage.Type) -> Storage
   where Storage: FixedWidthInteger & UnsignedInteger
 }
 
 extension Never: BitFieldProjectable {
+  @export(implementation) @inline(always)
   public static var bitWidth: Int { fatalError() }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger { fatalError() }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func storage<Storage>(_: Storage.Type) -> Storage
   where Storage: FixedWidthInteger & UnsignedInteger { fatalError() }
 }
 
 extension Bool: BitFieldProjectable {
-  public static let bitWidth = 1
+  @export(implementation) @inline(always)
+  public static var bitWidth: Int { 1 }
 
   /// Initializes a `Bool` from a storage value.
   ///
   /// `true` if `storage` is non-zero, `false` otherwise.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger {
     self = storage != 0b0
@@ -76,7 +78,7 @@ extension Bool: BitFieldProjectable {
   /// Converts this `Bool` to a storage value.
   ///
   /// `1` if `true`, `0` if `false`.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func storage<Storage>(_: Storage.Type) -> Storage
   where Storage: FixedWidthInteger & UnsignedInteger {
     self ? 0b1 : 0b0
@@ -95,7 +97,7 @@ extension Bool: BitFieldProjectable {
 /// significant bit of the field is the sign bit. For example, an 8-bit field
 /// that holds `0xff` projects as `Int8(-1)`.
 extension BitFieldProjectable where Self: FixedWidthInteger {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger {
     let storageBitWidth = MemoryLayout<Storage>.size * 8
@@ -114,7 +116,7 @@ extension BitFieldProjectable where Self: FixedWidthInteger {
     self = Self(truncatingIfNeeded: Self.Magnitude(storage))
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func storage<Storage>(_: Storage.Type) -> Storage
   where Storage: FixedWidthInteger & UnsignedInteger {
     let storageBitWidth = MemoryLayout<Storage>.size * 8
@@ -157,7 +159,7 @@ extension Int64: BitFieldProjectable {}
 /// that holds `0b11` has the raw value `-1`.
 extension BitFieldProjectable
 where Self: RawRepresentable, RawValue: FixedWidthInteger {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init<Storage>(storage: Storage)
   where Storage: FixedWidthInteger & UnsignedInteger {
     let storageBitWidth = MemoryLayout<Storage>.size * 8
@@ -199,7 +201,7 @@ where Self: RawRepresentable, RawValue: FixedWidthInteger {
     self = value
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func storage<Storage>(_: Storage.Type) -> Storage
   where Storage: FixedWidthInteger & UnsignedInteger {
     let storageBitWidth = MemoryLayout<Storage>.size * 8

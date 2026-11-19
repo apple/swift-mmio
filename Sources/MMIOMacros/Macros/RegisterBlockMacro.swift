@@ -68,20 +68,24 @@ extension RegisterBlockMacro: MMIOMemberMacro {
     accessLevel?.trailingTrivia = .spaces(1)
 
     return [
-      "\(accessLevel)let unsafeAddress: UInt",
+      """
+      @export(implementation) @inline(always)
+      \(accessLevel)let unsafeAddress: UInt
+      """,
       """
       #if !FEATURE_INTERPOSABLE
       @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
       #endif
+      @export(implementation) @inline(always)
       \(accessLevel)var interposer: (any MMIOInterposer)? {
-        @inlinable @inline(__always) get {
+        @export(implementation) @inline(always) get {
           #if FEATURE_INTERPOSABLE
           self._interposer
           #else
           nil
           #endif
         }
-        @inlinable @inline(__always) set {
+        @export(implementation) @inline(always) set {
           #if FEATURE_INTERPOSABLE
           self._interposer = newValue
           #endif
@@ -90,12 +94,12 @@ extension RegisterBlockMacro: MMIOMemberMacro {
       """,
       """
       #if FEATURE_INTERPOSABLE
-      @usableFromInline
+      @export(implementation) @inline(always)
       internal var _interposer: (any MMIOInterposer)?
       #endif
       """,
       """
-      @inlinable @inline(__always)
+      @export(implementation) @inline(always)
       \(accessLevel)init(unsafeAddress: UInt) {
         self.unsafeAddress = unsafeAddress
       }
@@ -104,7 +108,7 @@ extension RegisterBlockMacro: MMIOMemberMacro {
       #if !FEATURE_INTERPOSABLE
       @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
       #endif
-      @inlinable @inline(__always)
+      @export(implementation) @inline(always)
       \(accessLevel)init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
         self.unsafeAddress = unsafeAddress
         self.interposer = interposer

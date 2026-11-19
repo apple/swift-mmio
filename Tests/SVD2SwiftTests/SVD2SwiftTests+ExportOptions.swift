@@ -63,7 +63,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -111,7 +112,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -159,7 +161,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        public nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        public var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -211,7 +214,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -261,7 +265,8 @@ extension SVD2SwiftTests {
         /// An example device
         enum ExampleDevice {
           /// An example peripheral
-          nonisolated(unsafe) static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+          @export(implementation) @inline(always)
+          static var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
         }
 
         """,
@@ -312,7 +317,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -416,7 +422,8 @@ extension SVD2SwiftTests {
         /// An example device
         enum CustomDevice {
           /// An example peripheral
-          nonisolated(unsafe) static let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+          @export(implementation) @inline(always)
+          static var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
         }
 
         """,

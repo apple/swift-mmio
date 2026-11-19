@@ -46,7 +46,7 @@ extension RegisterBlockMemberMacro {
     guard let array = array else {
       return [
         """
-        @inlinable @inline(__always) get {
+        @export(implementation) @inline(always) get {
           #if FEATURE_INTERPOSABLE
           return .init(unsafeAddress: self.unsafeAddress + (\(offset)), interposer: self.interposer)
           #else
@@ -58,7 +58,7 @@ extension RegisterBlockMemberMacro {
     }
     return [
       """
-      @inlinable @inline(__always) get {
+      @export(implementation) @inline(always) get {
         #if FEATURE_INTERPOSABLE
         return .init(unsafeAddress: self.unsafeAddress + (\(offset)), stride: \(array.stride), count: \(array.count), interposer: self.interposer)
         #else

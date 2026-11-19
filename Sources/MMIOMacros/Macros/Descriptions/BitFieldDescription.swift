@@ -54,11 +54,12 @@ extension BitFieldDescription {
 extension BitFieldDescription {
   func rawVariableDeclaration() -> DeclSyntax {
     """
+    @export(implementation) @inline(always)
     \(self.accessLevel)var \(self.fieldName): \(self.storageType()) {
-      @inlinable @inline(__always) get {
+      @export(implementation) @inline(always) get {
         \(self.fieldType).extractBits(from: self.storage)
       }
-      @inlinable @inline(__always) set {
+      @export(implementation) @inline(always) set {
         \(self.fieldType).insertBits(newValue, into: &self.storage)
       }
     }
@@ -75,11 +76,12 @@ extension BitFieldDescription {
     }
 
     return """
+      @export(implementation) @inline(always)
       \(self.accessLevel)var \(self.fieldName): \(projectedType) {
-        @inlinable @inline(__always) get {
+        @export(implementation) @inline(always) get {
           \(self.fieldType).extract(from: self.storage)
         }
-        @inlinable @inline(__always) set {
+        @export(implementation) @inline(always) set {
           \(self.fieldType).insert(newValue, into: &self.storage)
         }
       }
@@ -95,8 +97,9 @@ extension BitFieldDescription {
     }
 
     return """
+      @export(implementation) @inline(always)
       \(self.accessLevel)var \(self.fieldName): \(projectedType) {
-        @inlinable @inline(__always) get {
+        @export(implementation) @inline(always) get {
           \(self.fieldType).extract(from: self.storage)
         }
       }
@@ -115,12 +118,13 @@ extension BitFieldDescription {
     // blocked-by: rdar://116130327 (Customizable deprecation messages)
 
     return """
+      @export(implementation) @inline(always)
       \(self.accessLevel)var \(self.fieldName): \(projectedType) {
         @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-        @inlinable @inline(__always) get {
+        @export(implementation) @inline(always) get {
           \(self.fieldType).extract(from: self.storage)
         }
-        @inlinable @inline(__always) set {
+        @export(implementation) @inline(always) set {
           \(self.fieldType).insert(newValue, into: &self.storage)
         }
       }
