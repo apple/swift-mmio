@@ -296,17 +296,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V1: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 0 ..< 1
-          }
+          typealias V1 = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
-          enum V2: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 1 ..< 2
-          }
+          typealias V2 = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<1, 2, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -392,17 +384,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V1: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Bool
-            static let bitRange = 0 ..< 1
-          }
+          typealias V1 = _MMIOBitField<Self, UInt8, Bool, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
-          enum V2: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 1 ..< 2
-          }
+          typealias V2 = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<1, 2, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -487,11 +471,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V1: DiscontiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = UInt16
-            static let bitRanges = [0 ..< 1, 3 ..< 4]
-          }
+          typealias V1 = _MMIOBitField<Self, UInt8, UInt16, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRange<3, 4, _MMIOBitFieldRangeEnd>>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -568,11 +548,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V1: DiscontiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = UInt16
-            static let bitRanges = [0 ..< 1, 3 ..< 4]
-          }
+          typealias V1 = _MMIOBitField<Self, UInt8, UInt16, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRange<3, 4, _MMIOBitFieldRangeEnd>>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -649,11 +625,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V1: DiscontiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = UInt8
-            static let bitRanges = [0 ..< 1, 2 ..< 4]
-          }
+          typealias V1 = _MMIOBitField<Self, UInt8, UInt8, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRange<2, 4, _MMIOBitFieldRangeEnd>>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -738,17 +710,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V1: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Bool
-            static let bitRange = 0 ..< 1
-          }
+          typealias V1 = _MMIOBitField<Self, UInt8, Bool, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
-          enum V2: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Bool
-            static let bitRange = 1 ..< 2
-          }
+          typealias V2 = _MMIOBitField<Self, UInt8, Bool, _MMIOBitFieldRange<1, 2, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -847,11 +811,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum Unbounded: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 0 ..< 32
-          }
+          typealias Unbounded = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<0, 32, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = OtherRangeTypes0
@@ -929,17 +889,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum PartialThrough: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 0 ..< 17
-          }
+          typealias PartialThrough = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<0, 17, _MMIOBitFieldRangeEnd>>
 
-          enum PartialFrom: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 17 ..< 32
-          }
+          typealias PartialFrom = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<17, 32, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = OtherRangeTypes1
@@ -1025,17 +977,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum PartialUpTo: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 0 ..< 16
-          }
+          typealias PartialUpTo = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<0, 16, _MMIOBitFieldRangeEnd>>
 
-          enum Closed: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 16 ..< 32
-          }
+          typealias Closed = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<16, 32, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = OtherRangeTypes2
@@ -1121,17 +1065,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum Low: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 0 ..< 1
-          }
+          typealias Low = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
-          enum High: ContiguousBitField {
-            typealias Storage = UInt32
-            typealias Projection = Never
-            static let bitRange = 31 ..< 32
-          }
+          typealias High = _MMIOBitField<Self, UInt32, Never, _MMIOBitFieldRange<31, 32, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = SingleBit
@@ -1217,17 +1153,9 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          public enum V1: ContiguousBitField {
-            public typealias Storage = UInt8
-            public typealias Projection = Bool
-            public static let bitRange = 0 ..< 1
-          }
+          public typealias V1 = _MMIOBitField<Self, UInt8, Bool, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
-          public enum V2: ContiguousBitField {
-            public typealias Storage = UInt8
-            public typealias Projection = Bool
-            public static let bitRange = 1 ..< 2
-          }
+          public typealias V2 = _MMIOBitField<Self, UInt8, Bool, _MMIOBitFieldRange<1, 2, _MMIOBitFieldRangeEnd>>
 
           public struct Raw: RegisterValueRaw {
             public typealias Value = S
@@ -1326,11 +1254,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 3 ..< 8
-          }
+          typealias V = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<3, 8, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -1417,11 +1341,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 7 ..< 8
-          }
+          typealias V = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<7, 8, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -1508,11 +1428,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 0 ..< 1
-          }
+          typealias V = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -1599,11 +1515,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum V: ContiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRange = 0 ..< 1
-          }
+          typealias V = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<0, 1, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -1690,11 +1602,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum Field: DiscontiguousBitField {
-            typealias Storage = UInt64
-            typealias Projection = Never
-            static let bitRanges = [0 ..< 24, 8 ..< 32, 16 ..< 48, 36 ..< 44]
-          }
+          typealias Field = _MMIOBitField<Self, UInt64, Never, _MMIOBitFieldRange<0, 24, _MMIOBitFieldRange<8, 32, _MMIOBitFieldRange<16, 48, _MMIOBitFieldRange<36, 44, _MMIOBitFieldRangeEnd>>>>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -1796,11 +1704,7 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum Field: DiscontiguousBitField {
-            typealias Storage = UInt8
-            typealias Projection = Never
-            static let bitRanges = [2 ..< 3, 0 ..< 4]
-          }
+          typealias Field = _MMIOBitField<Self, UInt8, Never, _MMIOBitFieldRange<2, 3, _MMIOBitFieldRange<0, 4, _MMIOBitFieldRangeEnd>>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S
@@ -1919,29 +1823,13 @@ struct RegisterMacroTests {
 
           private var _never: Never
 
-          enum Field0: ContiguousBitField {
-            typealias Storage = UInt64
-            typealias Projection = Never
-            static let bitRange = 0 ..< 10
-          }
+          typealias Field0 = _MMIOBitField<Self, UInt64, Never, _MMIOBitFieldRange<0, 10, _MMIOBitFieldRangeEnd>>
 
-          enum Field1: DiscontiguousBitField {
-            typealias Storage = UInt64
-            typealias Projection = Never
-            static let bitRanges = [0 ..< 4, 8 ..< 12]
-          }
+          typealias Field1 = _MMIOBitField<Self, UInt64, Never, _MMIOBitFieldRange<0, 4, _MMIOBitFieldRange<8, 12, _MMIOBitFieldRangeEnd>>>
 
-          enum Field2: ContiguousBitField {
-            typealias Storage = UInt64
-            typealias Projection = Never
-            static let bitRange = 10 ..< 24
-          }
+          typealias Field2 = _MMIOBitField<Self, UInt64, Never, _MMIOBitFieldRange<10, 24, _MMIOBitFieldRangeEnd>>
 
-          enum Field3: ContiguousBitField {
-            typealias Storage = UInt64
-            typealias Projection = Never
-            static let bitRange = 23 ..< 24
-          }
+          typealias Field3 = _MMIOBitField<Self, UInt64, Never, _MMIOBitFieldRange<23, 24, _MMIOBitFieldRangeEnd>>
 
           struct Raw: RegisterValueRaw {
             typealias Value = S

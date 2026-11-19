@@ -41,6 +41,14 @@ This changelog's format is based on
 - Improves SVD decoding performance about 2x. Integers are parsed without
   parser combinators, and expat no longer scans the data a second time to
   track line positions.
+- Changes the bit field macros to declare each field type as a typealias to the
+  shared generic type `_MMIOBitField`, in place of a new enum for each field. A
+  register block with 256 registers now compiles about 1.5x faster and makes
+  object files about 2x smaller. Discontiguous bit fields now compile to
+  straight-line code in optimized builds; before, each access looped over an
+  array of bit ranges.
+- Deprecates `BitField`, `ContiguousBitField`, and `DiscontiguousBitField`.
+  The bit field macros no longer generate types that conform to them.
 - Makes `Register` and `RegisterArray` explicitly not `Sendable`, so a
   register is used from one isolation domain unless the code shares it
   through an actor or a lock.
