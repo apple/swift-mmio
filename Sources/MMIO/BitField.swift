@@ -105,7 +105,7 @@ public protocol BitField {
 // Default implementations for insert/extract for Projection
 @available(*, deprecated)
 extension BitField {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   static func preconditionMatchingBitWidth(
     file: StaticString = #file,
     line: UInt = #line
@@ -129,13 +129,13 @@ extension BitField {
     #endif
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insert(_ value: Projection, into storage: inout Storage) {
     Self.preconditionMatchingBitWidth()
     Self.insertBits(value.storage(Storage.self), into: &storage)
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extract(from storage: Self.Storage) -> Projection {
     Self.preconditionMatchingBitWidth()
     return Projection(storage: Self.extractBits(from: storage))
@@ -170,24 +170,24 @@ public protocol ContiguousBitField: BitField {
 // Default implementations for ContiguousBitField
 @available(*, deprecated)
 extension ContiguousBitField {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitWidth: Int {
     Self.bitRange.upperBound - Self.bitRange.lowerBound
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitOffset: Int { Self.bitRange.lowerBound }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitMask: Storage { (1 << Self.bitWidth) &- 1 }
 
   // FIXME: value.bitWidth <= Self.bitWidth <= Storage.bitWidth
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insertBits(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRange] = value
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extractBits(from storage: Storage) -> Storage {
     storage[bits: Self.bitRange]
   }
@@ -213,7 +213,7 @@ public protocol DiscontiguousBitField: BitField {
 // Default implementations for DiscontiguousBitField
 @available(*, deprecated)
 extension DiscontiguousBitField {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitWidth: Int {
     var bitWidth = 0
     for bitRange in Self.bitRanges {
@@ -222,12 +222,12 @@ extension DiscontiguousBitField {
     return bitWidth
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insertBits(_ value: Storage, into storage: inout Storage) {
     storage[bits: Self.bitRanges] = value
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extractBits(from storage: Storage) -> Storage {
     storage[bits: Self.bitRanges]
   }
@@ -276,35 +276,35 @@ public enum _MMIOBitField<
   public typealias Projection = FieldProjection
 
   /// The bit ranges this field occupies within the register, in order.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitRanges: [Range<Int>] { BitRanges.bitRanges }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitWidth: Int { BitRanges.bitWidth }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insertBits(_ value: Storage, into storage: inout Storage) {
     BitRanges.insertBits(value, into: &storage, shift: 0)
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extractBits(from storage: Storage) -> Storage {
     BitRanges.extractBits(from: storage, shift: 0)
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insert(_ value: Projection, into storage: inout Storage) {
     Self.preconditionMatchingBitWidth()
     Self.insertBits(value.storage(Storage.self), into: &storage)
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extract(from storage: Storage) -> Projection {
     Self.preconditionMatchingBitWidth()
     return Projection(storage: Self.extractBits(from: storage))
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   static func preconditionMatchingBitWidth(
     file: StaticString = #file,
     line: UInt = #line
@@ -333,18 +333,18 @@ public enum _MMIOBitField<
 extension _MMIOBitField where BitRanges: _MMIOBitFieldSingleRange {
   /// The range of bits this field occupies within the register (e.g., `0..<4`
   /// for bits 0, 1, 2, 3).
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitRange: Range<Int> { BitRanges.bitRange }
 
   /// The offset of this field, representing the position of its least
   /// significant bit (LSB).
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitOffset: Int { BitRanges.bitRange.lowerBound }
 
   /// A bit mask representing the width of this field, right-aligned.
   ///
   /// For a field of `N` bits, this mask is `(1 << N) - 1`.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitMask: Storage { (1 << Self.bitWidth) &- 1 }
 }
 
@@ -377,18 +377,18 @@ public protocol _MMIOBitFieldRanges {
 /// - Important: Implementation detail of the bit field macros. Do not use
 ///   this type directly.
 public enum _MMIOBitFieldRangeEnd: _MMIOBitFieldRanges {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitRanges: [Range<Int>] { [] }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitWidth: Int { 0 }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insertBits<Storage: FixedWidthInteger>(
     _ value: Storage, into storage: inout Storage, shift: Int
   ) {}
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extractBits<Storage: FixedWidthInteger>(
     from storage: Storage, shift: Int
   ) -> Storage { 0 }
@@ -404,17 +404,17 @@ public enum _MMIOBitFieldRange<
   let upperBound: Int,
   Next: _MMIOBitFieldRanges
 >: _MMIOBitFieldRanges {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitRanges: [Range<Int>] {
     [lowerBound..<upperBound] + Next.bitRanges
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitWidth: Int {
     upperBound - lowerBound + Next.bitWidth
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func insertBits<Storage: FixedWidthInteger>(
     _ value: Storage, into storage: inout Storage, shift: Int
   ) {
@@ -441,7 +441,7 @@ public enum _MMIOBitFieldRange<
     Next.insertBits(value, into: &storage, shift: shift + bitWidth)
   }
 
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static func extractBits<Storage: FixedWidthInteger>(
     from storage: Storage, shift: Int
   ) -> Storage {
@@ -466,6 +466,6 @@ public protocol _MMIOBitFieldSingleRange: _MMIOBitFieldRanges {
 
 extension _MMIOBitFieldRange: _MMIOBitFieldSingleRange
 where Next == _MMIOBitFieldRangeEnd {
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public static var bitRange: Range<Int> { lowerBound..<upperBound }
 }

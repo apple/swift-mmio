@@ -111,7 +111,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -140,14 +141,17 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral.ExampleRegister {
           struct AValues: BitFieldProjectable, RawRepresentable {
-            static let bitWidth = 5
+            @export(implementation) @inline(always)
+            static var bitWidth: Int { 5 }
 
             /// 0b00000
-            static let _0b00000 = Self(rawValue: 0x0)
+            @export(implementation) @inline(always)
+            static var _0b00000: Self { Self(rawValue: 0x0) }
 
+            @export(implementation) @inline(always)
             var rawValue: UInt8
 
-            @inlinable @inline(__always)
+            @export(implementation) @inline(always)
             init(rawValue: Self.RawValue) {
               self.rawValue = rawValue
             }
@@ -180,7 +184,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        public nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        public var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -209,39 +214,55 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral.ExampleRegister {
           public struct AValues: BitFieldProjectable, RawRepresentable {
-            public static let bitWidth = 5
+            @export(implementation) @inline(always)
+            public static var bitWidth: Int { 5 }
 
             public struct Pattern {
-              var rawValue: UInt8
-              var mask: UInt8
+              @export(implementation) @inline(always)
+              public var rawValue: UInt8
+              @export(implementation) @inline(always)
+              public var mask: UInt8
+
+              @export(implementation) @inline(always)
+              public init(rawValue: UInt8, mask: UInt8) {
+                self.rawValue = rawValue
+                self.mask = mask
+              }
             }
 
+            @export(implementation) @inline(always)
             public static func ~= (pattern: Pattern, value: Self) -> Bool {
               (value.rawValue & pattern.mask) == pattern.rawValue
             }
 
             /// Any
-            public static let `Any` = Self(rawValue: 0x0)
+            @export(implementation) @inline(always)
+            public static var `Any`: Self { Self(rawValue: 0x0) }
 
             /// while
-            public static let `while` = Self(rawValue: 0x1)
+            @export(implementation) @inline(always)
+            public static var `while`: Self { Self(rawValue: 0x1) }
 
             /// let
-            public static let `let` = Self(rawValue: 0x2)
+            @export(implementation) @inline(always)
+            public static var `let`: Self { Self(rawValue: 0x2) }
 
             /// switch
-            public static let `switch` = Pattern(rawValue: 0x1c, mask: 0x1c)
+            @export(implementation) @inline(always)
+            public static var `switch`: Pattern { Pattern(rawValue: 0x1c, mask: 0x1c) }
 
             /// switch
+            @export(implementation) @inline(always)
             public static func `switch`(_ rawValue: UInt8 = `switch`.rawValue) -> Self {
               let value = Self(rawValue: rawValue)
               precondition(`switch` ~= value, "Invalid bits set in rawValue")
               return value
             }
 
+            @export(implementation) @inline(always)
             public var rawValue: UInt8
 
-            @inlinable @inline(__always)
+            @export(implementation) @inline(always)
             public init(rawValue: Self.RawValue) {
               self.rawValue = rawValue
             }
@@ -262,7 +283,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 
@@ -291,42 +313,59 @@ extension SVD2SwiftTests {
 
         extension ExamplePeripheral.ExampleRegister {
           struct ExampleEnumeratedValues: BitFieldProjectable, RawRepresentable {
-            static let bitWidth = 5
+            @export(implementation) @inline(always)
+            static var bitWidth: Int { 5 }
 
             struct Pattern {
+              @export(implementation) @inline(always)
               var rawValue: UInt8
+              @export(implementation) @inline(always)
               var mask: UInt8
+
+              @export(implementation) @inline(always)
+              init(rawValue: UInt8, mask: UInt8) {
+                self.rawValue = rawValue
+                self.mask = mask
+              }
             }
 
+            @export(implementation) @inline(always)
             static func ~= (pattern: Pattern, value: Self) -> Bool {
               (value.rawValue & pattern.mask) == pattern.rawValue
             }
 
             /// An example enumerated value 0
-            static let NamedExample0 = Self(rawValue: 0x0)
+            @export(implementation) @inline(always)
+            static var NamedExample0: Self { Self(rawValue: 0x0) }
 
             /// NamedExample1
-            static let NamedExample1 = Self(rawValue: 0x1)
+            @export(implementation) @inline(always)
+            static var NamedExample1: Self { Self(rawValue: 0x1) }
 
             /// An example enumerated value 2
-            static let _0b00010 = Self(rawValue: 0x2)
+            @export(implementation) @inline(always)
+            static var _0b00010: Self { Self(rawValue: 0x2) }
 
             /// 0b00011
-            static let _0b00011 = Self(rawValue: 0x3)
+            @export(implementation) @inline(always)
+            static var _0b00011: Self { Self(rawValue: 0x3) }
 
             /// An example with dont-care bits
-            static let ExampleDontCareBits = Pattern(rawValue: 0x1c, mask: 0x1c)
+            @export(implementation) @inline(always)
+            static var ExampleDontCareBits: Pattern { Pattern(rawValue: 0x1c, mask: 0x1c) }
 
             /// An example with dont-care bits
+            @export(implementation) @inline(always)
             static func ExampleDontCareBits(_ rawValue: UInt8 = ExampleDontCareBits.rawValue) -> Self {
               let value = Self(rawValue: rawValue)
               precondition(ExampleDontCareBits ~= value, "Invalid bits set in rawValue")
               return value
             }
 
+            @export(implementation) @inline(always)
             var rawValue: UInt8
 
-            @inlinable @inline(__always)
+            @export(implementation) @inline(always)
             init(rawValue: Self.RawValue) {
               self.rawValue = rawValue
             }

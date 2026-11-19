@@ -165,20 +165,22 @@ struct RegisterBlockMacroTests {
           var v: Void { _read {} }
           var v: Void { _modify {} }
 
+          @export(implementation) @inline(always)
           let unsafeAddress: UInt
 
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
+          @export(implementation) @inline(always)
           var interposer: (any MMIOInterposer)? {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               self._interposer
               #else
               nil
               #endif
             }
-            @inlinable @inline(__always) set {
+            @export(implementation) @inline(always) set {
               #if FEATURE_INTERPOSABLE
               self._interposer = newValue
               #endif
@@ -186,11 +188,11 @@ struct RegisterBlockMacroTests {
           }
 
           #if FEATURE_INTERPOSABLE
-          @usableFromInline
+          @export(implementation) @inline(always)
           internal var _interposer: (any MMIOInterposer)?
           #endif
 
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           init(unsafeAddress: UInt) {
             self.unsafeAddress = unsafeAddress
           }
@@ -198,7 +200,7 @@ struct RegisterBlockMacroTests {
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
             self.unsafeAddress = unsafeAddress
             self.interposer = interposer

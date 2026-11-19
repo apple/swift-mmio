@@ -86,6 +86,7 @@ where Value: RegisterValue {
   ///   data corruption, or system instability. Always verify addresses against
   ///   official hardware documentation. See <doc:Safety-Considerations>
   ///   for more details on safety.
+  @export(implementation) @inline(always)
   public var unsafeAddress: UInt
 
   /// An optional interposer instance for intercepting memory accesses,
@@ -103,15 +104,16 @@ where Value: RegisterValue {
     *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
   )
   #endif
+  @export(implementation) @inline(always)
   public var interposer: (any MMIOInterposer)? {
-    @inlinable @inline(__always) get {
+    @export(implementation) @inline(always) get {
       #if FEATURE_INTERPOSABLE
       self._interposer
       #else
       nil
       #endif
     }
-    @inlinable @inline(__always) set {
+    @export(implementation) @inline(always) set {
       #if FEATURE_INTERPOSABLE
       self._interposer = newValue
       #endif
@@ -119,13 +121,13 @@ where Value: RegisterValue {
   }
 
   #if FEATURE_INTERPOSABLE
-  @usableFromInline
+  @export(implementation) @inline(always)
   internal var _interposer: (any MMIOInterposer)?
   #endif
 
   /// Internal check to ensure the register's memory address is correctly
   /// aligned.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   static func preconditionAligned(unsafeAddress: UInt) {
     let alignment = MemoryLayout<Value.Raw.Storage>.alignment
     #if hasFeature(Embedded)
@@ -148,7 +150,7 @@ where Value: RegisterValue {
   ///
   /// - Parameter unsafeAddress: The absolute memory address of the hardware
   ///   register.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init(unsafeAddress: UInt) {
     Self.preconditionAligned(unsafeAddress: unsafeAddress)
     self.unsafeAddress = unsafeAddress
@@ -170,7 +172,7 @@ where Value: RegisterValue {
     *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
   )
   #endif
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
     Self.preconditionAligned(unsafeAddress: unsafeAddress)
     self.unsafeAddress = unsafeAddress
@@ -180,7 +182,7 @@ where Value: RegisterValue {
 
 extension Register {
   /// A pointer to the memory location of the register.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   var pointer: UnsafeMutablePointer<Value.Raw.Storage> {
     // Unsafety is justified by the `unsafeAddress` initializer precondition
     // and the nature of MMIO.
@@ -210,7 +212,7 @@ extension Register {
   ///
   /// - Returns: A `Value.Read` instance representing the current state of the
   ///   register.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func read() -> Value.Read {
     let storage: Value.Raw.Storage
     #if FEATURE_INTERPOSABLE
@@ -253,7 +255,7 @@ extension Register {
   ///
   /// - Parameter newValue: A `Value.Write` instance containing the data to be
   ///   written.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func write(_ newValue: Value.Write) {
     let storage = Value.Raw(newValue).storage
     #if FEATURE_INTERPOSABLE
@@ -299,7 +301,7 @@ extension Register {
   ///   Modify this view to set the desired register state.
   ///
   /// - Returns: The value returned by the `body` closure, if any.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func write<T>(_ body: (inout Value.Write) -> (T)) -> T {
     var newValue = Value.Write(Value.Raw(0))  // Initialize with all zeros
     let returnValue = body(&newValue)
@@ -339,7 +341,7 @@ extension Register {
   ///   `inout Value.Write` view for modification.
   ///
   /// - Returns: The value returned by the `body` closure, if any.
-  @inlinable @inline(__always) @_disfavoredOverload
+  @export(implementation) @inline(always) @_disfavoredOverload
   public func modify<T>(_ body: (Value.Read, inout Value.Write) -> (T)) -> T {
     let value = self.read()
     var newValue = Value.Write(value)  // Initialize Write view from Read view
@@ -364,7 +366,7 @@ extension Register where Value.Read == Value.Write {
       use the 'modify' method with a single 'inout ReadWrite' parameter: \
       'myRegister.modify { view in ... }'.
       """)
-  @inlinable @inline(__always) @_disfavoredOverload
+  @export(implementation) @inline(always) @_disfavoredOverload
   public func modify<T>(_ body: (Value.Read, inout Value.Write) -> (T)) -> T {
     var value = self.read() // Value.Read is also Value.Write
     let returnValue = body(value, &value)
@@ -405,7 +407,7 @@ extension Register where Value.Read == Value.Write {
   ///   (which is also `Value.Read`) view for modification.
   ///
   /// - Returns: The value returned by the `body` closure, if any.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public func modify<T>(_ body: (inout Value.Write) -> (T)) -> T {
     var value = self.read()  // Value.Read is also Value.Write
     let returnValue = body(&value)

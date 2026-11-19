@@ -242,7 +242,7 @@ struct RegisterBlockOffsetMacroTests {
       """,
       expandedSource: """
         var a: Reg<T> {
-          @inlinable @inline(__always) get {
+          @export(implementation) @inline(always) get {
             #if FEATURE_INTERPOSABLE
             return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
             #else
@@ -262,7 +262,7 @@ struct RegisterBlockOffsetMacroTests {
       """,
       expandedSource: """
         var a: Swift.Int {
-          @inlinable @inline(__always) get {
+          @export(implementation) @inline(always) get {
             #if FEATURE_INTERPOSABLE
             return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
             #else

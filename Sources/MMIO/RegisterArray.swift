@@ -55,13 +55,16 @@
 /// - ``MMIO/RegisterArray/init(unsafeAddress:stride:count:interposer:)``
 public struct RegisterArray<Value>: ~Sendable {
   /// The base memory address of the first element in this array.
+  @export(implementation) @inline(always)
   public var unsafeAddress: UInt
 
   /// The byte distance between the start of one element and the start of the
   /// next.
+  @export(implementation) @inline(always)
   public var stride: UInt
 
   /// The total number of elements in this array.
+  @export(implementation) @inline(always)
   public var count: UInt
 
   /// An optional interposer instance, propagated to elements accessed through
@@ -71,15 +74,16 @@ public struct RegisterArray<Value>: ~Sendable {
     *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
   )
   #endif
+  @export(implementation) @inline(always)
   public var interposer: (any MMIOInterposer)? {
-    @inlinable @inline(__always) get {
+    @export(implementation) @inline(always) get {
       #if FEATURE_INTERPOSABLE
       self._interposer
       #else
       nil
       #endif
     }
-    @inlinable @inline(__always) set {
+    @export(implementation) @inline(always) set {
       #if FEATURE_INTERPOSABLE
       self._interposer = newValue
       #endif
@@ -87,7 +91,7 @@ public struct RegisterArray<Value>: ~Sendable {
   }
 
   #if FEATURE_INTERPOSABLE
-  @usableFromInline
+  @export(implementation) @inline(always)
   internal var _interposer: (any MMIOInterposer)?
   #endif
 
@@ -108,7 +112,7 @@ public struct RegisterArray<Value>: ~Sendable {
   ///   - stride: The number of bytes from the start of one element to the start
   ///     of the next (the step between elements).
   ///   - count: The total number of elements in the array.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init(
     unsafeAddress: UInt,
     stride: UInt,
@@ -143,7 +147,7 @@ public struct RegisterArray<Value>: ~Sendable {
     *, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers."
   )
   #endif
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public init(
     unsafeAddress: UInt,
     stride: UInt,
@@ -170,7 +174,7 @@ extension RegisterArray where Value: RegisterValue {
   /// - Returns: A ``MMIO/Register`` instance configured to access the hardware
   ///   register at the calculated address:
   ///   `self.unsafeAddress + (UInt(index) * self.stride)`.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public subscript<Index>(
     _ index: Index
   ) -> Register<Value> where Index: BinaryInteger {
@@ -208,7 +212,7 @@ extension RegisterArray where Value: RegisterProtocol {
   /// - Returns: An instance of `Value` (the register block type) configured to
   ///   access the hardware block at the calculated address:
   ///   `self.unsafeAddress + (UInt(index) * self.stride)`.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public subscript<Index>(
     _ index: Index
   ) -> Value where Index: BinaryInteger {

@@ -66,7 +66,8 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// An example peripheral
-        nonisolated(unsafe) let exampleperipheral = ExamplePeripheral(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var exampleperipheral: ExamplePeripheral { ExamplePeripheral(unsafeAddress: 0x1000) }
 
         """,
 

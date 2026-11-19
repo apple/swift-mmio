@@ -271,7 +271,7 @@ struct BitFieldMacroTests {
       """,
       expandedSource: """
         var a: Reg<T> {
-          get {
+          @export(implementation) @inline(always) get {
             fatalError()
           }
         }
@@ -287,7 +287,7 @@ struct BitFieldMacroTests {
       """,
       expandedSource: """
         var a: Swift.Int {
-          get {
+          @export(implementation) @inline(always) get {
             fatalError()
           }
         }
@@ -325,7 +325,7 @@ struct BitFieldMacroTests {
       """,
       expandedSource: """
         var a: Int {
-          get {
+          @export(implementation) @inline(always) get {
             fatalError()
           }
         }
@@ -387,7 +387,7 @@ struct BitFieldMacroTests {
       """,
       expandedSource: """
         var a: Int {
-          get {
+          @export(implementation) @inline(always) get {
             fatalError()
           }
         }

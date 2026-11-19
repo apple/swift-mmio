@@ -111,7 +111,7 @@ extension RegisterValueRead {
   /// This property allows direct manipulation of the view's bits. Use this with
   /// caution, as changes made here bypass typed field accessors.
   @_disfavoredOverload
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public var raw: Value.Raw {
     _read {
       yield Value.Raw(self)
@@ -151,7 +151,7 @@ extension RegisterValueWrite {
   ///
   /// This property allows direct manipulation of the view's bits. Use this with
   /// caution, as changes made here bypass typed field accessors.
-  @inlinable @inline(__always)
+  @export(implementation) @inline(always)
   public var raw: Value.Raw {
     _read {
       yield Value.Raw(self)

@@ -107,7 +107,7 @@ struct RegisterWithValues {
   struct FieldValues: BitFieldProjectable, RawRepresentable {
     static let bitWidth = 2
     var rawValue: UInt8
-    @inlinable @inline(__always)
+    @export(implementation) @inline(always)
     init(rawValue: Self.RawValue) {
       self.rawValue = rawValue
     }

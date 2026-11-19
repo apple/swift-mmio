@@ -59,13 +59,16 @@ extension SVD2SwiftTests {
         import MMIO
 
         /// Timer 0
-        nonisolated(unsafe) let timer0 = TIMER0(unsafeAddress: 0x1000)
+        @export(implementation) @inline(always)
+        var timer0: TIMER0 { TIMER0(unsafeAddress: 0x1000) }
 
         /// Timer 1
-        nonisolated(unsafe) let timer1 = TIMER1(unsafeAddress: 0x2000)
+        @export(implementation) @inline(always)
+        var timer1: TIMER1 { TIMER1(unsafeAddress: 0x2000) }
 
         /// Watchdog
-        nonisolated(unsafe) let wdt = WDT(unsafeAddress: 0x3000)
+        @export(implementation) @inline(always)
+        var wdt: WDT { WDT(unsafeAddress: 0x3000) }
 
         /// Device interrupts, by NVIC number.
         enum Interrupt: UInt16 {

@@ -176,10 +176,13 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
@@ -192,10 +195,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -230,10 +236,13 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
@@ -246,10 +255,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -279,13 +291,13 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var v2: V2 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -303,26 +315,31 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var v2: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V2.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V2.insertBits(newValue, into: &self.storage)
               }
             }
@@ -334,10 +351,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -367,13 +387,13 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var v2: V2 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -391,26 +411,31 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var v2: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V2.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V2.insertBits(newValue, into: &self.storage)
               }
             }
@@ -422,18 +447,22 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: Bool {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extract(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -460,7 +489,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -476,18 +505,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
@@ -499,18 +532,22 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt16 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extract(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -537,7 +574,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -553,18 +590,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
@@ -576,18 +617,22 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt16 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extract(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -614,7 +659,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -630,18 +675,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
@@ -653,18 +702,22 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extract(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insert(newValue, into: &self.storage)
               }
             }
@@ -693,13 +746,13 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var v2: V2 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -717,29 +770,35 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.Read) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.Write) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var v2: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V2.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V2.insertBits(newValue, into: &self.storage)
               }
             }
@@ -747,12 +806,15 @@ struct RegisterMacroTests {
 
           struct Read: RegisterValueRead {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v1: Bool {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extract(from: self.storage)
               }
             }
@@ -760,20 +822,24 @@ struct RegisterMacroTests {
 
           struct Write: RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Read) {
               // FIXME: mask off bits
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v2: Bool {
               @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V2.extract(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V2.insert(newValue, into: &self.storage)
               }
             }
@@ -800,7 +866,7 @@ struct RegisterMacroTests {
         struct OtherRangeTypes0 {
           @available(*, unavailable)
           var unbounded: Unbounded {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -816,18 +882,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = OtherRangeTypes0
             typealias Storage = UInt32
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var unbounded: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Unbounded.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Unbounded.insertBits(newValue, into: &self.storage)
               }
             }
@@ -839,10 +909,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = OtherRangeTypes0
+            @export(implementation) @inline(always)
             var storage: UInt32
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -872,13 +945,13 @@ struct RegisterMacroTests {
         struct OtherRangeTypes1 {
           @available(*, unavailable)
           var partialThrough: PartialThrough {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var partialFrom: PartialFrom {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -896,26 +969,31 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = OtherRangeTypes1
             typealias Storage = UInt32
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var partialThrough: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 PartialThrough.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 PartialThrough.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var partialFrom: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 PartialFrom.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 PartialFrom.insertBits(newValue, into: &self.storage)
               }
             }
@@ -927,10 +1005,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = OtherRangeTypes1
+            @export(implementation) @inline(always)
             var storage: UInt32
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -960,13 +1041,13 @@ struct RegisterMacroTests {
         struct OtherRangeTypes2 {
           @available(*, unavailable)
           var partialUpTo: PartialUpTo {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var closed: Closed {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -984,26 +1065,31 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = OtherRangeTypes2
             typealias Storage = UInt32
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var partialUpTo: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 PartialUpTo.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 PartialUpTo.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var closed: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Closed.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Closed.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1015,10 +1101,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = OtherRangeTypes2
+            @export(implementation) @inline(always)
             var storage: UInt32
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1048,13 +1137,13 @@ struct RegisterMacroTests {
         struct SingleBit {
           @available(*, unavailable)
           var low: Low {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var high: High {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1072,26 +1161,31 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = SingleBit
             typealias Storage = UInt32
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var low: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Low.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Low.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var high: UInt32 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 High.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 High.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1103,10 +1197,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = SingleBit
+            @export(implementation) @inline(always)
             var storage: UInt32
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1136,13 +1233,13 @@ struct RegisterMacroTests {
         public struct S {
           @available(*, unavailable)
           var v1: V1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var v2: V2 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1160,29 +1257,35 @@ struct RegisterMacroTests {
           public struct Raw: RegisterValueRaw {
             public typealias Value = S
             public typealias Storage = UInt8
+            @export(implementation) @inline(always)
             public var storage: Storage
+            @export(implementation) @inline(always)
             public init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             public init(_ value: Value.Read) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             public init(_ value: Value.Write) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             public var v1: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V1.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             public var v2: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V2.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V2.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1190,12 +1293,15 @@ struct RegisterMacroTests {
 
           public struct Read: RegisterValueRead {
             public typealias Value = S
+            @export(implementation) @inline(always)
             public var storage: UInt8
+            @export(implementation) @inline(always)
             public init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             public var v1: Bool {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V1.extract(from: self.storage)
               }
             }
@@ -1203,20 +1309,24 @@ struct RegisterMacroTests {
 
           public struct Write: RegisterValueWrite {
             public typealias Value = S
+            @export(implementation) @inline(always)
             public var storage: UInt8
+            @export(implementation) @inline(always)
             public init(_ value: Raw) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             public init(_ value: Read) {
               // FIXME: mask off bits
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             public var v2: Bool {
               @available(*, deprecated, message: "API misuse; read from write view returns the value to be written, not the value initially read.")
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V2.extract(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V2.insert(newValue, into: &self.storage)
               }
             }
@@ -1243,7 +1353,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v: V {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1259,18 +1369,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1282,10 +1396,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1330,7 +1447,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v: V {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1346,18 +1463,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1369,10 +1490,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1417,7 +1541,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v: V {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1433,18 +1557,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1456,10 +1584,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1504,7 +1635,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var v: V {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1520,18 +1651,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var v: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 V.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 V.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1543,10 +1678,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1591,7 +1729,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var field: Field {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1607,18 +1745,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt64
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var field: UInt64 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Field.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Field.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1630,10 +1772,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt64
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1693,7 +1838,7 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var field: Field {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1709,18 +1854,22 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt8
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var field: UInt8 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Field.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Field.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1732,10 +1881,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt8
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }
@@ -1794,25 +1946,25 @@ struct RegisterMacroTests {
         struct S {
           @available(*, unavailable)
           var field0: Field0 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var field1: Field1 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var field2: Field2 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
           @available(*, unavailable)
           var field3: Field3 {
-            get {
+            @export(implementation) @inline(always) get {
               fatalError()
             }
           }
@@ -1834,42 +1986,49 @@ struct RegisterMacroTests {
           struct Raw: RegisterValueRaw {
             typealias Value = S
             typealias Storage = UInt64
+            @export(implementation) @inline(always)
             var storage: Storage
+            @export(implementation) @inline(always)
             init(_ storage: Storage) {
               self.storage = storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Value.ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             var field0: UInt64 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Field0.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Field0.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var field1: UInt64 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Field1.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Field1.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var field2: UInt64 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Field2.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Field2.insertBits(newValue, into: &self.storage)
               }
             }
+            @export(implementation) @inline(always)
             var field3: UInt64 {
-              @inlinable @inline(__always) get {
+              @export(implementation) @inline(always) get {
                 Field3.extractBits(from: self.storage)
               }
-              @inlinable @inline(__always) set {
+              @export(implementation) @inline(always) set {
                 Field3.insertBits(newValue, into: &self.storage)
               }
             }
@@ -1881,10 +2040,13 @@ struct RegisterMacroTests {
 
           struct ReadWrite: RegisterValueRead, RegisterValueWrite {
             typealias Value = S
+            @export(implementation) @inline(always)
             var storage: UInt64
+            @export(implementation) @inline(always)
             init(_ value: ReadWrite) {
               self.storage = value.storage
             }
+            @export(implementation) @inline(always)
             init(_ value: Raw) {
               self.storage = value.storage
             }

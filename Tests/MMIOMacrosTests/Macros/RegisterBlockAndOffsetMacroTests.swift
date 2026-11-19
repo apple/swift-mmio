@@ -43,7 +43,7 @@ struct RegisterBlockAndOffsetMacroTests {
       expandedSource: """
         struct I2C {
           var control: Control {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
               #else
@@ -52,7 +52,7 @@ struct RegisterBlockAndOffsetMacroTests {
             }
           }
           var dr: Register<DR> {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               return .init(unsafeAddress: self.unsafeAddress + (0x8), interposer: self.interposer)
               #else
@@ -61,20 +61,22 @@ struct RegisterBlockAndOffsetMacroTests {
             }
           }
 
+          @export(implementation) @inline(always)
           let unsafeAddress: UInt
 
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
+          @export(implementation) @inline(always)
           var interposer: (any MMIOInterposer)? {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               self._interposer
               #else
               nil
               #endif
             }
-            @inlinable @inline(__always) set {
+            @export(implementation) @inline(always) set {
               #if FEATURE_INTERPOSABLE
               self._interposer = newValue
               #endif
@@ -82,11 +84,11 @@ struct RegisterBlockAndOffsetMacroTests {
           }
 
           #if FEATURE_INTERPOSABLE
-          @usableFromInline
+          @export(implementation) @inline(always)
           internal var _interposer: (any MMIOInterposer)?
           #endif
 
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           init(unsafeAddress: UInt) {
             self.unsafeAddress = unsafeAddress
           }
@@ -94,7 +96,7 @@ struct RegisterBlockAndOffsetMacroTests {
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
             self.unsafeAddress = unsafeAddress
             self.interposer = interposer
@@ -125,7 +127,7 @@ struct RegisterBlockAndOffsetMacroTests {
       expandedSource: """
         struct I2C {
           var control: Control {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               return .init(unsafeAddress: self.unsafeAddress + (0x000), stride: 0x10, count: 0x08, interposer: self.interposer)
               #else
@@ -134,7 +136,7 @@ struct RegisterBlockAndOffsetMacroTests {
             }
           }
           var dr: Register<DR> {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               return .init(unsafeAddress: self.unsafeAddress + (0x100), stride: 0x10, count: 0x10, interposer: self.interposer)
               #else
@@ -143,20 +145,22 @@ struct RegisterBlockAndOffsetMacroTests {
             }
           }
 
+          @export(implementation) @inline(always)
           let unsafeAddress: UInt
 
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
+          @export(implementation) @inline(always)
           var interposer: (any MMIOInterposer)? {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               self._interposer
               #else
               nil
               #endif
             }
-            @inlinable @inline(__always) set {
+            @export(implementation) @inline(always) set {
               #if FEATURE_INTERPOSABLE
               self._interposer = newValue
               #endif
@@ -164,11 +168,11 @@ struct RegisterBlockAndOffsetMacroTests {
           }
 
           #if FEATURE_INTERPOSABLE
-          @usableFromInline
+          @export(implementation) @inline(always)
           internal var _interposer: (any MMIOInterposer)?
           #endif
 
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           init(unsafeAddress: UInt) {
             self.unsafeAddress = unsafeAddress
           }
@@ -176,7 +180,7 @@ struct RegisterBlockAndOffsetMacroTests {
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
             self.unsafeAddress = unsafeAddress
             self.interposer = interposer
@@ -207,7 +211,7 @@ struct RegisterBlockAndOffsetMacroTests {
       expandedSource: """
         public struct I2C {
           var control: Control {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               return .init(unsafeAddress: self.unsafeAddress + (0x0), interposer: self.interposer)
               #else
@@ -216,7 +220,7 @@ struct RegisterBlockAndOffsetMacroTests {
             }
           }
           var dr: Register<DR> {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               return .init(unsafeAddress: self.unsafeAddress + (0x8), interposer: self.interposer)
               #else
@@ -225,20 +229,22 @@ struct RegisterBlockAndOffsetMacroTests {
             }
           }
 
+          @export(implementation) @inline(always)
           public let unsafeAddress: UInt
 
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
+          @export(implementation) @inline(always)
           public var interposer: (any MMIOInterposer)? {
-            @inlinable @inline(__always) get {
+            @export(implementation) @inline(always) get {
               #if FEATURE_INTERPOSABLE
               self._interposer
               #else
               nil
               #endif
             }
-            @inlinable @inline(__always) set {
+            @export(implementation) @inline(always) set {
               #if FEATURE_INTERPOSABLE
               self._interposer = newValue
               #endif
@@ -246,11 +252,11 @@ struct RegisterBlockAndOffsetMacroTests {
           }
 
           #if FEATURE_INTERPOSABLE
-          @usableFromInline
+          @export(implementation) @inline(always)
           internal var _interposer: (any MMIOInterposer)?
           #endif
 
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           public init(unsafeAddress: UInt) {
             self.unsafeAddress = unsafeAddress
           }
@@ -258,7 +264,7 @@ struct RegisterBlockAndOffsetMacroTests {
           #if !FEATURE_INTERPOSABLE
           @available(*, deprecated, message: "Define FEATURE_INTERPOSABLE to enable interposers.")
           #endif
-          @inlinable @inline(__always)
+          @export(implementation) @inline(always)
           public init(unsafeAddress: UInt, interposer: (any MMIOInterposer)?) {
             self.unsafeAddress = unsafeAddress
             self.interposer = interposer

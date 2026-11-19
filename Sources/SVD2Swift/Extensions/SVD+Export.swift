@@ -397,35 +397,36 @@ extension SVDPeripheral: SVDExportable {
     options: ExportOptions,
     context: ExportContext
   ) {
-    // Peripherals are not `Sendable`. A global or static peripheral must be
-    // `nonisolated(unsafe)` to compile in Swift 6 mode, so the compiler does
-    // not check how tasks share it. Instance member peripherals are checked.
-    let isInstanceMember =
-      options.namespaceUnderDevice && options.instanceMemberPeripherals
-    let accessorModifier =
-      if isInstanceMember {
-        ""
-      } else if options.namespaceUnderDevice {
-        "nonisolated(unsafe) static "
-      } else {
-        "nonisolated(unsafe) "
-      }
-
+    let type: String
+    let value: String
     if let dimensionElement = self.dimensionElement {
       let count = dimensionElement.dim
       let stride = dimensionElement.dimIncrement
+      type = "RegisterArray<\(context.swiftTypeName)>"
+      value = """
+        \(type)(unsafeAddress: \(hex: self.baseAddress), stride: \(hex: stride), count: \(count))
+        """
+    } else {
+      type = context.swiftTypeName
+      value = "\(type)(unsafeAddress: \(hex: self.baseAddress))"
+    }
 
+    if options.namespaceUnderDevice && options.instanceMemberPeripherals {
       outputWriter.insert(
         """
         \(comment: context.swiftDescription)
-        \(options.accessLevel)\(accessorModifier)let \(identifier: context.swiftInstanceName) = RegisterArray<\(context.swiftTypeName)>(\
-        unsafeAddress: \(hex: self.baseAddress), stride: \(hex: stride), count: \(count))
+        \(options.accessLevel)let \(identifier: context.swiftInstanceName) = \(value)
         """)
     } else {
+      // A global or static peripheral is a computed property, so it has no
+      // storage. Clients fold its address to a constant, and it does not need
+      // `nonisolated(unsafe)` to compile in Swift 6 mode.
+      let staticModifier = options.namespaceUnderDevice ? "static " : ""
       outputWriter.insert(
         """
         \(comment: context.swiftDescription)
-        \(options.accessLevel)\(accessorModifier)let \(identifier: context.swiftInstanceName) = \(context.swiftTypeName)(unsafeAddress: \(hex: self.baseAddress))
+        @export(implementation) @inline(always)
+        \(options.accessLevel)\(staticModifier)var \(identifier: context.swiftInstanceName): \(type) { \(value) }
         """)
     }
   }
@@ -742,7 +743,8 @@ extension SVDEnumeration: SVDExportable {
     outputWriter.scope(typeScope) { outputWriter in
       outputWriter.insert(
         """
-        \(options.accessLevel)static let bitWidth = \(bitWidth)
+        @export(implementation) @inline(always)
+        \(options.accessLevel)static var bitWidth: Int { \(bitWidth) }
         """)
 
       if requiresPattern {
@@ -750,12 +752,27 @@ extension SVDEnumeration: SVDExportable {
         outputWriter.scope(patternScope) { outputWriter in
           outputWriter.insert(
             """
-            var rawValue: \(rawValueType)
-            var mask: \(rawValueType)
+            @export(implementation) @inline(always)
+            \(options.accessLevel)var rawValue: \(rawValueType)
+            @export(implementation) @inline(always)
+            \(options.accessLevel)var mask: \(rawValueType)
             """)
+
+          let patternInitScope = """
+            @export(implementation) @inline(always)
+            \(options.accessLevel)init(rawValue: \(rawValueType), mask: \(rawValueType))
+            """
+          outputWriter.scope(patternInitScope) { outputWriter in
+            outputWriter.insert(
+              """
+              self.rawValue = rawValue
+              self.mask = mask
+              """)
+          }
         }
 
         let patternMatchScope = """
+          @export(implementation) @inline(always)
           \(options.accessLevel)static func ~= (pattern: Pattern, value: Self) -> Bool
           """
         outputWriter.scope(patternMatchScope) { outputWriter in
@@ -787,18 +804,21 @@ extension SVDEnumeration: SVDExportable {
             outputWriter.insert(
               """
               \(comment: swiftDescription)
-              \(options.accessLevel)static let \(identifier: swiftName) = Self(rawValue: \(hex: value))
+              @export(implementation) @inline(always)
+              \(options.accessLevel)static var \(identifier: swiftName): Self { Self(rawValue: \(hex: value)) }
               """)
 
           default:
             outputWriter.insert(
               """
               \(comment: swiftDescription)
-              \(options.accessLevel)static let \(identifier: swiftName) = Pattern(rawValue: \(hex: value), mask: \(hex: mask, bits: bitWidth))
+              @export(implementation) @inline(always)
+              \(options.accessLevel)static var \(identifier: swiftName): Pattern { Pattern(rawValue: \(hex: value), mask: \(hex: mask, bits: bitWidth)) }
               """)
 
             let factoryScope = """
               \(comment: swiftDescription)
+              @export(implementation) @inline(always)
               \(options.accessLevel)static func \(identifier: swiftName)(_ rawValue: \(rawValueType) = \(identifier: swiftName).rawValue) -> Self
               """
             outputWriter.scope(factoryScope) { outputWriter in
@@ -818,11 +838,12 @@ extension SVDEnumeration: SVDExportable {
 
       outputWriter.insert(
         """
+        @export(implementation) @inline(always)
         \(options.accessLevel)var rawValue: \(rawValueType)
         """)
 
       let initScope = """
-        @inlinable @inline(__always)
+        @export(implementation) @inline(always)
         \(options.accessLevel)init(rawValue: Self.RawValue)
         """
       outputWriter.scope(initScope) { outputWriter in
