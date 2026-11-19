@@ -33,6 +33,26 @@ let control = Control(unsafeAddress: 0x1000)
 control.cr1.modify { $0.en = true }
 ```
 
+### Writing a register's reset value
+
+If the device documentation specifies a reset bit pattern that software may
+write to the whole register, declare it with `reset:`.
+
+```swift
+@Register(bitWidth: 16, reset: 0x0004)
+struct Configuration {
+  @ReadWrite(bits: ..., as: UInt16.self)
+  var value: VALUE
+}
+
+let configuration = Register<Configuration>(unsafeAddress: 0x1000)
+configuration.reset()
+```
+
+`reset()` performs one volatile write with no preceding read. Use the device's
+documented address and reset value, and make sure a full-width write is allowed,
+including for any reserved bits.
+
 ## Using Swift MMIO in your project
 
 Swift MMIO supports use with the Swift Package Manager. First, add the Swift MMIO repository to your Package's dependencies:

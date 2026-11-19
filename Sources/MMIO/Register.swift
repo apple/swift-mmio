@@ -413,3 +413,16 @@ extension Register where Value.Read == Value.Write {
     return returnValue
   }
 }
+
+/// Operations for registers with a software-writable reset value.
+extension Register where Value: ResettableRegisterValue {
+  /// Writes the declared reset value in one volatile store.
+  ///
+  /// This operation does not read the register. It writes the entire register,
+  /// including any reserved bits. Only use this operation when the hardware
+  /// documentation permits writing the declared bit pattern.
+  @inlinable @inline(__always)
+  public func reset() {
+    self.write(Value.Write(Value.Raw(Value.resetValue)))
+  }
+}
