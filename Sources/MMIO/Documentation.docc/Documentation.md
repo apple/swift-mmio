@@ -44,6 +44,10 @@ Contributions and feedback are welcome. Please refer to the [Contribution Guidel
 - <doc:Custom-BitFieldProjectable>
 - <doc:Testing-With-Interposers>
 
+### Bit Fields
+
+- ``MMIO/BitVector``
+
 ### Protocols
 
 - ``MMIO/BitFieldProjectable``
