@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import MMIOUtilities
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
@@ -17,6 +18,9 @@ import SwiftSyntaxMacros
 public struct RegisterMacro {
   @Argument(label: "bitWidth")
   var bitWidth: BitWidth
+
+  @Argument(label: "reset")
+  var reset: ExprSyntax?
 }
 
 extension RegisterMacro: ParsableMacro {
@@ -28,6 +32,8 @@ extension RegisterMacro: ParsableMacro {
     switch label {
     case "bitWidth":
       try self._bitWidth.update(from: expression, in: context)
+    case "reset":
+      try self._reset.update(from: expression, in: context)
     default:
       fatalError()
     }
@@ -110,7 +116,28 @@ extension RegisterMacro: MMIOMemberMacro {
       isSymmetric: isSymmetric)
 
     register.validate(in: context)
-    return register.declarations()
+    var declarations = register.declarations()
+    if let reset = self.reset {
+      guard bitFields.contains(where: { $0.type.isWriteable }) else {
+        throw context.error(
+          at: reset,
+          message: .init("A reset value requires a writable bit field"))
+      }
+      guard
+        let literal = reset.as(IntegerLiteralExprSyntax.self),
+        let value = SwiftIntegerLiteralParser<UInt64>().parseAll(
+          literal.literal.text),
+        value <= UInt64.max >> (64 - bitWidth)
+      else {
+        throw context.error(
+          at: reset,
+          message: .init(
+            "Expected an unsigned integer literal fitting within \(bitWidth) bits"))
+      }
+      declarations.append(
+        "\(accessLevel)static var resetValue: Raw.Storage { \(literal.trimmed) }")
+    }
+    return declarations
   }
 }
 
@@ -150,7 +177,10 @@ extension RegisterMacro: MMIOExtensionMacro {
     // Only create extension when applied to struct decls.
     guard declaration.is(StructDeclSyntax.self) else { return [] }
 
-    let `extension`: DeclSyntax = "extension \(type.trimmed): RegisterValue {}"
+    let conformance =
+      self.reset == nil ? "RegisterValue" : "ResettableRegisterValue"
+    let `extension`: DeclSyntax =
+      "extension \(type.trimmed): \(raw: conformance) {}"
 
     return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
   }

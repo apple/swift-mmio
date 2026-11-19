@@ -86,6 +86,19 @@ public macro RegisterBlock(offset: Int, stride: Int, count: Int) =
 public macro Register(bitWidth: Int) =
   #externalMacro(module: "MMIOMacros", type: "RegisterMacro")
 
+/// Defines a hardware register with a software-writable reset value.
+///
+/// - Parameters:
+///   - bitWidth: The total width of the register in bits.
+///   - reset: The unsigned integer literal to write when resetting the
+///     register. It must fit within `bitWidth`. Use this overload only when
+///     the hardware permits a full-width write of this value.
+@attached(member, names: arbitrary)
+@attached(memberAttribute)
+@attached(extension, conformances: RegisterValue, ResettableRegisterValue)
+public macro Register(bitWidth: Int, reset: UInt64) =
+  #externalMacro(module: "MMIOMacros", type: "RegisterMacro")
+
 /// Defines reserved bit field within a hardware register.
 ///
 /// Reserved bits are parts of a register that are typically unused, have
