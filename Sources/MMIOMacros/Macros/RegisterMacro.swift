@@ -121,21 +121,28 @@ extension RegisterMacro: MMIOMemberMacro {
       guard bitFields.contains(where: { $0.type.isWriteable }) else {
         throw context.error(
           at: reset,
-          message: .init("A reset value requires a writable bit field"))
+          message: .resetValueRequiresWritableBitField())
       }
       guard
         let literal = reset.as(IntegerLiteralExprSyntax.self),
         let value = SwiftIntegerLiteralParser<UInt64>().parseAll(
-          literal.literal.text),
-        value <= UInt64.max >> (64 - bitWidth)
+          literal.literal.text)
       else {
         throw context.error(
           at: reset,
-          message: .init(
-            "Expected an unsigned integer literal fitting within \(bitWidth) bits"))
+          message: .expectedIntegerLiteral())
+      }
+      guard value <= UInt64.max >> (64 - bitWidth) else {
+        throw context.error(
+          at: reset,
+          message: .resetValueDoesNotFit(bitWidth: bitWidth))
       }
       declarations.append(
-        "\(accessLevel)static var resetValue: Raw.Storage { \(literal.trimmed) }")
+        """
+        \(accessLevel)static var resetValue: Raw.Storage {
+          \(literal.trimmed)
+        }
+        """)
     }
     return declarations
   }
@@ -178,10 +185,26 @@ extension RegisterMacro: MMIOExtensionMacro {
     guard declaration.is(StructDeclSyntax.self) else { return [] }
 
     let conformance =
-      self.reset == nil ? "RegisterValue" : "ResettableRegisterValue"
+      self.reset == nil
+      ? "RegisterValue"
+      : "RegisterValue, ResettableRegisterValue"
     let `extension`: DeclSyntax =
       "extension \(type.trimmed): \(raw: conformance) {}"
 
     return [try `extension`.requireAs(ExtensionDeclSyntax.self, context)]
+  }
+}
+
+extension ErrorDiagnostic {
+  static func resetValueRequiresWritableBitField() -> Self {
+    .init(
+      "'\(Macro.signature)' requires a writable bit field for 'reset'")
+  }
+
+  static func resetValueDoesNotFit(bitWidth: Int) -> Self {
+    .init(
+      """
+      '\(Macro.signature)' requires 'reset' to fit within \(bitWidth) bits
+      """)
   }
 }
