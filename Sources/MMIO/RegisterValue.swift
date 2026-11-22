@@ -163,3 +163,10 @@ extension RegisterValueWrite {
     }
   }
 }
+
+/// A register layout with a predefined value that software can write to reset
+/// the register.
+public protocol ResettableRegisterValue: RegisterValue {
+  /// The full-width bit pattern written by `Register.reset()`.
+  static var resetValue: Raw.Storage { get }
+}

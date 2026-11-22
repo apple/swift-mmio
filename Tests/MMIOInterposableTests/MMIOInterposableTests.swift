@@ -40,6 +40,46 @@ struct MMIOInterposableTests {
     var reserved0: Reserved0
   }
 
+  @Register(bitWidth: 16, reset: 0x8002)
+  struct WriteOnlyRegister {
+    @WriteOnly(bits: ..., as: UInt16.self)
+    var command: COMMAND
+  }
+
+  @Test func reset_writesDeclaredValueWithoutReading() {
+    let interposer = MMIOTracingInterposer()
+    let register = Register<WriteOnlyRegister>(
+      unsafeAddress: 0x1000, interposer: interposer)
+
+    register.reset()
+
+    assertMMIOInterposerTrace(
+      interposer: interposer,
+      trace: [.store(of: UInt16(0x8002), to: 0x1000)])
+  }
+
+  // 0x8002 sets bit 1 (in the writable field) and bit 15 (in the reserved
+  // field). The store must keep the reserved bits from the reset pattern.
+  @Register(bitWidth: 16, reset: 0x8002)
+  struct ReadWriteReservedRegister {
+    @ReadWrite(bits: 0..<2, as: UInt16.self)
+    var value: VALUE
+    @Reserved(bits: 2..<16)
+    var reserved0: Reserved0
+  }
+
+  @Test func reset_storesReservedBitsFromDeclaredValue() {
+    let interposer = MMIOTracingInterposer()
+    let register = Register<ReadWriteReservedRegister>(
+      unsafeAddress: 0x1000, interposer: interposer)
+
+    register.reset()
+
+    assertMMIOInterposerTrace(
+      interposer: interposer,
+      trace: [.store(of: UInt16(0x8002), to: 0x1000)])
+  }
+
   @Test func registerBlock_passesInterposerToChildren() {
     let interposer = MMIOTracingInterposer()
     let example = Example(unsafeAddress: 0x1000, interposer: interposer)

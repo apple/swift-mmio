@@ -1934,5 +1934,277 @@ struct RegisterMacroTests {
       macros: Self.macros,
       indentationWidth: Self.indentationWidth)
   }
+  @Test func expansion_withoutResetValue() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8)
+      struct S {
+        @ReadWrite(bits: 0..<1, as: Bool.self)
+        var v1: V1
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V1: ContiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = Bool
+            static let bitRange = 0 ..< 1
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            var v1: Bool {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+        }
+
+        extension S: RegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func expansion_withResetValue() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8, reset: 0x01)
+      struct S {
+        @ReadWrite(bits: 0..<1, as: Bool.self)
+        var v1: V1
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v1: V1 {
+            get {
+              fatalError()
+            }
+          }
+
+          private init() {
+            fatalError()
+          }
+
+          private var _never: Never
+
+          enum V1: ContiguousBitField {
+            typealias Storage = UInt8
+            typealias Projection = Bool
+            static let bitRange = 0 ..< 1
+          }
+
+          struct Raw: RegisterValueRaw {
+            typealias Value = S
+            typealias Storage = UInt8
+            var storage: Storage
+            init(_ storage: Storage) {
+              self.storage = storage
+            }
+            init(_ value: Value.ReadWrite) {
+              self.storage = value.storage
+            }
+            var v1: UInt8 {
+              @inlinable @inline(__always) get {
+                V1.extractBits(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insertBits(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          typealias Read = ReadWrite
+
+          typealias Write = ReadWrite
+
+          struct ReadWrite: RegisterValueRead, RegisterValueWrite {
+            typealias Value = S
+            var storage: UInt8
+            init(_ value: ReadWrite) {
+              self.storage = value.storage
+            }
+            init(_ value: Raw) {
+              self.storage = value.storage
+            }
+            var v1: Bool {
+              @inlinable @inline(__always) get {
+                V1.extract(from: self.storage)
+              }
+              @inlinable @inline(__always) set {
+                V1.insert(newValue, into: &self.storage)
+              }
+            }
+          }
+
+          static var resetValue: Raw.Storage {
+            0x01
+          }
+        }
+
+        extension S: RegisterValue, ResettableRegisterValue {
+        }
+        """,
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func reset_nonLiteral_emitsDiagnostic() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8, reset: 1 + 1)
+      struct S {
+        @ReadWrite(bits: 0..<1)
+        var v: V
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v: V {
+            get {
+              fatalError()
+            }
+          }
+        }
+
+        extension S: RegisterValue, ResettableRegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.expectedIntegerLiteral().message,
+          line: 1,
+          column: 33,
+          highlights: ["1 + 1"])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func reset_valueDoesNotFitBitWidth_emitsDiagnostic() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8, reset: 0x100)
+      struct S {
+        @ReadWrite(bits: 0..<1)
+        var v: V
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var v: V {
+            get {
+              fatalError()
+            }
+          }
+        }
+
+        extension S: RegisterValue, ResettableRegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.resetValueDoesNotFit(bitWidth: 8).message,
+          line: 1,
+          column: 33,
+          highlights: ["0x100"])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
+
+  @Test func reset_requiresWritableBitField_emitsDiagnostic() {
+    assertMacroExpansion(
+      """
+      @Register(bitWidth: 0x8, reset: 0x0)
+      struct S {
+        @Reserved(bits: 1..<8)
+        var reserved: Reserved
+        @ReadOnly(bits: 0, as: Bool.self)
+        var flag: FLAG
+      }
+      """,
+      expandedSource: """
+        struct S {
+          @available(*, unavailable)
+          var reserved: Reserved {
+            get {
+              fatalError()
+            }
+          }
+          @available(*, unavailable)
+          var flag: FLAG {
+            get {
+              fatalError()
+            }
+          }
+        }
+
+        extension S: RegisterValue, ResettableRegisterValue {
+        }
+        """,
+      diagnostics: [
+        .init(
+          message: ErrorDiagnostic.resetValueRequiresWritableBitField().message,
+          line: 1,
+          column: 33,
+          highlights: ["0x0"])
+      ],
+      macros: Self.macros,
+      indentationWidth: Self.indentationWidth)
+  }
 }
 #endif
