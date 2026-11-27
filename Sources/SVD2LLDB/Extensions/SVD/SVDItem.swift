@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
 import MMIOUtilities
 import SVD
 
@@ -79,7 +80,8 @@ extension SVDPeripheral: SVDItem {
   var modifiedWriteValues: SVD.SVDModifiedWriteValues? { nil }
 
   func children() -> [any SVDItem] {
-    (self.registers?.cluster ?? []) + (self.registers?.register ?? [])
+    (self.registers?.cluster ?? []).flatMap { $0.expandingDimensions() }
+      + (self.registers?.register ?? []).flatMap { $0.expandingDimensions() }
   }
 
   func info(
@@ -118,7 +120,8 @@ extension SVDCluster: SVDItem {
   var modifiedWriteValues: SVD.SVDModifiedWriteValues? { nil }
 
   func children() -> [any SVDItem] {
-    (self.cluster ?? []) + (self.register ?? [])
+    (self.cluster ?? []).flatMap { $0.expandingDimensions() }
+      + (self.register ?? []).flatMap { $0.expandingDimensions() }
   }
 
   func info(
@@ -213,5 +216,69 @@ extension SVDField: SVDItem {
       info.append(("Read Action", "\(readAction)"))
     }
     return info
+  }
+}
+
+/// An SVD element that can be declared once and repeated with `<dim>`.
+protocol SVDDimensionable {
+  var name: String { get set }
+  var addressOffset: UInt64 { get set }
+  var dimensionElement: SVDDimensionElement? { get set }
+}
+
+extension SVDRegister: SVDDimensionable {}
+extension SVDCluster: SVDDimensionable {}
+
+extension SVDDimensionable {
+  /// Expands an array declared with `<dim>` into one element per index.
+  ///
+  /// Each element has the `%s` (or `[%s]`) placeholder in its name replaced by
+  /// its index and its address offset advanced by `<dimIncrement>`. An element
+  /// without `<dim>` is returned unchanged.
+  func expandingDimensions() -> [Self] {
+    guard let dimensionElement = self.dimensionElement else { return [self] }
+    let indices = dimensionElement.indices()
+    return indices.enumerated().map { position, index in
+      var copy = self
+      copy.name =
+        self.name
+        .replacingOccurrences(of: "[%s]", with: index)
+        .replacingOccurrences(of: "%s", with: index)
+      copy.addressOffset =
+        self.addressOffset
+        &+ UInt64(position) &* dimensionElement.dimIncrement
+      copy.dimensionElement = nil
+      return copy
+    }
+  }
+}
+
+extension SVDDimensionElement {
+  /// The index names of the array, taken from `<dimIndex>`.
+  ///
+  /// `<dimIndex>` is either a range such as `0-3` or a comma separated list
+  /// such as `A,B,C`. Without it the indices are `0..<dim`. A list whose length
+  /// differs from `<dim>` is not trusted and falls back to `0..<dim`.
+  func indices() -> [String] {
+    let count = Int(clamping: self.dim)
+    let fallback = (0..<count).map(String.init)
+    guard let dimIndex = self.dimIndex?.trimmingCharacters(in: .whitespaces),
+      !dimIndex.isEmpty
+    else { return fallback }
+
+    let parts = dimIndex.split(separator: "-", omittingEmptySubsequences: false)
+    if parts.count == 2,
+      let lower = Int(parts[0].trimmingCharacters(in: .whitespaces)),
+      let upper = Int(parts[1].trimmingCharacters(in: .whitespaces)),
+      lower <= upper
+    {
+      guard upper - lower + 1 == count else { return fallback }
+      return (lower...upper).map(String.init)
+    }
+
+    let list = dimIndex.split(separator: ",").map {
+      $0.trimmingCharacters(in: .whitespaces)
+    }
+    return list.count == count ? list : fallback
   }
 }
